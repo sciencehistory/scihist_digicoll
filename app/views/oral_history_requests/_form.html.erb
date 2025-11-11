@@ -1,4 +1,4 @@
-<%= simple_form_for @oral_history_request,  :url => :request_oral_history  do |f| %>
+<%= simple_form_for @oral_history_request, :url => :request_oral_history, html: { data: { blacklight_modal: "preserve" } }  do |f| %>
 
   <% remembered_form_values = oral_history_request_form_entry_read %>
 
@@ -78,7 +78,7 @@
     <%= f.hidden_field :work_friendlier_id, value: @work.friendlier_id %>
 
     <div class="form-actions mt-3">
-      <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary me-3" %>
+      <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary me-3", data: { bl_dismiss: "modal" } %>
       <%= f.button :submit, value: "Submit request", class: "btn btn-brand-main" %>
     </div>
   </div>

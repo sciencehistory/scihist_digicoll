@@ -84,7 +84,11 @@ class OralHistoryRequestsController < ApplicationController
     if current_oral_history_requester &&
           OralHistoryRequest.where(work: @work, oral_history_requester: current_oral_history_requester).exists?
 
-        redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
+        return_status(
+          oral_history_requests_path,
+          "You have already requested this Oral History: #{@work.title}",
+          add_view_requests_link: true
+        )
 
         return # abort further processing
     end
@@ -121,9 +125,15 @@ class OralHistoryRequestsController < ApplicationController
       OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
 
       if current_oral_history_requester.present? && current_oral_history_requester.email == @oral_history_request.requester_email
-        redirect_to oral_history_requests_path, flash: { success: "The files you requested from '#{@work.title}' are immediately available." }
+        return_status(oral_history_requests_path,
+          "The files you requested from '#{@work.title}' are immediately available and can be viewed now",
+          add_view_requests_link: true
+        )
       else
-        redirect_to work_path(@work.friendlier_id), flash: { success: "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link." }
+        return_status(
+          work_path(@work.friendlier_id),
+          "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link."
+        )
       end
     else # manual review
       OralHistoryRequestNotificationMailer.
@@ -131,11 +141,39 @@ class OralHistoryRequestsController < ApplicationController
         notification_email.
         deliver_later
 
-      redirect_to work_path(@work.friendlier_id), flash: { success: "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}" }
+      return_status(
+        work_path(@work.friendlier_id),
+        "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}"
+      )
     end
   end
 
 private
+
+  # display a message in a redirect with flash, or an inline HTML fragment for JS placement in modal,
+  # depending on request type
+  #
+  # @param return_dest argument to redirect_to if we are redirecting
+  # @param message [String] message for flash message and/or modal
+  # @param alert_type [String] flash type and `alert_$$` class for alert
+  # @param add_view_requests_link [Boolean] if true, then in modal we'll add a link to View your requests.
+  def return_status(redirect_dest, message, alert_type: "success", add_view_requests_link: false)
+    if request.xhr?
+      if add_view_requests_link
+        message = <<~EOS.html_safe
+          <p>#{ERB::Util.html_escape message}</p>
+          <p>
+            <i class="fa fa-external-link" aria-hidden="true"></i>
+            <a href="#{oral_history_requests_path}" target="_blank">View your requests here</a>
+          </p>
+        EOS
+      end
+
+      render partial: "alert", layout: false, locals: { alert_type: "success", message: message }
+    else
+      redirect_to redirect_dest, flash: { alert_type => message }
+    end
+  end
 
   # load @work, and create a new @oral_history_request
   #
@@ -154,10 +192,17 @@ private
       # If they are already authenticated, we can just direct them there,
       # otherwise we send them a sign-in link
       if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
-        redirect_to oral_history_requests_path, flash: { success: "You have already requested this Oral History: #{@work.title}" }
+        return_status(
+          oral_history_requests_path,
+          "You have already requested this Oral History: #{@work.title}",
+          add_view_requests_link: true
+        )
       else
         OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later
-        redirect_to work_path(@work.friendlier_id), flash: { success: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests.", }
+        return_status(
+          work_path(@work.friendlier_id),
+          "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests."
+        )
       end
 
       return false # abort further processing

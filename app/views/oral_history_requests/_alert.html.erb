@@ -1,0 +1,23 @@
+<%# used for sending back html fragment for JS replacement in modal %>
+<%# locals: (message:, alert_type: "success") %>
+
+
+<%= render Blacklight::System::ModalComponent.new do |component| %>
+  <% component.with_title do %>
+    <% if @work.oral_history_content.available_by_request_manual_review? %>
+        Request Oral History Access
+      <% else %>
+        Get Oral History Access
+      <% end %>
+  <% end %>
+
+  <% component.with_body do %>
+    <div class="modal-body alert alert-<%= alert_type %>" role="alert">
+      <%= message %>
+    </div>
+  <% end %>
+
+  <% component.with_footer do %>
+    <%= button_tag "OK", class: "btn btn-brand-main", data: { bl_dismiss: "modal" } %>
+  <% end %>
+<% end %>
