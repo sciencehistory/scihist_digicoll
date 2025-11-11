@@ -1,12 +1,10 @@
 <%= render Blacklight::System::ModalComponent.new do |component| %>
   <% component.with_title do %>
-    <h1 class="brand-alt-h1">
-      <% if @work.oral_history_content.available_by_request_manual_review? %>
-        Request Oral History Access
-      <% else %>
-        Get Oral History Access
-      <% end %>
-    </h1>
+    <% if @work.oral_history_content.available_by_request_manual_review? %>
+      Request Oral History Access
+    <% else %>
+      Get Oral History Access
+    <% end %>
   <% end %>
 
   <%= render 'form', oral_history_request: @oral_history_request %>
