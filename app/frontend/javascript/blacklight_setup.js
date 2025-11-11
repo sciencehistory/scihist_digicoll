@@ -24,22 +24,3 @@ import Blacklight from 'blacklight-frontend';
 import BlacklightRangeLimit from "blacklight-range-limit";
 BlacklightRangeLimit.init({onLoadHandler: Blacklight.onLoad });
 
-
-// Patch in any needed blacklight modal fixes
-
-if (Blacklight.Modal.target()) {
-
-  // Make sure we catch html modal's own close (eg escape key), to trigger blacklight
-  // hide cleanup, including restoration of scroll behavior!
-  //
-  // https://github.com/projectblacklight/blacklight/pull/3694
-  //
-  // https://github.com/sciencehistory/scihist_digicoll/issues/3049
-  //
-  Blacklight.Modal.target().addEventListener("cancel", (event) => {
-    // we can stop default behavior, we're going to close the dialog ourselves
-    event.preventDefault();
-    Blacklight.Modal.hide();
-  });
-}
-
