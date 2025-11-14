@@ -1,14 +1,3 @@
-# The serializer will use these associations, so they should be eager-loaded:
-# * leaf_representative
-#
-# serializer = WorkCartSerializer.new(columns)
-
-
-# Next steps- try and do this on Thursday
-  # Deal with the filenames
-  # Create a zip file with all the filenames and the metadata.
-  # Test the thing in a real google spreadsheet and see if it imports.
-
 class GoogleArtsAndCultureSerializer
 
   def initialize(scope, columns: nil)

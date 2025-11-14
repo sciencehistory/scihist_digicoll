@@ -1,21 +1,7 @@
 require 'open-uri'
 require 'zip'
 
-# Create a ZIP of full-size JPGs of all images in a work.
-#
-# Known limitation: If a work contains child works (rather than direct assets), only one single representative
-# image for each child is included.
-#
-#     WorkZipCreator.new(work).create_zip
-#
-# Will return a ruby Tempfile that is NOT closed/unliked, up to caller to take care
-# of it.
-#
-# Zipfile will have an attribution file added to it, as well as attribution text set
-# as zip comment.
-#
-# Callback is a proc that takes keyword arguments `progress_total` and `progress_i` to receive progress info
-# for reporting to user.
+
 class GoogleArtsAndCultureZipCreator
   attr_reader :scope, :callback
 
