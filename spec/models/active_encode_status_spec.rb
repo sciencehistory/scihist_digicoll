@@ -14,12 +14,14 @@ RSpec.describe ActiveEncodeStatus, type: :model do
           s3_url = "s3://#{File.join('faked-output-bucket', Shrine.storages[:video_derivatives].prefix.to_s, 'somewhere/hls.m3u8')}"
 
           output.id = "fake"
+          output.label = "hls.m3u8"
           output.url = s3_url
         end,
         ActiveEncode::Output.new.tap do |output|
           s3_url = "s3://#{File.join('faked-output-bucket', Shrine.storages[:video_derivatives].prefix.to_s, 'wrong/hls_low.m3u8')}"
 
           output.id = "fake"
+          output.label = "hls_low.m3u8"
           output.url = s3_url
           output.height = 420
         end

@@ -22,9 +22,10 @@ class ActiveEncodeStatus < ApplicationRecord
   def refresh_from_aws
     active_encode_result = ActiveEncode::Base.find(self.active_encode_id)
 
-    # active_encode let's us recognize the master playlist just cause
-    # it has no height/width set? OK, fine.
-    master_playlist = active_encode_result.output.find { |o| o.height.nil? }
+    # active_encode makes it difficult to recognize master playlist, the label
+    # matching our base name currently should do it. Other ones that aren't mater
+    # might be #{OUTPUT_BASE_NAME}_low.m3u8 or #{OUTPUT_BASE_NAME}_high.m3u8 etc.
+    master_playlist = active_encode_result.output.find { |o| o.label == "#{CreateHlsMediaconvertJobService::OUTPUT_BASE_NAME}.m3u8" }
 
     # update updated_at even if no other state changes, to record the refresh
     update!(

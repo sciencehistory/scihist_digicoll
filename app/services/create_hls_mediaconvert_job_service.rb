@@ -35,6 +35,7 @@ class CreateHlsMediaconvertJobService
     HlsPresetInfo.new(preset_name: "scihist-hls-high", name_modifier: "_high", pixel_height: 1080, bitrate: 4_400_000),
   ].sort_by(&:bitrate).freeze
 
+  OUTPUT_BASE_NAME = "hls"
 
   OUTPUT_SHRINE_STORAGE_KEY = :video_derivatives
 
@@ -120,7 +121,7 @@ class CreateHlsMediaconvertJobService
 
       unique_number = SecureRandom.hex
 
-      path = "/hls/#{asset.id}/#{unique_number}/hls"
+      path = "/hls/#{asset.id}/#{unique_number}/#{OUTPUT_BASE_NAME}"
 
       if output_storage.prefix.present?
         path = "/#{output_storage.prefix.to_s}#{path}"
