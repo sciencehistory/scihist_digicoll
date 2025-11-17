@@ -295,6 +295,11 @@ class CatalogController < ApplicationController
     # config.default_facet_suggest = false
 
     # customize facet list display, so we can customize suggest form
+    # This will no longer be necessary (nor will the components it points to)
+    # once we update to a Blacklight that includes:
+    # https://github.com/projectblacklight/blacklight/pull/3769
+    #
+    # See: https://github.com/sciencehistory/scihist_digicoll/pull/3187
     config.index.facet_filters_component = Scihist::BlacklightFacetFiltersComponent
 
     # solr fields that will be treated as facets by the blacklight application
