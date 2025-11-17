@@ -13,7 +13,7 @@
     "domready": "^1.0.8",
     "font-awesome": "^4.7.0",
     "jquery": "^ 3.6.0",
-    "js-yaml": ">= 3.13.1",
+    "js-yaml": ">= 4.1.1",
     "openseadragon": "^4.0.0",
     "tom-select": "^2.3.1",
     "video.js": "^8.23.0"
