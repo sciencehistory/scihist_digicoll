@@ -27,14 +27,13 @@ class GoogleArtsAndCultureZipCreator
   #
   # Members will have derivatives pre-loaded.
   def self.members_to_include(work)
-    @members_to_include ||= work.
-                            members.
-                            includes(:leaf_representative).
-                            where(published: true).
-                            order(:position).
-                            select do |m|
-                              m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
-                            end
+    work.members.
+    includes(:leaf_representative).
+    where(published: true).
+    order(:position).
+    select do |m|
+      m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
+    end
   end
 
 
@@ -42,24 +41,23 @@ class GoogleArtsAndCultureZipCreator
   def create
     comment_file = tmp_comment_file!
     tmp_zipfile = tmp_zipfile!
-
     derivative_files = []
-
     Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
-
       # Add attribution as file and zip comment text
       zipfile.comment = comment_text
       zipfile.add("about.txt", comment_file)
       zipfile.add("manifest.csv", csv_file)
-
-      @scope.includes(:leaf_representative).find_each do |work|
-        self.class.members_to_include(work).each do |member|
-          filename = self.class.filename_from_asset(member)
-          uploaded_file = file_to_include(member.leaf_representative)
-          file_obj = uploaded_file.download
-          derivative_files << file_obj
-          entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
-          zipfile.add(entry, file_obj)
+      if true
+        @scope.includes(:leaf_representative).find_each do |work|
+          self.class.members_to_include(work).each do |member|
+            filename = self.class.filename_from_asset(member)  
+            uploaded_file = file_to_include(member.leaf_representative)
+            file_obj = uploaded_file.download
+            derivative_files << file_obj
+            entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
+            zipfile.add(entry, file_obj)
+            puts "added #{filename}"
+          end
         end
       end
     end
