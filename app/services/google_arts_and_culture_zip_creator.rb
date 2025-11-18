@@ -53,24 +53,17 @@ class GoogleArtsAndCultureZipCreator
       zipfile.add("manifest.csv", csv_file)
 
       @scope.includes(:leaf_representative).find_each do |work|
-        puts "Starting work #{work.title}"
         self.class.members_to_include(work).each do |member|
-          puts "   Starting member #{member.friendlier_id}"
           filename = self.class.filename_from_asset(member)
           uploaded_file = file_to_include(member.leaf_representative)
           file_obj = uploaded_file.download
           derivative_files << file_obj
           entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
           zipfile.add(entry, file_obj)
-          puts "   Added asset #{member.friendlier_id}"
         end
-        puts "Added work #{work.title}"
       end
-      puts "Got throguh the scope."
     end
-    puts "About to open the zip file"
     tmp_zipfile.open
-    puts "About to return the zip file"
     return tmp_zipfile
   ensure
     (derivative_files || []).each do |tmp_file|
