@@ -432,6 +432,8 @@ GEM
     mutex_m (0.3.0)
     namae (1.2.0)
       racc (~> 1.7)
+    neighbor (0.6.0)
+      activerecord (>= 7.1)
     net-http (0.6.0)
       uri
     net-imap (0.5.12)
@@ -861,6 +863,7 @@ DEPENDENCIES
   lograge (< 2)
   mail (>= 2.8.0.rc1, < 3)
   matrix (~> 0.4)
+  neighbor (< 2)
   net-protocol (!= 0.2.0)
   oai (~> 1.0, >= 1.0.1)
   omniauth-entra-id
