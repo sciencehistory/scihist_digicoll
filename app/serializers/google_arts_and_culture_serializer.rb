@@ -1,4 +1,5 @@
 class GoogleArtsAndCultureSerializer
+  include Rails.application.routes.url_helpers
 
   def initialize(scope, columns: nil)
     @scope = scope
@@ -23,8 +24,10 @@ class GoogleArtsAndCultureSerializer
     data = []
     data << title_row
     @scope.includes(:leaf_representative).find_each do |work|
-      data << work_row(work)
+
       assets = GoogleArtsAndCultureZipCreator.members_to_include(work)
+
+      data << work_row(work)
       assets.each do |asset|
          data << asset_row(asset)
       end
@@ -51,9 +54,8 @@ class GoogleArtsAndCultureSerializer
   def title_row
     @column_keys.map do |k|
       if array_columns.include? k.to_s
-        #pp "column count for #{k}: #{column_counts[k.to_s]}"
         (0..(column_counts[k.to_s] - 1)).map do |i|
-          "#{k}##{i}"
+          "#{all_columns[k]}##{i}"
          end
       else
         all_columns[k]
@@ -68,7 +70,6 @@ class GoogleArtsAndCultureSerializer
       )
     end.flatten
   end
-
 
   def filename_from_asset(asset)
     if asset&.file&.url.nil?
@@ -85,21 +86,15 @@ class GoogleArtsAndCultureSerializer
       GoogleArtsAndCultureZipCreator.filename_from_asset(asset)
     end
 
+
     vals = {
-      friendlier_id:  not_applicable, # this is just for works
+      friendlier_id:  asset.parent.friendlier_id, # this is just for works
       subitem_id:     asset.friendlier_id,
       order_id:       asset.position || no_value,
       title:          asset.title,
       filespec:       filename,
+      filetype:       asset_filetype(asset)
     }
-
-      # filetype    # "Image",  "Video", or "Sequence"
-      # sequence if moer than one image in.
-      # For now works with one image are treated as one-item "sequence."
-
-      # filespec  # the name of the file (should be unique)
-
-
     @column_keys.map do |k|
       count = column_counts.dig(k.to_s)
       if count.nil?
@@ -122,30 +117,35 @@ class GoogleArtsAndCultureSerializer
       order_id:                 'orderid',      # order
       title:                    'title',
       filespec:                 'filespec',
+      filetype:                 'filetype',
+      url_text:                 '' 
       url:                      'relation:url',
 
-      # additional_title:         'additional_title',
-      # creator:                  'creator',
-      # department:               'department',
-
-      # # filetype    # "Image",  "Video", or "Sequence"
-      # # sequence if moer than one image in.
-      # # For now works with one image are treated as one-item "sequence."
-
-      # # filespec  # the name of the file (should be unique)
-      # min_date:                 'dateCreated:start',
-      # max_date:                 'dateCreated:end',
-      # date_of_work:             'dateCreated:display',
+      additional_title:         'additional_title',
+      creator:                  'creator',
+      publisher:                'publisher',
 
 
-      # medium:                   'medium',
-      # extent:                   'Extent',
-      # place:                    'locationCreated:placename',
-      # format:                   'format',
-      # genre:                    'genre',
-      # description:              'description',
+      min_date:                 'dateCreated:start',
+      max_date:                 'dateCreated:end',
+      date_of_work:             'dateCreated:display',
+
+      # ?:  datePublished:end
+      # ?:  datePublished:start
+
+      medium:                   'medium',
+
+      # 'format' is actually used to store our 'extent' metadata in GAC.
+      extent:                   'format',
+      
+      place:                    'locationCreated:placename',
+      
+
+      #format:                   'format',
+      #genre:                    'genre',
+      description:              'description',
       subject:                    'subject',
-      # rights_holder:            'rights',
+      rights_holder:            'rights',
 
     }
   end
@@ -159,6 +159,7 @@ class GoogleArtsAndCultureSerializer
       'genre',
       'date_of_work',
       'creator',
+      'publisher',
       'medium',
       'extent',
       'place',
@@ -228,7 +229,7 @@ class GoogleArtsAndCultureSerializer
   end
 
   def url(work)
-    work.url
+    app_url_base + Rails.application.routes.url_helpers.work_path(work.friendlier_id)
   end
 
   def external_id(work)
@@ -236,11 +237,19 @@ class GoogleArtsAndCultureSerializer
   end
 
   def creator(work)
-    work.creator.map(&:value)
+    work.creator.find_all { |creator| creator.category.to_s != "publisher" }.map(&:value)
+  end
+
+  def publisher(work)
+    work.creator.find_all { |creator| creator.category.to_s == "publisher" }.map(&:value)
   end
 
   def place(work)
     work.place.map(&:value)
+  end
+
+  def filetype(work)
+    'Sequence'
   end
 
   def collection(work)
@@ -248,7 +257,7 @@ class GoogleArtsAndCultureSerializer
   end
 
   def date_of_work(work)
-    DateDisplayFormatter.new(work.date_of_work).display_dates
+    DateDisplayFormatter.new(work.date_of_work).display_dates unless min_date(work).nil?
   end
 
   def min_date(work)
@@ -280,12 +289,17 @@ class GoogleArtsAndCultureSerializer
     I18n.l work.updated_at, format: :admin
   end
 
-  def url(work)
-  end
-
   # END WORK METHODS
 
-
+  def asset_filetype(asset)
+    if    asset.content_type&.start_with?("video/")
+        'Video'
+      elsif asset.content_type&.start_with?("image/")
+        'Image'
+      else
+        not_applicable
+      end
+  end
 
   protected
 
@@ -294,7 +308,7 @@ class GoogleArtsAndCultureSerializer
   end
 
   def test_mode
-    true
+    false
   end
 
   def padding
