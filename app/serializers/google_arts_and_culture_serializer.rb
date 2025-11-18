@@ -10,7 +10,6 @@ class GoogleArtsAndCultureSerializer
     end
   end
 
-
   # Does not close the tempfile - that's your responsibility.
   def csv_tempfile
     output_csv_file = Tempfile.new
@@ -47,7 +46,6 @@ class GoogleArtsAndCultureSerializer
   end
 
   def column_max_arel(column_name)
-    #pp Arel.sql("max(jsonb_array_length(kithe_models.json_attributes -> '#{column_name}'))" )
     Arel.sql("max(jsonb_array_length(kithe_models.json_attributes -> '#{column_name}'))" )
   end
 
@@ -118,10 +116,11 @@ class GoogleArtsAndCultureSerializer
       title:                    'title',
       filespec:                 'filespec',
       filetype:                 'filetype',
-      url_text:                 '' 
+      url_text:                 'relation:text',
       url:                      'relation:url',
 
-      additional_title:         'additional_title',
+      # TODO:
+      # additional_title:         'additional_title',
       creator:                  'creator',
       publisher:                'publisher',
 
@@ -157,9 +156,7 @@ class GoogleArtsAndCultureSerializer
       'external_id',
       'additional_title',
       'genre',
-      'date_of_work',
       'creator',
-      'publisher',
       'medium',
       'extent',
       'place',
@@ -228,6 +225,10 @@ class GoogleArtsAndCultureSerializer
     not_applicable
   end
 
+  def url_text(work)
+    'Science History Institute Digital Collections'
+  end
+
   def url(work)
     app_url_base + Rails.application.routes.url_helpers.work_path(work.friendlier_id)
   end
@@ -241,7 +242,7 @@ class GoogleArtsAndCultureSerializer
   end
 
   def publisher(work)
-    work.creator.find_all { |creator| creator.category.to_s == "publisher" }.map(&:value)
+    work.creator.find_all { |creator| creator.category.to_s == "publisher" }.map(&:value).join(", ")
   end
 
   def place(work)
@@ -256,16 +257,26 @@ class GoogleArtsAndCultureSerializer
     work.contained_by.map(&:title)
   end
 
+  # For example if either dateCreated:display
+  # or dateCreated:end are non-empty then
+  # dateCreated:start must also be non-empty.
+  # To not set a date leave all three fields empty.
+
+  # TODO -- how do we handle multiple dates?
   def date_of_work(work)
-    DateDisplayFormatter.new(work.date_of_work).display_dates unless min_date(work).nil?
+    unless min_date(work).present?
+      no_value
+    else
+      DateDisplayFormatter.new(work.date_of_work).display_dates.first
+    end
   end
 
   def min_date(work)
-    DateIndexHelper.new(work).min_date&.in_time_zone("UTC")&.xmlschema
+    DateIndexHelper.new(work).min_date&.year.to_s
   end
 
   def max_date(work)
-    DateIndexHelper.new(work).max_date&.in_time_zone("UTC")&.xmlschema
+    DateIndexHelper.new(work).max_date&.year.to_s
   end
 
   def description(work)
@@ -322,6 +333,4 @@ class GoogleArtsAndCultureSerializer
   def not_applicable
     test_mode ? 'N/A' : ''
   end
-
-
 end
