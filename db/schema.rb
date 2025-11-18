@@ -10,9 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_171351) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_18_204125) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "vector"
 
   create_enum :available_by_request_mode_type, [
     "off",
