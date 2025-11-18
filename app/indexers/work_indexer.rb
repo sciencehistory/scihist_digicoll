@@ -279,6 +279,15 @@ class WorkIndexer < Kithe::Indexer
         context.add_output("text_no_boost_tesim", *standard_text)
       end
     end
+
+    # Unicode normalize all facets -- should display identically, but matters for facet
+    # search/suggest func that does byte-per-byte searching. Solr does no unicode normalization
+    # or 'analysis'  at all on "string" fields, we've got to do it.
+    each_record do |_rec, context|
+      context.output_hash.keys.grep(/_facet$/).each do |facet_key|
+        context.output_hash[facet_key].each { |value| value.unicode_normalize!(:nfc) }
+      end
+    end
   end
 
   # Iterate over all members of a work, collecting a string from each one that is published.

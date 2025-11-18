@@ -68,6 +68,15 @@ describe WorkIndexer do
     end
   end
 
+  describe "un-normalized unicode in a facet value" do
+    let(:work) { create(:work, subject: ["café".unicode_normalize(:nfd)]) }
+    let(:output_hash)   { WorkIndexer.new.map_record(work) }
+
+    it "gets normalized as NFC" do
+      expect(output_hash["subject_facet"]).to eq ["café".unicode_normalize(:nfc)]
+    end
+  end
+
   describe "oral history" do
     let(:work) { create(:oral_history_work, :published, format: ['text']) }
 
