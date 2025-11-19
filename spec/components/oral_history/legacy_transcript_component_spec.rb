@@ -57,10 +57,11 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     allow(ohms_xml_with_footnotes.legacy_transcript).
       to receive(:footnote_array).
       and_return(["one", "two", "three"])
-    line = {
-      :text => "DUARTE: My grandfather Duarte [[footnote]] 1[[/footnote]] was Portuguese  [[footnote]]2 [[/footnote]] from the Azores  [[footnote]] 3   [[/footnote]] ",
-      :line_num=>10
-    }
+
+    line = OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(
+      text: "DUARTE: My grandfather Duarte [[footnote]] 1[[/footnote]] was Portuguese  [[footnote]]2 [[/footnote]] from the Azores  [[footnote]] 3   [[/footnote]] ",
+      line_num: 10
+    )
 
     render_inline ohms_transcript_display_with_footnotes
 
@@ -123,8 +124,12 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
         render_inline ohms_transcript_display
 
-        expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
-          to eq("<a href=\"#t=0\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
+        expect(
+          ohms_transcript_display.format_ohms_line(
+            OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: "some text", line_num: 1)
+          )
+        ).to eq("<a href=\"#t=0\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
+
         expect(shown_timecodes).to eq(["00:00:00", "", ""])
       end
     end
@@ -153,8 +158,11 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
         render_inline ohms_transcript_display
 
-        expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
-          to eq("<a href=\"#t=120\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
+        expect(
+          ohms_transcript_display.format_ohms_line(
+            OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: "some text", line_num: 1)
+          )
+        ).to eq("<a href=\"#t=120\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
       end
     end
 

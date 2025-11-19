@@ -13,8 +13,6 @@ class OralHistoryContent
       # :word_number and :seconds .
       #
       # We parse the somewhat mystical OHMS <sync> element to get it.
-      #
-      # Public mostly so we can test it. :(
       def sync_timecodes
         @sync_timecodes ||= parse_sync!
       end
@@ -137,7 +135,37 @@ class OralHistoryContent
         result
       end
 
+      public
 
+      # holds an ordered list of Line's, and can describe
+      class Paragraph
+        # @return [Array<OralHistoryContent::LegacyTranscript::Line>] ordered list of Line objects
+        attr_reader :lines
+
+        def initialize(lines = nil)
+          @lines = lines || []
+        end
+
+        # @param line [OralHistoryContent::LegacyTranscript::Line] add a line, used to build
+        def <<(line)
+          raise ArgumentError.new("must be a Line, not #{line.inspect}") unless line.kind_of?(Line)
+          @lines << line
+        end
+      end
+
+      class Line
+        # @return [String] complete text, may include footnotes and speaker label and other markup
+        attr_reader :text
+
+        # @return [Integer] 1-based line number index in entire transcript, NOT in paragraph
+        attr_reader :line_num
+
+        def initialize(text:, line_num:)
+          @text = text
+          @line_num = line_num
+        end
+      end
     end
+
   end
 end
