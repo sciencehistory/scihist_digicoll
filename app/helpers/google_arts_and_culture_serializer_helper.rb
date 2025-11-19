@@ -1,8 +1,11 @@
 module GoogleArtsAndCultureSerializerHelper
-  # START WORK METHODS:
+
+  # Work
+
   def subitem_id(work)
     not_applicable
   end
+
 
   # Should we treat works with only one asset differently? Probably not.
   def filespec(work)
@@ -42,7 +45,7 @@ module GoogleArtsAndCultureSerializerHelper
   end
 
 
-  # For example if either dateCreated:display
+  # If either dateCreated:display
   # or dateCreated:end are non-empty then
   # dateCreated:start must also be non-empty.
   # To not set a date leave all three fields empty.
@@ -52,16 +55,20 @@ module GoogleArtsAndCultureSerializerHelper
     unless min_date(work).present?
       no_value
     else
-      DateDisplayFormatter.new(work.date_of_work).display_dates.first
+      DateDisplayFormatter.new(work.date_of_work).display_dates.join("; ")
     end
   end
 
   def min_date(work)
-    DateIndexHelper.new(work).min_date&.year.to_s
+    DateIndexHelper.new(work).min_date.to_s
   end
 
   def max_date(work)
-    DateIndexHelper.new(work).max_date&.year.to_s
+    DateIndexHelper.new(work).max_date.to_s
+  end
+
+  def format_date(date)
+    date.year.to_s
   end
 
   def description(work)
@@ -85,9 +92,10 @@ module GoogleArtsAndCultureSerializerHelper
     I18n.l work.updated_at, format: :admin
   end
 
+  # Asset
 
   def asset_filetype(asset)
-    if    asset.content_type&.start_with?("video/")
+    if asset.content_type&.start_with?("video/")
         'Video'
       elsif asset.content_type&.start_with?("image/")
         'Image'
@@ -103,6 +111,8 @@ module GoogleArtsAndCultureSerializerHelper
       File.basename(URI.parse(asset.file.url(public: true)))
     end
   end
+
+  # Other
 
   def padding
     test_mode ? 'PADDING' : ''

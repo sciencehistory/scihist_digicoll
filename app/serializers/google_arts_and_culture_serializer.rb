@@ -26,9 +26,9 @@ class GoogleArtsAndCultureSerializer
     @scope.includes(:leaf_representative).find_each do |work|
       assets = GoogleArtsAndCultureZipCreator.members_to_include(work)
       data << work_row(work)
-      assets.each do |asset|
-         data << asset_row(asset)
-      end
+      # assets.each do |asset|
+      #    data << asset_row(asset)
+      # end
     end
     data
   end
@@ -51,8 +51,13 @@ class GoogleArtsAndCultureSerializer
   def title_row
     @column_keys.map do |k|
       if array_columns.include? k.to_s
+        start_index = if (k == :additional_title)
+          1
+        else
+           0
+        end
         (0..(column_counts[k.to_s] - 1)).map do |i|
-          "#{all_columns[k]}##{i}"
+          "#{all_columns[k]}##{start_index + i}"
          end
       else
         all_columns[k]
@@ -104,38 +109,41 @@ class GoogleArtsAndCultureSerializer
       friendlier_id:            'itemid',       # friendlier_id of works
       subitem_id:               'subitemid',    # friendlier_id of assets
       order_id:                 'orderid',      # order
-      title:                    'title',
-      filespec:                 'filespec',
-      filetype:                 'filetype',
-      url_text:                 'relation:text',
-      url:                      'relation:url',
-
-      # TODO:
-      # additional_title:         'additional_title',
-      creator:                  'creator',
-      publisher:                'publisher',
 
 
-      min_date:                 'dateCreated:start',
-      max_date:                 'dateCreated:end',
-      date_of_work:             'dateCreated:display',
+      title:                    'title#0',
+      additional_title:         'title',
 
-      # ?:  datePublished:end
-      # ?:  datePublished:start
+
+
+      # filespec:                 'filespec',
+      # filetype:                 'filetype',
+      # url_text:                 'relation:text',
+      # url:                      'relation:url',
+
+      # creator:                  'creator',
+      # publisher:                'publisher',
+
+
+      # min_date:                 'dateCreated:start',
+      # max_date:                 'dateCreated:end',
+      # date_of_work:             'dateCreated:display',
+
+      # place:                    'locationCreated:placename',
+      
 
       medium:                   'medium',
-
-      # 'format' is actually used to store our 'extent' metadata in GAC.
+      # # Gotcha: 'format' is actually used to store our 'extent' metadata in GAC.
       extent:                   'format',
-      
-      place:                    'locationCreated:placename',
-      
-      # TODO: figure out what google calls these:
-      # format:                   'format',
-      # genre:                    'genre',
-      description:              'description',
-      subject:                    'subject',
-      rights_holder:            'rights',
+      # genre:                    'art=genre',
+      # description:              'description',
+      # subject:                    'subject',
+      # rights_holder:            'rights',
+
+      # # PROBLEM CHILDREN:
+      # # GAC doesn't seem to have a field for what we call "format"
+      # # format:                   '???',
+
 
     }
   end
