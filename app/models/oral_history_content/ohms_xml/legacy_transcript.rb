@@ -76,6 +76,7 @@ class OralHistoryContent
           # add timestamps included
           @transcript_paragraphs.each do |paragraph|
             paragraph.included_timestamps = timestamps_in_line_numnber_range(paragraph.line_number_range)
+            paragraph.previous_timestamp = timestamp_previous_to_line_number(paragraph.line_number_range.first)
           end
         end
 
@@ -89,6 +90,17 @@ class OralHistoryContent
         line_number_range.collect do |line_number|
           sync_timecodes[line_number]
         end.compact.flatten.collect { |data| data[:seconds]}
+      end
+
+      # sometimes we want the timestamp immediately previous to a line
+      # number to make sure we have the timestamp that includes the whole thing,
+      # if the line number doesn't have one etc.
+      #
+      # Return 0 if none found.
+      def timestamp_previous_to_line_number(line_number)
+        found_index = line_number.downto(0).find { |i| sync_timecodes[i] }
+
+        found_index ? sync_timecodes[found_index].last[:seconds] : 0
       end
 
       # Returns A hash where:
@@ -189,8 +201,12 @@ class OralHistoryContent
         # @return [integer] 1-based index of paragraph in document
         attr_reader :paragraph_index
 
-        # @return [Array<Integer>] list of timecodes (as seconds) included in ths paragraph
+        # @return [Array<Integer>] list of timestamps (as seconds) included in ths paragraph
         attr_accessor :included_timestamps
+
+        # @return [Integer] timestamp in seconds of the PREVIOUS timestamp to this paragraph,
+        #                   to latest the timestamp sure not to miss beginning of paragraph.
+        attr_accessor :previous_timestamp
 
         def initialize(lines = nil, paragraph_index:)
           @lines = lines || []

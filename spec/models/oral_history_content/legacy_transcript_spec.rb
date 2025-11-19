@@ -65,10 +65,16 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
 
     it "include timestamps" do
       expect(legacy_transcript.paragraphs.first.included_timestamps).to eq []
+      expect(legacy_transcript.paragraphs.first.previous_timestamp).to eq 0
+
       expect(legacy_transcript.paragraphs.second.included_timestamps).to eq []
-      expect(legacy_transcript.paragraphs.third.included_timestamps).to eq []
+      expect(legacy_transcript.paragraphs.third.previous_timestamp).to eq 0
 
       expect(legacy_transcript.paragraphs.fourth.included_timestamps).to eq [60, 120, 180]
+      expect(legacy_transcript.paragraphs.fourth.previous_timestamp).to eq 0
+
+      expect(legacy_transcript.paragraphs.fifth.included_timestamps).to eq []
+      expect(legacy_transcript.paragraphs.fifth.previous_timestamp).to eq 180
     end
   end
 
