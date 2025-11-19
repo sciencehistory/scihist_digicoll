@@ -37,20 +37,9 @@ module OralHistory
     # if the array of footnotes doesn't contain a footnote for `number`,
     # we are *not* going to throw an error.
     def call
-      paragraphs = []
-      current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new
 
-      legacy_transcript.transcript_lines.each_with_index do |line, index|
-        current_paragraph << OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: line, line_num: index + 1)
 
-        if line.empty?
-          paragraphs << current_paragraph
-          current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new
-        end
-      end
-      paragraphs << current_paragraph
-
-      paragraph_html_arr = paragraphs.collect do |paragraph|
+      paragraph_html_arr = legacy_transcript.paragraphs.collect do |paragraph|
         content_tag("div", class: "ohms-transcript-paragraph-wrapper") do
           content_tag("p", class: "ohms-transcript-paragraph") do
             safe_join(paragraph.lines.collect do |line|

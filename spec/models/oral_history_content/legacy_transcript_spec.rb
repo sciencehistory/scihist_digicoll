@@ -16,18 +16,47 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
     end
   end
 
-  describe "#transcript_lines" do
+  describe "#paragraphs" do
+    it "returns good paragraphs" do
+      expect(legacy_transcript.paragraphs).to be_present
+      expect(legacy_transcript.paragraphs).to all(be_kind_of(OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph))
+      legacy_transcript.paragraphs.each do |paragraph|
+        expect(paragraph.lines).to all(be_kind_of(OralHistoryContent::OhmsXml::LegacyTranscript::Line))
+      end
+
+
+      expect(legacy_transcript.paragraphs.first.text).to eq "BROCK: This is an oral history interview with Ron Duarte taking place on 13 June 2006. The interviewer is David Brock. Ron, I believe that you were born in Pescadero [Pescadero, California] but I'm not sure exactly when."
+      expect(legacy_transcript.paragraphs.second.text).to eq "DUARTE: On 7 May 1930."
+      expect(legacy_transcript.paragraphs.last.text).to eq "[END OF INTERVIEW]"
+
+      # Exact line numbers in original ascii are important for timecode sync in
+      # legacy ohms format.
+      paragraph = legacy_transcript.paragraphs.third
+      expect(paragraph.lines.count).to eq 3
+
+      expect(paragraph.lines.first.line_num).to eq 7
+      expect(paragraph.lines.first.text).to eq "BROCK: Tell us a little bit about your family background and your family's"
+
+      expect(paragraph.lines.second.line_num).to eq 8
+      expect(paragraph.lines.second.text).to eq "history in Pescadero."
+
+      expect(paragraph.lines.third.line_num).to eq 9
+      expect(paragraph.lines.third.text).to eq ""
+    end
+  end
+
+  describe "#transcript_lines_text" do
     it "strips footnote section from the text" do
-      expect(legacy_transcript_with_footnotes.transcript_lines).to be_present
-      all_text = legacy_transcript_with_footnotes.transcript_lines.join("\n")
+      expect(legacy_transcript_with_footnotes.transcript_lines_text).to be_present
+      all_text = legacy_transcript_with_footnotes.transcript_lines_text.join("\n")
       expect(all_text).not_to match(%r{\[\[/?footnotes\]\]})
     end
     it "correctly outputs an empty array of footnotes when none are present" do
-      expect(legacy_transcript.transcript_lines).to be_present
+      expect(legacy_transcript.transcript_lines_text).to be_present
       expect(legacy_transcript.footnote_array).to eq []
     end
     it "keeps references to the footnotes in the text, if they are present" do
-      all_text = legacy_transcript_with_footnotes.transcript_lines.join("\n")
+      all_text = legacy_transcript_with_footnotes.transcript_lines_text.join("\n")
       expect(all_text).to match(/\[\[footnote\]\]1\[\[\/footnote\]\]/)
       expect(all_text).to match(/\[\[footnote\]\]2\[\[\/footnote\]\]/)
     end

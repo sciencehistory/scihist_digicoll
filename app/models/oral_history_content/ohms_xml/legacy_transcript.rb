@@ -39,12 +39,35 @@ class OralHistoryContent
       # Returns an ordered array of transcript lines
       # Filters the footnotes out. References to the footnotes, however, are kept;
       # these are dealt with in the view component.
-      def transcript_lines
+      def transcript_lines_text
         @transcript_lines ||= begin
           text = transcript_text
           text.gsub!(%r{\[\[footnotes\]\].*?\[\[/footnotes\]\]}m, '')
           text.split("\n")
         end
+      end
+
+      # @return [Array<Paragraph>] array of our paragraph objects, each of which has lines
+      #                            paragraphs are determined as separated by blank lines
+      #                            in transcript
+      def paragraphs
+        @transcript_paragraphs ||= begin
+          @transcript_paragraphs = []
+
+          current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new
+
+          transcript_lines_text.each_with_index do |line, index|
+            current_paragraph << OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: line, line_num: index + 1)
+
+            if line.empty?
+              @transcript_paragraphs << current_paragraph
+              current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new
+            end
+          end
+          @transcript_paragraphs << current_paragraph
+        end
+
+        @transcript_paragraphs
       end
 
       private
@@ -151,10 +174,15 @@ class OralHistoryContent
           raise ArgumentError.new("must be a Line, not #{line.inspect}") unless line.kind_of?(Line)
           @lines << line
         end
+
+        # @return [String] just text of all lines joined by space
+        def text
+          @lines.collect {|s| s.text.chomp }.join(" ").strip
+        end
       end
 
       class Line
-        # @return [String] complete text, may include footnotes and speaker label and other markup
+        # @return [String] line text, may include footnote references, speaker label, timecodes, etc.
         attr_reader :text
 
         # @return [Integer] 1-based line number index in entire transcript, NOT in paragraph
