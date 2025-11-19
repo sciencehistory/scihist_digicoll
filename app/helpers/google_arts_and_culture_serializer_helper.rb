@@ -41,9 +41,6 @@ module GoogleArtsAndCultureSerializerHelper
     'Sequence'
   end
 
-  def collection(work)
-    work.contained_by.map(&:title)
-  end
 
   # For example if either dateCreated:display
   # or dateCreated:end are non-empty then
@@ -99,6 +96,14 @@ module GoogleArtsAndCultureSerializerHelper
       end
   end
 
+  def filename_from_asset(asset)
+    if asset&.file&.url.nil?
+      no_value
+    else
+      File.basename(URI.parse(asset.file.url(public: true)))
+    end
+  end
+
   def padding
     test_mode ? 'PADDING' : ''
   end
@@ -110,5 +115,4 @@ module GoogleArtsAndCultureSerializerHelper
   def not_applicable
     test_mode ? 'N/A' : ''
   end
-  
 end

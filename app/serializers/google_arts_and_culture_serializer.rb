@@ -11,7 +11,7 @@ class GoogleArtsAndCultureSerializer
     end
   end
 
-  # Does not close the tempfile - that's your responsibility.
+  # Does not close the tempfile.
   def csv_tempfile
     output_csv_file = Tempfile.new
     CSV.open(output_csv_file, "wb") do |csv|
@@ -24,9 +24,7 @@ class GoogleArtsAndCultureSerializer
     data = []
     data << title_row
     @scope.includes(:leaf_representative).find_each do |work|
-
       assets = GoogleArtsAndCultureZipCreator.members_to_include(work)
-
       data << work_row(work)
       assets.each do |asset|
          data << asset_row(asset)
@@ -68,14 +66,6 @@ class GoogleArtsAndCultureSerializer
         column_methods[k].call(work), column_counts.dig(k.to_s)
       )
     end.flatten
-  end
-
-  def filename_from_asset(asset)
-    if asset&.file&.url.nil?
-      no_value
-    else
-      File.basename(URI.parse(asset.file.url(public: true)))
-    end
   end
 
   def asset_row(asset)
@@ -177,8 +167,6 @@ class GoogleArtsAndCultureSerializer
   # { :title => method(work), :additional_title => method(work), ... }
   def column_methods
     @column_methods ||= @column_keys.map do |column_label|
-    
-      # create the proc
       new_proc = if self.respond_to? column_label
         # If k is defined in this class, use that (e.g. :created)
         Proc.new { |some_work| self.send column_label, some_work }
@@ -188,16 +176,13 @@ class GoogleArtsAndCultureSerializer
       else
         raise "Unknown column: #{column_label}"
       end
-    
       [column_label, new_proc]
     end.to_h
   end
 
   def scalar_or_array(arr_or_string, count_of_columns_needed)
     return no_value if arr_or_string.nil?
-
     return arr_or_string if arr_or_string.is_a? String
-
     if arr_or_string.length > count_of_columns_needed
       raise "Too many values"
     else
