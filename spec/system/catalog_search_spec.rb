@@ -76,6 +76,44 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     end
   end
 
+  describe "'more' facets filter feature" do
+    let!(:work1) do
+      create(:public_work,
+        subject: ["one", "two", "three", "four", "five", "six"],
+      )
+    end
+
+    # Make sure facet suggest feature is turned on for this test
+    around do |example|
+      original = CatalogController.blacklight_config.default_facet_suggest
+      CatalogController.blacklight_config.default_facet_suggest = true
+
+      example.run
+
+      CatalogController.blacklight_config.default_facet_suggest = original
+    end
+
+    it "can filter values in modal" do
+      visit search_catalog_path(search_field: "all_fields")
+
+      within(".blacklight-subject_facet") do
+        click_on "Subject"
+        click_on "more"
+      end
+      expect(page).to have_selector("h1.modal-title", text: "Subject")
+
+      within(".modal") do
+        expect(page).to have_text("one")
+        expect(page).to have_text("two")
+
+        fill_in "facet_suggest_subject_facet", with: "two"
+
+        expect(page).not_to have_text("one")
+        expect(page).to have_text("two")
+      end
+    end
+  end
+
   describe "admin notes" do
     let(:admin_note_text) { "an admin note" }
     let(:admin_note_query) { "\"#{admin_note_text}\"" }
