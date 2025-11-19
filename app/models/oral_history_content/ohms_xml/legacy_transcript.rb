@@ -9,6 +9,11 @@ class OralHistoryContent
         @nokogiri_xml = nokogiri_xml
       end
 
+      # @return transcript accession id from XML
+      def accession_id
+        @accession_id ||= @nokogiri_xml.at_xpath("//ohms:record/ohms:accession", ohms: OHMS_NS).text
+      end
+
       # A hash where key is an OHMS line number. Value is a Hash containing
       # :word_number and :seconds .
       #
