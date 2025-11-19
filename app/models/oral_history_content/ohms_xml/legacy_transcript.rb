@@ -59,14 +59,16 @@ class OralHistoryContent
         @transcript_paragraphs ||= begin
           @transcript_paragraphs = []
 
-          current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new
+          current_paragraph_index = 1
+          current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new(paragraph_index: current_paragraph_index)
 
           transcript_lines_text.each_with_index do |line, index|
             current_paragraph << OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: line, line_num: index + 1)
 
             if line.empty?
               @transcript_paragraphs << current_paragraph
-              current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new
+              current_paragraph_index += 1
+              current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new(paragraph_index: current_paragraph_index)
             end
           end
           @transcript_paragraphs << current_paragraph
@@ -170,8 +172,14 @@ class OralHistoryContent
         # @return [Array<OralHistoryContent::LegacyTranscript::Line>] ordered list of Line objects
         attr_reader :lines
 
-        def initialize(lines = nil)
+        attr_reader :transcript_id
+
+        # @return [integer] 1-based index of paragraph in document
+        attr_reader :paragraph_index
+
+        def initialize(lines = nil, paragraph_index:)
           @lines = lines || []
+          @paragraph_index = paragraph_index
         end
 
         # @param line [OralHistoryContent::LegacyTranscript::Line] add a line, used to build

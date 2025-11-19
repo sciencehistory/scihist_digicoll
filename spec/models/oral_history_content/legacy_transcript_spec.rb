@@ -16,6 +16,12 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
     end
   end
 
+  describe "#accession_id" do
+    it "comes from XML" do
+      expect(legacy_transcript.accession_id).to eq "OH0344"
+    end
+  end
+
   describe "#paragraphs" do
     it "returns good paragraphs" do
       expect(legacy_transcript.paragraphs).to be_present
@@ -23,6 +29,8 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
 
       legacy_transcript.paragraphs.each do |paragraph|
         expect(paragraph.lines).to all(be_kind_of(OralHistoryContent::OhmsXml::LegacyTranscript::Line))
+
+        expect(paragraph.paragraph_index).to be_kind_of(Integer)
       end
 
       legacy_transcript.paragraphs.each do |paragraph|
@@ -38,6 +46,7 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
       # Exact line numbers in original ascii are important for timecode sync in
       # legacy ohms format.
       paragraph = legacy_transcript.paragraphs.third
+      expect(paragraph.paragraph_index).to eq 3
       expect(paragraph.lines.count).to eq 3
       expect(paragraph.line_number_range).to eq (7...9)
 
