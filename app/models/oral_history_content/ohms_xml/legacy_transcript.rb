@@ -179,6 +179,12 @@ class OralHistoryContent
         def text
           @lines.collect {|s| s.text.chomp }.join(" ").strip
         end
+
+        # @return [Range] from first to last line number, with line numbers being 1-indexed
+        #                 in entire document.
+        def line_number_range
+          (@lines.first.line_num...@lines.last.line_num)
+        end
       end
 
       class Line
