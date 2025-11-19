@@ -41,7 +41,7 @@ module OralHistory
 
       paragraph_html_arr = legacy_transcript.paragraphs.collect do |paragraph|
         content_tag("div", class: "ohms-transcript-paragraph-wrapper") do
-          content_tag("p", class: "ohms-transcript-paragraph") do
+          content_tag("p", class: "ohms-transcript-paragraph", id: paragraph.fragment_id) do
             safe_join(paragraph.lines.collect do |line|
               content_tag("span", format_ohms_line(line),
                 class: "ohms-transcript-line",

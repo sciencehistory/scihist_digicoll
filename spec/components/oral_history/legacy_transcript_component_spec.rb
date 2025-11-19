@@ -18,6 +18,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
     expect(parsed.css("span.ohms-transcript-line").count).to eq(transcript_text.split("\n").count)
     expect(parsed.css("p.ohms-transcript-paragraph").count).to eq(transcript_text.split("\n\n").count)
+
     # plus one because we have added one for the 0 timestamp
     expect(parsed.css("a.ohms-transcript-timestamp").count).to eq(ohms_xml.legacy_transcript.sync_timecodes.count + 1)
 
@@ -26,6 +27,14 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     expect(first_line.to_html).to eq(
       %Q{<span class="ohms-transcript-line" id="ohms_line_1" data-searchable-transcript-line="true"><a href="#t=0" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="transcript-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}
     )
+  end
+
+  it "includes unique paragraph ids" do
+    parsed = render_inline(ohms_transcript_display)
+
+    ids = parsed.css("p.ohms-transcript-paragraph/@id").collect(&:text)
+    expect(ids).to all(be_present)
+    expect(ids.uniq).to eq ids # no duplicates
   end
 
   it "properly renders footnotes and references to them" do

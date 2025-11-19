@@ -198,6 +198,12 @@ class OralHistoryContent
         def line_number_range
           (@lines.first.line_num...@lines.last.line_num)
         end
+
+        # @return [String] to be used as an anchor within an HTML doc, that can be targeted
+        #                  with a link
+        def fragment_id
+          "oh-t#{transcript_id}-p#{paragraph_index}"
+        end
       end
 
       class Line
