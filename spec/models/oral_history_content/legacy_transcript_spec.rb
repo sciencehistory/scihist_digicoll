@@ -37,18 +37,21 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
         expect(paragraph.line_number_range).to be_kind_of(Range)
         expect(paragraph.line_number_range.first).to be_present
         expect(paragraph.line_number_range.last).to be_present
+        expect(paragraph.line_number_range).not_to be_exclude_end
       end
 
       expect(legacy_transcript.paragraphs.first.text).to eq "BROCK: This is an oral history interview with Ron Duarte taking place on 13 June 2006. The interviewer is David Brock. Ron, I believe that you were born in Pescadero [Pescadero, California] but I'm not sure exactly when."
       expect(legacy_transcript.paragraphs.second.text).to eq "DUARTE: On 7 May 1930."
       expect(legacy_transcript.paragraphs.last.text).to eq "[END OF INTERVIEW]"
+    end
 
-      # Exact line numbers in original ascii are important for timecode sync in
+    it "include lines with numbers" do
+      # Exact line numbers as in original text file transcript are important for timecode sync in
       # legacy ohms format.
       paragraph = legacy_transcript.paragraphs.third
       expect(paragraph.paragraph_index).to eq 3
       expect(paragraph.lines.count).to eq 3
-      expect(paragraph.line_number_range).to eq (7...9)
+      expect(paragraph.line_number_range).to eq (7..9)
 
       expect(paragraph.lines.first.line_num).to eq 7
       expect(paragraph.lines.first.text).to eq "BROCK: Tell us a little bit about your family background and your family's"
@@ -58,6 +61,14 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
 
       expect(paragraph.lines.third.line_num).to eq 9
       expect(paragraph.lines.third.text).to eq ""
+    end
+
+    it "include timestamps" do
+      expect(legacy_transcript.paragraphs.first.included_timestamps).to eq []
+      expect(legacy_transcript.paragraphs.second.included_timestamps).to eq []
+      expect(legacy_transcript.paragraphs.third.included_timestamps).to eq []
+
+      expect(legacy_transcript.paragraphs.fourth.included_timestamps).to eq [60, 120, 180]
     end
   end
 
@@ -100,7 +111,4 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
       expect(footnotes_array[1]).to eq "Howard N. and Lucille L. Sloane, A Pictorial History of American Mining: The adventure and drama of finding and extracting nature's wealth from the earth, from pre-Columbian times to the present (New York: Crown Publishers, Inc., 1970)."
     end
   end
-
-
-
 end

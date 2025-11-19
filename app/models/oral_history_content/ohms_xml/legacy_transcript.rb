@@ -72,12 +72,24 @@ class OralHistoryContent
             end
           end
           @transcript_paragraphs << current_paragraph
+
+          # add timestamps included
+          @transcript_paragraphs.each do |paragraph|
+            paragraph.included_timestamps = timestamps_in_line_numnber_range(paragraph.line_number_range)
+          end
         end
 
         @transcript_paragraphs
       end
 
       private
+
+      # @return [Array<Integer>] array timecodes included in line number ranges, as numbers of seconds
+      def timestamps_in_line_numnber_range(line_number_range)
+        line_number_range.collect do |line_number|
+          sync_timecodes[line_number]
+        end.compact.flatten.collect { |data| data[:seconds]}
+      end
 
       # Returns A hash where:
       #   the key is an OHMS line number.
@@ -177,6 +189,9 @@ class OralHistoryContent
         # @return [integer] 1-based index of paragraph in document
         attr_reader :paragraph_index
 
+        # @return [Array<Integer>] list of timecodes (as seconds) included in ths paragraph
+        attr_accessor :included_timestamps
+
         def initialize(lines = nil, paragraph_index:)
           @lines = lines || []
           @paragraph_index = paragraph_index
@@ -196,7 +211,7 @@ class OralHistoryContent
         # @return [Range] from first to last line number, with line numbers being 1-indexed
         #                 in entire document.
         def line_number_range
-          (@lines.first.line_num...@lines.last.line_num)
+          (@lines.first.line_num..@lines.last.line_num)
         end
 
         # @return [String] to be used as an anchor within an HTML doc, that can be targeted
