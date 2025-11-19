@@ -1,17 +1,13 @@
 require 'open-uri'
 require 'zip'
 
-
 class GoogleArtsAndCultureZipCreator
   attr_reader :scope, :callback
 
-  # @param callback [proc], proc taking keyword arguments progress_i: and progress_total:, can
-  #   be used to update a progress UI.
   def initialize(scope, callback: nil)
     @scope = scope
     @callback = callback
   end
-
 
   def csv_file
     serializer = GoogleArtsAndCultureSerializer.new(scope)
@@ -39,13 +35,9 @@ class GoogleArtsAndCultureZipCreator
 
   # Returns a Tempfile. Up to caller to close/unlink tempfile when done with it.
   def create
-    comment_file = tmp_comment_file!
     tmp_zipfile = tmp_zipfile!
     derivative_files = []
     Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
-      # Add attribution as file and zip comment text
-      zipfile.comment = comment_text
-      zipfile.add("about.txt", comment_file)
       zipfile.add("manifest.csv", csv_file)
       if true
         @scope.includes(:leaf_representative).find_each do |work|
@@ -69,10 +61,6 @@ class GoogleArtsAndCultureZipCreator
       tmp_file.unlink
     end
 
-    if comment_file
-      comment_file.close
-      comment_file.unlink
-    end
   end
 
   private
@@ -87,20 +75,6 @@ class GoogleArtsAndCultureZipCreator
   end
 
   def tmp_zipfile!
-    Tempfile.new(["GAC_download_#{'asdasd'}", ".zip"]).tap { |t| t.binmode }
-  end
-
-  def comment_text
-    @comment_text ||= <<~EOS
-      Courtesy of the Science History Institute, https://sciencehistory.org
-      Prepared on #{Time.now}
-    EOS
-  end
-
-  def tmp_comment_file!
-    Tempfile.new("zip-comment").tap do |file|
-      file.write(comment_text)
-      file.rewind
-    end
+    Tempfile.new(["GAC_download", ".zip"]).tap { |t| t.binmode }
   end
 end
