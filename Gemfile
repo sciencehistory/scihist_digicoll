@@ -158,9 +158,6 @@ gem 'sitemap_generator', '~> 6.0' # google sitemap generation
 
 gem 'sane_patch', '< 2.0' # time-limited monkey patches
 
-gem 'activerecord-postgres_enum', '~> 2.0' # can record postgres enums in schema.rb dump
-
-
 # For autoscaling on heroku via hirefire.io service, but hopefully won't cause any problems
 # when running not on heroku.
 #
