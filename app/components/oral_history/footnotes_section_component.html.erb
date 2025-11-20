@@ -2,6 +2,6 @@
 <div class="mx-1 my-2"><strong>NOTES</strong></div>
 <div class="footnote-list mx-1 mb-5">
     <% footnote_array.each_with_index.map do |footnote_text, i| %>
-        <= render FootnoteComponent.new(footnote_reference: i+1, footnote_text, footnote_text) %>
+        <%= render OralHistory::FootnoteComponent.new(footnote_reference: i+1, footnote_text: footnote_text) %>
     <% end %>
 </div>
