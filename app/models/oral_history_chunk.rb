@@ -4,6 +4,9 @@ class OralHistoryChunk < ApplicationRecord
   # 3072 is size of OpenAI text-embedding-3-large we use
   FAKE_EMBEDDING = [0.0] * 3072
 
+  # Filter embedding from logs just cause it's so darn long!
+  self.filter_attributes += [:embedding]
+
   # from neighbors gem for pg_vector embeddings
   has_neighbors :embedding
 
