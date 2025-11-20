@@ -3,6 +3,9 @@ class OralHistoryContent
 
     # For LEGACY kind of Ohms XML, with <ohms:sync> and <ohms:transcript> elements.
     class LegacyTranscript
+      # catch speaker prefix, adapted from standard PHP OHMS viewer
+      OHMS_SPEAKER_LABEL_RE = /\A[[:space:]]*([A-Z\-.\' ]+:) (.*)\Z/
+
       attr_reader :nokogiri_xml
 
       def initialize(nokogiri_xml)
@@ -241,15 +244,28 @@ class OralHistoryContent
         # @return [String] line text, may include footnote references, speaker label, timecodes, etc.
         attr_reader :text
 
+        # @return [String] just the speaker label like "SMITH:" extracted from text
+        attr_reader :speaker_label
+
+        # @return [Strring] if there's a speaker lable, just the part of text AFTER speaker label.
+        #                   Otherwise equiv to text
+        attr_reader :utterance
+
         # @return [Integer] 1-based line number index in entire transcript, NOT in paragraph
         attr_reader :line_num
 
         def initialize(text:, line_num:)
           @text = text
           @line_num = line_num
+
+          if @text =~ OHMS_SPEAKER_LABEL_RE
+            @speaker_label = $1
+            @utterance = $2
+          else
+            @utterance = @text
+          end
         end
       end
     end
-
   end
 end
