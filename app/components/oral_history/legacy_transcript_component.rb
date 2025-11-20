@@ -37,25 +37,15 @@ module OralHistory
     # if the array of footnotes doesn't contain a footnote for `number`,
     # we are *not* going to throw an error.
     def call
-      paragraphs = []
-      current_paragraph = []
-      legacy_transcript.transcript_lines.each_with_index do |line, index|
-        current_paragraph << { text: line, line_num: index + 1}
 
-        if line.empty?
-          paragraphs << current_paragraph
-          current_paragraph = []
-        end
-      end
-      paragraphs << current_paragraph
 
-      paragraph_html_arr = paragraphs.collect do |p_arr|
+      paragraph_html_arr = legacy_transcript.paragraphs.collect do |paragraph|
         content_tag("div", class: "ohms-transcript-paragraph-wrapper") do
-          content_tag("p", class: "ohms-transcript-paragraph") do
-            safe_join(p_arr.collect do |line|
+          content_tag("p", class: "ohms-transcript-paragraph", id: paragraph.fragment_id) do
+            safe_join(paragraph.lines.collect do |line|
               content_tag("span", format_ohms_line(line),
                 class: "ohms-transcript-line",
-                  id: "ohms_line_#{line[:line_num]}",
+                  id: "ohms_line_#{line.line_num}",
                   "data-searchable-transcript-line" => true)
             end)
           end
@@ -97,8 +87,8 @@ module OralHistory
     # * Catches "speaker" notation and wraps in class.
     # * Makes sure there is whitespace at the end. Keep it all appropriately html safe.
     def format_ohms_line(line)
-      ohms_line_str = line[:text]
-      line_number = line[:line_num]
+      ohms_line_str = line.text
+      line_number = line.line_num
 
       # catch speaker prefix, adapted from standard PHP OHMS viewer
       if ohms_line_str =~ /\A[[:space:]]*([A-Z\-.\' ]+:) (.*)\Z/
