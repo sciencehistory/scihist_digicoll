@@ -46,6 +46,9 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     expect(line_with_first_footnote).to include "[1]"
 
     expect(parsed.css(".footnote").count).to eq 2
+
+    expect(parsed.css(".footnote-list .footnote-page-bottom-container").count).to eq 2
+    expect(parsed.css(".footnote-list .footnote-page-bottom-container").text). to include("U.S. Patent 2,281,576, issued 5 May 1942")
   end
 
   # Footnotes and footnote references are expected
