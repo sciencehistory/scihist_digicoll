@@ -1,8 +1,8 @@
-<%= simple_form_for @oral_history_request,  :url => :request_oral_history  do |f| %>
+<%= simple_form_for @oral_history_request, :url => :request_oral_history, html: { data: { blacklight_modal: "preserve" } }  do |f| %>
 
   <% remembered_form_values = oral_history_request_form_entry_read %>
 
-  <div class="mb-5 mt-4">
+  <div>
     <p>
       To receive files for "<%= @work.title %>" by email, please fill out the form below.
 
@@ -77,13 +77,13 @@
 
     <%= f.hidden_field :work_friendlier_id, value: @work.friendlier_id %>
 
-    <div class="form-actions mt-3">
-      <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary me-3" %>
+    <div class="form-actions mt-3 d-flex justify-content-end">
+      <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary me-3", data: { bl_dismiss: "modal" } %>
       <%= f.button :submit, value: "Submit request", class: "btn btn-brand-main" %>
     </div>
   </div>
 
-  <div class="alert alert-info mt-5 mb-5" role="alert">
+  <div class="alert alert-info mt-4" role="alert">
     <p>We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
     </p>
 

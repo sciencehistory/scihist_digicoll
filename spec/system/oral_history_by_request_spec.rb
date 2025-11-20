@@ -61,6 +61,9 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_text("Fill out a brief form to receive immediate access to these files.")
 
       click_on 'Get Access'
+
+      expect(page).to have_selector(".modal") # now in modal
+                                              #
       pr = '#oral_history_request_'
 
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
@@ -69,7 +72,11 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       # leave out intended use, because not required for this request type, make sure it goes through
 
       expect(OralHistoryRequest.count).to eq 0
+
       click_on 'Submit request'
+
+
+      expect(page).to have_selector(".modal") # now in modal
       expect(page).to have_text("The files you have requested are immediately available")
       expect(OralHistoryRequest.count).to eq 1
 
@@ -113,6 +120,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       click_on 'Request Access'
       pr = '#oral_history_request_'
 
+      expect(page).to have_selector(".modal") # now in modal
       expect(page).to have_text("After your request is received, you will receive an email response, usually within 3 business days. ")
 
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
@@ -122,6 +130,8 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       expect(OralHistoryRequest.count).to eq 0
       click_on 'Submit request'
+
+      expect(page).to have_selector(".modal") # now in modal
       expect(page).to have_text("Your request will be reviewed")
       expect(OralHistoryRequest.count).to eq 1
 
@@ -176,6 +186,8 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
 
       click_on 'Submit request'
+
+      expect(page).to have_selector(".modal") # now in modal
       expect(page).to have_text "Thank you for your interest"
 
       # by saving and restoring from cookie, the form should be pre-filled
