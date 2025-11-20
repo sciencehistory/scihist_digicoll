@@ -16,7 +16,9 @@ jobs:
   tests:
     services:
       db:
-        image: postgres:14.3
+        # for postgres, we can get an image from pgvector that is pg with pgvector avail
+        # test with pgvector 0.8.0 and pg 15, matching prod we think.
+        image: pgvector/pgvector:0.8.0-pg15
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
