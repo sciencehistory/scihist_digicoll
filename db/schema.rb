@@ -14,11 +14,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_171351) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_enum :available_by_request_mode_type, [
-    "off",
-    "automatic",
-    "manual_review",
-  ], force: :cascade
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "available_by_request_mode_type", ["off", "automatic", "manual_review"]
 
   create_function :kithe_models_friendlier_id_gen, sql_definition: <<-'SQL'
       CREATE OR REPLACE FUNCTION public.kithe_models_friendlier_id_gen(min_value bigint, max_value bigint)
