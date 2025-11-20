@@ -45,6 +45,10 @@ class OralHistoryContent < ApplicationRecord
   has_and_belongs_to_many :interviewer_profiles
   has_and_belongs_to_many :interviewee_biographies
 
+  # Delete all embedding chunks if we get deleted, should be fine `delete` instead of `destroy`,
+  # we don't need callbacks?
+  has_many :oral_history_chunks, inverse_of: :oral_history_content, dependent: :delete_all
+
   include CombinedAudioUploader::Attachment.new(:combined_audio_m4a, store: :combined_audio_derivatives)
 
   # Generic attachment with with no custom uploader behavior at all
