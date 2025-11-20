@@ -238,6 +238,13 @@ class OralHistoryContent
         def fragment_id
           "oh-t#{transcript_id}-p#{paragraph_index}"
         end
+
+        # @return [String] speaker name from any speaker label. Can be nil. Assumes
+        #                  whole paragraph is one speaker, identified on first line, which
+        #                  SHOULD be true, but weird things may happen if it ain't.
+        def speaker_name
+          lines.first&.speaker_label&.chomp(":")
+        end
       end
 
       class Line

@@ -76,6 +76,18 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
       expect(legacy_transcript.paragraphs.fifth.included_timestamps).to eq []
       expect(legacy_transcript.paragraphs.fifth.previous_timestamp).to eq 180
     end
+
+    it "includes #speaker_name" do
+      expect(legacy_transcript.paragraphs.first.speaker_name).to eq "BROCK"
+
+      expect(legacy_transcript.paragraphs.second.speaker_name).to eq "DUARTE"
+
+      expect(legacy_transcript.paragraphs.third.speaker_name).to eq "BROCK"
+
+      expect(legacy_transcript.paragraphs.fourth.speaker_name).to eq "DUARTE"
+
+      expect(legacy_transcript.paragraphs.fifth.speaker_name).to eq "BROCK"
+    end
   end
 
   describe "#transcript_lines_text" do
