@@ -26,7 +26,7 @@ class GoogleArtsAndCultureSerializer
     @scope.includes(:leaf_representative).find_each do |work|
       assets = members_to_include(work)
       if assets.count == 1
-        data << single_asset_work_row(work, assets)
+        data << single_asset_work_row(work, assets.first)
       else 
         data << work_row(work)
         assets.each do |asset|
@@ -53,8 +53,8 @@ class GoogleArtsAndCultureSerializer
     @attribute_keys.map { |key| work_value_for_attribute_key(work, key) }.flatten
   end
 
-  def single_asset_work_row(work, assets)
-    asset_values = standard_asset_values(assets.first)
+  def single_asset_work_row(work, asset)
+    asset_values = standard_asset_values(asset)
     @attribute_keys.map do |key|
       if [:filetype, :filespec].include? key
         asset_values[key]
