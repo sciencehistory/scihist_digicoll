@@ -1,13 +1,33 @@
 module GoogleArtsAndCultureSerializerHelper
 
-  # Work
+  def members_to_include(work)
+    work.members.
+    includes(:leaf_representative).
+    where(published: true).
+    order(:position).
+    select do |m|
+      m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
+    end
+  end
+
+  # This is the common method for saved asset names.
+  def filename_from_asset(asset)
+    "#{DownloadFilenameHelper.filename_base_from_parent(asset)}.jpg"
+  end
+
+  # @returns [Shrine::UploadedFile]
+  def file_to_include(asset)
+    if asset.content_type == "image/jpeg"
+      asset.file
+    else
+      asset.file_derivatives(:download_full)
+    end
+  end
 
   def subitem_id(work)
     not_applicable
   end
 
-
-  # Should we treat works with only one asset differently? Probably not.
   def filespec(work)
     not_applicable
   end
@@ -44,13 +64,6 @@ module GoogleArtsAndCultureSerializerHelper
     'Sequence'
   end
 
-
-  # If either dateCreated:display
-  # or dateCreated:end are non-empty then
-  # dateCreated:start must also be non-empty.
-  # To not set a date leave all three fields empty.
-
-  # TODO -- how do we handle multiple dates?
   def date_of_work(work)
     unless min_date(work).present?
       no_value
@@ -102,14 +115,6 @@ module GoogleArtsAndCultureSerializerHelper
       else
         not_applicable
       end
-  end
-
-  def filename_from_asset(asset)
-    if asset&.file&.url.nil?
-      no_value
-    else
-      File.basename(URI.parse(asset.file.url(public: true)))
-    end
   end
 
   # Other
