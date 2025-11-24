@@ -88,6 +88,15 @@ describe OralHistoryContent::OhmsXml::LegacyTranscript do
 
       expect(legacy_transcript.paragraphs.fifth.speaker_name).to eq "BROCK"
     end
+
+    it "sets assumed_speaker_name from previous speaker" do
+      0.upto(legacy_transcript.paragraphs.length - 2).each do |index|
+        first_paragraph = legacy_transcript.paragraphs[index]
+        second_paragraph = legacy_transcript.paragraphs[index + 1]
+
+        expect(second_paragraph.assumed_speaker_name).to eq (first_paragraph.speaker_name || first_paragraph.assumedspeaker_name)
+      end
+    end
   end
 
   describe "#transcript_lines_text" do

@@ -62,6 +62,7 @@ class OralHistoryContent
         @transcript_paragraphs ||= begin
           @transcript_paragraphs = []
 
+          last_speaker_name = nil
           current_paragraph_index = 1
           current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new(paragraph_index: current_paragraph_index)
 
@@ -70,8 +71,14 @@ class OralHistoryContent
 
             if line.empty?
               @transcript_paragraphs << current_paragraph
+              last_speaker_name = current_paragraph.speaker_name || current_paragraph.assumed_speaker_name
+
+
               current_paragraph_index += 1
               current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new(paragraph_index: current_paragraph_index)
+              if current_paragraph.speaker_name.blank?
+                current_paragraph.assumed_speaker_name = last_speaker_name
+              end
             end
           end
           @transcript_paragraphs << current_paragraph
@@ -220,6 +227,11 @@ class OralHistoryContent
         # @return [Integer] timestamp in seconds of the PREVIOUS timestamp to this paragraph,
         #                   to latest the timestamp sure not to miss beginning of paragraph.
         attr_accessor :previous_timestamp
+
+        # @return [String] when the paragraph has no speaker name internally, we guess/assume
+        #    it has the same speaker as previous paragraph. Store such an assumed speaker name
+        #    from previous paragraph here.
+        attr_accessor :assumed_speaker_name
 
         def initialize(lines = nil, paragraph_index:)
           @lines = lines || []
