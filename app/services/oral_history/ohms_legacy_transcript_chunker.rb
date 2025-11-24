@@ -18,6 +18,9 @@ module OralHistory
     # in the middle of a speaker turn or splitting an answer and question
     UPPER_WORD_LIMIT = 880
 
+    # Batches of chunks to create
+    BATCH_SIZE = 50
+
     attr_reader :transcript,  :interviewee_names, :oral_history_content
 
     def initialize(oral_history_content:)
@@ -39,12 +42,36 @@ module OralHistory
         collect { |c| c.value.split(",").first.upcase }
     end
 
+    def create_db_records(use_dummy_embedding: false)
+      # array of arrays of paragraphs
+      chunk_arrays = split_chunks
+
+      # create in batches for efficient batch embedding fetching, and efficient
+      # insertion in DB with transactions.
+      chunk_arrays.each_slice(BATCH_SIZE) do |batch|
+        records = batch.collect { |list_of_paragraphs| build_chunk_record(list_of_paragraphs) }
+
+        # TODO, get embeddings, for now we use dummy
+        if use_dummy_embedding
+          records.each { |r| r.embedding = OralHistoryChunk::FAKE_EMBEDDING }
+        else
+          raise StandardError.new("fetching embedding not yet implemented")
+        end
+
+        # little bit easier on the DB to save em in batches in a transaction
+        OralHistoryChunk.transaction do
+          records.each { |r| r.save! }
+        end
+      end
+    end
+
     # Goes through transcript paragraphs, divides into chunks, based on turn and word goals
     #
-    # @return [Array<Array<OralHistoryContent::OhmsXml::LegacyTranscript::Turn>>] array of arrays, where
-    #    each array is a "chunk" consisting of one of more turns.
+    # @return [Array<Array<OralHistoryContent::OhmsXml::LegacyTranscript::Turn>>] array of arrays,
+    #    where the individual arrays are lists of Paragraphs, representing a "chunk" consisting of
+    #    one or usually several paragraphs.
     def split_chunks
-      chunks = [] # array of arrays of LegacyTranscript::Turn
+      chunks = [] # array of arrays of LegacyTranscript::Paragraph
 
       current_chunk = []
       paragraph_speaker_name = nil

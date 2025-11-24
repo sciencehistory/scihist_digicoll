@@ -103,4 +103,20 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
     end
   end
 
+  describe "#create_db_records" do
+    # duarte is a nice short one (that we don't really have in OHMS)
+    let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
+
+    describe "with dummy embeddings for testing" do
+      it "saves multiple records" do
+        chunker.create_db_records(use_dummy_embedding: true)
+
+        chunks =  oral_history_content.reload.oral_history_chunks
+
+        expect(chunks).to be_present
+        expect(chunks.first.start_paragraph_number).to eq 1
+        expect(chunks.last.end_paragraph_number).to eq legacy_transcript.paragraphs.count
+      end
+    end
+  end
 end
