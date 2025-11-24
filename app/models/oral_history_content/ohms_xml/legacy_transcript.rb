@@ -194,6 +194,16 @@ class OralHistoryContent
 
       public
 
+
+      # A simple word count algorithm, it doesn't need to be exact, it's often
+      # an approximation for LLM tokens anyway. Used to decide how big our chunks
+      # should be.
+      #
+      # Takes multiple argument strongs, return sum of count of em
+      def self.word_count(*strings)
+        strings.collect { |s| s.scan(/\w+/).count }.sum
+      end
+
       # holds an ordered list of Line's, and can describe
       class Paragraph
         # @return [Array<OralHistoryContent::LegacyTranscript::Line>] ordered list of Line objects
@@ -220,11 +230,16 @@ class OralHistoryContent
         def <<(line)
           raise ArgumentError.new("must be a Line, not #{line.inspect}") unless line.kind_of?(Line)
           @lines << line
+          @word_count = nil
         end
 
         # @return [String] just text of all lines joined by space
         def text
           @lines.collect {|s| s.text.chomp }.join(" ").strip
+        end
+
+        def word_count
+          @word_count ||= OralHistoryContent::OhmsXml::LegacyTranscript.word_count(text)
         end
 
         # @return [Range] from first to last line number, with line numbers being 1-indexed

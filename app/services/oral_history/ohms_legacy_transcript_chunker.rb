@@ -40,7 +40,6 @@ module OralHistory
       chunks = [] # array of arrays of LegacyTranscript::Turn
 
       current_chunk = []
-      current_chunk_word_count = 0
       paragraph_speaker_name = nil
 
       transcript.paragraphs.each do |paragraph|
@@ -48,22 +47,21 @@ module OralHistory
 
         # only change speaker name if we have one, otherwise leave last one
         paragraph_speaker_name = paragraph.speaker_name if paragraph.speaker_name.present?
-        paragraph_word_count = word_count(paragraph.text)
 
-        if current_chunk_word_count + paragraph_word_count < LOWER_WORD_LIMIT
+        prospective_count = chunk_word_count(current_chunk) + paragraph.word_count
+
+        if prospective_count < LOWER_WORD_LIMIT
           # We won't even be at lower limit, so add to chunk
           current_chunk << paragraph
-          current_chunk_word_count += paragraph_word_count
 
-        elsif current_chunk_word_count + paragraph_word_count >= UPPER_WORD_LIMIT
+        elsif prospective_count >= UPPER_WORD_LIMIT
           # We'd be above upper limit if we added to chunk, so end chunk and start new one
           chunks << current_chunk
 
           last_two_paragraphs = (chunks.last || []).last(2)
           current_chunk = last_two_paragraphs + [ paragraph ]
-          current_chunk_word_count = word_count(*current_chunk.collect(&:text))
 
-        elsif current_chunk_word_count + paragraph_word_count >= WORD_GOAL &&
+        elsif prospective_count >= WORD_GOAL &&
               !interviewee_names.find { |n| paragraph_speaker_name.end_with? n }  &&
               interviewee_names.find { |n| last_paragraph_speaker_name.end_with? n }
           # It's a speaker name change to somoene that isn't an interviewee (a question) and we're above
@@ -72,7 +70,6 @@ module OralHistory
 
           last_two_paragraphs = (chunks.last || []).last(2)
           current_chunk = last_two_paragraphs + [ paragraph ]
-          current_chunk_word_count = word_count(*current_chunk.collect(&:text))
 
         else
           # Add to current chunk, loop again until a condition above is met, maybe
@@ -81,7 +78,6 @@ module OralHistory
           # We could get more sophisticated with lookahead and end if we are at
           # goal and aren't gonna find a speaker naem before max, but meh.
           current_chunk << paragraph
-          current_chunk_word_count += paragraph_word_count
 
         end
       end
@@ -92,11 +88,9 @@ module OralHistory
 
     private
 
-    # Takes one or more strings and returns the sum of their word counts,
-    # with a simple word count algorithm, doesn't need to be exact, it's
-    # really an approximation for tokens anyway.
-    def word_count(*strings)
-      strings.collect { |s| s.scan(/\w+/).count }.sum
+    # A chunk_array is an array of Paragraphs, just sums their word counts
+    def chunk_word_count(chunk_array)
+      chunk_array.collect(&:word_count).sum
     end
   end
 end

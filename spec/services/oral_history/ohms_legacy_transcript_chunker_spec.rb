@@ -13,7 +13,8 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
   let(:chunker) { described_class.new(legacy_transcript, interviewee_names: [interviewee_speaker_label]) }
 
   def word_count(*strings)
-    strings.collect { |s| s.scan(/\w+/).count }.sum
+    # use consistent word count algorithm
+    OralHistoryContent::OhmsXml::LegacyTranscript.word_count(*strings)
   end
 
   describe "split_chunks" do
