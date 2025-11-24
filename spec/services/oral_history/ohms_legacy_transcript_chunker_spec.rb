@@ -1,20 +1,19 @@
 require 'rails_helper'
 
 describe OralHistory::OhmsLegacyTranscriptChunker do
-  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml"}
+  let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
 
   let(:work) {
     build(:oral_history_work, :ohms_xml,
       ohms_xml_text: File.read(ohms_xml_path),
-      creator: [{ category: "interviewee", value: "Smyth, Charles Phelps, 1895-1990"},
-                { category: "interviewer", value: "Sturchio, Jeffrey L. (Jeffrey Louis), 1952-"}]
+      creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
+                { category: "interviewer", value: "Bohning, James J."}]
     )
   }
+  let(:interviewee_speaker_label) { "HANFORD" }
 
   let(:oral_history_content) { work.oral_history_content }
   let(:legacy_transcript) { oral_history_content.ohms_xml.legacy_transcript }
-
-  let(:interviewee_speaker_label) { "SMYTH" }
 
   let(:chunker) { described_class.new(oral_history_content: oral_history_content) }
 
@@ -53,7 +52,8 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
     end
 
     it "all chunks over minimum word count" do
-      expect(chunks).to all satisfy { |chunk| word_count(*chunk.collect(&:text)) >= described_class::LOWER_WORD_LIMIT }
+      # except possibly the last one, which just has what's left.
+      expect(chunks.slice(0, chunks.length - 1)).to all satisfy { |chunk| word_count(*chunk.collect(&:text)) >= described_class::LOWER_WORD_LIMIT }
     end
 
     it "all chunks below max word count" do
@@ -90,7 +90,7 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
       expect(record.end_paragraph_number).to eq list_of_paragraphs.last.paragraph_index
       expect(record.text).to eq list_of_paragraphs.collect(&:text).join("\n\n")
 
-      expect(record.speakers).to eq ["STURCHIO", "SMYTH", "DOEL"]
+      expect(record.speakers).to eq ["HANFORD", "BOHNING"]
 
       # json standard says hash keys must be string, pg will insist
       list_of_paragraphs.each do |paragraph|
