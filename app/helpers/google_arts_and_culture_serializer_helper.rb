@@ -1,13 +1,40 @@
 module GoogleArtsAndCultureSerializerHelper
-
   def members_to_include(work)
     work.members.
     includes(:leaf_representative).
     where(published: true).
+    where(type: "Asset").
     order(:position).
     select do |m|
       m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
     end
+  end
+
+  # Asset
+  def asset_filetype(asset)
+    if asset.content_type&.start_with?("video/")
+        'Video' # currently unavailable
+      elsif asset.content_type&.start_with?("image/")
+        'Image'
+      else
+        not_applicable
+      end
+  end
+
+  def standard_asset_values(asset)
+    filename = if asset&.file&.url.nil?
+      no_value
+    else
+      filename_from_asset(asset)
+    end
+    {
+      friendlier_id:  asset.parent.friendlier_id, # this is just for works
+      subitem_id:     asset.friendlier_id,
+      order_id:       asset.position || no_value,
+      title:          asset.title,
+      filespec:       filename,
+      filetype:       asset_filetype(asset)
+    }
   end
 
   # This is the common method for saved asset names.
@@ -42,6 +69,10 @@ module GoogleArtsAndCultureSerializerHelper
 
   def url(work)
     app_url_base + Rails.application.routes.url_helpers.work_path(work.friendlier_id)
+  end
+
+  def app_url_base
+    @app_url_base ||= ScihistDigicoll::Env.lookup!(:app_url_base)
   end
 
   def external_id(work)
@@ -105,19 +136,9 @@ module GoogleArtsAndCultureSerializerHelper
     I18n.l work.updated_at, format: :admin
   end
 
-  # Asset
-
-  def asset_filetype(asset)
-    if asset.content_type&.start_with?("video/")
-        'Video'
-      elsif asset.content_type&.start_with?("image/")
-        'Image'
-      else
-        not_applicable
-      end
+  def test_mode
+    false
   end
-
-  # Other
 
   def padding
     test_mode ? 'PADDING' : ''

@@ -53,6 +53,18 @@ class GoogleArtsAndCultureSerializer
     @attribute_keys.map { |key| work_value_for_attribute_key(work, key) }.flatten
   end
 
+  def asset_row(asset)
+    vals = standard_asset_values(asset)
+    @attribute_keys.map do |k|
+      count = column_counts.dig(k.to_s)
+      if count.nil?
+        vals.fetch(k, not_applicable)
+      else
+        Array.new(count, not_applicable)
+      end
+    end.flatten
+  end
+
   def single_asset_work_row(work, asset)
     asset_values = standard_asset_values(asset)
     @attribute_keys.map do |key|
@@ -75,33 +87,6 @@ class GoogleArtsAndCultureSerializer
     )
   end
 
-  def asset_row(asset)
-    vals = standard_asset_values(asset)
-    @attribute_keys.map do |k|
-      count = column_counts.dig(k.to_s)
-      if count.nil?
-        vals.fetch(k, not_applicable)
-      else
-        Array.new(count, not_applicable)
-      end
-    end.flatten
-  end
-
-  def standard_asset_values(asset)
-    filename = if asset&.file&.url.nil?
-      no_value
-    else
-      filename_from_asset(asset)
-    end
-    {
-      friendlier_id:  asset.parent.friendlier_id, # this is just for works
-      subitem_id:     asset.friendlier_id,
-      order_id:       asset.position || no_value,
-      title:          asset.title,
-      filespec:       filename,
-      filetype:       asset_filetype(asset)
-    }
-  end
 
 
   # number of columns we need for each array attribute.
@@ -221,7 +206,6 @@ class GoogleArtsAndCultureSerializer
     @app_url_base ||= ScihistDigicoll::Env.lookup!(:app_url_base)
   end
 
-  def test_mode
-    false
-  end
+
+
 end
