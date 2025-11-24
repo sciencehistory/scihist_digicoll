@@ -131,6 +131,7 @@ module OralHistory
 
       OralHistoryChunk.new(
         text: list_of_paragraphs.collect(&:text).join("\n\n"),
+        oral_history_content: oral_history_content,
         start_paragraph_number: list_of_paragraphs.first.paragraph_index,
         end_paragraph_number: list_of_paragraphs.last.paragraph_index,
         speakers: speakers,

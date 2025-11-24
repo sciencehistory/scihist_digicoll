@@ -83,6 +83,7 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
 
       expect(record).to be_kind_of(OralHistoryChunk)
       expect(record.persisted?).to be false
+      expect(record.oral_history_content).to eq oral_history_content
 
       expect(record.embedding).to be nil
 
