@@ -2,15 +2,21 @@ require 'rails_helper'
 
 describe OralHistory::OhmsLegacyTranscriptChunker do
   let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/smythe_OH0042.xml"}
-  let(:interviewee_speaker_label) { "SMYTH"}
 
-  #let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
-  #let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
+  let(:work) {
+    build(:oral_history_work, :ohms_xml,
+      ohms_xml_text: File.read(ohms_xml_path),
+      creator: [{ category: "interviewee", value: "Smyth, Charles Phelps, 1895-1990"},
+                { category: "interviewer", value: "Sturchio, Jeffrey L. (Jeffrey Louis), 1952-"}]
+    )
+  }
 
-  let(:legacy_transcript) { OralHistoryContent::OhmsXml::LegacyTranscript.new(Nokogiri::XML(File.read(ohms_xml_path)))}
+  let(:oral_history_content) { work.oral_history_content }
+  let(:legacy_transcript) { oral_history_content.ohms_xml.legacy_transcript }
 
+  let(:interviewee_speaker_label) { "SMYTH" }
 
-  let(:chunker) { described_class.new(legacy_transcript, interviewee_names: [interviewee_speaker_label]) }
+  let(:chunker) { described_class.new(oral_history_content: oral_history_content) }
 
   def word_count(*strings)
     # use consistent word count algorithm

@@ -16,20 +16,27 @@ module OralHistory
 
     # if next paragraph would take us over this many words, end the chunk even
     # in the middle of a speaker turn or splitting an answer and question
-    UPPER_WORD_LIMIT = 880 #
+    UPPER_WORD_LIMIT = 880
 
-    attr_reader :transcript,  :interviewee_names
+    attr_reader :transcript,  :interviewee_names, :oral_history_content
 
-    def initialize(transcript, interviewee_names:)
-      unless transcript.kind_of?(OralHistoryContent::OhmsXml::LegacyTranscript)
-        raise ArgumentError.new("transcript must be OralHistoryContent::OhmsXml::LegacyTranscript, but was #{transcript.class}")
+    def initialize(oral_history_content:)
+      unless oral_history_content.kind_of?(OralHistoryContent)
+        raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
       end
 
-      @transcript = transcript
+      unless oral_history_content.ohms_xml.legacy_transcript.present?
+        raise ArgumentError.new("#{self.class.name} can only be used with a LegacyTranscript, but argument does not have one: #{oral_history_content.inspect}")
+      end
 
-      # For matching to speaker names
-      #@interviewee_names = work.creator.find_all { |c| c.category == "interviewee"}.collect { |c| c.value.split(",").first.upcase }
-      @interviewee_names = interviewee_names
+      @oral_history_content = oral_history_content
+      @transcript = oral_history_content.ohms_xml.legacy_transcript
+
+      # For matching to speaker names, assume it's "lastname, first dates" type heading,
+      # take last name and upcase
+      @interviewee_names = oral_history_content.work.creator.
+        find_all { |c| c.category == "interviewee"}.
+        collect { |c| c.value.split(",").first.upcase }
     end
 
     # Goes through transcript paragraphs, divides into chunks, based on turn and word goals
