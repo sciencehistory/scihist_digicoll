@@ -17,7 +17,7 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
     OralHistoryContent::OhmsXml::LegacyTranscript.word_count(*strings)
   end
 
-  describe "split_chunks" do
+  describe "#split_chunks" do
     let(:chunks) { chunker.split_chunks }
 
     it "creates chunks as arrays of Paragraphs" do
@@ -68,4 +68,30 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
       expect(interviewee_first_list.count.to_f / chunks.length).to be <= 0.05
     end
   end
+
+  describe "#build_chunk_record" do
+    let(:list_of_paragraphs) { legacy_transcript.paragraphs.slice(7, 5) }
+
+    it "builds good record" do
+      record = chunker.build_chunk_record(list_of_paragraphs)
+
+      expect(record).to be_kind_of(OralHistoryChunk)
+      expect(record.persisted?).to be false
+
+      expect(record.embedding).to be nil
+
+      expect(record.start_paragraph_number).to eq list_of_paragraphs.first.paragraph_index
+      expect(record.end_paragraph_number).to eq list_of_paragraphs.last.paragraph_index
+      expect(record.text).to eq list_of_paragraphs.collect(&:text).join("\n\n")
+
+      # json standard says hash keys must be string, pg will insist
+      list_of_paragraphs.each do |paragraph|
+        timestamp_data = record.other_metadata["timestamps"][paragraph.paragraph_index.to_s]
+        expect(timestamp_data).to be_present
+        expect(timestamp_data["included"]).to eq paragraph.included_timestamps
+        expect(timestamp_data["previous"]).to eq paragraph.previous_timestamp
+      end
+    end
+  end
+
 end

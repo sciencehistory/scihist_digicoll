@@ -48,42 +48,81 @@ module OralHistory
         # only change speaker name if we have one, otherwise leave last one
         paragraph_speaker_name = paragraph.speaker_name if paragraph.speaker_name.present?
 
+        # How big will a chunk be if we add this paragraph to it?
         prospective_count = chunk_word_count(current_chunk) + paragraph.word_count
 
+        # We won't even be at lower limit, so need to add to chunk to work towards it
         if prospective_count < LOWER_WORD_LIMIT
-          # We won't even be at lower limit, so add to chunk
           current_chunk << paragraph
 
+        # We'd be above upper limit if we added to chunk, so must end chunk and start new one
         elsif prospective_count >= UPPER_WORD_LIMIT
-          # We'd be above upper limit if we added to chunk, so end chunk and start new one
           chunks << current_chunk
 
           last_two_paragraphs = (chunks.last || []).last(2)
           current_chunk = last_two_paragraphs + [ paragraph ]
 
+        # It's a speaker name change to someone that isn't an interviewee (we think it's a question,
+        # not an answer) and we're above word goal, so great time to end the chunk and start a new
+        # one with the presumed question. end_with? is used for some weird "multi-interviewee with
+        # same name" use cases, good enough.
         elsif prospective_count >= WORD_GOAL &&
               !interviewee_names.find { |n| paragraph_speaker_name.end_with? n }  &&
               interviewee_names.find { |n| last_paragraph_speaker_name.end_with? n }
-          # It's a speaker name change to somoene that isn't an interviewee (a question) and we're above
-          # word goal, so great time to end the chunk and start a new one with the presumed question
           chunks << current_chunk
 
           last_two_paragraphs = (chunks.last || []).last(2)
           current_chunk = last_two_paragraphs + [ paragraph ]
 
+        # Otherwise, keep adding to current chunk, loop again until a condition above is met, maybe
+        # we can get to speaker name change before max.
+        #
+        # We could get more sophisticated with lookahead and end if we are at
+        # goal and aren't gonna find a speaker naem before max, but meh.
         else
-          # Add to current chunk, loop again until a condition above is met, maybe
-          # we can get to speaker name change before max.
-          #
-          # We could get more sophisticated with lookahead and end if we are at
-          # goal and aren't gonna find a speaker naem before max, but meh.
           current_chunk << paragraph
-
         end
       end
-      chunks << current_chunk
+      chunks << current_chunk # last one
 
       chunks
+    end
+
+    # @param list_of_paragraphs [Array<OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph>]
+    #
+    # Takes list of paragraphs and builds an OralHistoryChunk ActiveRecord object for it, does not
+    # yet save, to allow efficiencies in bulk saving. Will be an expensive AI call out to get
+    # embedding, unless dummy_embedding true is given.
+    #
+    # Record will NOT have embedding filled out, to allow efficient future bulk fetching
+    # of embedding by caller.
+    #
+    # @return [OralHistoryChunk] that is NOT persisted to db yet, just in memory.
+    #
+    def build_chunk_record(list_of_paragraphs)
+
+      # timestamps are in number of seconds. Hash keyed by paragraph index
+      # with timestamp info for that paragraph.
+      #
+      # Json standard says keys have to be strings, postgres will convert them if we like it or not
+      paragraph_timestamps = list_of_paragraphs.collect do |paragraph|
+        [
+          paragraph.paragraph_index.to_s,
+          {
+            "included" => paragraph.included_timestamps,
+            "previous" => paragraph.previous_timestamp
+          }
+        ]
+      end.to_h
+
+      OralHistoryChunk.new(
+        text: list_of_paragraphs.collect(&:text).join("\n\n"),
+        start_paragraph_number: list_of_paragraphs.first.paragraph_index,
+        end_paragraph_number: list_of_paragraphs.last.paragraph_index,
+        other_metadata: {
+          "timestamps" => paragraph_timestamps
+        }
+      )
     end
 
     private
