@@ -115,10 +115,18 @@ module OralHistory
         ]
       end.to_h
 
+      # All speakers -- if the first paragraph isn't labelled, use assumed_speaker_name
+      # recorded from previous paragraphs.
+      speakers = [list_of_paragraphs.first.speaker_name || list_of_paragraphs.first.assumed_speaker_name] +
+        list_of_paragraphs.slice(1, list_of_paragraphs.length).collect(&:speaker_name)
+      speakers.compact!
+      speakers.uniq!
+
       OralHistoryChunk.new(
         text: list_of_paragraphs.collect(&:text).join("\n\n"),
         start_paragraph_number: list_of_paragraphs.first.paragraph_index,
         end_paragraph_number: list_of_paragraphs.last.paragraph_index,
+        speakers: speakers,
         other_metadata: {
           "timestamps" => paragraph_timestamps
         }

@@ -84,6 +84,8 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
       expect(record.end_paragraph_number).to eq list_of_paragraphs.last.paragraph_index
       expect(record.text).to eq list_of_paragraphs.collect(&:text).join("\n\n")
 
+      expect(record.speakers).to eq ["STURCHIO", "SMYTH", "DOEL"]
+
       # json standard says hash keys must be string, pg will insist
       list_of_paragraphs.each do |paragraph|
         timestamp_data = record.other_metadata["timestamps"][paragraph.paragraph_index.to_s]
