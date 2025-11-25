@@ -19,7 +19,7 @@ module OralHistory
     UPPER_WORD_LIMIT = 640
 
     # Batches of chunks to create
-    BATCH_SIZE = 50
+    BATCH_SIZE = 100
 
     attr_reader :transcript,  :interviewee_names, :oral_history_content
 
