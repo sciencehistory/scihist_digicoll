@@ -65,12 +65,16 @@ class GoogleArtsAndCultureSerializer
     end.flatten
   end
 
+  # We treat works with only one image specially;
+  # there's no need to have two lines in the spreadsheet for them.
   def single_asset_work_row(work, asset)
     asset_values = standard_asset_values(asset)
     @attribute_keys.map do |key|
       if [:filetype, :filespec].include? key
+        # file info comes from asset_values
         asset_values[key]
       else
+        # all other metadata is work metadata.
         work_value_for_attribute_key(work, key)
       end
     end.flatten
@@ -140,12 +144,13 @@ class GoogleArtsAndCultureSerializer
       
       genre:                    'art=genre',
       description:              'description',
-      subject:                    'subject',
-      rights_holder:            'rights',
+      subject:                   'subject',
+      rights:                    'rights',
+      rights_holder:             'customtext:rights_holder',
 
       # GAC's 'format' is used for our 'extent' metadata.
       extent:                   'format',
-      # Meanwhile, GAC doesn't seem to have a field for what we call "format"
+      # GAC doesn't seem to have a field for what we call "format"
       # format:                   '???',
 
     }
@@ -201,11 +206,4 @@ class GoogleArtsAndCultureSerializer
     return array if array.length == target_length
     array.concat(Array.new(target_length - array.length, padding_value))
   end
-
-  def app_url_base
-    @app_url_base ||= ScihistDigicoll::Env.lookup!(:app_url_base)
-  end
-
-
-
 end

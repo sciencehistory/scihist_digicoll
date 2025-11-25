@@ -116,7 +116,8 @@ RSpec.describe GoogleArtsAndCultureSerializer do
         "dateCreated:display",
         "art=genre#0",
         "description",
-        "rights"
+        "rights",
+        "customtext:rights_holder"
       ]
     end
   end
@@ -129,7 +130,7 @@ RSpec.describe GoogleArtsAndCultureSerializer do
       expect(row).to eq [
         work_1.friendlier_id, "", "", "Work One", "", "Sequence", "Science History Institute Digital Collections",
         "http://127.0.0.1/works/#{work_1.friendlier_id}", "", "2019-01-01", "2019-12-31", "2019",
-        "Rare books", "", ""
+        "Rare books", "", "Public Domain Mark 1.0", ""
       ]
     end
   end
@@ -154,9 +155,10 @@ RSpec.describe GoogleArtsAndCultureSerializer do
         "2019-01-01",
         "2019-12-31",
         "2019",
-        "Rare books",
-        "",
-        ""
+         "Rare books",
+         "",
+         "Public Domain Mark 1.0",
+         ""
       ]
     end
   end
@@ -192,7 +194,7 @@ RSpec.describe GoogleArtsAndCultureSerializer do
       expect(row.length).to eq(serializer.title_row.length)
       expect(row).to eq([
         asset.parent.friendlier_id, asset.friendlier_id, "", "Test title", "work_two_#{asset.parent.friendlier_id}_#{asset.friendlier_id}.jpg",
-        "Image", "", "", "", "", "", "", "", "", ""
+        "Image", "", "", "", "", "", "", "", "", "", ""
       ])
     end
   end

@@ -136,6 +136,10 @@ module GoogleArtsAndCultureSerializerHelper
     I18n.l work.updated_at, format: :admin
   end
 
+  def rights(work)
+    RightsTerm.label_for(work.rights)
+  end
+
   def test_mode
     false
   end
