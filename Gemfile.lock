@@ -817,7 +817,7 @@ DEPENDENCIES
   active_encode (~> 2.0)
   alba (~> 3.1)
   attr_json (~> 2.3)
-  aws-sdk-bedrockruntime (~> 1)
+  aws-sdk-bedrockruntime (~> 1.66)
   aws-sdk-cloudfront (~> 1.91)
   aws-sdk-cloudwatchevents (~> 1.0)
   aws-sdk-cloudwatchlogs (~> 1.0)
