@@ -383,6 +383,7 @@ Rails.application.routes.draw do
       collection do
         delete 'clear'
         post 'report'
+        post 'google_arts_and_culture_export'
       end
     end
 
