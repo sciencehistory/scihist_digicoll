@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_18_204457) do
+ActiveRecord::Schema[8.0].define(version: 2025_11_25_030700) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "vector"
 
@@ -233,9 +233,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_18_204457) do
   create_table "oral_history_chunks", force: :cascade do |t|
     t.vector "embedding", limit: 3072, null: false
     t.bigint "oral_history_content_id", null: false
-    t.integer "start_paragraph_number"
-    t.integer "end_paragraph_number"
-    t.text "text"
+    t.integer "start_paragraph_number", null: false
+    t.integer "end_paragraph_number", null: false
+    t.text "text", null: false
     t.string "speakers", default: [], array: true
     t.jsonb "other_metadata", default: {}
     t.datetime "created_at", null: false
