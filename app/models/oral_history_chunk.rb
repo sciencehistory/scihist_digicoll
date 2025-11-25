@@ -34,6 +34,8 @@ class OralHistoryChunk < ApplicationRecord
     self.get_openai_embeddings(text).first
   end
 
+  # note results will have a #neighbor_distance with the cosine distance and/or
+  # similarity, not sure about these scores.
   def self.neighbors_for_query(query)
     self.nearest_neighbors(:embedding, get_openai_embedding(query), distance: "cosine")
   end
