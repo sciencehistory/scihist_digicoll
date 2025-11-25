@@ -47,7 +47,7 @@ class OralHistoryContent < ApplicationRecord
 
   # Delete all embedding chunks if we get deleted, should be fine `delete` instead of `destroy`,
   # we don't need callbacks?
-  has_many :oral_history_chunks, inverse_of: :oral_history_content, dependent: :delete_all
+  has_many :oral_history_chunks, -> { order(start_paragraph_number: :asc) }, inverse_of: :oral_history_content, dependent: :delete_all
 
   after_save :delete_chunks_on_transcript_change
 
