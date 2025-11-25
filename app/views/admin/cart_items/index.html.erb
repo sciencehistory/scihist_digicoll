@@ -4,6 +4,7 @@
   <p>
     <%= link_to "Batch Edit", batch_update_admin_works_path, class: "btn btn-primary" %>
     <%= link_to "Save a report", report_admin_cart_items_path, class: "btn btn-primary", data: { confirm: "Save a CSV report?"}, method: "post" %>
+    <%= link_to "Google Arts and Culture export", google_arts_and_culture_export_admin_cart_items_path, class: "btn btn-primary", data: { confirm: "Export these works to Google Arts & Culture?"}, method: "post" %>
     <%= link_to "Clear Cart", clear_admin_cart_items_path, class: "btn btn-outline-danger", data: { confirm: "Delete all items in cart?"}, method: "delete" %>
   </p>
 

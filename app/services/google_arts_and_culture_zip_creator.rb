@@ -25,7 +25,7 @@ class GoogleArtsAndCultureZipCreator
             derivative_files << file_obj
             entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
             zipfile.add(entry, file_obj)
-            # puts "added #{filename}"
+            puts "added #{filename}"
           end
         end
       end
