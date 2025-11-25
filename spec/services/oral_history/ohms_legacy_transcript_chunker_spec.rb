@@ -47,7 +47,7 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
         first_chunk = chunks[index]
         second_chunk = chunks[index + 1]
 
-        expect(second_chunk.first(2)).to eq (first_chunk.last(2))
+        expect(second_chunk.first(1)).to eq (first_chunk.last(1))
       end
     end
 
@@ -66,12 +66,12 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
       # third paragraph is the first uniquely new one, first two are overlap. We try
       # to make that first unique one be the interviewer, not the interviewee.
       #
-      # But it's definitely not invariant, depends on paragraph size, depends on transcript, but
-      # we'll say less than 5% -- current example is more like 1%
+      # But it's definitely not invariant, depends on paragraph size, depends on transcript, with
+      # smaller chunks, more of them won't end "right", it's okay. 15%?
 
       interviewee_first_list = chunks.find_all { |chunk| chunk.third.speaker_name == interviewee_speaker_label }
 
-      expect(interviewee_first_list.count.to_f / chunks.length).to be <= 0.05
+      expect(interviewee_first_list.count.to_f / chunks.length).to be <= 0.15
     end
   end
 
@@ -104,10 +104,14 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
   end
 
   describe "#create_db_records" do
-    # duarte is a nice short one (that we don't really have in OHMS)
+    # duarte is a nice short one (we don't really have it in OHMS, but works for short test)
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
 
-    describe "with dummy embeddings for testing" do
+    describe "with mocked OpenAI embeddings" do
+      before do
+        allow(OralHistoryChunk).to receive(:get_openai_embedding).and_return(OralHistoryChunk::FAKE_EMBEDDING)
+      end
+
       it "saves multiple records" do
         chunker.create_db_records(use_dummy_embedding: true)
 
