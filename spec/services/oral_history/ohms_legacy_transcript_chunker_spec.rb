@@ -109,11 +109,11 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
 
     describe "with mocked OpenAI embeddings" do
       before do
-        allow(OralHistoryChunk).to receive(:get_openai_embedding).and_return(OralHistoryChunk::FAKE_EMBEDDING)
+        allow(OralHistoryChunk).to receive(:get_openai_embeddings) { |*args| [OralHistoryChunk::FAKE_EMBEDDING] * args.count }
       end
 
       it "saves multiple records" do
-        chunker.create_db_records(use_dummy_embedding: true)
+        chunker.create_db_records
 
         chunks =  oral_history_content.reload.oral_history_chunks
 

@@ -14,8 +14,8 @@ class OralHistoryChunk < ApplicationRecord
 
 
   # One or more texts, do one request to OpenAI to get one or more embedding
-  # vectors back. Can do multiple to do a bulk request
-  def self.get_openai_embedding(*texts)
+  # vectors back. Can include multiple texts to do a bulk request for all of them.
+  def self.get_openai_embeddings(*texts)
     response = OPENAI_CLIENT.embeddings(
       parameters: {
         model: "text-embedding-3-large",
@@ -24,10 +24,18 @@ class OralHistoryChunk < ApplicationRecord
     )
 
     if response["error"]
-      raise "OpenAI Error: #{response['error']['message']}"
+      raise StandardError.new("OpenAI Error: #{response['error']['message']}")
     end
 
     return response["data"].map { |d| d["embedding"] }
+  end
+
+  def self.get_openai_embedding(text)
+    self.get_openai_embeddings(text).first
+  end
+
+  def self.neighbors_for_query(query)
+    self.nearest_neighbors(:embedding, get_openai_embedding(query), distance: "cosine")
   end
 
   # Filter embedding from logs just cause it's so darn long!

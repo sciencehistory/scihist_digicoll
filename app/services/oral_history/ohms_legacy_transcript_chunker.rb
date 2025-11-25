@@ -58,7 +58,7 @@ module OralHistory
         if use_dummy_embedding
           records.each { |r| r.embedding = OralHistoryChunk::FAKE_EMBEDDING }
         else
-          embeddings = OralHistoryChunk.get_openai_embedding(*records.collect(&:text))
+          embeddings = OralHistoryChunk.get_openai_embeddings(*records.collect(&:text))
 
           if embeddings.count != records.count
             raise StandardError.new("Fetched OpenAI embeddings in batch, but count does not equal record count! #{embeddings.count}, #{records.count}")
