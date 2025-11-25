@@ -131,16 +131,35 @@ module OralHistory
 
     # @param k [Integer] how many chunks to get
     def get_chunks(k: INITIAL_CHUNK_COUNT)
-      # the SQL log for the neighbor query is too huge!!
-      OralHistoryChunk.neighbors_for_query(question).limit(k)
+      # TODO: the SQL log for the neighbor query is too huge!!
+      # Preload work, so we can get title or other metadata we might want.
+      OralHistoryChunk.neighbors_for_query(question).limit(k).includes(oral_history_content: :work).strict_loading
     end
 
     def format_chunks(chunks)
       separator = "------------------------------"
 
       chunks.collect do |chunk|
+        title = chunk.oral_history_content.work.title
+
+        # hackily get a date range
+        dates = chunk.oral_history_content.work.date_of_work.collect { |d| [d.start, d.finish]}.flatten.compact.uniq.sort
+        date_string = if dates.length > 1
+          ", #{dates.first.slice(0, 4)}-#{dates.last.slice(0, 4)}"
+        elsif dates.length > 0
+          ", #{dates.first.slice(0, 4)}"
+        else
+          ""
+        end
+
+        title = title += date_string
+
+        oh_id = chunk.oral_history_content.work.external_id.find { |id| id.category == "interview"}&.value
+
         <<~EOS
           #{separator}
+          ORAL HISTORY: #{title}
+          ORAL HISTORY NUMBER: #{oh_id}
           CHUNK ID: #{chunk.id}
           SPEAKERS: #{chunk.speakers.join(", ")}
           PARAGRAPH NUMBERS: #{chunk.start_paragraph_number.upto(chunk.end_paragraph_number).to_a.join(", ")}
