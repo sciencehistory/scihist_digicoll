@@ -8,20 +8,21 @@ module OralHistory
   #
   class OhmsLegacyTranscriptChunker
     # always want more than this many words
-    LOWER_WORD_LIMIT = 380
+    LOWER_WORD_LIMIT = 280
 
     # if we're at this many, and next paragraph looks like an "Question" rather than
     # "Answer", end the chunk before the new Question.
-    WORD_GOAL = 580
+    WORD_GOAL = 480
 
     # if next paragraph would take us over this many words, end the chunk even
     # in the middle of a speaker turn or splitting an answer and question
-    UPPER_WORD_LIMIT = 880
+    UPPER_WORD_LIMIT = 640
 
     # Batches of chunks to create
     BATCH_SIZE = 50
 
     attr_reader :transcript,  :interviewee_names, :oral_history_content
+
 
     def initialize(oral_history_content:)
       unless oral_history_content.kind_of?(OralHistoryContent)
@@ -41,6 +42,8 @@ module OralHistory
         find_all { |c| c.category == "interviewee"}.
         collect { |c| c.value.split(",").first.upcase }
     end
+
+
 
     def create_db_records(use_dummy_embedding: false)
       # array of arrays of paragraphs
@@ -103,8 +106,8 @@ module OralHistory
         elsif prospective_count >= UPPER_WORD_LIMIT
           chunks << current_chunk
 
-          last_two_paragraphs = (chunks.last || []).last(2)
-          current_chunk = last_two_paragraphs + [ paragraph ]
+          overlap_paragraphs = (chunks.last || []).last(1)
+          current_chunk = overlap_paragraphs + [ paragraph ]
 
         # It's a speaker name change to someone that isn't an interviewee (we think it's a question,
         # not an answer) and we're above word goal, so great time to end the chunk and start a new
@@ -115,8 +118,8 @@ module OralHistory
               interviewee_names.find { |n| last_paragraph_speaker_name.end_with? n }
           chunks << current_chunk
 
-          last_two_paragraphs = (chunks.last || []).last(2)
-          current_chunk = last_two_paragraphs + [ paragraph ]
+          overlap_paragraphs = (chunks.last || []).last(1)
+          current_chunk = overlap_paragraphs + [ paragraph ]
 
         # Otherwise, keep adding to current chunk, loop again until a condition above is met, maybe
         # we can get to speaker name change before max.
