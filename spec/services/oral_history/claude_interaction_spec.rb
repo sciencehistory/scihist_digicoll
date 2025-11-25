@@ -11,16 +11,14 @@ describe OralHistory::ClaudeInteraction do
     it "formats" do
       expect(interaction.format_chunks([chunk1, chunk2]).strip).to eq <<~EOS.strip
        ------------------------------
-       ORAL HISTORY: Oral history interview with William John Bailey, 1986
-       ORAL HISTORY NUMBER: 0012
+       ORAL HISTORY TITLE: Oral history interview with William John Bailey, 1986
        CHUNK ID: #{chunk1.id}
        SPEAKERS: SMITH
        PARAGRAPH NUMBERS: 12, 13, 14, 15
        TEXT:
        #{chunk1.text.chomp}
        ------------------------------
-       ORAL HISTORY: Oral history interview with William John Bailey, 1986
-       ORAL HISTORY NUMBER: 0012
+       ORAL HISTORY TITLE: Oral history interview with William John Bailey, 1986
        CHUNK ID: #{chunk2.id}
        SPEAKERS: SMITH, JONES
        PARAGRAPH NUMBERS: 12, 13, 14, 15

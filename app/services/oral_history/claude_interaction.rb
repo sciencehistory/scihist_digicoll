@@ -89,6 +89,7 @@ module OralHistory
           "footnotes": [
             {
               "number": 1,
+              "oral_history_title": "<oral_history_title>",
               "chunk_id": "<chunk_id>",
               "paragraph_start": <number>,
               "paragraph_end": <number>,
@@ -140,6 +141,10 @@ module OralHistory
       separator = "------------------------------"
 
       chunks.collect do |chunk|
+        # Title is really just for debugging, it can always be fetched by chunk_id, but
+        # it does make debugging a lot easier to keep the title in the pipeline, to
+        # footnote.
+
         title = chunk.oral_history_content.work.title
 
         # hackily get a date range
@@ -154,12 +159,9 @@ module OralHistory
 
         title = title += date_string
 
-        oh_id = chunk.oral_history_content.work.external_id.find { |id| id.category == "interview"}&.value
-
         <<~EOS
           #{separator}
-          ORAL HISTORY: #{title}
-          ORAL HISTORY NUMBER: #{oh_id}
+          ORAL HISTORY TITLE: #{title}
           CHUNK ID: #{chunk.id}
           SPEAKERS: #{chunk.speakers.join(", ")}
           PARAGRAPH NUMBERS: #{chunk.start_paragraph_number.upto(chunk.end_paragraph_number).to_a.join(", ")}
