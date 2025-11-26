@@ -70,8 +70,12 @@ module OralHistory
         end
 
         # little bit easier on the DB to save em in batches in a transaction
-        OralHistoryChunk.transaction do
-          records.each { |r| r.save! }
+        #
+        # The 3072 vector embeddings take up so much space in dev logs, no good way to filter
+        Rails.logger.silence(Logger::WARN) do
+          OralHistoryChunk.transaction do
+            records.each { |r| r.save! }
+          end
         end
       end
 
