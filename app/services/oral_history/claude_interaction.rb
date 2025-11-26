@@ -45,9 +45,10 @@ module OralHistory
       # Claude is insisting on including a markdown fence
       raw_text.gsub!(/(\A\s*```json)|(```\s*\Z)/, '')
 
-      return JSON.parse(raw_text)
+      validate_claude_response( JSON.parse(raw_text) )
+    rescue JSON::ParserError => e
+      raise OutputFormattingError.new("Does not parse as JSON: #{e.message}" , output: raw_text)
     end
-
 
     def system_instructions
       # - Write the answer as if you have complete knowledge, without mentioning the source or process of retrieval.
@@ -169,6 +170,56 @@ module OralHistory
           #{chunk.text.chomp}
         EOS
       end.join + "#{separator}"
+    end
+
+    # The thing we asked Claude for, does it look like we asked?
+    #
+    # Raises ClaudeInteraction::OutputFormattingError if not
+    #
+    # @return [Hash] arg passed in, for convenient chaining
+    def validate_claude_response(json)
+      unless json.kind_of?(Hash)
+        raise OutputFormattingError.new("not a hash", output: output)
+      end
+
+      required_top_keys = %w[narrative footnotes more_chunks_needed answer_unavailable]
+      required_footnote_keys = %w[number oral_history_title chunk_id paragraph_start paragraph_end type text]
+
+      missing_top = required_top_keys - json.keys
+      if missing_top.any?
+        raise OutputFormattingError.new("Missing top-level keys: #{missing_top.join(', ')}", output: json)
+      end
+
+      json['footnotes'].each_with_index do |footnote, i|
+        missing_fn_keys = required_footnote_keys - footnote.keys
+        if missing_fn_keys.any?
+          raise OutputFormattingError.new("Missing keys in footnote #{i+1}: #{missing_fn_keys.join(', ')}", output: json)
+        end
+
+        unless %w{quote summary}.include? footnote["type"]
+          raise OutputFormattingError.new("Invalid type key in footnote #{i+1}: #{footnote["type"]}", output: json)
+        end
+      end
+
+      # check all footnotes are present in both directions
+      footnote_refs = json["narrative"].scan(/\[(\d+)\]/).flatten.collect(&:to_i)
+      footnotes = json["footnotes"].collect { |h| h["number"] }
+      footnote_refs.zip(footnotes) do |pair|
+        unless pair.first == pair.second
+          raise OutputFormattingError.new("Footnotes don't match up at note: #{pair}", output: json)
+        end
+      end
+
+      json
+    end
+
+    # we asked Claude for json in a certain format, did we get it?
+    class OutputFormattingError < StandardError
+      attr_reader :output
+      def initialize(msg=nil, output: nil)
+        @output = output
+        super(msg)
+      end
     end
   end
 end
