@@ -1,5 +1,13 @@
 # Chunks of text for LLM RAG research
 class OralHistoryChunk < ApplicationRecord
+  # Filter embedding from logs just cause it's so darn long!
+  self.filter_attributes += [:embedding]
+
+  belongs_to :oral_history_content
+
+  # from neighbors gem for pg_vector embeddings
+  has_neighbors :embedding
+
   # Scope to fetch neighbors for query, to find relevant chunks to supply for RAG.
   #
   # Will make an API call to OpenAI for embedding for query!
@@ -44,11 +52,5 @@ class OralHistoryChunk < ApplicationRecord
     self.get_openai_embeddings(text).first
   end
 
-  # Filter embedding from logs just cause it's so darn long!
-  self.filter_attributes += [:embedding]
 
-  # from neighbors gem for pg_vector embeddings
-  has_neighbors :embedding
-
-  belongs_to :oral_history_content
 end
