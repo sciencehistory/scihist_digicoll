@@ -66,8 +66,7 @@ describe OralHistory::ClaudeInteraction do
             "chunk_id" => "123",
             "paragraph_start" => 12,
             "paragraph_end" => 15,
-            "type" => "quote",
-            "text" => "This is a quote"
+            "quote" => "This is a quote"
           }
         ],
         "more_chunks_needed" => false,
@@ -84,17 +83,15 @@ describe OralHistory::ClaudeInteraction do
     describe "clause response validation errors" do
       describe "missing more_chunks_needed" do
         let(:json_return) {
-          # we're only passing it through, it doesn't matter
           {
-            "narrative" => "Some kind of answer [1]",
+            "narrative" => "Some kind of answer [^1]",
             "footnotes" => [
               { "number" => 1,
                 "oral_history_title" => "Some title, 2001",
                 "chunk_id" => "123",
                 "paragraph_start" => 12,
                 "paragraph_end" => 15,
-                "type" => "quote",
-                "text" => "This is a quote"
+                "quote" => "This is a quote"
               }
             ],
             "answer_unavailable" => false
@@ -109,16 +106,14 @@ describe OralHistory::ClaudeInteraction do
 
       describe "missing paragraph_start in footnote" do
         let(:json_return) {
-          # we're only passing it through, it doesn't matter
           {
-            "narrative" => "Some kind of answer [1]",
+            "narrative" => "Some kind of answer [^1]",
             "footnotes" => [
               { "number" => 1,
                 "oral_history_title" => "Some title, 2001",
                 "chunk_id" => "123",
                 "paragraph_end" => 15,
-                "type" => "quote",
-                "text" => "This is a quote"
+                "quote" => "This is a quote"
               }
             ],
             "more_chunks_needed" => false,
@@ -134,9 +129,8 @@ describe OralHistory::ClaudeInteraction do
 
       describe "missing footnote" do
         let(:json_return) {
-          # we're only passing it through, it doesn't matter
           {
-            "narrative" => "Some kind of answer [1]",
+            "narrative" => "Some kind of answer [^1]",
             "footnotes" => [
             ],
             "more_chunks_needed" => false,
