@@ -34,19 +34,9 @@ describe OralHistory::ClaudeInteraction do
       allow(OralHistoryChunk).to receive(:get_openai_embeddings) { |*args| [OralHistoryChunk::FAKE_EMBEDDING] * args.count }
     end
 
-    let(:json_return) {
-      # we're only passing it through, it doesn't matter
-      {
-        "narrative" => "The retrieved material does not contain information about collaborations with James D. Watson. The interviews discuss various scientific collaborations among other researchers in chemistry and physics, but none mention James D. Watson as a collaborator of any interview subject.",
-        "footnotes" => [],
-        "more_chunks_needed" => false,
-        "answer_unavailable" => true
-      }
-    }
-
-    it "returns json answer" do
+    before do
       # we aren't testing much with the mock, but oh well
-      expect(described_class::AWS_BEDROCK_CLIENT).to receive(:converse).and_return(
+      allow(described_class::AWS_BEDROCK_CLIENT).to receive(:converse).and_return(
         OpenStruct.new(
           output: OpenStruct.new(
             message: OpenStruct.new(
@@ -64,11 +54,101 @@ describe OralHistory::ClaudeInteraction do
           )
         )
       )
+    end
 
+    let(:json_return) {
+      # we're only passing it through, it doesn't matter
+      {
+        "narrative" => "Some kind of answer [1]",
+        "footnotes" => [
+          { "number" => 1,
+            "oral_history_title" => "Some title, 2001",
+            "chunk_id" => "123",
+            "paragraph_start" => 12,
+            "paragraph_end" => 15,
+            "type" => "quote",
+            "text" => "This is a quote"
+          }
+        ],
+        "more_chunks_needed" => false,
+        "answer_unavailable" => false
+      }
+    }
+
+    it "returns json answer" do
       answer = interaction.get_answer
       expect(answer).to be_kind_of(Hash)
       expect(answer).to eq json_return
+    end
 
+    describe "clause response validation errors" do
+      describe "missing more_chunks_needed" do
+        let(:json_return) {
+          # we're only passing it through, it doesn't matter
+          {
+            "narrative" => "Some kind of answer [1]",
+            "footnotes" => [
+              { "number" => 1,
+                "oral_history_title" => "Some title, 2001",
+                "chunk_id" => "123",
+                "paragraph_start" => 12,
+                "paragraph_end" => 15,
+                "type" => "quote",
+                "text" => "This is a quote"
+              }
+            ],
+            "answer_unavailable" => false
+          }
+        }
+        it "raises" do
+          expect {
+            answer = interaction.get_answer
+          }.to raise_error(described_class::OutputFormattingError)
+        end
+      end
+
+      describe "missing paragraph_start in footnote" do
+        let(:json_return) {
+          # we're only passing it through, it doesn't matter
+          {
+            "narrative" => "Some kind of answer [1]",
+            "footnotes" => [
+              { "number" => 1,
+                "oral_history_title" => "Some title, 2001",
+                "chunk_id" => "123",
+                "paragraph_end" => 15,
+                "type" => "quote",
+                "text" => "This is a quote"
+              }
+            ],
+            "more_chunks_needed" => false,
+            "answer_unavailable" => false
+          }
+        }
+        it "raises" do
+          expect {
+            answer = interaction.get_answer
+          }.to raise_error(described_class::OutputFormattingError)
+        end
+      end
+
+      describe "missing footnote" do
+        let(:json_return) {
+          # we're only passing it through, it doesn't matter
+          {
+            "narrative" => "Some kind of answer [1]",
+            "footnotes" => [
+            ],
+            "more_chunks_needed" => false,
+            "answer_unavailable" => false
+          }
+        }
+        it "raises" do
+          expect {
+            answer = interaction.get_answer
+          }.to raise_error(described_class::OutputFormattingError)
+        end
+      end
     end
   end
 end
