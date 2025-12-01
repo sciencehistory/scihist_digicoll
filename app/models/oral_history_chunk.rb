@@ -8,14 +8,17 @@ class OralHistoryChunk < ApplicationRecord
   # from neighbors gem for pg_vector embeddings
   has_neighbors :embedding
 
-  # Scope to fetch neighbors for query, to find relevant chunks to supply for RAG.
-  #
-  # Will make an API call to OpenAI for embedding for query!
+  # Scope to fetch neighbors for embedding, to find relevant chunks to supply for RAG.
   #
   # Note: results will have a #neighbor_distance with the cosine distance, could
   # be useful for estimating how useful.
+  scope :neighbors_for_embedding, ->(embedding) {
+    self.nearest_neighbors(:embedding, embedding, distance: "cosine")
+  }
+
+  # Convenience that looks up the embedding for you. Will make an API call toOpenAI for embedding for query!
   scope :neighbors_for_query, ->(query) {
-    self.nearest_neighbors(:embedding, get_openai_embedding(query), distance: "cosine")
+    neighbors_for_embedding(get_openai_embedding(query))
   }
 
   # For testing or what have you, since `embedding` attribute is required.
