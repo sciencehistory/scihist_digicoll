@@ -1,6 +1,10 @@
 require 'open-uri'
 require 'zip'
 
+# Creates a zip file containing one file per exported asset, plus a CSV with metadata.
+# This is intended to use with the "Advanced Import" functionality of Google Arts and Culture.
+# See https://support.google.com/culturalinstitute/partners/answer/4618071 for more details.
+
 class GoogleArtsAndCultureZipCreator
   include GoogleArtsAndCultureSerializerHelper
   attr_reader :scope, :callback
@@ -15,7 +19,7 @@ class GoogleArtsAndCultureZipCreator
     tmp_zipfile = tmp_zipfile!
     derivative_files = []
     Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
-      zipfile.add("manifest.csv", csv_file)
+      zipfile.add("manifest.csv", metadata_csv_file)
       @scope.includes(:leaf_representative).find_each do |work|
         members_to_include(work).each do |member|
           filename = asset_filename(member)
@@ -36,7 +40,7 @@ class GoogleArtsAndCultureZipCreator
     end
   end
 
-  def csv_file
+  def metadata_csv_file
     serializer = GoogleArtsAndCultureSerializer.new(scope)
     serializer.csv_tempfile
   end

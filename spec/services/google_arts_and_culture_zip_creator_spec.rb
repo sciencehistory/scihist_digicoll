@@ -32,10 +32,10 @@ RSpec.describe GoogleArtsAndCultureZipCreator do
     end
   end
 
-  describe "#csv_file" do
+  describe "#metadata_csv_file" do
     let(:creator) { described_class.new(scope) }
     it "returns a Tempfile" do
-      tempfile = creator.csv_file
+      tempfile = creator.metadata_csv_file
       expect(tempfile).to be_a(Tempfile)
       expect(File.exist?(tempfile.path)).to be(true)
       expect(File.size(tempfile.path)).to be > 0

@@ -140,7 +140,6 @@ RSpec.describe GoogleArtsAndCultureSerializer do
       assets = serializer.members_to_include(work_1)
       row    = serializer.work_row(work_1, single_asset: assets.first)
       expect(row).to be_an(Array)
-      # We can at least assert it has the same number of columns as title_row
       expect(row.length).to eq(serializer.title_row.length)
       expect(row).to eq [
         work_1.friendlier_id,

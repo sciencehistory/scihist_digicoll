@@ -2,6 +2,11 @@ class GoogleArtsAndCultureSerializer
   include Rails.application.routes.url_helpers
   include GoogleArtsAndCultureSerializerHelper
 
+
+  # columns is an optional array of metadata to include in the output.
+  # If you don't include columns, all metdata is included.
+  # Useful for testing.
+  # GoogleArtsAndCultureSerializer.new(scope, columns: [:friendlier_id, :title, :file_name]) would only include those three columns.
   def initialize(scope, columns: nil)
     @scope = scope
     @attribute_keys = if columns.nil?
@@ -38,6 +43,7 @@ class GoogleArtsAndCultureSerializer
   end
 
   def title_row
+    # if a given attribute stretches over several columns, label the columns correctly (creator#0, creator#1, creator#2, etc.)
     @attribute_keys.map do |k|
       if array_attributes.include? k.to_s
         (0..(column_counts[k.to_s] - 1)).map do |i|
@@ -49,12 +55,19 @@ class GoogleArtsAndCultureSerializer
     end.flatten
   end
 
+  # A single row describing work-level metadata.
   def work_row(work, single_asset: nil)
     @attribute_keys.map do |key|
+
+      # Special case: if the work has only one asset, we provide the asset's filetype and filename
+      # in the work row:
       if single_asset.present? && key == :filetype
         asset_filetype(single_asset)
       elsif single_asset.present? && key == :file_name
         asset_filename(single_asset)
+
+
+      # Normal case:
       else
         scalar_or_padded_array(
           work_attribute_methods[key].call(work),
@@ -64,6 +77,7 @@ class GoogleArtsAndCultureSerializer
     end.flatten
   end
 
+  # Works with two or more assets have an extra row for each asset listed below the work row.
   def asset_row(asset)
     vals = {
       file_name:      asset_filename(asset),
@@ -84,7 +98,24 @@ class GoogleArtsAndCultureSerializer
     end.flatten
   end
 
-  # number of columns we need for each array attribute.
+  # We store multiple values for each of these types of metadata. Note that we don't make much of an attempt to
+  # distinguish creator categories, at least for now.
+  # Likewise, `external_id` is treated as an array, with categories ignored.
+  def array_attributes
+    [
+      'subject',
+      'external_id',
+      'additional_title',
+      'genre',
+      'creator',
+      'medium',
+      'extent',
+      'place',
+      'format',
+    ]
+  end
+
+  # Count of of columns we need for each array attribute.
   def column_counts
     @column_counts ||= Hash[
         array_attributes.zip(
@@ -165,20 +196,6 @@ class GoogleArtsAndCultureSerializer
     }
   end
 
-  def array_attributes
-    [
-      'subject',
-      'external_id',
-      'additional_title',
-      'genre',
-      'creator',
-      'medium',
-      'extent',
-      'place',
-      'format',
-    ]
-  end
-
 
   # Returns a hash.
   # The keys of the hash are the same as @attribute_keys .
@@ -204,10 +221,17 @@ class GoogleArtsAndCultureSerializer
     end.to_h
   end
 
+  # Return zero, one or more values of metadata, padded as needed.
   def scalar_or_padded_array(arr_or_string, count_of_columns_needed: )
+    # no value: return no_value (empty string).
     return no_value if arr_or_string.nil?
+
+    # one value: return a string
     return arr_or_string if arr_or_string.is_a? String
+
     raise "Too many values" if arr_or_string.length > count_of_columns_needed
+
+    # return multiple values, padding if needed so that the array spans the correct number of columns.
     return arr_or_string if arr_or_string.length == count_of_columns_needed
     arr_or_string.concat(Array.new(count_of_columns_needed - arr_or_string.length, padding))
   end
