@@ -1,5 +1,23 @@
 # Chunks of text for LLM RAG research
 class OralHistoryChunk < ApplicationRecord
+  # Filter embedding from logs just cause it's so darn long!
+  self.filter_attributes += [:embedding]
+
+  belongs_to :oral_history_content
+
+  # from neighbors gem for pg_vector embeddings
+  has_neighbors :embedding
+
+  # Scope to fetch neighbors for query, to find relevant chunks to supply for RAG.
+  #
+  # Will make an API call to OpenAI for embedding for query!
+  #
+  # Note: results will have a #neighbor_distance with the cosine distance, could
+  # be useful for estimating how useful.
+  scope :neighbors_for_query, ->(query) {
+    self.nearest_neighbors(:embedding, get_openai_embedding(query), distance: "cosine")
+  }
+
   # For testing or what have you, since `embedding` attribute is required.
   # 3072 is size of OpenAI text-embedding-3-large we use
   FAKE_EMBEDDING = [0.0] * 3072
@@ -34,17 +52,5 @@ class OralHistoryChunk < ApplicationRecord
     self.get_openai_embeddings(text).first
   end
 
-  # note results will have a #neighbor_distance with the cosine distance and/or
-  # similarity, not sure about these scores.
-  def self.neighbors_for_query(query)
-    self.nearest_neighbors(:embedding, get_openai_embedding(query), distance: "cosine")
-  end
 
-  # Filter embedding from logs just cause it's so darn long!
-  self.filter_attributes += [:embedding]
-
-  # from neighbors gem for pg_vector embeddings
-  has_neighbors :embedding
-
-  belongs_to :oral_history_content
 end

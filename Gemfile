@@ -70,6 +70,7 @@ gem "aws-sdk-cloudwatchlogs", "~> 1.0"
 gem "aws-sdk-mediaconvert", "~> 1.0"
 gem "aws-sdk-s3", "~> 1.0"
 gem "aws-sdk-cloudfront", "~> 1.91"
+gem 'aws-sdk-bedrockruntime', '~> 1.66'
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
