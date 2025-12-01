@@ -19,13 +19,12 @@ class GoogleArtsAndCultureZipCreator
       if true
         @scope.includes(:leaf_representative).find_each do |work|
           members_to_include(work).each do |member|
-            filename = filename_from_asset(member)
-            uploaded_file = file_to_include(member.leaf_representative)
-            file_obj = uploaded_file.download
+            filename = asset_filename(member)
+            file_obj = asset_file(member.leaf_representative).download
             derivative_files << file_obj
             entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
             zipfile.add(entry, file_obj)
-            puts "added #{filename}"
+            puts "added #{filename}" if test_mode
           end
         end
       end
@@ -37,7 +36,6 @@ class GoogleArtsAndCultureZipCreator
       tmp_file.close
       tmp_file.unlink
     end
-
   end
 
   def csv_file
