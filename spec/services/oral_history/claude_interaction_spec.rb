@@ -5,7 +5,7 @@ describe OralHistory::ClaudeInteraction do
   let(:chunk1) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH"])}
   let(:chunk2) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH", "JONES"], text: "Chunk 2")}
 
-  let(:interaction) { described_class.new(question: "What are scientists like?") }
+  let(:interaction) { described_class.new(question: "What are scientists like?", question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
 
   describe "#format_chunks" do
     it "formats" do
@@ -29,17 +29,18 @@ describe OralHistory::ClaudeInteraction do
     end
   end
 
-  describe "#get_answer" do
+  describe "interaction with claude" do
     before do
       allow(OralHistoryChunk).to receive(:get_openai_embeddings) { |*args| [OralHistoryChunk::FAKE_EMBEDDING] * args.count }
     end
 
-    before do
-      # we aren't testing much with the mock, but oh well
-      allow(described_class::AWS_BEDROCK_CLIENT).to receive(:converse).and_return(
-        OpenStruct.new(
+    # AWS sdk returns OpenStruct, we don't want to talk to it, so we mock it here, tests
+    # fragile on this being consistent.
+    let(:response) do
+       OpenStruct.new(
           output: OpenStruct.new(
             message: OpenStruct.new(
+              role: "assistant",
               content: [
                 OpenStruct.new(
                   # Claude is insisting on the markdown ``` fencing!
@@ -50,10 +51,19 @@ describe OralHistory::ClaudeInteraction do
                   EOS
                 )
               ]
-            )
+            ),
+            stop_reason: "end_turn",
+            usage: OpenStruct.new(
+              input_tokens: 7087, output_tokens: 54, total_tokens: 7141, cache_read_input_tokens: 0, cache_write_input_tokens: 0
+            ),
+            metrics: OpenStruct.new(latency_ms: 3252)
           )
         )
-      )
+    end
+
+    before do
+      # we aren't testing much with the mock, but oh well
+      allow(described_class::AWS_BEDROCK_CLIENT).to receive(:converse).and_return(response)
     end
 
     let(:json_return) {
@@ -74,13 +84,31 @@ describe OralHistory::ClaudeInteraction do
       }
     }
 
-    it "returns json answer" do
-      answer = interaction.get_answer
-      expect(answer).to be_kind_of(Hash)
-      expect(answer).to eq json_return
+    describe "#get_answer" do
+      it "returns json answer" do
+        answer = interaction.get_answer
+        expect(answer).to be_kind_of(Hash)
+        expect(answer).to eq json_return
+      end
     end
 
-    describe "clause response validation errors" do
+    describe "#get_response" do
+      it "fetches chunks, returns response" do
+        expect(interaction).to receive(:get_chunks).and_call_original
+
+        response = interaction.get_response
+
+        expect(response).to be_kind_of(OpenStruct) # what AWS sdk returns
+      end
+    end
+
+
+    describe "#extract_answer" do
+      it "extracts answer" do
+        answer = interaction.extract_answer(response)
+        expect(answer).to eq json_return
+      end
+
       describe "missing more_chunks_needed" do
         let(:json_return) {
           {
@@ -99,7 +127,7 @@ describe OralHistory::ClaudeInteraction do
         }
         it "raises" do
           expect {
-            answer = interaction.get_answer
+            answer = interaction.extract_answer(response)
           }.to raise_error(described_class::OutputFormattingError)
         end
       end
@@ -122,7 +150,7 @@ describe OralHistory::ClaudeInteraction do
         }
         it "raises" do
           expect {
-            answer = interaction.get_answer
+            answer = interaction.extract_answer(response)
           }.to raise_error(described_class::OutputFormattingError)
         end
       end
@@ -139,7 +167,7 @@ describe OralHistory::ClaudeInteraction do
         }
         it "raises" do
           expect {
-            answer = interaction.get_answer
+            answer = interaction.extract_answer(response)
           }.to raise_error(described_class::OutputFormattingError)
         end
       end

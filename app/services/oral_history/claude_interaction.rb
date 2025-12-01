@@ -20,34 +20,52 @@ module OralHistory
       region:             ScihistDigicoll::Env.lookup(:aws_region)
     )
 
-    attr_reader :question
+    attr_reader :question, :question_embedding
 
-    def initialize(question: question)
+    def initialize(question:, question_embedding:)
       @question = question
+      @question_embedding = question_embedding
     end
 
-    # Contacts Claude via API to get an answer.
+    # convenience to look up the embedding
+    def self.with_question(question)
+      self.new(question: question, question_embedding: OralHistoryChunk.get_openai_embedding(question))
+    end
+
+    # Convenience method for back-end tests. Contacts Claude via API to get an answer.
     #
     # @return [Hash] json hash with narrative and footnotes keys.
     def get_answer
+      extract_answer( get_response )
+    end
+
+    # Takes AWS Bedrock Claude response, gets and validates our JSON answer from it
+    #
+    # Can raise an OralHistory::ClaudeInteraction::OutputFormattingError
+    def extract_answer(response)
+      raw_text = response.output.message.content.first.text
+
+      # Claude is insisting on including a markdown fence, remove it
+      raw_text.gsub!(/(\A\s*```json)|(```\s*\Z)/, '')
+
+      # raise if we're not validated
+      return validated_claude_response( JSON.parse(raw_text) )
+    rescue JSON::ParserError => e
+      raise OutputFormattingError.new("Does not parse as JSON: #{e.message};\n\n\n#{raw_text}\n\n" , output: raw_text)
+    end
+
+
+    #
+    def get_response
       chunks = get_chunks(k: INITIAL_CHUNK_COUNT)
       user_instructions = construct_user_prompt(chunks)
 
       # more params are available, both general bedrock and specific to model
-      response = AWS_BEDROCK_CLIENT.converse(
+      AWS_BEDROCK_CLIENT.converse(
         model_id: MODEL_ID,
         system: [{ text: system_instructions }],
         messages: [{ role: 'user', content: [{ text: user_instructions }] }]
       )
-
-      raw_text = response.output.message.content.first.text
-
-      # Claude is insisting on including a markdown fence
-      raw_text.gsub!(/(\A\s*```json)|(```\s*\Z)/, '')
-
-      return validated_claude_response( JSON.parse(raw_text) )
-    rescue JSON::ParserError => e
-      raise OutputFormattingError.new("Does not parse as JSON: #{e.message};\n\n\n#{raw_text}\n\n" , output: raw_text)
     end
 
     def system_instructions
@@ -138,7 +156,7 @@ module OralHistory
     def get_chunks(k: INITIAL_CHUNK_COUNT)
       # TODO: the SQL log for the neighbor query is too huge!!
       # Preload work, so we can get title or other metadata we might want.
-      OralHistoryChunk.neighbors_for_query(question).limit(k).includes(oral_history_content: :work).strict_loading
+      OralHistoryChunk.neighbors_for_embedding(question_embedding).limit(k).includes(oral_history_content: :work).strict_loading
     end
 
     def format_chunks(chunks)
