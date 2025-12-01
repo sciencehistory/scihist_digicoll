@@ -3,6 +3,9 @@ class OralHistoryContent
 
     # For LEGACY kind of Ohms XML, with <ohms:sync> and <ohms:transcript> elements.
     class LegacyTranscript
+      # catch speaker prefix, adapted from standard PHP OHMS viewer
+      OHMS_SPEAKER_LABEL_RE = /\A[[:space:]]*([A-Z\-.\' ]+:) (.*)\Z/
+
       attr_reader :nokogiri_xml
 
       def initialize(nokogiri_xml)
@@ -59,6 +62,7 @@ class OralHistoryContent
         @transcript_paragraphs ||= begin
           @transcript_paragraphs = []
 
+          last_speaker_name = nil
           current_paragraph_index = 1
           current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new(paragraph_index: current_paragraph_index)
 
@@ -67,8 +71,14 @@ class OralHistoryContent
 
             if line.empty?
               @transcript_paragraphs << current_paragraph
+              last_speaker_name = current_paragraph.speaker_name || current_paragraph.assumed_speaker_name
+
+
               current_paragraph_index += 1
               current_paragraph = OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph.new(paragraph_index: current_paragraph_index)
+              if current_paragraph.speaker_name.blank?
+                current_paragraph.assumed_speaker_name = last_speaker_name
+              end
             end
           end
           @transcript_paragraphs << current_paragraph
@@ -191,6 +201,16 @@ class OralHistoryContent
 
       public
 
+
+      # A simple word count algorithm, it doesn't need to be exact, it's often
+      # an approximation for LLM tokens anyway. Used to decide how big our chunks
+      # should be.
+      #
+      # Takes multiple argument strongs, return sum of count of em
+      def self.word_count(*strings)
+        strings.collect { |s| s.scan(/\w+/).count }.sum
+      end
+
       # holds an ordered list of Line's, and can describe
       class Paragraph
         # @return [Array<OralHistoryContent::LegacyTranscript::Line>] ordered list of Line objects
@@ -208,6 +228,11 @@ class OralHistoryContent
         #                   to latest the timestamp sure not to miss beginning of paragraph.
         attr_accessor :previous_timestamp
 
+        # @return [String] when the paragraph has no speaker name internally, we guess/assume
+        #    it has the same speaker as previous paragraph. Store such an assumed speaker name
+        #    from previous paragraph here.
+        attr_accessor :assumed_speaker_name
+
         def initialize(lines = nil, paragraph_index:)
           @lines = lines || []
           @paragraph_index = paragraph_index
@@ -217,11 +242,16 @@ class OralHistoryContent
         def <<(line)
           raise ArgumentError.new("must be a Line, not #{line.inspect}") unless line.kind_of?(Line)
           @lines << line
+          @word_count = nil
         end
 
         # @return [String] just text of all lines joined by space
         def text
           @lines.collect {|s| s.text.chomp }.join(" ").strip
+        end
+
+        def word_count
+          @word_count ||= OralHistoryContent::OhmsXml::LegacyTranscript.word_count(text)
         end
 
         # @return [Range] from first to last line number, with line numbers being 1-indexed
@@ -235,11 +265,25 @@ class OralHistoryContent
         def fragment_id
           "oh-t#{transcript_id}-p#{paragraph_index}"
         end
+
+        # @return [String] speaker name from any speaker label. Can be nil. Assumes
+        #                  whole paragraph is one speaker, identified on first line, which
+        #                  SHOULD be true, but weird things may happen if it ain't.
+        def speaker_name
+          lines.first&.speaker_label&.chomp(":")
+        end
       end
 
       class Line
         # @return [String] line text, may include footnote references, speaker label, timecodes, etc.
         attr_reader :text
+
+        # @return [String] just the speaker label like "SMITH:" extracted from text
+        attr_reader :speaker_label
+
+        # @return [Strring] if there's a speaker lable, just the part of text AFTER speaker label.
+        #                   Otherwise equiv to text
+        attr_reader :utterance
 
         # @return [Integer] 1-based line number index in entire transcript, NOT in paragraph
         attr_reader :line_num
@@ -247,9 +291,15 @@ class OralHistoryContent
         def initialize(text:, line_num:)
           @text = text
           @line_num = line_num
+
+          if @text =~ OHMS_SPEAKER_LABEL_RE
+            @speaker_label = $1
+            @utterance = $2
+          else
+            @utterance = @text
+          end
         end
       end
     end
-
   end
 end
