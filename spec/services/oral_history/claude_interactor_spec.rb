@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe OralHistory::ClaudeInteraction do
+describe OralHistory::ClaudeInteractor do
   let(:work) { create(:oral_history_work) }
   let(:chunk1) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH"])}
   let(:chunk2) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH", "JONES"], text: "Chunk 2")}
@@ -116,10 +116,10 @@ describe OralHistory::ClaudeInteraction do
 
           expect(ai_conversation.chunks_used).to be_present
           expect(ai_conversation.chunks_used).to all satisfy { |retrieved_chunk_info|
-            retrieved_chunk_info.kind_of?(OralHistory::AiConversation::RetrivedChunkInfo) &&
-            retrieved_chunk_info.rank.present? &&
-            retrieved_chunk_info.chunk_id.present? &&
-            retrieved_chunk_info.cosine_distance.present?
+            retrieved_chunk_info.kind_of?(Hash) &&
+            retrieved_chunk_info['rank'].present? &&
+            retrieved_chunk_info['chunk_id'].present? &&
+            retrieved_chunk_info['cosine_distance'].present?
           }
 
           expect(ai_conversation.response_metadata["usage"]).to be_present

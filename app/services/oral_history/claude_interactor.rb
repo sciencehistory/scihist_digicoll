@@ -7,7 +7,7 @@ module OralHistory
   #
   # Does not do a continuous conversation, user gets one isolated question. Returns
   # answer as JSON.
-  class ClaudeInteraction
+  class ClaudeInteractor
     # claude sonnet 4.5
     MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
@@ -41,7 +41,7 @@ module OralHistory
 
     # Takes AWS Bedrock Claude response, gets and validates our JSON answer from it
     #
-    # Can raise an OralHistory::ClaudeInteraction::OutputFormattingError
+    # Can raise an OralHistory::ClaudeInteractor::OutputFormattingError
     def extract_answer(response)
       raw_text = response.output.message.content.first.text
 
@@ -214,12 +214,12 @@ module OralHistory
 
     # The thing we asked Claude for, does it look like we asked?
     #
-    # Raises ClaudeInteraction::OutputFormattingError if not
+    # Raises ClaudeInteractor::OutputFormattingError if not
     #
     # @return [Hash] arg passed in, for convenient chaining
     def validated_claude_response(json)
       unless json.kind_of?(Hash)
-        raise OutputFormattingError.new("not a hash", output: output)
+        raise OutputFormattingError.new("not a hash", output: json)
       end
 
       required_top_keys = %w[narrative footnotes more_chunks_needed answer_unavailable]
