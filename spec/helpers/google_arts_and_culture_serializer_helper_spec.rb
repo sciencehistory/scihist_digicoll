@@ -35,9 +35,9 @@ RSpec.describe GoogleArtsAndCultureSerializerHelper, type: :helper do
 
     let!(:asset) { create(:asset_with_faked_file, faked_content_type: "image/tiff", position: 0, friendlier_id: "abc", parent: create(:work)) }
 
-    describe "#filename_from_asset" do
+    describe "#asset_filename" do
       it "returns a string filename for the given asset" do
-        expect(helper.filename_from_asset(asset)).to eq "test_title_#{asset.parent.friendlier_id}_0_#{asset.friendlier_id}.jpg"
+        expect(helper.asset_filename(asset)).to eq "test_title_#{asset.parent.friendlier_id}_0_#{asset.friendlier_id}.jpg"
       end
     end
 
@@ -46,29 +46,10 @@ RSpec.describe GoogleArtsAndCultureSerializerHelper, type: :helper do
         expect(helper.asset_filetype(asset)).to eq "Image"
       end
     end
-
-    describe "#standard_asset_values" do
-      it "returns standard values" do
-        expect(helper.standard_asset_values(asset)).to eq({ 
-          filespec: "test_title_#{asset.parent.friendlier_id}_0_abc.jpg",
-          filetype: "Image",
-          friendlier_id: asset.parent.friendlier_id,
-          order_id: 0,
-          subitem_id: "abc",
-          title: "Test title"
-        })
-      end
-    end
-
-    # describe "#asset_row" do
-    #   it "returns standard values" do
-    #     expect(helper.asset_row(asset)).to eq "N/A"
-    #   end
-    # end
-
-    describe "#file_to_include" do
+    
+    describe "#asset_file" do
       it "returns an uploaded file" do
-        expect(helper.file_to_include(asset).class).to eq AssetUploader::UploadedFile
+        expect(helper.asset_file(asset).class).to eq AssetUploader::UploadedFile
       end
     end    
   end
@@ -93,9 +74,9 @@ RSpec.describe GoogleArtsAndCultureSerializerHelper, type: :helper do
         expect(helper.subitem_id(work)).to eq "N/A"
       end
     end
-    describe "#filespec" do
+    describe "#file_name" do
       it "returns n/a" do
-        expect(helper.filespec(work)).to eq "N/A"
+        expect(helper.file_name(work)).to eq "N/A"
       end
     end
     describe "#order_id" do

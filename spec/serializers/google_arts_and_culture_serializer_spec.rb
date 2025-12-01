@@ -36,10 +36,10 @@ RSpec.describe GoogleArtsAndCultureSerializer do
     end
 
     it "restricts to a provided set of columns" do
-      s = described_class.new(scope, columns: [:friendlier_id, :title, :filespec])
+      s = described_class.new(scope, columns: [:friendlier_id, :title, :file_name])
       expect(
         s.instance_variable_get(:@attribute_keys)
-      ).to eq([:friendlier_id, :title, :filespec])
+      ).to eq([:friendlier_id, :title, :file_name])
     end
   end
 
@@ -49,7 +49,7 @@ RSpec.describe GoogleArtsAndCultureSerializer do
       expect(attrs[:friendlier_id]).to eq('itemid')
       expect(attrs[:subitem_id]).to eq('subitemid')
       expect(attrs[:title]).to eq('title')
-      expect(attrs[:filespec]).to eq('filespec')
+      expect(attrs[:file_name]).to eq('filespec')
       expect(attrs[:filetype]).to eq('filetype')
     end
   end
@@ -62,9 +62,9 @@ RSpec.describe GoogleArtsAndCultureSerializer do
     end
   end
 
-  describe "#attribute_methods" do
+  describe "#work_attribute_methods" do
     it "returns a hash of procs keyed by attribute name" do
-      methods_hash = serializer.attribute_methods
+      methods_hash = serializer.work_attribute_methods
 
       expect(methods_hash).to be_a(Hash)
       expect(methods_hash.keys).to include(:title)
@@ -138,7 +138,7 @@ RSpec.describe GoogleArtsAndCultureSerializer do
   describe "#single_asset_work_row" do
     it "uses asset-specific values for filespec/filetype when there is one asset" do
       assets = serializer.members_to_include(work_1)
-      row    = serializer.single_asset_work_row(work_1, assets.first)
+      row    = serializer.work_row(work_1, single_asset: assets.first)
       expect(row).to be_an(Array)
       # We can at least assert it has the same number of columns as title_row
       expect(row.length).to eq(serializer.title_row.length)
@@ -160,27 +160,6 @@ RSpec.describe GoogleArtsAndCultureSerializer do
          "Public Domain Mark 1.0",
          ""
       ]
-    end
-  end
-
-  describe "#work_value_for_attribute_key" do
-    it "extracts a value (or padded array) for a given key" do
-      value = serializer.work_value_for_attribute_key(work_1, :title)
-
-      expect(value).to be_a(String).or be_an(Array)
-    end
-  end
-
-  describe "#standard_asset_values" do
-    let(:asset) { serializer.members_to_include(work_1).first }
-    let(:vals)  { serializer.standard_asset_values(asset) }
-
-    it "returns a hash with standard keys" do
-      expect(vals).to include(:friendlier_id, :subitem_id, :order_id, :title, :filespec, :filetype)
-    end
-
-    it "includes the parent's friendlier_id" do
-      expect(vals[:friendlier_id]).to eq(asset.parent.friendlier_id)
     end
   end
 
@@ -228,35 +207,27 @@ RSpec.describe GoogleArtsAndCultureSerializer do
     end
   end
 
-  describe "#scalar_or_array" do
+  describe "#scalar_or_padded_array" do
     it "returns no_value when input is nil" do
-      result = serializer.scalar_or_array(nil, count_of_columns_needed: 2)
+      result = serializer.scalar_or_padded_array(nil, count_of_columns_needed: 2)
       expect(result).to eq(serializer.no_value)
     end
 
     it "returns the string untouched when given a string" do
-      result = serializer.scalar_or_array("foo", count_of_columns_needed: 2)
+      result = serializer.scalar_or_padded_array("foo", count_of_columns_needed: 2)
       expect(result).to eq("foo")
     end
 
     it "pads an array up to the expected length" do
-      result = serializer.scalar_or_array(["a"], count_of_columns_needed: 3)
+      result = serializer.scalar_or_padded_array(["a"], count_of_columns_needed: 3)
       expect(result).to be_an(Array)
       expect(result).to eq ['a', '', '']
     end
 
     it "raises when given more values than allowed" do
       expect {
-        serializer.scalar_or_array(["a", "b", "c"], count_of_columns_needed: 2)
+        serializer.scalar_or_padded_array(["a", "b", "c"], count_of_columns_needed: 2)
       }.to raise_error("Too many values")
-    end
-  end
-
-  describe "#pad_array" do
-    it "pads an array to a target length using the given padding value" do
-      array = ["x"]
-      padded = serializer.pad_array(array, 3, "PAD")
-      expect(padded).to eq(["x", "PAD", "PAD"])
     end
   end
 end

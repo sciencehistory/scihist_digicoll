@@ -10,40 +10,9 @@ module GoogleArtsAndCultureSerializerHelper
     end
   end
 
-  # Asset
-  def asset_filetype(asset)
-    if asset.content_type&.start_with?("video/")
-        'Video' # currently unavailable
-      elsif asset.content_type&.start_with?("image/")
-        'Image'
-      else
-        not_applicable
-      end
-  end
-
-  def standard_asset_values(asset)
-    filename = if asset&.file&.url.nil?
-      no_value
-    else
-      filename_from_asset(asset)
-    end
-    {
-      friendlier_id:  asset.parent.friendlier_id, # this is just for works
-      subitem_id:     asset.friendlier_id,
-      order_id:       asset.position || no_value,
-      title:          asset.title,
-      filespec:       filename,
-      filetype:       asset_filetype(asset)
-    }
-  end
-
-  # This is the common method for saved asset names.
-  def filename_from_asset(asset)
-    "#{DownloadFilenameHelper.filename_base_from_parent(asset)}.jpg"
-  end
-
+  
   # @returns [Shrine::UploadedFile]
-  def file_to_include(asset)
+  def asset_file(asset)
     if asset.content_type == "image/jpeg"
       asset.file
     else
@@ -51,11 +20,30 @@ module GoogleArtsAndCultureSerializerHelper
     end
   end
 
-  def subitem_id(work)
+  def asset_filetype(asset)
+    if asset.content_type&.start_with?("video/")
+      'Video' # currently unavailable
+    elsif asset.content_type&.start_with?("image/")
+      'Image'
+    else
+      not_applicable
+    end
+  end
+
+  def filetype(work)
+    'Sequence'
+  end
+
+  def asset_filename(asset)
+    return no_value if asset&.file&.url.nil?
+    "#{DownloadFilenameHelper.filename_base_from_parent(asset)}.jpg"
+  end
+
+  def file_name(work)
     not_applicable
   end
 
-  def filespec(work)
+  def subitem_id(work)
     not_applicable
   end
 
@@ -91,9 +79,6 @@ module GoogleArtsAndCultureSerializerHelper
     work.place.map(&:value)
   end
 
-  def filetype(work)
-    'Sequence'
-  end
 
   def date_of_work(work)
     unless min_date(work).present?

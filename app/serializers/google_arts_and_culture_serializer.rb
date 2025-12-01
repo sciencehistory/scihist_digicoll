@@ -26,11 +26,11 @@ class GoogleArtsAndCultureSerializer
     @scope.includes(:leaf_representative).find_each do |work|
       assets = members_to_include(work)
       if assets.count == 1
-        data << single_asset_work_row(work, assets.first)
+        data << work_row(work, single_asset: assets.first)
       else 
         data << work_row(work)
         assets.each do |asset|
-           data << asset_row(asset)
+          data << asset_row(asset)
         end
       end
     end
@@ -49,12 +49,31 @@ class GoogleArtsAndCultureSerializer
     end.flatten
   end
 
-  def work_row(work)
-    @attribute_keys.map { |key| work_value_for_attribute_key(work, key) }.flatten
+  def work_row(work, single_asset: nil)
+    @attribute_keys.map do |key|
+      if single_asset.present? && key == :filetype
+        asset_filetype(single_asset)
+      elsif single_asset.present? && key == :file_name
+        asset_filename(single_asset)
+      else
+        scalar_or_padded_array(
+          work_attribute_methods[key].call(work),
+          count_of_columns_needed: column_counts.dig(key.to_s)
+        )
+      end
+    end.flatten
   end
 
   def asset_row(asset)
-    vals = standard_asset_values(asset)
+    vals = {
+      file_name:      asset_filename(asset),
+      filetype:       asset_filetype(asset),
+      friendlier_id:  asset.parent.friendlier_id, # friendlier_id is just used for works
+      subitem_id:     asset.friendlier_id,
+      order_id:       asset.position || no_value,
+      title:          asset.title,
+    }
+
     @attribute_keys.map do |k|
       count = column_counts.dig(k.to_s)
       if count.nil?
@@ -64,34 +83,6 @@ class GoogleArtsAndCultureSerializer
       end
     end.flatten
   end
-
-  # We treat works with only one image specially;
-  # there's no need to have two lines in the spreadsheet for them.
-  def single_asset_work_row(work, asset)
-    asset_values = standard_asset_values(asset)
-    @attribute_keys.map do |key|
-      if [:filetype, :filespec].include? key
-        # file info comes from asset_values
-        asset_values[key]
-      else
-        # all other metadata is work metadata.
-        work_value_for_attribute_key(work, key)
-      end
-    end.flatten
-  end
-
-  def work_value_for_attribute_key(work, key)
-    # Because multi-valued attributes are presented in a tabular form,
-    # we need a padded array in certain cases.
-    # This is the number of columns we reserved for this attribute:
-    count_of_columns_needed = column_counts.dig(key.to_s)
-    scalar_or_array(
-      attribute_methods[key].call(work),
-      count_of_columns_needed: count_of_columns_needed
-    )
-  end
-
-
 
   # number of columns we need for each array attribute.
   def column_counts
@@ -118,38 +109,56 @@ class GoogleArtsAndCultureSerializer
   # (as documented at https://support.google.com/culturalinstitute/partners/answer/4618071?hl=en and so on).
   def all_attributes
     @all_attributes ||= {
-      friendlier_id:            'itemid',       # friendlier_id of works
-      subitem_id:               'subitemid',    # friendlier_id of assets
-      order_id:                 'orderid',      # order
+      # friendlier_id of works
+      friendlier_id:            'itemid',
 
+      # friendlier_id of assets
+      subitem_id:               'subitemid',    
 
+      # order of assets within a work
+      order_id:                 'orderid',
+
+      # title (a string)
       title:                    'title',
+
+      # GAC doesn't accept multiple titles, but we are including them anyway
       additional_title:         'customtext:additional_title',
 
-      filespec:                 'filespec',
+      # name of the downloaded asset file
+      file_name:                 'filespec',
+
+      # 'Sequence' for works, 'Image' for image assets
       filetype:                 'filetype',
+
+      # for linking back to the digital collections
       url_text:                 'relation:text',
       url:                      'relation:url',
 
+      # Non-publisher creators
       creator:                  'creator',
+
+      # Publisher(s). Separated by commas; we don't have a lot of works with multiple publishers.
       publisher:                'publisher',
 
+      subject:                   'subject',
 
+      # GAC's 'format' is used for our 'extent' metadata.
+      extent:                   'format',
+      
+      # Dates:
       min_date:                 'dateCreated:start',
       max_date:                 'dateCreated:end',
       date_of_work:             'dateCreated:display',
 
       place:                    'locationCreated:placename',
       medium:                   'medium',
-      
       genre:                    'art=genre',
       description:              'description',
-      subject:                   'subject',
+
+
       rights:                    'rights',
       rights_holder:             'customtext:rights_holder',
 
-      # GAC's 'format' is used for our 'extent' metadata.
-      extent:                   'format',
       # GAC doesn't seem to have a field for what we call "format"
       # format:                   '???',
 
@@ -180,8 +189,8 @@ class GoogleArtsAndCultureSerializer
   #   returns the metadata we want.
   #
   # { :title => method(work), :additional_title => method(work), ... }
-  def attribute_methods
-    @attribute_methods ||= @attribute_keys.map do |attribute_label|
+  def work_attribute_methods
+    @work_attribute_methods ||= @attribute_keys.map do |attribute_label|
       new_proc = if self.respond_to? attribute_label
         # If k is defined in GoogleArtsAndCultureSerializerHelper, use that (e.g. :created)
         Proc.new { |some_work| self.send attribute_label, some_work }
@@ -195,15 +204,12 @@ class GoogleArtsAndCultureSerializer
     end.to_h
   end
 
-  def scalar_or_array(arr_or_string, count_of_columns_needed: )
+  def scalar_or_padded_array(arr_or_string, count_of_columns_needed: )
     return no_value if arr_or_string.nil?
     return arr_or_string if arr_or_string.is_a? String
     raise "Too many values" if arr_or_string.length > count_of_columns_needed
-    pad_array(arr_or_string, count_of_columns_needed, padding)
+    return arr_or_string if arr_or_string.length == count_of_columns_needed
+    arr_or_string.concat(Array.new(count_of_columns_needed - arr_or_string.length, padding))
   end
 
-  def pad_array(array, target_length, padding_value = nil)
-    return array if array.length == target_length
-    array.concat(Array.new(target_length - array.length, padding_value))
-  end
 end
