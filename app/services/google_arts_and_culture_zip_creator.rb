@@ -16,16 +16,14 @@ class GoogleArtsAndCultureZipCreator
     derivative_files = []
     Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
       zipfile.add("manifest.csv", csv_file)
-      if true
-        @scope.includes(:leaf_representative).find_each do |work|
-          members_to_include(work).each do |member|
-            filename = asset_filename(member)
-            file_obj = asset_file(member.leaf_representative).download
-            derivative_files << file_obj
-            entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
-            zipfile.add(entry, file_obj)
-            puts "added #{filename}" if test_mode
-          end
+      @scope.includes(:leaf_representative).find_each do |work|
+        members_to_include(work).each do |member|
+          filename = asset_filename(member)
+          file_obj = asset_file(member.leaf_representative).download
+          derivative_files << file_obj
+          entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
+          zipfile.add(entry, file_obj)
+          puts "added #{filename}" if test_mode
         end
       end
     end
