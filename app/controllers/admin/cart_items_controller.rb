@@ -102,4 +102,15 @@ class Admin::CartItemsController < AdminController
       output_csv_file.close
     end
   end
+
+
+  def google_arts_and_culture_export
+    begin
+      serializer = GoogleArtsAndCultureZipCreator.new(current_user.works_in_cart)
+      output_csv_file = serializer.create
+      send_file output_csv_file.path, filename: "google-arts-and-culture-export-#{Date.today.to_s}.zip"
+    ensure
+      output_csv_file.close
+    end
+  end
 end
