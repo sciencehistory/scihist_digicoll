@@ -100,8 +100,33 @@ describe OralHistory::ClaudeInteraction do
 
         expect(response).to be_kind_of(OpenStruct) # what AWS sdk returns
       end
-    end
 
+      describe "with conversation_record:" do
+        let(:ai_conversation) { OralHistory::AiConversation.build(question: "i wonder", question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
+
+        it "fills out metadata in conversation" do
+          chunk1; chunk2
+
+          interaction.get_response(conversation_record: ai_conversation)
+
+          # Doesn't save it
+          expect(ai_conversation).not_to be_persisted
+
+          expect(ai_conversation.request_sent_at).to be_present
+
+          expect(ai_conversation.chunks_used).to be_present
+          expect(ai_conversation.chunks_used).to all satisfy { |retrieved_chunk_info|
+            retrieved_chunk_info.kind_of?(OralHistory::AiConversation::RetrivedChunkInfo) &&
+            retrieved_chunk_info.rank.present? &&
+            retrieved_chunk_info.chunk_id.present? &&
+            retrieved_chunk_info.cosine_distance.present?
+          }
+
+          expect(ai_conversation.response_metadata["usage"]).to be_present
+          expect(ai_conversation.response_metadata["metrics"]).to be_present
+        end
+      end
+    end
 
     describe "#extract_answer" do
       it "extracts answer" do

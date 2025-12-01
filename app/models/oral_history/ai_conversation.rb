@@ -36,11 +36,11 @@ class OralHistory::AiConversation < ApplicationRecord
   # @param chunks [Array<OralHistoryChunk>] as fetched from neigbor gem, with a #neighbor_distance attribute
   def record_chunks_used(chunks)
     self.chunks_used = chunks.collect.with_index do |chunk, index|
-      {
+      RetrivedChunkInfo.new(
         "rank" => index + 1,
         "chunk_id" => chunk.id,
         "cosine_distance" => chunk.neighbor_distance
-      }
+      )
     end
   end
 end

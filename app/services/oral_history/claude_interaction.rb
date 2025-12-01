@@ -54,18 +54,35 @@ module OralHistory
       raise OutputFormattingError.new("Does not parse as JSON: #{e.message};\n\n\n#{raw_text}\n\n" , output: raw_text)
     end
 
-
+    # @param converesation_record [OralHistory::AiConversation] optiona, if given we'll log
+    #   parts of our interaction there.
     #
-    def get_response
+    # @return [OpenStruct] from the AWS bedrock client
+    #
+    # can raise a Aws::Errors::ServiceError
+    def get_response(conversation_record:nil)
       chunks = get_chunks(k: INITIAL_CHUNK_COUNT)
+
+      conversation_record&.record_chunks_used(chunks)
+
       user_instructions = construct_user_prompt(chunks)
 
+      conversation_record&.request_sent_at = Time.current
+
       # more params are available, both general bedrock and specific to model
-      AWS_BEDROCK_CLIENT.converse(
+      response = AWS_BEDROCK_CLIENT.converse(
         model_id: MODEL_ID,
         system: [{ text: system_instructions }],
         messages: [{ role: 'user', content: [{ text: user_instructions }] }]
       )
+
+      # store certain parts of response as metrics
+      conversation_record&.response_metadata = {
+        "usage" => response.output.usage.to_h,
+        "metrics" => response.output.metrics.to_h
+      }
+
+      return response
     end
 
     def system_instructions
