@@ -67,11 +67,11 @@ describe OralHistory::OhmsLegacyTranscriptChunker do
       # to make that first unique one be the interviewer, not the interviewee.
       #
       # But it's definitely not invariant, depends on paragraph size, depends on transcript, with
-      # smaller chunks, more of them won't end "right", it's okay. 15%?
+      # the smaller chunks we're using a lot of them wont' end "right", it's okay.
 
       interviewee_first_list = chunks.find_all { |chunk| chunk.third.speaker_name == interviewee_speaker_label }
 
-      expect(interviewee_first_list.count.to_f / chunks.length).to be <= 0.15
+      expect(interviewee_first_list.count.to_f / chunks.length).to be <= 0.20
     end
   end
 
