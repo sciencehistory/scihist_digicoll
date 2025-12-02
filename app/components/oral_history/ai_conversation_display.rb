@@ -46,7 +46,7 @@ module OralHistory
 
         <<~EOS
            <a href="##{footnote_item_data.anchor}"><span class="badge bg-primary rounded-pill">#{footnote_item_data.number}</span></a>
-          <a href="#" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“#{footnote_item_data.quote}”">
+          <a target="_blank" href="#{work_path(footnote_item_data.work.friendlier_id)}" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“#{footnote_item_data.quote}”">
             <span class="badge bg-secondary rounded-pill">#{footnote_item_data.short_citation_title} ~ #{footnote_item_data.nearest_timecode_formatted}</span>
           </a>
         EOS

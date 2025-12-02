@@ -5,11 +5,12 @@
 <% footnote_list.each do |footnote_item_data| %>
   <p id="<%= footnote_item_data.anchor %>">
     <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
-    <span class="fs-5">
-    <b><i><%= footnote_item_data.short_citation_title %></i></b>
-    ¶<%= footnote_item_data.short_citation_paragraphs %>
-    <%= footnote_item_data.nearest_timecode_formatted.present? ? " around <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" %>:
-    </span>
+
+    <%= link_to(work_path(footnote_item_data.work.friendlier_id), class: "fs-5", target: "_blank") do  %>
+      <%= footnote_item_data.short_citation_title %>
+      ¶<%= footnote_item_data.short_citation_paragraphs %>
+      <%= footnote_item_data.nearest_timecode_formatted.present? ? " around <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
+    <%- end %>
     “<%= footnote_item_data.quote %>”
   </p>
 <% end %>
