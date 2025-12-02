@@ -61,7 +61,7 @@ class OralHistory::AiConversation < ApplicationRecord
   end
 
   def complete?
-    success? || error?
+    status_success? || status_error?
   end
 
   # @param chunks [Array<OralHistoryChunk>] as fetched from neigbor gem, with a #neighbor_distance attribute

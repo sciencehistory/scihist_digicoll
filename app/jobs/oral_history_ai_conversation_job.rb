@@ -15,7 +15,7 @@ class OralHistoryAiConversationJob < ApplicationJob
     # Error we can re-run, otherwise it's not in runnable state.
     # TODO: if it's stuck after some timeout, we might be willing to re-start?
     # Or that might not be the right flow.
-    unless ai_conversation.queued? || ai_conversation.error?
+    unless ai_conversation.status_queued? || ai_conversation.status_error?
       Rails.info.log("#{self.class.name}: #{ai_conversation.class.name} #{ai_conversation.id}: Can't exec conversation in status #{ai_conversation.status}")
       return
     end
