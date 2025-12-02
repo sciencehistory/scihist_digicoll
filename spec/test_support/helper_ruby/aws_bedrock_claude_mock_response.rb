@@ -16,13 +16,13 @@ module AwsBedrockClaudeMockResponse
               EOS
             )
           ]
-        ),
-        stop_reason: "end_turn",
-        usage: OpenStruct.new(
-          input_tokens: 7087, output_tokens: 54, total_tokens: 7141, cache_read_input_tokens: 0, cache_write_input_tokens: 0
-        ),
-        metrics: OpenStruct.new(latency_ms: 3252)
-      )
+        )
+      ),
+      stop_reason: "end_turn",
+      usage: OpenStruct.new(
+        input_tokens: 7087, output_tokens: 54, total_tokens: 7141, cache_read_input_tokens: 0, cache_write_input_tokens: 0
+      ),
+      metrics: OpenStruct.new(latency_ms: 3252)
     )
   end
 end

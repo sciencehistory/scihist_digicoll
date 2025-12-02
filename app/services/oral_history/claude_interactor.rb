@@ -77,9 +77,10 @@ module OralHistory
       )
 
       # store certain parts of response as metrics
+
       conversation_record&.response_metadata = {
-        "usage" => response.output.usage.to_h,
-        "metrics" => response.output.metrics.to_h
+        "usage" => response.usage.to_h,
+        "metrics" => response.metrics.to_h
       }
 
       return response
