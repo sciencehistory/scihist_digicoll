@@ -1,0 +1,7 @@
+<%= answer_narrative %>
+
+<hr>
+
+<% answer_footnote_list.each do |footnote| %>
+  <%= simple_format "#{footnote["number"]}. \"#{footnote["quote"]}\"" %>
+<% end %>
