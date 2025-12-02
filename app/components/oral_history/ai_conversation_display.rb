@@ -7,11 +7,16 @@ module OralHistory
     end
 
     def answer_narrative
-      simple_format @ai_conversation.answer_json["narrative"]
+      @answer_narrative ||= format_footnote_reference_html(@ai_conversation.answer_json["narrative"])
     end
 
     def footnote_list
       @footnote_list ||= build_footnote_data
+    end
+
+    def get_footnote_item_data(number)
+      # perhaps could build a hash, this is fine for now
+      footnote_list.find { |f| f.number == number.to_i }
     end
 
     # We have the hash from Claude with chunk ID's, we need
@@ -25,6 +30,25 @@ module OralHistory
       @ai_conversation.answer_json["footnotes"].collect do |response_hash|
         FootnoteItemData.new(response_hash: response_hash, chunk: chunks_by_id[response_hash["chunk_id"]])
       end
+    end
+
+    # find references that look like [^12] in the text, and replace with nice
+    # HTML tags, producing SAFE html_safe on the way out
+    def format_footnote_reference_html(narrative_text)
+      # first make sure it's all html safe, cause we're gonna be slicing and dicing it
+      narrative_text = Rails::HTML5::FullSanitizer.new.sanitize(narrative_text)
+
+      # now replace footnote references with html doing all sorts of things
+      # Use a separate component maybe?
+      narrative_text.gsub!(/\[\^\d+\]/) do |reference|
+        number = reference.slice(2, reference.length-2) # get rid of brackets
+        footnote_item_data = get_footnote_item_data(number)
+
+        <<~EOS
+           <a href="##{footnote_item_data.anchor}"><span class="badge bg-primary rounded-pill">#{footnote_item_data.number}</span></a>
+          <span class="badge bg-secondary rounded-pill">#{footnote_item_data.short_citation_title} ~ #{footnote_item_data.nearest_timecode_formatted}</span>
+        EOS
+      end.html_safe
     end
 
     class FootnoteItemData
@@ -57,6 +81,10 @@ module OralHistory
 
       def paragraph_end
         response_hash["paragraph_end"]
+      end
+
+      def anchor
+        "footnote-#{number}"
       end
 
       def nearest_timecode_formatted

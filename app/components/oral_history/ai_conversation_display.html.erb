@@ -3,7 +3,7 @@
 <hr>
 
 <% footnote_list.each do |footnote_item_data| %>
-  <p id="footnote-<%= footnote_item_data.number %>">
+  <p id="<%= footnote_item_data.anchor %>">
     <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
     <span class="fs-5">
     <b><i><%= footnote_item_data.short_citation_title %></i></b>
