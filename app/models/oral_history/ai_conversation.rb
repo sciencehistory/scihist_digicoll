@@ -18,6 +18,42 @@ class OralHistory::AiConversation < ApplicationRecord
 
   enum :status, { queued: "queued", in_process: "in_process", success: "success", error: "error" }
 
+  # Actually talk to Claude based on question preserved here, and record answer and metadata as
+  # we go. This could take 10+ seconds, so is usually done in a background job.
+  #
+  # This will do possibly multiple save!s of self to save state.
+  def exec_and_record_interaction
+    # Get and save embedding if it's not already there (it costs money, so we want to cache it!),
+    # and set status to in_process
+    self.question_embedding ||= OralHistoryChunk.get_openai_embedding(self.question)
+    self.status = :in_process
+    self.save!
+
+    # Start the conversation, could take 10-20 seconds even.
+    interactor = OralHistory::ClaudeInteractor.new(question: self.question, question_embedding: self.question_embedding)
+    response = interactor.get_response(conversation_record: self)
+
+    self.answer_json = interactor.extract_answer(response)
+    self.status = :success
+    self.save!
+
+  rescue Aws::Errors::ServiceError, OralHistory::ClaudeInteractor::OutputFormattingError => e
+    record_error_state(e)
+    # report it to eg honeybadger anyway, this should work.
+    Rails.error.report(e)
+  end
+
+  # records and saves
+  def record_error_state(e)
+    self.status = :error
+    self.error_info = {
+      "exception_class" => e.class.name,
+      "message" => e.message,
+      "backtrace" => Rails.backtrace_cleaner.clean(e.backtrace).collect(&:to_json)
+    }
+    self.save!
+  end
+
   def complete?
     success? || error?
   end
