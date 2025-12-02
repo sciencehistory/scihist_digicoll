@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 describe OralHistory::ClaudeInteractor do
+  include AwsBedrockClaudeMockResponse
+
   let(:work) { create(:oral_history_work) }
   let(:chunk1) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH"])}
   let(:chunk2) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH", "JONES"], text: "Chunk 2")}
@@ -37,28 +39,7 @@ describe OralHistory::ClaudeInteractor do
     # AWS sdk returns OpenStruct, we don't want to talk to it, so we mock it here, tests
     # fragile on this being consistent.
     let(:response) do
-       OpenStruct.new(
-          output: OpenStruct.new(
-            message: OpenStruct.new(
-              role: "assistant",
-              content: [
-                OpenStruct.new(
-                  # Claude is insisting on the markdown ``` fencing!
-                  text: <<~EOS
-                    ```json
-                    #{json_return.to_json}
-                     ```
-                  EOS
-                )
-              ]
-            ),
-            stop_reason: "end_turn",
-            usage: OpenStruct.new(
-              input_tokens: 7087, output_tokens: 54, total_tokens: 7141, cache_read_input_tokens: 0, cache_write_input_tokens: 0
-            ),
-            metrics: OpenStruct.new(latency_ms: 3252)
-          )
-        )
+      claude_mock_response(json_return: json_return)
     end
 
     before do
