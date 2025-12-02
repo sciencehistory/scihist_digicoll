@@ -4,7 +4,7 @@ RSpec.describe OralHistory::AiConversation, type: :model do
   describe "#exec_and_record_interaction" do
     let(:session_id) { "dummy-session-id" }
     let(:question) { "How do we?" }
-    let(:conversation) { OralHistory::AiConversation.create!(question: question, session_id: session_id) }
+    let(:conversation) { OralHistory::AiConversation.build(question: question, session_id: session_id) }
 
      let(:json_return) do
       {
@@ -62,7 +62,7 @@ RSpec.describe OralHistory::AiConversation, type: :model do
 
     describe "with response error" do
       let(:json_return) { "illegal not a hash" }
-      let(:conversation) { OralHistory::AiConversation.create!(question: question, question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
+      let(:conversation) { OralHistory::AiConversation.build(question: question, question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
 
       it "stores error state and info" do
         conversation.exec_and_record_interaction
@@ -74,6 +74,16 @@ RSpec.describe OralHistory::AiConversation, type: :model do
         expect(conversation.error_info).to be_present
         expect(conversation.error_info["exception_class"]).to eq "OralHistory::ClaudeInteractor::OutputFormattingError"
         expect(conversation.error_info["backtrace"]).to be_kind_of(Array)
+      end
+    end
+
+    describe "on an already in_process conversation" do
+      let(:conversation) { OralHistory::AiConversation.build(status: "in_process", question: question, question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
+
+      it "refuses to run, raises" do
+        expect {
+          conversation.exec_and_record_interaction
+        }.to raise_error(RuntimeError).with_message("can't exec_and_record_interaction on status in_process")
       end
     end
   end
