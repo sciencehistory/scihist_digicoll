@@ -1,5 +1,12 @@
 module OralHistory
   class AiConversationDisplay < ApplicationComponent
+    # For admin output reporting, per million tokens. Claude Sonnet 4.5.AWS bedrock is same prices.
+    # https://platform.claude.com/docs/en/about-claude/pricing
+    OUTPUT_TOKEN_COST_PER_M = 15.0
+    INPUT_TOKEN_COST_PER_M = 3.0
+
+    delegate :can?, to: :helpers
+
     attr_reader :ai_conversation
 
     def initialize(ai_conversation)
@@ -51,6 +58,34 @@ module OralHistory
           </a>
         EOS
       end.html_safe
+    end
+
+    # for admin display
+    def estimated_cost_in_dollars
+      @estimated_cost_in_dollars ||= begin
+        input_tokens = ai_conversation.response_metadata.dig("usage", "input_tokens")
+        output_tokens = ai_conversation.response_metadata.dig("usage", "output_tokens")
+
+        if input_tokens && output_tokens
+         (input_tokens.to_f / 1_000_000 * INPUT_TOKEN_COST_PER_M ) + (output_tokens.to_f / 1_000_000 * OUTPUT_TOKEN_COST_PER_M)
+        end
+      end
+    end
+
+    def debug_output_items
+      ai_conversation.answer_json.except("narrative", "footnotes").merge(ai_conversation.response_metadata)
+    end
+
+    def debug_chunks_list
+      @debug_chunks_list ||= begin
+        ids = ai_conversation.chunks_used.collect { |h| h["chunk_id"] }
+        OralHistoryChunk.where(id: ids).in_order_of(:id, ids).includes(oral_history_content: :work).strict_loading
+      end
+    end
+
+    # for admin debug info
+    def cosine_distance_for_chunk(chunk_id)
+      ai_conversation.chunks_used.find { |h| h["chunk_id"] == chunk_id }&.dig("cosine_distance")
     end
 
     class FootnoteItemData
