@@ -290,6 +290,8 @@ $pagination-active-border-color:    $pagination-active-bg;
 
 $popover-font-size: 1rem;
 $popover-border-radius: 9px;
+// We use popovers for some lengthy stuff, default 276px
+$popover-max-width: min(70vw, ($max-readable-width * 0.95));
 
 // This variable is used in Blacklight gem CSS, and
 // causes a mysterious bug we don't entirely understand. We don't use the portion
