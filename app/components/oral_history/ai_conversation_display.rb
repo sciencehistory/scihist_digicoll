@@ -55,15 +55,17 @@ module OralHistory
 
       # now replace footnote references with html doing all sorts of things
       # Use a separate component maybe?
-      narrative_text.gsub!(/\[\^\d+\]/) do |reference|
+      narrative_text.gsub!(/\[\^\d+\]\s*/) do |reference|
         number = reference.slice(2, reference.length-2) # get rid of brackets
         footnote_item_data = get_footnote_item_data(number)
 
-        <<~EOS
-           <a href="##{footnote_item_data.anchor}"><span class="badge bg-primary rounded-pill">#{footnote_item_data.number}</span></a>
-          <a target="_blank" href="#{link_from_footnote_item(footnote_item_data)}")}" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“#{ERB::Util.html_escape footnote_item_data.quote}”">
-            <span class="badge bg-secondary-subtle rounded-pill">#{footnote_item_data.short_citation_title} ~ #{footnote_item_data.nearest_timecode_formatted}</span>
-          </a>
+        <<~EOS.strip
+          <span class="ai-conversation-display-footnote-reference">
+            <a href="##{footnote_item_data.anchor}"><span class="badge bg-primary rounded-pill">#{footnote_item_data.number}</span></a>
+            <a target="_blank" href="#{link_from_footnote_item(footnote_item_data)}")}" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“#{ERB::Util.html_escape footnote_item_data.quote}”">
+              <span class="badge bg-secondary-subtle rounded-pill">#{footnote_item_data.short_citation_title} ~ #{footnote_item_data.nearest_timecode_formatted}</span>
+            </a>
+          </span>
         EOS
       end
       narrative_text.html_safe

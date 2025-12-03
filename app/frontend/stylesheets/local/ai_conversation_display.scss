@@ -1,0 +1,17 @@
+// Make two badges into one capsule badge thing
+.ai-conversation-display-footnote-reference {
+  display: inline-flex;
+  margin-left: 0.25em;
+
+  a:nth-child(1) .badge {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+
+    padding-right: 0.25em;
+  }
+
+  a:nth-child(2) .badge {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+  }
+}
