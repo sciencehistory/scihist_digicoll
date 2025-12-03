@@ -13,6 +13,8 @@ module OralHistory
 
     INITIAL_CHUNK_COUNT = 8
 
+    ANSWER_UNAVAILABLE_TEXT = "I cannot answer this question from the material available."
+
     # should e threadsafe, and better to re-use for re-used connections maybe
     AWS_BEDROCK_CLIENT = Aws::BedrockRuntime::Client.new(
       access_key_id:      ScihistDigicoll::Env.lookup(:aws_access_key_id),
@@ -100,7 +102,7 @@ module OralHistory
         - If you mention a person in an answer, always give their name, never just a role, description, pronoun, or relationship.
         - Only use evidence from the retrieved chunks. Never hallucinate or speculate or use outside information.
         - Reason internally, but do NOT show intermediate reasoning.
-        - If the claim cannot be supported by the provided evidence, set "answer_unavailable": true in the JSON, and set narrative to "I cannot answer this question from the material available."
+        - If the claim cannot be supported by the provided evidence, set "answer_unavailable": true in the JSON, and set narrative to "#{ANSWER_UNAVAILABLE_TEXT}"
         - Integrate claims from the retrieved chunks with inline footnote numbers [^1], [^2], etc. Only use each footnote once.
         - Inline footnotes must correspond exactly to the footnotes included.
         - Do NOT include disclaimers about retrieval, missing evidence, or limitations.

@@ -1,18 +1,20 @@
 <%= answer_narrative %>
 
-<hr class="mt-4 mb-4">
+<% if footnote_list.present? %>
+  <hr class="mt-4 mb-4">
 
-<% footnote_list.each do |footnote_item_data| %>
-  <p id="<%= footnote_item_data.anchor %>">
-    <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
+  <% footnote_list.each do |footnote_item_data| %>
+    <p id="<%= footnote_item_data.anchor %>">
+      <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
 
-    <%= link_to(link_from_footnote_item(footnote_item_data), class: "fs-5", target: "_blank") do  %>
-      <%= footnote_item_data.short_citation_title %>
-      ¶<%= footnote_item_data.short_citation_paragraphs %>
-      <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
-    <%- end %>
-    “<%= footnote_item_data.quote %>”
-  </p>
+      <%= link_to(link_from_footnote_item(footnote_item_data), class: "fs-5", target: "_blank") do  %>
+        <%= footnote_item_data.short_citation_title %>
+        ¶<%= footnote_item_data.short_citation_paragraphs %>
+        <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
+      <%- end %>
+      “<%= footnote_item_data.quote %>”
+    </p>
+  <% end %>
 <% end %>
 
 

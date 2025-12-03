@@ -49,6 +49,15 @@ class OralHistory::AiConversation < ApplicationRecord
     Rails.error.report(e)
   end
 
+  def complete?
+    status_success? || status_error?
+  end
+
+  # We asked Claude to tell us when it thinks it can't get an answer, did it?
+  def llm_says_answer_unavailable?
+    self.answer_json["answer_unavailable"] == true
+  end
+
   # records and saves
   def record_error_state(e)
     self.status = :error
@@ -60,9 +69,6 @@ class OralHistory::AiConversation < ApplicationRecord
     self.save!
   end
 
-  def complete?
-    status_success? || status_error?
-  end
 
   # @param chunks [Array<OralHistoryChunk>] as fetched from neigbor gem, with a #neighbor_distance attribute
   def record_chunks_used(chunks)

@@ -14,7 +14,13 @@ module OralHistory
     end
 
     def answer_narrative
-      @answer_narrative ||= format_footnote_reference_html(@ai_conversation.answer_json["narrative"])
+      @answer_narrative ||= begin
+        if ai_conversation.llm_says_answer_unavailable?
+          OralHistory::ClaudeInteractor::ANSWER_UNAVAILABLE_TEXT
+        else
+          format_footnote_reference_html(@ai_conversation.answer_json["narrative"])
+        end
+      end
     end
 
     def footnote_list
@@ -42,6 +48,8 @@ module OralHistory
     # find references that look like [^12] in the text, and replace with nice
     # HTML tags, producing SAFE html_safe on the way out
     def format_footnote_reference_html(narrative_text)
+      return narrative_text unless narrative_text.present?
+
       # first make sure it's all html safe, cause we're gonna be slicing and dicing it
       narrative_text = Rails::HTML5::FullSanitizer.new.sanitize(narrative_text)
 
@@ -57,7 +65,8 @@ module OralHistory
             <span class="badge bg-secondary-subtle rounded-pill">#{footnote_item_data.short_citation_title} ~ #{footnote_item_data.nearest_timecode_formatted}</span>
           </a>
         EOS
-      end.html_safe
+      end
+      narrative_text.html_safe
     end
 
     def link_from_footnote_item(footnote_item)
@@ -78,7 +87,11 @@ module OralHistory
     end
 
     def debug_output_items
-      ai_conversation.answer_json.except("narrative", "footnotes").merge(ai_conversation.response_metadata)
+      ai_conversation.answer_json.except("narrative", "footnotes").merge(ai_conversation.response_metadata).merge(
+        # sometimes it gives us a narrative about why the answer was unavailable, that we aren't showing to user,
+        # so merge that in too
+        "narrative" => (@ai_conversation.answer_json["narrative"] if @ai_conversation.llm_says_answer_unavailable?)
+      ).compact
     end
 
     def debug_chunks_list
