@@ -9,7 +9,7 @@
     <%= link_to(link_from_footnote_item(footnote_item_data), class: "fs-5", target: "_blank") do  %>
       <%= footnote_item_data.short_citation_title %>
       ¶<%= footnote_item_data.short_citation_paragraphs %>
-      <%= footnote_item_data.nearest_timecode_formatted.present? ? " around <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
+      <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
     <%- end %>
     “<%= footnote_item_data.quote %>”
   </p>
