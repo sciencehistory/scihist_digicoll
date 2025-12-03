@@ -1,7 +1,7 @@
 <%# hacky and also not accessible way to reload every 3 seconds until we are done, temporary %>
 <% unless @conversation.complete? %>
   <%= content_for(:head) do %>
-    <meta http-equiv="refresh" content="2">
+    <meta http-equiv="refresh" content="4">
   <% end %>
 <% end %>
 
