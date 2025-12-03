@@ -13,7 +13,7 @@ module OralHistory
 
     INITIAL_CHUNK_COUNT = 8
 
-    ANSWER_UNAVAILABLE_TEXT = "I cannot answer this question from the material available."
+    ANSWER_UNAVAILABLE_TEXT = "I am unable to answer this question with the methods and sources available."
 
     # should e threadsafe, and better to re-use for re-used connections maybe
     AWS_BEDROCK_CLIENT = Aws::BedrockRuntime::Client.new(
