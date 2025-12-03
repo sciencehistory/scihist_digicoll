@@ -53,11 +53,16 @@ module OralHistory
 
         <<~EOS
            <a href="##{footnote_item_data.anchor}"><span class="badge bg-primary rounded-pill">#{footnote_item_data.number}</span></a>
-          <a target="_blank" href="#{work_path(footnote_item_data.work.friendlier_id)}" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“#{ERB::Util.html_escape footnote_item_data.quote}”">
+          <a target="_blank" href="#{link_from_footnote_item(footnote_item_data)}")}" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“#{ERB::Util.html_escape footnote_item_data.quote}”">
             <span class="badge bg-secondary-subtle rounded-pill">#{footnote_item_data.short_citation_title} ~ #{footnote_item_data.nearest_timecode_formatted}</span>
           </a>
         EOS
       end.html_safe
+    end
+
+    def link_from_footnote_item(footnote_item)
+      # this works for OHMS, will have to be changed for others.
+      work_path(footnote_item.work.friendlier_id, anchor: "p=#{footnote_item.paragraph_start}")
     end
 
     # for admin display

@@ -6,7 +6,7 @@
   <p id="<%= footnote_item_data.anchor %>">
     <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
 
-    <%= link_to(work_path(footnote_item_data.work.friendlier_id), class: "fs-5", target: "_blank") do  %>
+    <%= link_to(link_from_footnote_item(footnote_item_data), class: "fs-5", target: "_blank") do  %>
       <%= footnote_item_data.short_citation_title %>
       ¶<%= footnote_item_data.short_citation_paragraphs %>
       <%= footnote_item_data.nearest_timecode_formatted.present? ? " around <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
@@ -17,42 +17,38 @@
 
 
 <% if can? :access_staff_functions %>
-<hr class="mt-4 mb-4">
-<details>
-  <summary class="fw-bold fs-3">Admin Debug Info</summary>
-
-  <dl class="mt-2">
-    <dt>estimated cost</dt>
-    <dd>
-      <% if estimated_cost_in_dollars.present? %>
-        $<%= ("%0.4f" % estimated_cost_in_dollars) %>
-      <% else %>
-        unavailable
-      <% end %>
-    </dd>
-
-    <% debug_output_items.each_pair do |key, value| %>
-      <dt><%= key %></dt>
-      <dd><%= value %></dd>
-    <% end %>
-  </dl>
-
+  <hr class="mt-4 mb-4">
   <details>
-    <summary class="fw-bold fs-4">Chunks (passages) retrieved</summary>
-    <% debug_chunks_list.each do |chunk| %>
+    <summary class="fw-bold fs-3">Admin Debug Info</summary>
 
-        <details class="mt-2">
-          <summary><%= chunk.id %>: <%= chunk.oral_history_content.work.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= cosine_distance_for_chunk(chunk.id) %></summary>
+    <dl class="mt-2">
+      <dt>estimated cost</dt>
+      <dd>
+        <% if estimated_cost_in_dollars.present? %>
+          $<%= ("%0.4f" % estimated_cost_in_dollars) %>
+        <% else %>
+          unavailable
+        <% end %>
+      </dd>
 
-            <div class="ms-5 mt-2">
-              <%= simple_format chunk.text %>
-              <hr>
-            </div>
-        </details>
+      <% debug_output_items.each_pair do |key, value| %>
+        <dt><%= key %></dt>
+        <dd><%= value %></dd>
+      <% end %>
+    </dl>
 
-    <% end %>
+    <details>
+      <summary class="fw-bold fs-4">Chunks (passages) retrieved</summary>
+      <% debug_chunks_list.each do |chunk| %>
+          <details class="mt-2">
+            <summary><%= chunk.id %>: <%= chunk.oral_history_content.work.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= cosine_distance_for_chunk(chunk.id) %></summary>
+
+              <div class="ms-5 mt-2">
+                <%= simple_format chunk.text %>
+                <hr>
+              </div>
+          </details>
+      <% end %>
+    </details>
   </details>
-
-</details>
-
 <% end %>
