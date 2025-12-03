@@ -7,7 +7,7 @@ module OralHistory
   #
   # Does not do a continuous conversation, user gets one isolated question. Returns
   # answer as JSON.
-  class ClaudeInteraction
+  class ClaudeInteractor
     # claude sonnet 4.5
     MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
@@ -20,18 +20,54 @@ module OralHistory
       region:             ScihistDigicoll::Env.lookup(:aws_region)
     )
 
-    attr_reader :question
+    attr_reader :question, :question_embedding
 
-    def initialize(question: question)
+    def initialize(question:, question_embedding:)
       @question = question
+      @question_embedding = question_embedding
     end
 
-    # Contacts Claude via API to get an answer.
+    # convenience to look up the embedding
+    def self.with_question(question)
+      self.new(question: question, question_embedding: OralHistoryChunk.get_openai_embedding(question))
+    end
+
+    # Convenience method for back-end tests. Contacts Claude via API to get an answer.
     #
     # @return [Hash] json hash with narrative and footnotes keys.
     def get_answer
+      extract_answer( get_response )
+    end
+
+    # Takes AWS Bedrock Claude response, gets and validates our JSON answer from it
+    #
+    # Can raise an OralHistory::ClaudeInteractor::OutputFormattingError
+    def extract_answer(response)
+      raw_text = response.output.message.content.first.text
+
+      # Claude is insisting on including a markdown fence, remove it
+      raw_text.gsub!(/(\A\s*```json)|(```\s*\Z)/, '')
+
+      # raise if we're not validated
+      return validated_claude_response( JSON.parse(raw_text) )
+    rescue JSON::ParserError => e
+      raise OutputFormattingError.new("Does not parse as JSON: #{e.message};\n\n\n#{raw_text}\n\n" , output: raw_text)
+    end
+
+    # @param converesation_record [OralHistory::AiConversation] optiona, if given we'll log
+    #   parts of our interaction there.
+    #
+    # @return [OpenStruct] from the AWS bedrock client
+    #
+    # can raise a Aws::Errors::ServiceError
+    def get_response(conversation_record:nil)
       chunks = get_chunks(k: INITIAL_CHUNK_COUNT)
+
+      conversation_record&.record_chunks_used(chunks)
+
       user_instructions = construct_user_prompt(chunks)
+
+      conversation_record&.request_sent_at = Time.current
 
       # more params are available, both general bedrock and specific to model
       response = AWS_BEDROCK_CLIENT.converse(
@@ -40,14 +76,14 @@ module OralHistory
         messages: [{ role: 'user', content: [{ text: user_instructions }] }]
       )
 
-      raw_text = response.output.message.content.first.text
+      # store certain parts of response as metrics
 
-      # Claude is insisting on including a markdown fence
-      raw_text.gsub!(/(\A\s*```json)|(```\s*\Z)/, '')
+      conversation_record&.response_metadata = {
+        "usage" => response.usage.to_h,
+        "metrics" => response.metrics.to_h
+      }
 
-      return validated_claude_response( JSON.parse(raw_text) )
-    rescue JSON::ParserError => e
-      raise OutputFormattingError.new("Does not parse as JSON: #{e.message};\n\n\n#{raw_text}\n\n" , output: raw_text)
+      return response
     end
 
     def system_instructions
@@ -138,7 +174,7 @@ module OralHistory
     def get_chunks(k: INITIAL_CHUNK_COUNT)
       # TODO: the SQL log for the neighbor query is too huge!!
       # Preload work, so we can get title or other metadata we might want.
-      OralHistoryChunk.neighbors_for_query(question).limit(k).includes(oral_history_content: :work).strict_loading
+      OralHistoryChunk.neighbors_for_embedding(question_embedding).limit(k).includes(oral_history_content: :work).strict_loading
     end
 
     def format_chunks(chunks)
@@ -179,12 +215,12 @@ module OralHistory
 
     # The thing we asked Claude for, does it look like we asked?
     #
-    # Raises ClaudeInteraction::OutputFormattingError if not
+    # Raises ClaudeInteractor::OutputFormattingError if not
     #
     # @return [Hash] arg passed in, for convenient chaining
     def validated_claude_response(json)
       unless json.kind_of?(Hash)
-        raise OutputFormattingError.new("not a hash", output: output)
+        raise OutputFormattingError.new("not a hash", output: json)
       end
 
       required_top_keys = %w[narrative footnotes more_chunks_needed answer_unavailable]

@@ -1,11 +1,13 @@
 require 'rails_helper'
 
-describe OralHistory::ClaudeInteraction do
+describe OralHistory::ClaudeInteractor do
+  include AwsBedrockClaudeMockResponse
+
   let(:work) { create(:oral_history_work) }
   let(:chunk1) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH"])}
   let(:chunk2) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH", "JONES"], text: "Chunk 2")}
 
-  let(:interaction) { described_class.new(question: "What are scientists like?") }
+  let(:interaction) { described_class.new(question: "What are scientists like?", question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
 
   describe "#format_chunks" do
     it "formats" do
@@ -29,31 +31,20 @@ describe OralHistory::ClaudeInteraction do
     end
   end
 
-  describe "#get_answer" do
+  describe "interaction with claude" do
     before do
       allow(OralHistoryChunk).to receive(:get_openai_embeddings) { |*args| [OralHistoryChunk::FAKE_EMBEDDING] * args.count }
     end
 
+    # AWS sdk returns OpenStruct, we don't want to talk to it, so we mock it here, tests
+    # fragile on this being consistent.
+    let(:response) do
+      claude_mock_response(json_return: json_return)
+    end
+
     before do
       # we aren't testing much with the mock, but oh well
-      allow(described_class::AWS_BEDROCK_CLIENT).to receive(:converse).and_return(
-        OpenStruct.new(
-          output: OpenStruct.new(
-            message: OpenStruct.new(
-              content: [
-                OpenStruct.new(
-                  # Claude is insisting on the markdown ``` fencing!
-                  text: <<~EOS
-                    ```json
-                    #{json_return.to_json}
-                     ```
-                  EOS
-                )
-              ]
-            )
-          )
-        )
-      )
+      allow(described_class::AWS_BEDROCK_CLIENT).to receive(:converse).and_return(response)
     end
 
     let(:json_return) {
@@ -74,13 +65,56 @@ describe OralHistory::ClaudeInteraction do
       }
     }
 
-    it "returns json answer" do
-      answer = interaction.get_answer
-      expect(answer).to be_kind_of(Hash)
-      expect(answer).to eq json_return
+    describe "#get_answer" do
+      it "returns json answer" do
+        answer = interaction.get_answer
+        expect(answer).to be_kind_of(Hash)
+        expect(answer).to eq json_return
+      end
     end
 
-    describe "clause response validation errors" do
+    describe "#get_response" do
+      it "fetches chunks, returns response" do
+        expect(interaction).to receive(:get_chunks).and_call_original
+
+        response = interaction.get_response
+
+        expect(response).to be_kind_of(OpenStruct) # what AWS sdk returns
+      end
+
+      describe "with conversation_record:" do
+        let(:ai_conversation) { OralHistory::AiConversation.build(question: "i wonder", question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
+
+        it "fills out metadata in conversation" do
+          chunk1; chunk2
+
+          interaction.get_response(conversation_record: ai_conversation)
+
+          # Doesn't save it
+          expect(ai_conversation).not_to be_persisted
+
+          expect(ai_conversation.request_sent_at).to be_present
+
+          expect(ai_conversation.chunks_used).to be_present
+          expect(ai_conversation.chunks_used).to all satisfy { |retrieved_chunk_info|
+            retrieved_chunk_info.kind_of?(Hash) &&
+            retrieved_chunk_info['rank'].present? &&
+            retrieved_chunk_info['chunk_id'].present? &&
+            retrieved_chunk_info['cosine_distance'].present?
+          }
+
+          expect(ai_conversation.response_metadata["usage"]).to be_present
+          expect(ai_conversation.response_metadata["metrics"]).to be_present
+        end
+      end
+    end
+
+    describe "#extract_answer" do
+      it "extracts answer" do
+        answer = interaction.extract_answer(response)
+        expect(answer).to eq json_return
+      end
+
       describe "missing more_chunks_needed" do
         let(:json_return) {
           {
@@ -99,7 +133,7 @@ describe OralHistory::ClaudeInteraction do
         }
         it "raises" do
           expect {
-            answer = interaction.get_answer
+            answer = interaction.extract_answer(response)
           }.to raise_error(described_class::OutputFormattingError)
         end
       end
@@ -122,7 +156,7 @@ describe OralHistory::ClaudeInteraction do
         }
         it "raises" do
           expect {
-            answer = interaction.get_answer
+            answer = interaction.extract_answer(response)
           }.to raise_error(described_class::OutputFormattingError)
         end
       end
@@ -139,7 +173,7 @@ describe OralHistory::ClaudeInteraction do
         }
         it "raises" do
           expect {
-            answer = interaction.get_answer
+            answer = interaction.extract_answer(response)
           }.to raise_error(described_class::OutputFormattingError)
         end
       end

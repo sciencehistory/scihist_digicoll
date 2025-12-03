@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_11_25_030700) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_01_161421) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "vector"
 
@@ -228,6 +228,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_11_25_030700) do
     t.text "notes_from_staff"
     t.index ["oral_history_requester_email_id"], name: "idx_on_oral_history_requester_email_id_ff2cc727ac"
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
+  end
+
+  create_table "oral_history_ai_conversations", force: :cascade do |t|
+    t.string "status", default: "queued", null: false
+    t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
+    t.string "session_id"
+    t.string "question", null: false
+    t.vector "question_embedding", limit: 3072
+    t.jsonb "response_metadata", default: {}
+    t.jsonb "chunks_used", default: {}
+    t.jsonb "error_info"
+    t.jsonb "answer_json"
+    t.datetime "request_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "oral_history_chunks", force: :cascade do |t|
