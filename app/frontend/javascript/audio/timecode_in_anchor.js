@@ -3,6 +3,8 @@
 //
 // Used for both Oral History audio, and work show video.
 //
+// Confusingly, now also used for #p={paragraph number} anchor linking in oral histories.
+//
 // Using "t" as a key is roughly compatible with WC3 "media fragment" standard, and other
 // common practice.
 //
@@ -10,12 +12,13 @@
 // can be clicked to advance to timecode, without changing the #fragmentIdentifier.
 
 import domready from 'domready';
-import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode} from './helpers/ohms_player_helpers.js';
+import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode, scrollToElement} from './helpers/ohms_player_helpers.js';
 import * as bootstrap from 'bootstrap';
 
 domready(function() {
   var hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   var timeCodeSeconds = window.location.hash.includes("=") && hashParams.get("t");
+  var paragraphNumber = window.location.hash.includes("=") && hashParams.get("p");
 
   if (timeCodeSeconds) {
     if (history.scrollRestoration) {
@@ -58,7 +61,22 @@ domready(function() {
         }
       }
     }
-  }
+  } else if (paragraphNumber && hasOhTabs()) {
+      // OH transcript paragraph number, need to make sure we've switched to transcript tab,
+      // then scroll to element leaving room for navbar
+      if (hashParams.get("tab") != "ohTranscript") {
+        bootstrap.Tab.getOrCreateInstance(
+          document.querySelector('*[data-bs-toggle="tab"][href="#ohTranscript"]')
+        ).show();
+      }
+
+      execWhenOhTabActive("ohTranscript", function() {
+        const element = document.querySelector(`#oh-t-p${paragraphNumber}`);
+        if (element) {
+          scrollToElement(element);
+        }
+      });
+    }
 });
 
 // Something has already executed bootstrap tab to switch to targetTabId. But maybe

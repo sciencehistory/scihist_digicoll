@@ -1,0 +1,32 @@
+class OralHistoryAiConversationController < ApplicationController
+  # for now ALL require staff login, eventually we will gate so you can
+  # only see your own questions
+  before_action :authorize_access
+
+  # For now, admin controllers allow anyone who is logged in
+  def authorize_access
+    unless can? :access_staff_functions
+      # raise the error from `access_granted` to be consistent.
+      raise AccessGranted::AccessDenied.new("Only logged-in staff can access this feature")
+    end
+  end
+
+  # empty question form
+  def new
+  end
+
+  def create
+    conversation = OralHistoryAiConversationJob.launch(session_id: session.id, question: params.require(:q))
+
+    redirect_to oral_history_ai_conversation_path(conversation.external_id)
+  end
+
+  # See your question and possibly answer if it's complete!
+  def show
+    @conversation = OralHistory::AiConversation.find_by_external_id(params.require(:id))
+  end
+
+  # list existing questions, only for admin!
+  def index
+  end
+end
