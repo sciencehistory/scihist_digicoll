@@ -1,7 +1,12 @@
 // Make two badges into one capsule badge thing
 .ai-conversation-display-footnote-reference {
   display: inline-flex;
-  margin-left: 0.25em;
+  margin-left: 0;
+  margin-right: 0.5em;
+
+  // raise it up a bit to more footnotey, but there isn't tons of room
+  position: relative;
+  bottom: 0.15em;
 
   a:nth-child(1) .badge {
     border-top-right-radius: 0 !important;

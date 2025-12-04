@@ -55,7 +55,7 @@ module OralHistory
 
       # now replace footnote references with html doing all sorts of things
       # Use a separate component maybe?
-      narrative_text.gsub!(/\[\^\d+\]\s*/) do |reference|
+      narrative_text.gsub!(/\s*\[\^\d+\]/) do |reference|
         number = reference.slice(2, reference.length-2) # get rid of brackets
         footnote_item_data = get_footnote_item_data(number)
 
