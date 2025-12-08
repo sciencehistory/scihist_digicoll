@@ -1,5 +1,5 @@
 module OralHistory
-  class AiConversationDisplay < ApplicationComponent
+  class AiConversationDisplayComponent < ApplicationComponent
     # For admin output reporting, per million tokens. Claude Sonnet 4.5.AWS bedrock is same prices.
     # https://platform.claude.com/docs/en/about-claude/pricing
     OUTPUT_TOKEN_COST_PER_M = 15.0

@@ -29,7 +29,7 @@
       Sorry, an error happened!  Error object <%= @conversation.external_id %>.
     </div>
   <% else %>
-    <%= render OralHistory::AiConversationDisplay.new(@conversation)%>
+    <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
   <% end %>
 
 
