@@ -55,7 +55,7 @@ class OralHistory::AiConversation < ApplicationRecord
 
   # We asked Claude to tell us when it thinks it can't get an answer, did it?
   def llm_says_answer_unavailable?
-    self.answer_json["answer_unavailable"] == true
+    self.answer_json&.dig("answer_unavailable") == true
   end
 
   # records and saves

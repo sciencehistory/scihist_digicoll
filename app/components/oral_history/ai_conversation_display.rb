@@ -35,7 +35,9 @@ module OralHistory
     # We have the hash from Claude with chunk ID's, we need
     # to fetch the chunks, use some data from each, we get a footnote
     def build_footnote_data
-      chunk_ids = @ai_conversation.answer_json["footnotes"].collect {|h| h["chunk_id"]}
+      chunk_ids = @ai_conversation.answer_json["footnotes"]&.collect {|h| h["chunk_id"]}
+      return [] unless chunk_ids
+
       chunks = OralHistoryChunk.where(id: chunk_ids).includes(oral_history_content: :work).strict_loading
 
       chunks_by_id = chunks.collect { |c| [c.id.to_s, c] }.to_h
