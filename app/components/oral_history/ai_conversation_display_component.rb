@@ -43,7 +43,7 @@ module OralHistory
       chunks_by_id = chunks.collect { |c| [c.id.to_s, c] }.to_h
 
       @ai_conversation.answer_json["footnotes"].collect do |response_hash|
-        FootnoteItemData.new(response_hash: response_hash, chunk: chunks_by_id[response_hash["chunk_id"]])
+        FootnoteItem.new(response_hash: response_hash, chunk: chunks_by_id[response_hash["chunk_id"]])
       end
     end
 
@@ -110,7 +110,7 @@ module OralHistory
       ai_conversation.chunks_used.find { |h| h["chunk_id"] == chunk_id }&.dig("cosine_distance")
     end
 
-    class FootnoteItemData
+    class FootnoteItem
       attr_reader :response_hash, :chunk
 
       def initialize(response_hash:,chunk:)
