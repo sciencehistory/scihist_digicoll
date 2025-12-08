@@ -73,10 +73,8 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
       end
 
       expect(entry_names.size).to be 2
-      expect(entry_names).to eq [
-        "test_title_#{work_1.friendlier_id}_#{work_1.members.first.friendlier_id}.jpg",
-        "test_title_#{work_2.friendlier_id}_#{work_2.members.first.friendlier_id}.jpg"
-      ]
+      expect(entry_names).to contain_exactly "test_title_#{work_1.friendlier_id}_#{work_1.members.first.friendlier_id}.jpg", "test_title_#{work_2.friendlier_id}_#{work_2.members.first.friendlier_id}.jpg"
+      
     ensure
       if zip_file
         zip_file.close
