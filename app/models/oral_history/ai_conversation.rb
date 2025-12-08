@@ -76,7 +76,7 @@ class OralHistory::AiConversation < ApplicationRecord
       {
         "rank" => index + 1,
         "chunk_id" => chunk.id,
-        "cosine_distance" => chunk.neighbor_distance.nan? ? 0 : chunk.neighbor_distance
+        "cosine_distance" => (chunk.neighbor_distance.nil? || chunk.neighbor_distance.nan?) ? 0 : chunk.neighbor_distance
       }
     end
   end

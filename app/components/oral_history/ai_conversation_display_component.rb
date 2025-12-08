@@ -43,7 +43,7 @@ module OralHistory
       chunks_by_id = chunks.collect { |c| [c.id.to_s, c] }.to_h
 
       @ai_conversation.answer_json["footnotes"].collect do |response_hash|
-        FootnoteItem.new(response_hash: response_hash, chunk: chunks_by_id[response_hash["chunk_id"]])
+        FootnoteItem.new(response_hash: response_hash, chunk: chunks_by_id[response_hash["chunk_id"].to_s])
       end
     end
 
@@ -117,8 +117,11 @@ module OralHistory
         @response_hash = response_hash
         @chunk = chunk
 
-        unless @response_hash && @chunk
-          raise ArgumentError.new("Missing response_hash or chunk")
+        unless @response_hash
+          raise ArgumentError.new("Missing response_hash")
+        end
+        unless @chunk
+          raise ArgumentError.new("Missing chunk")
         end
       end
 
@@ -150,8 +153,8 @@ module OralHistory
         # we could have more complicated algorithm to find best timestamp, but good enough
         # for now.
         @nearest_timecode_formatted ||= begin
-          timestamp_info = chunk.other_metadata["timestamps"][paragraph_start.to_s]
-          timestamp = timestamp_info["included"].first || timestamp_info["previous"]
+          timestamp_info = chunk.other_metadata.dig("timestamps", paragraph_start.to_s)
+          timestamp = timestamp_info&.dig("included", 0) || timestamp_info&.dig("previous")
           timestamp.present? ? OhmsHelper.format_ohms_timestamp(timestamp) : ""
         end
       end
