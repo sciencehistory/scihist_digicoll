@@ -62,6 +62,11 @@ class OralHistory::AiConversation < ApplicationRecord
     answer_json["narrative"]
   end
 
+  # Array of hashes, the format of the hash is still not formally specified, sorry
+  def answer_footnotes_json
+    answer_json["footnotes"]
+  end
+
   # records and saves
   def record_error_state(e)
     self.status = :error
