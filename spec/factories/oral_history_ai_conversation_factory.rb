@@ -7,7 +7,8 @@ FactoryBot.define do
     # which probably isn't a great sign.
     trait :success_with_associations do
       transient do
-        # this is expensive, yes, but we need it.
+        # this is expensive, yes, but we need it. need to create cause isn't in
+        # a real association, sorry.
         chunks { [create(:oral_history_chunk, :with_oral_history_content)] }
       end
 
@@ -39,8 +40,14 @@ FactoryBot.define do
 
       after(:build) do |conversation, evaluator|
         if evaluator.chunks
+          # fix footnotes to refer to actual chunk data
           conversation.answer_json["footnotes"].each_with_index do |footnote, index|
-            footnote["chunk_id"] = evaluator.chunks[index % evaluator.chunks.length].id
+            sample_chunk = evaluator.chunks[index % evaluator.chunks.length]
+            sample_chunk_paragraph_num = (sample_chunk.start_paragraph_number..sample_chunk.end_paragraph_number).to_a.sample
+
+            footnote["chunk_id"] = sample_chunk.id
+            footnote["paragraph_start"] = sample_chunk_paragraph_num
+            footnote["paragraph_end"] = sample_chunk_paragraph_num
           end
 
           conversation.record_chunks_used(evaluator.chunks)
