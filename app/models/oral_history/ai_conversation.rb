@@ -58,6 +58,10 @@ class OralHistory::AiConversation < ApplicationRecord
     self.answer_json&.dig("answer_unavailable") == true
   end
 
+  def answer_narrative
+    answer_json["narrative"]
+  end
+
   # records and saves
   def record_error_state(e)
     self.status = :error

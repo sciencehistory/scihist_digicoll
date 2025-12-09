@@ -34,4 +34,47 @@ describe OralHistory::AiConversationDisplayComponent, type: :component do
       )
     end
   end
+
+  describe "format_footnote_reference" do
+    before do
+      render_inline component
+    end
+
+    it "replaces footnote references with html for good footnote reference" do
+      formatted_narrative= component.format_footnote_reference_html(conversation.answer_narrative)
+
+      expect(formatted_narrative).not_to include "[^1]"
+      expect(formatted_narrative).not_to include "[^2]"
+
+      nokogiri = Nokogiri::HTML.fragment(formatted_narrative)
+
+      component.footnote_list.each do |footnote_data|
+        expect(nokogiri).to have_selector(".ai-conversation-display-footnote-reference##{footnote_data.ref_anchor}")
+      end
+    end
+
+    it "removes html and such" do
+      formatted_narrative = component.format_footnote_reference_html("This is < <bad> <script>stuff</script>")
+
+      expect(formatted_narrative).to eq "This is &lt;  stuff"
+      expect(formatted_narrative).to be_html_safe
+    end
+
+  end
+
+  it "includes answer" do
+    result = render_inline(component)
+
+    answer = result.at_css(".answer-narrative")
+    expect(answer).to be_present
+    expect(answer.inner_html.strip).to eq component.format_footnote_reference_html(conversation.answer_narrative).strip
+  end
+
+  it "includes footnotes" do
+    render_inline(component)
+
+    component.footnote_list.each do |footnote_data|
+      expect(page).to have_css("p##{footnote_data.anchor}")
+    end
+  end
 end
