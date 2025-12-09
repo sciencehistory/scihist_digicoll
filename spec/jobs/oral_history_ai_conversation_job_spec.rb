@@ -5,9 +5,11 @@ describe OralHistoryAiConversationJob, type: :job do
   let(:session_id) { "dummy-session-id" }
 
   it ".launch" do
-    record = described_class.launch(question: question, session_id: session_id)
+    record = nil
 
-    expect(described_class).to have_been_enqueued
+    expect {
+      record = described_class.launch(question: question, session_id: session_id)
+    }.to have_enqueued_job(described_class)
 
     expect(record).to be_kind_of(OralHistory::AiConversation)
     expect(record.persisted?).to be true

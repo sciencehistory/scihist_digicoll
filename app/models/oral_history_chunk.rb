@@ -8,6 +8,10 @@ class OralHistoryChunk < ApplicationRecord
   # from neighbors gem for pg_vector embeddings
   has_neighbors :embedding
 
+  # normally populated by neigbor gem with custom SELECT, but declaring it
+  # as an attribute helps us mock it in tests.
+  attribute :neighbor_distance, :float
+
   # Scope to fetch neighbors for embedding, to find relevant chunks to supply for RAG.
   #
   # Note: results will have a #neighbor_distance with the cosine distance, could

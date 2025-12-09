@@ -20,5 +20,24 @@ FactoryBot.define do
         his place. [laughter] We had a free run there of things.
       EOS
     end
+
+    after(:build) do |chunk, evaluator|
+      # build timestamp info if it's not there
+      unless chunk.other_metadata["timestamps"].present?
+        chunk.other_metadata["timestamps"] ||= {}
+
+        current_timestamp = 120
+        chunk.start_paragraph_number.upto(chunk.end_paragraph_number) do |par_number|
+          chunk.other_metadata["timestamps"][par_number.to_s] = {
+            "previous" => chunk.other_metadata["timestamps"].dig((par_number-1).to_s, "included")&.last,
+            "included" => [(current_timestamp += 30)]
+          }
+        end
+      end
+    end
+
+    trait :with_oral_history_content do
+      oral_history_content { create(:oral_history_work).oral_history_content }
+    end
   end
 end
