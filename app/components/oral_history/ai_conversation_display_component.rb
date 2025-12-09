@@ -61,14 +61,7 @@ module OralHistory
         number = reference.scan(/\d+/).first # extract just number
         footnote_item_data = get_footnote_item_data(number)
 
-        <<~EOS.strip
-          <span class="ai-conversation-display-footnote-reference" id="#{footnote_item_data.ref_anchor}">
-            <a href="##{footnote_item_data.anchor}"><span class="badge bg-primary rounded-pill">#{footnote_item_data.number}</span></a>
-            <a target="_blank" href="#{link_from_footnote_item(footnote_item_data)}" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“#{ERB::Util.html_escape footnote_item_data.quote}”">
-              <span class="badge bg-secondary-subtle rounded-pill">#{footnote_item_data.short_citation_title} ~ #{footnote_item_data.nearest_timecode_formatted}</span>
-            </a>
-          </span>
-        EOS
+        (render OralHistory::AiConversationFootnoteReferenceComponent.new(footnote_item_data)).strip
       end
       narrative_text.html_safe
     end
