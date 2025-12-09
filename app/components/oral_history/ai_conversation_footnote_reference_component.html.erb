@@ -1,6 +1,14 @@
-<span class="ai-conversation-display-footnote-reference" id="<%= footnote_item.ref_anchor %>">
-  <a href="<%= footnote_item.anchor %>"><span class="badge bg-primary rounded-pill"><%= footnote_item.number %></span></a>
-  <a target="_blank" href="<%= link_from_footnote_item(footnote_item) %>" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-content="“<%= footnote_item.quote %>”">
+<%= content_tag "span", class: "ai-conversation-display-footnote-reference", id: footnote_item.ref_anchor do -%>
+  <%= link_to "##{footnote_item.anchor}" do %>
+    <span class="badge bg-primary rounded-pill"><%= footnote_item.number %></span>
+  <%- end -%>
+  <%= link_to(link_from_footnote_item(footnote_item),
+              target: "_blank",
+              "data-bs-toggle" => "popover",
+              "data-bs-content" => "“#{footnote_item.quote}”",
+              "data-bs-trigger" => "hover focus",
+              "data-bs-placement" => "bottom"
+              ) do -%>
     <span class="badge bg-secondary-subtle rounded-pill"><%= footnote_item.short_citation_title %> ~ <%= footnote_item.nearest_timecode_formatted %></span>
-  </a>
-</span>
+  <%- end -%>
+<%- end -%>
