@@ -39,18 +39,16 @@
       <% end %>
     </dl>
 
-    <details>
-      <summary class="fw-bold fs-4">Chunks (passages) retrieved</summary>
-      <% debug_chunks_list.each do |chunk| %>
-          <details class="mt-2">
-            <summary><%= chunk.id %>: <%= chunk.oral_history_content.work.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= cosine_distance_for_chunk(chunk.id) %></summary>
+    <h3>Chunks (passages) retrieved</h3>
+    <% debug_chunks_list.each do |chunk| %>
+        <details class="mt-2">
+          <summary><%= chunk.id %>: <%= chunk.oral_history_content.work.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= cosine_distance_for_chunk(chunk.id) %></summary>
 
-              <div class="ms-5 mt-2">
-                <%= simple_format chunk.text %>
-                <hr>
-              </div>
-          </details>
-      <% end %>
-    </details>
+            <div class="ms-5 mt-2">
+              <%= simple_format chunk.text %>
+              <hr>
+            </div>
+        </details>
+    <% end %>
   </details>
 <% end %>
