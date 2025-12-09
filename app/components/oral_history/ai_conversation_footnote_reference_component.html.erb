@@ -2,7 +2,7 @@
   <%= link_to "##{footnote_item.anchor}" do %>
     <span class="badge bg-primary rounded-pill"><%= footnote_item.number %></span>
   <%- end -%>
-  <%= link_to(link_from_footnote_item(footnote_item),
+  <%= link_to(link_from_ai_conversation_footnote(footnote_item),
               target: "_blank",
               "data-bs-toggle" => "popover",
               "data-bs-content" => "“#{footnote_item.quote}”",

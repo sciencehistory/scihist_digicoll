@@ -29,7 +29,7 @@ describe OralHistory::AiConversationDisplayComponent, type: :component do
     it "can create links to footnote" do
       render_inline component
 
-      expect(component.link_from_footnote_item(footnote_data.first)).to eq(
+      expect(component.link_from_ai_conversation_footnote(footnote_data.first)).to eq(
         work_path(footnote_data.first.work.friendlier_id, anchor: "p=#{footnote_data.first.paragraph_start}")
       )
     end

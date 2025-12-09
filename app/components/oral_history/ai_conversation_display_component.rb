@@ -1,5 +1,7 @@
 module OralHistory
   class AiConversationDisplayComponent < ApplicationComponent
+    delegate :link_from_ai_conversation_footnote, to: :helpers
+
     # For admin output reporting, per million tokens. Claude Sonnet 4.5.AWS bedrock is same prices.
     # https://platform.claude.com/docs/en/about-claude/pricing
     OUTPUT_TOKEN_COST_PER_M = 15.0
@@ -64,11 +66,6 @@ module OralHistory
         (render OralHistory::AiConversationFootnoteReferenceComponent.new(footnote_item_data)).strip
       end
       narrative_text.html_safe
-    end
-
-    def link_from_footnote_item(footnote_item)
-      # this works for OHMS, will have to be changed for others.
-      work_path(footnote_item.work.friendlier_id, anchor: "p=#{footnote_item.paragraph_start}")
     end
 
     # for admin display

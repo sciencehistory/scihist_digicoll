@@ -1,5 +1,7 @@
 module OralHistory
   class AiConversationFootnoteReferenceComponent < ApplicationComponent
+    delegate :link_from_ai_conversation_footnote, to: :helpers
+
     attr_reader :footnote_item
 
     # @param footnote_item [AiConversationDisplayComponent::FootnoteItem]
@@ -11,9 +13,6 @@ module OralHistory
       @footnote_item = footnote_item
     end
 
-    def link_from_footnote_item(footnote_item)
-      # this works for OHMS, will have to be changed for others.
-      work_path(footnote_item.work.friendlier_id, anchor: "p=#{footnote_item.paragraph_start}")
-    end
+
   end
 end
