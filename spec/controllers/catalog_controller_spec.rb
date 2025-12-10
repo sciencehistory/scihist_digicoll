@@ -237,7 +237,7 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       expect(response_noko).to have_selector("a.facet-select", text: "onetwo")
       expect(response_noko).to have_selector("a.facet-select", text: "onethree")
 
-      expect(response_noko).not_to have_selector("a.facet-select", text: "three")
+      expect(response_noko).not_to have_selector("a.facet-select", exact_text: "three")
     end
 
     describe "additional custom functionality" do
