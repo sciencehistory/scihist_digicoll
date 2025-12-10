@@ -1,5 +1,20 @@
 module GoogleArtsAndCulture
   class GoogleArtsAndCulture::AssetSerializer < GoogleArtsAndCulture::KitheModelSerializer
+
+
+    def self.filename(asset)
+      "#{DownloadFilenameHelper.filename_base_from_parent(asset)}.jpg" unless asset&.file&.url.nil?
+    end
+
+    def self.file(asset)
+      if asset.content_type == "image/jpeg"
+        asset.file
+      else
+        asset.file_derivatives(:download_full)
+      end
+    end
+
+
     def initialize(model, callback: nil, attribute_keys:, column_counts:)
       @asset = model
       super
@@ -26,16 +41,18 @@ module GoogleArtsAndCulture
     end
 
     def file
-      if @asset.content_type == "image/jpeg"
-        @asset.file
-      else
-        @asset.file_derivatives(:download_full)
-      end
+      self.class.file(@asset)
+      # if @asset.content_type == "image/jpeg"
+      #   @asset.file
+      # else
+      #   @asset.file_derivatives(:download_full)
+      # end
     end
 
     def filename
-      return no_value if @asset&.file&.url.nil?
-      "#{DownloadFilenameHelper.filename_base_from_parent(@asset)}.jpg"
+      self.class.filename(@asset)
+      # return no_value if @asset&.file&.url.nil?
+      # "#{DownloadFilenameHelper.filename_base_from_parent(@asset)}.jpg"
     end
 
     def filetype

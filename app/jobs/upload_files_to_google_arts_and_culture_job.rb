@@ -38,7 +38,6 @@ class UploadFilesToGoogleArtsAndCultureJob  < ApplicationJob
       bucket_name =             ScihistDigicoll::Env.lookup(:google_arts_and_culture_bucket_name)
       project_id =              ScihistDigicoll::Env.lookup(:google_arts_and_culture_project_id)
 
-
       credentials = ::Google::Auth::ServiceAccountCredentials.make_creds(
         json_key_io: StringIO.new(credentials_json_string),
         scope: "https://www.googleapis.com/auth/devstorage.read_write"

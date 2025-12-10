@@ -84,8 +84,7 @@ module GoogleArtsAndCulture
 
     def files
       members_to_include.map do |asset|
-        asset_serializer = GoogleArtsAndCulture::AssetSerializer.new(asset, attribute_keys: @attribute_keys, column_counts: @column_counts)
-        [asset_serializer.filename, asset_serializer.file]
+        [GoogleArtsAndCulture::AssetSerializer.filename(asset), GoogleArtsAndCulture::AssetSerializer.file(asset)]
       end
     end
 
