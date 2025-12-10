@@ -1,22 +1,27 @@
 module GoogleArtsAndCulture
   class GoogleArtsAndCulture::WorkSerializer < GoogleArtsAndCulture::KitheModelSerializer
+
+
+    def self.memmbers_to_include(work)
+      work.members.
+        includes(:leaf_representative).
+        where(published: true).
+        where(type: "Asset").
+        order(:position).
+        select do |m|
+          m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
+        end
+    end
+
+
     def initialize(model, callback: nil, attribute_keys:, column_counts:)
       super
       @work = model
     end
 
     def members_to_include
-      @members_to_include ||= @work.members.
-      includes(:leaf_representative).
-      where(published: true).
-      where(type: "Asset").
-      order(:position).
-      select do |m|
-        m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
-      end
+      @members_to_include ||= self.class.memmbers_to_include(@work)
     end
-
-
 
     def metadata
       result = [work_metadata]

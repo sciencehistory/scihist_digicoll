@@ -18,9 +18,11 @@ module GoogleArtsAndCulture
     end
 
     def upload_files_to_google_arts_and_culture
-      @scope.includes(:leaf_representative).each do |work|
-        UploadFilesToGoogleArtsAndCultureJob.perform_now(work: @work, attribute_keys: @attribute_keys, column_counts: column_counts)
-      end      
+      UploadFilesToGoogleArtsAndCultureJob.new.perform(
+        work_ids: @scope.pluck(:id),
+        attribute_keys: @attribute_keys,
+        column_counts: column_counts
+      )
     end
 
 

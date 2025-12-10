@@ -1,27 +1,28 @@
-# app/jobs/upload_work_to_google_arts_and_culture_job.rb
 
+#class UploadFilesToGoogleArtsAndCultureJob  < ApplicationJob
 class UploadFilesToGoogleArtsAndCultureJob  < ApplicationJob
-
-  def perform(work:,  attribute_keys:, column_counts: )
-
+  def perform(work_ids:,  attribute_keys:, column_counts: )
     downloaded_files = []
-    @work = work
+    @work_ids = work_ids
     @attribute_keys = attribute_keys
     @column_counts = column_counts
-    
-    files = GoogleArtsAndCulture::WorkSerializer.new(@work, attribute_keys: @attribute_keys, column_counts: column_counts).files.to_h
 
     bucket = google_arts_and_storage_bucket
-
-    files.each do |filename, uploaded_file_obj|
-      file_obj = uploaded_file_obj.download
-      downloaded_files << file_obj
-      begin
-        #file = bucket.create_file(file_obj.path, filename)
-        #puts "Uploaded #{filename} to gs://#{bucket_name}/#{filename}"
-        puts "Done with #{filename}"
-      rescue Google::Apis::ClientError, Google::Cloud::PermissionDeniedError => e
-        puts "Unable to open the bucket: #{e.message}"
+    work_ids.each do |id|
+      work = Work.find(id)
+      files = GoogleArtsAndCulture::WorkSerializer.new(work, attribute_keys: @attribute_keys, column_counts: column_counts).files.to_h
+      files.each do |filename, uploaded_file_obj|
+        file_obj = uploaded_file_obj.download
+        downloaded_files << file_obj
+        begin
+          unless bucket.nil?
+            file = bucket.create_file(file_obj.path, filename)
+            puts "Uploaded #{filename} to gs://#{bucket_name}/#{filename}"
+          end
+          puts "Done with #{filename}"
+        rescue Google::Apis::ClientError, Google::Cloud::PermissionDeniedError => e
+          puts "Unable to open the bucket: #{e.message}"
+        end
       end
     end
   ensure

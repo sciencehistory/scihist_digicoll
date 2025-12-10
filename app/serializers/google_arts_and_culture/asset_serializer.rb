@@ -26,10 +26,6 @@ module GoogleArtsAndCulture
     end
 
     def file
-      return []
-    end
-
-    def file
       if @asset.content_type == "image/jpeg"
         @asset.file
       else
