@@ -19,35 +19,9 @@ module GoogleArtsAndCulture
 
     def upload_files_to_google_arts_and_culture
       @scope.includes(:leaf_representative).each do |work|
-        puts "Starting on #{work.title}"
         UploadFilesToGoogleArtsAndCultureJob.perform_now(work: @work, attribute_keys: @attribute_keys, column_counts: column_counts)
       end      
     end
-
-    # TO BE DELETED!
-    # Returns a Tempfile. Up to caller to close/unlink tempfile when done with it.
-    def files_as_zip
-      downloaded_files = []
-      tmp_zipfile = Tempfile.new(["GAC_download", ".zip"]).tap { |t| t.binmode }
-      Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
-        files.each do |filename, uploaded_file_obj|
-          file_obj = uploaded_file_obj.download
-          downloaded_files << file_obj
-          entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
-          zipfile.add(entry, file_obj)
-          puts "added #{filename}"
-        end
-      end
-      tmp_zipfile.open
-      return tmp_zipfile
-    ensure
-      (downloaded_files || []).each do |tmp_file|
-        tmp_file.close
-        tmp_file.unlink
-      end
-    end
-
-
 
 
     # Does not close the tempfile.
