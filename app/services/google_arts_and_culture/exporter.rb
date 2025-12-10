@@ -1,6 +1,7 @@
 require 'open-uri'
 require 'zip'
-
+require "google/cloud/storage"
+require "googleauth"
 
 module GoogleArtsAndCulture
   class Exporter
@@ -16,6 +17,14 @@ module GoogleArtsAndCulture
       end
     end
 
+    def upload_files_to_google_arts_and_culture
+      @scope.includes(:leaf_representative).each do |work|
+        puts "Starting on #{work.title}"
+        UploadFilesToGoogleArtsAndCultureJob.perform_now(work: @work, attribute_keys: @attribute_keys, column_counts: column_counts)
+      end      
+    end
+
+    # TO BE DELETED!
     # Returns a Tempfile. Up to caller to close/unlink tempfile when done with it.
     def files_as_zip
       downloaded_files = []
@@ -38,18 +47,7 @@ module GoogleArtsAndCulture
       end
     end
 
-    # Returns a hash.
-    # Keys are file titles.
-    # Values are AssetUploader::UploadedFile objects.
-    def files
-      @files ||= begin
-        data = []
-        @scope.includes(:leaf_representative).each do |work|
-          data.append *GoogleArtsAndCulture::WorkSerializer.new(work, attribute_keys: @attribute_keys, column_counts: column_counts).files
-        end
-        data.to_h
-      end
-    end
+
 
 
     # Does not close the tempfile.

@@ -49,7 +49,6 @@ RSpec.describe GoogleArtsAndCulture::AssetSerializer do
 
   describe "#filename" do
     it "returns a string filename for the given asset" do
-      pp serializer.class
       expect(serializer.filename).to eq "test_title_#{asset.parent.friendlier_id}_0_#{asset.friendlier_id}.jpg"
     end
   end
