@@ -1,5 +1,4 @@
 
-#class UploadFilesToGoogleArtsAndCultureJob  < ApplicationJob
 class UploadFilesToGoogleArtsAndCultureJob  < ApplicationJob
   def perform(work_ids:,  attribute_keys:, column_counts: )
     downloaded_files = []

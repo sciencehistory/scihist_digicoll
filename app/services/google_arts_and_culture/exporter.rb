@@ -18,7 +18,7 @@ module GoogleArtsAndCulture
     end
 
     def upload_files_to_google_arts_and_culture
-      UploadFilesToGoogleArtsAndCultureJob.new.perform(
+      UploadFilesToGoogleArtsAndCultureJob.perform_later(
         work_ids: @scope.pluck(:id),
         attribute_keys: @attribute_keys,
         column_counts: column_counts

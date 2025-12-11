@@ -44,42 +44,43 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
     end
   end
 
-  describe "#files_as_zip" do
+  describe "#upload_files_to_google_arts_and_culture" do
     let(:creator) { described_class.new(scope) }
-
-    it "returns a Tempfile ready for reading" do
-      zip_file = creator.files_as_zip
-
-      expect(zip_file).to be_present
-      expect(zip_file).to be_a(Tempfile)
-      expect(zip_file.size).to be > 0
-      expect(zip_file.size).to eq(File.size(zip_file.path))
-      expect(zip_file.lineno).to eq(0)
-    ensure
-      if zip_file
-        zip_file.close
-        zip_file.unlink
-      end
-    end
-
-    it "builds a zip file that includes asset entries" do
-      zip_file = creator.files_as_zip
-      entry_names = []
-
-      Zip::File.open(zip_file.path) do |zip|
-        zip.each do |entry|
-          entry_names << entry.name
-        end
-      end
-
-      expect(entry_names.size).to be 2
-      expect(entry_names).to contain_exactly "test_title_#{work_1.friendlier_id}_#{work_1.members.first.friendlier_id}.jpg", "test_title_#{work_2.friendlier_id}_#{work_2.members.first.friendlier_id}.jpg"
-      
-    ensure
-      if zip_file
-        zip_file.close
-        zip_file.unlink
-      end
+    it "enqueues a job to upload the files" do
+      expect {
+        creator.upload_files_to_google_arts_and_culture
+      }.to have_enqueued_job(UploadFilesToGoogleArtsAndCultureJob).with { |params|
+        {
+          work_ids: [work_1.id, work_2.id],
+          attribute_keys:  [
+            :friendlier_id,
+            :subitem_id,
+            :order_id,
+            :title,
+            :additional_title,
+            :file_name,
+            :filetype,
+            :url_text,
+            :url,
+            :creator,
+            :publisher,
+            :subject,
+            :extent,
+            :min_date,
+            :max_date,
+            :date_of_work,
+            :place,
+            :medium,
+            :genre,
+            :description,
+            :rights,
+            :rights_holder
+          ],
+          column_counts: {
+            "subject" => 0, "external_id" => 4, "additional_title" => 0, "genre" => 1, "creator" => 0, "medium" => 0, "extent" => 0, "place" => 0, "format" => 1
+          }
+        }
+      }
     end
   end
 end
