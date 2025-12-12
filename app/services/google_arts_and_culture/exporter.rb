@@ -18,13 +18,12 @@ module GoogleArtsAndCulture
     end
 
     def upload_files_to_google_arts_and_culture
-      UploadFilesToGoogleArtsAndCultureJob.perform_later(
-        work_ids: @scope.pluck(:id),
-        attribute_keys: @attribute_keys,
-        column_counts: column_counts
-      )
+      UploadFilesToGoogleArtsAndCultureJob.new.perform(work_ids: @scope.pluck(:id))
     end
 
+    def upload_files_to_google_arts_and_culture_async
+      UploadFilesToGoogleArtsAndCultureJob.perform_later(work_ids: @scope.pluck(:id))
+    end
 
     # Does not close the tempfile.
     def metadata_csv_tempfile
@@ -44,10 +43,6 @@ module GoogleArtsAndCulture
         end
         data
       end
-    end
-
-    def tmp_zipfile!
-      Tempfile.new(["GAC_download", ".zip"]).tap { |t| t.binmode }
     end
 
     def title_row
