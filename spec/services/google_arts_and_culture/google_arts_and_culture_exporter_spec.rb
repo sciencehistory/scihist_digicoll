@@ -48,37 +48,10 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
     let(:creator) { described_class.new(scope) }
     it "enqueues a job to upload the files" do
       expect {
-        creator.upload_files_to_google_arts_and_culture
+        creator.upload_files_to_google_arts_and_culture_async
       }.to have_enqueued_job(UploadFilesToGoogleArtsAndCultureJob).with { |params|
         {
-          work_ids: [work_1.id, work_2.id],
-          attribute_keys:  [
-            :friendlier_id,
-            :subitem_id,
-            :order_id,
-            :title,
-            :additional_title,
-            :file_name,
-            :filetype,
-            :url_text,
-            :url,
-            :creator,
-            :publisher,
-            :subject,
-            :extent,
-            :min_date,
-            :max_date,
-            :date_of_work,
-            :place,
-            :medium,
-            :genre,
-            :description,
-            :rights,
-            :rights_holder
-          ],
-          column_counts: {
-            "subject" => 0, "external_id" => 4, "additional_title" => 0, "genre" => 1, "creator" => 0, "medium" => 0, "extent" => 0, "place" => 0, "format" => 1
-          }
+          work_ids: [work_1.id, work_2.id]
         }
       }
     end
