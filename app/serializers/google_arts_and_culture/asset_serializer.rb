@@ -1,7 +1,11 @@
 module GoogleArtsAndCulture
   class GoogleArtsAndCulture::AssetSerializer < GoogleArtsAndCulture::KitheModelSerializer
 
-
+    # Two class methods
+    #
+    # We use these methods in both the metadata and file exports;
+    # for the latter, we want lightweight way to access them
+    # without worrying about presentation, but it's important
     def self.filename(asset)
       "#{DownloadFilenameHelper.filename_base_from_parent(asset)}.jpg" unless asset&.file&.url.nil?
     end
@@ -15,6 +19,8 @@ module GoogleArtsAndCulture
     end
 
 
+
+    # Instance methods:
     def initialize(model, callback: nil, attribute_keys:, column_counts:)
       @asset = model
       super
@@ -40,19 +46,14 @@ module GoogleArtsAndCulture
       end.flatten
     end
 
+    # Calls the class method
     def file
       self.class.file(@asset)
-      # if @asset.content_type == "image/jpeg"
-      #   @asset.file
-      # else
-      #   @asset.file_derivatives(:download_full)
-      # end
     end
 
+    # Calls the class method
     def filename
       self.class.filename(@asset)
-      # return no_value if @asset&.file&.url.nil?
-      # "#{DownloadFilenameHelper.filename_base_from_parent(@asset)}.jpg"
     end
 
     def filetype
