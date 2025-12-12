@@ -2,7 +2,7 @@ module GoogleArtsAndCulture
   class GoogleArtsAndCulture::WorkSerializer < GoogleArtsAndCulture::KitheModelSerializer
 
 
-    def self.memmbers_to_include(work)
+    def self.members_to_include(work)
       work.members.
         includes(:leaf_representative).
         where(published: true).
@@ -13,6 +13,14 @@ module GoogleArtsAndCulture
         end
     end
 
+    # Returns a hash of { filename_string => file_obj }
+    def self.file_hash(work)
+      self.members_to_include(work).map do |asset|
+        [GoogleArtsAndCulture::AssetSerializer.filename(asset), GoogleArtsAndCulture::AssetSerializer.file(asset)]
+      end.to_h
+    end
+
+
 
     def initialize(model, callback: nil, attribute_keys:, column_counts:)
       super
@@ -20,8 +28,13 @@ module GoogleArtsAndCulture
     end
 
     def members_to_include
-      @members_to_include ||= self.class.memmbers_to_include(@work)
+      @members_to_include ||= self.class.members_to_include(@work)
     end
+
+    def file_hash
+      @file_hash ||= self.class.file_hash(@work)
+    end
+
 
     def metadata
       result = [work_metadata]
@@ -82,11 +95,6 @@ module GoogleArtsAndCulture
       @single_member ||= members_to_include.count == 1
     end
 
-    def files
-      members_to_include.map do |asset|
-        [GoogleArtsAndCulture::AssetSerializer.filename(asset), GoogleArtsAndCulture::AssetSerializer.file(asset)]
-      end
-    end
 
     def filetype
       'Sequence'
