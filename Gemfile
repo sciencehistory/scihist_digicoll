@@ -71,6 +71,8 @@ gem "aws-sdk-mediaconvert", "~> 1.0"
 gem "aws-sdk-s3", "~> 1.0"
 gem "aws-sdk-cloudfront", "~> 1.91"
 
+gem "google-cloud-storage"
+
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
@@ -130,6 +132,8 @@ gem 'access-granted', "~> 1.0" # authorization
 gem 'omniauth-entra-id'
 gem 'omniauth-rails_csrf_protection'
 
+# For uploading to Google Arts and Culture
+gem "shrine-google_cloud_storage"
 
 # decorating and truncating html
 gem "rinku", '~> 2.0' # auto-linking
