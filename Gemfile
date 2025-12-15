@@ -71,7 +71,10 @@ gem "aws-sdk-mediaconvert", "~> 1.0"
 gem "aws-sdk-s3", "~> 1.0"
 gem "aws-sdk-cloudfront", "~> 1.91"
 
-gem "google-cloud-storage"
+gem "google-cloud-storage", "~> 1.57.1"
+gem "google-api-client", "~> 0.7.1"
+gem "googleauth", "~> 1.15.0"
+
 
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
