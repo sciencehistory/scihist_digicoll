@@ -18,6 +18,12 @@ class OralHistory::AiConversation < ApplicationRecord
 
   enum :status, { queued: "queued", in_process: "in_process", success: "success", error: "error" }, prefix: :status
 
+  before_save do
+    # record git SHA of the current codebase, to give us a chance to know what logic
+    # generated this, for comparison.
+    self.project_source_version ||= ENV['SOURCE_VERSION']
+  end
+
   # Actually talk to Claude based on question preserved here, and record answer and metadata as
   # we go. This could take 10+ seconds, so is usually done in a background job.
   #

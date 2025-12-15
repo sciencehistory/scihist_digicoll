@@ -41,6 +41,22 @@ RSpec.describe OralHistory::AiConversation, type: :model do
       expect(conversation.answer_json).to eq json_return
     end
 
+    describe "with SOURCE_VERSION" do
+      let(:source_version) { "mock_git_sha" }
+
+      before do
+        allow(OralHistoryChunk).to receive(:get_openai_embedding).and_return(OralHistoryChunk::FAKE_EMBEDDING)
+
+        allow(ENV).to receive(:[]).and_call_original # for other ENV
+        allow(ENV).to receive(:[]).with("SOURCE_VERSION").and_return(source_version)
+      end
+
+      it "is recorded" do
+        conversation.exec_and_record_interaction
+        expect(conversation.project_source_version).to eq source_version
+      end
+    end
+
     describe "with response error" do
       let(:json_return) { "illegal not a hash" }
       let(:conversation) { OralHistory::AiConversation.build(question: question, question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
