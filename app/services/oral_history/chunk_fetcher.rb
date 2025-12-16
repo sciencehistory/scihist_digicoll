@@ -6,6 +6,7 @@ module OralHistory
   # other constraints.
   class ChunkFetcher
     attr_reader :top_k, :question_embedding, :per_document_limit, :oversample_factor
+    attr_reader :exclude_oral_history_chunk_ids
 
 
     # @param top_k [Integer] how many chunks do you want back
@@ -16,11 +17,17 @@ module OralHistory
     # @param oversample_factor [Integer] When doing per_document_limit, we need to kind of originally
     #     fetch more than that, so we can then apply the per_document limit and still have enough.
     #     It all happens inside a SQL subquery, but we can't actually rank _everything_.
-    def initialize(top_k:, question_embedding:, per_document_limit: nil, oversample_factor: 3)
+    #
+    # @param exclude_chunks[Array<OralHistoryChunk,Integer>] Array of OralHistoryChunk, or OralHistoryChunk#id, exclude these
+    def initialize(top_k:, question_embedding:, per_document_limit: nil, oversample_factor: 3, exclude_chunks: nil)
       @top_k = top_k
       @question_embedding = question_embedding
       @per_document_limit = per_document_limit
       @oversample_factor = oversample_factor
+
+      if exclude_chunks
+        @exclude_oral_history_chunk_ids = exclude_chunks.collect {|i| i.kind_of?(OralHistoryChunk) ? i.id : i }
+      end
     end
 
     # @return [Array<OralHistoryChunk>]  Where each one also has a `neighbor_distance` attribute
@@ -38,9 +45,15 @@ module OralHistory
 
     # Without limit count, we'll add that later.
     def base_relation
-      OralHistoryChunk.neighbors_for_embedding(question_embedding).includes(oral_history_content: :work)
       # Preload work, so we can get title or other metadata we might want.
-      #OralHistoryChunk.neighbors_for_embedding(question_embedding).includes(oral_history_content: :work)
+      relation = OralHistoryChunk.neighbors_for_embedding(question_embedding).includes(oral_history_content: :work)
+
+      # exclude chunks?
+      if exclude_oral_history_chunk_ids.present?
+        relation = relation.where.not(id: exclude_oral_history_chunk_ids)
+      end
+
+      relation
     end
 
     # We need to take base_scope and use it as a Postgres CTE (Common Table Expression)

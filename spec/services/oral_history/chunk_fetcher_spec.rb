@@ -48,6 +48,8 @@ describe OralHistory::ChunkFetcher do
                         speakers: ["SMITH", "JONES"], text: "Chunk 3")}
 
 
+  let(:all_chunks) { [chunk1, chunk2, chunk3, chunk4] }
+
   it "fetches" do
     results = described_class.new(question_embedding: fake_question_embedding, top_k: 2).fetch_chunks
 
@@ -81,4 +83,20 @@ describe OralHistory::ChunkFetcher do
     expect(included_similarity.min).to be >= excluded_similarity.max
   end
 
+  describe "exclude_chunks" do
+    it "can exclude chunks by id" do
+      exclude_chunk_ids = [chunk1, chunk3].collect(&:id)
+      results = described_class.new(question_embedding: fake_question_embedding, top_k: 100, exclude_chunks: exclude_chunk_ids).fetch_chunks
+
+      expected_ids = all_chunks.collect(&:id) - exclude_chunk_ids
+      expect(results.collect(&:id)).to match_array expected_ids
+    end
+
+    it "can exclude chunks by chunk" do
+      results = described_class.new(question_embedding: fake_question_embedding, top_k: 100, exclude_chunks: [chunk2, chunk4]).fetch_chunks
+
+      expected_ids = all_chunks.collect(&:id) - [chunk2, chunk4].collect(&:id)
+      expect(results.collect(&:id)).to match_array expected_ids
+    end
+  end
 end
