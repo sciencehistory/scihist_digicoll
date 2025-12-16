@@ -8,15 +8,15 @@ module OralHistory
   #
   class OhmsLegacyTranscriptChunker
     # always want more than this many words
-    LOWER_WORD_LIMIT = 270
+    LOWER_WORD_LIMIT = 260
 
     # if we're at this many, and next paragraph looks like an "Question" rather than
     # "Answer", end the chunk before the new Question.
-    WORD_GOAL = 420
+    WORD_GOAL = 395
 
     # if next paragraph would take us over this many words, end the chunk even
     # in the middle of a speaker turn or splitting an answer and question
-    UPPER_WORD_LIMIT = 540
+    UPPER_WORD_LIMIT = 520
 
     # Batches of chunks to create
     BATCH_SIZE = 100
