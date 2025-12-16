@@ -61,26 +61,27 @@ describe OralHistory::ChunkFetcher do
     results.collect(&:oral_history_content).flatten.collect(&:work)
   end
 
+  describe "max_per_interview" do
+    it "fetches with limit" do
+      # We ask for 3, but can only get 2 because of per-doc limit
+      results = described_class.new(question_embedding: fake_question_embedding, top_k: 3, max_per_interview: 1).fetch_chunks
 
-  it "fetches with per_document_limit" do
-    # We ask for 3, but can only get 2 because of per-doc limit
-    results = described_class.new(question_embedding: fake_question_embedding, top_k: 3, per_document_limit: 1).fetch_chunks
+      expect(results.length).to eq 2
 
-    expect(results.length).to eq 2
+      # Two oral_history_content_id's, each with only 1 chunk
+      groups = results.group_by {|c| c.oral_history_content_id }
+      expect(groups.count).to eq 2
+      expect(groups.values).to all satisfy { |v| v.length== 1}
 
-    # Two oral_history_content_id's, each with only 1 chunk
-    groups = results.group_by {|c| c.oral_history_content_id }
-    expect(groups.count).to eq 2
-    expect(groups.values).to all satisfy { |v| v.length== 1}
+      # included chunks have closer vector distance to question than excluded
+      excluded = [chunk1, chunk2, chunk3, chunk4].find_all { |c| ! c.id.in?(results.collect(&:id)) }
+      excluded_similarity = excluded.collect {|c| cosine_similarity(c.embedding, fake_question_embedding) }
 
-    # included chunks have closer vector distance to question than excluded
-    excluded = [chunk1, chunk2, chunk3, chunk4].find_all { |c| ! c.id.in?(results.collect(&:id)) }
-    excluded_similarity = excluded.collect {|c| cosine_similarity(c.embedding, fake_question_embedding) }
+      included_similarity = results.collect {|c| cosine_similarity(c.embedding, fake_question_embedding) }
 
-    included_similarity = results.collect {|c| cosine_similarity(c.embedding, fake_question_embedding) }
-
-    # everything included has more similarity than anything excluded!
-    expect(included_similarity.min).to be >= excluded_similarity.max
+      # everything included has more similarity than anything excluded!
+      expect(included_similarity.min).to be >= excluded_similarity.max
+    end
   end
 
   describe "exclude_chunks" do
