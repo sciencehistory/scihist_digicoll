@@ -108,9 +108,7 @@ module OralHistory
 
     # @param k [Integer] how many chunks to get
     def get_chunks(k: INITIAL_CHUNK_COUNT)
-      # TODO: the SQL log for the neighbor query is too huge!!
-      # Preload work, so we can get title or other metadata we might want.
-      OralHistoryChunk.neighbors_for_embedding(question_embedding).limit(k).includes(oral_history_content: :work).strict_loading
+      OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: k).fetch_chunks
     end
 
     def format_chunks(chunks)
