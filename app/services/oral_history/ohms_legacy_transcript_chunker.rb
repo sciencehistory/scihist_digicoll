@@ -21,10 +21,15 @@ module OralHistory
     # Batches of chunks to create
     BATCH_SIZE = 100
 
+    EMBEDDING_RETRY_WAIT = 5
+
     attr_reader :transcript,  :interviewee_names, :oral_history_content
 
 
-    def initialize(oral_history_content:)
+    # @param allow_embedding_wait_seconds [Integer] if we exceed open ai rate limit for getting
+    #    embedding, can we wait and try again? With maximum wait being this many seconds.
+    #    Default 0, so, no.
+    def initialize(oral_history_content:, allow_embedding_wait_seconds: 0)
       unless oral_history_content.kind_of?(OralHistoryContent)
         raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
       end
@@ -41,6 +46,8 @@ module OralHistory
       @interviewee_names = oral_history_content.work.creator.
         find_all { |c| c.category == "interviewee"}.
         collect { |c| c.value.split(",").first.upcase }
+
+      @allow_embedding_wait_seconds = allow_embedding_wait_seconds
     end
 
 
@@ -58,7 +65,16 @@ module OralHistory
         if use_dummy_embedding
           records.each { |r| r.embedding = OralHistoryChunk::FAKE_EMBEDDING }
         else
-          embeddings = OralHistoryChunk.get_openai_embeddings(*records.collect(&:text))
+          embeddings = begin
+            OralHistoryChunk.get_openai_embeddings(*records.collect(&:text))
+          rescue Faraday::TooManyRequestsError => e
+            # got a 429 from openai,
+            if should_retry_openai_rate_limit(e)
+              retry
+            else
+              raise e
+            end
+          end
 
           if embeddings.count != records.count
             raise StandardError.new("Fetched OpenAI embeddings in batch, but count does not equal record count! #{embeddings.count}, #{records.count}")
@@ -76,6 +92,34 @@ module OralHistory
       end
 
       nil
+    end
+
+    # an openai rate limit exception. Logs it. Decides based on our max wait time
+    # if it's wait-retryable.  Does the waiting if it is, and then returns true.
+    #
+    # Returns false if not wait-retyable cause we don't have enough wait time.
+    def should_retry_openai_rate_limit(e)
+      log_msg = "#{self.class.name} #{job_id}: Error getting embeddings? #{e}:"
+
+      if allow_embedding_wait_seconds > 0
+        log_msg += "WILL RETRY AFTER WAIT: "
+      else
+        log_msg += "ABORTING: "
+      end
+
+      relevant_headers = e.response.headers.keys.select { |k| k.start_with?("retry") || k.start_with?("x-retry")}
+      log_msg += "\n\n    #{ e.response.headers.to_h.slice(relevant_headers).inspect }"
+
+      Rails.logger.warn(log_msg)
+
+      if allow_embedding_wait_seconds > 0
+        wait = [EMBEDDING_RETRY_WAIT, allow_embedding_wait_seconds].min
+        allow_embedding_wait_seconds = allow_embedding_wait_seconds - wait
+        sleep wait
+        return true
+      else
+        return false
+      end
     end
 
     # Goes through transcript paragraphs, divides into chunks, based on turn and word goals
