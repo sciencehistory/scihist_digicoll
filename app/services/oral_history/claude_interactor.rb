@@ -66,16 +66,13 @@ module OralHistory
       chunks = get_chunks(k: INITIAL_CHUNK_COUNT)
 
       conversation_record&.record_chunks_used(chunks)
-
-      user_instructions = construct_user_prompt(chunks)
-
       conversation_record&.request_sent_at = Time.current
 
       # more params are available, both general bedrock and specific to model
       response = AWS_BEDROCK_CLIENT.converse(
         model_id: MODEL_ID,
-        system: [{ text: system_instructions }],
-        messages: [{ role: 'user', content: [{ text: user_instructions }] }]
+        system: [{ text: render_system_instructions }],
+        messages: [{ role: 'user', content: [{ text: render_user_prompt(chunks) }] }]
       )
 
       # store certain parts of response as metrics
@@ -88,88 +85,25 @@ module OralHistory
       return response
     end
 
-    def system_instructions
-      # - If fewer than 5 unique oral histories are represented in the supplied chunks, and the question is broad or asks about multiple individuals, set "more_chunks_needed": true.
-      # - Write the answer as if you have complete knowledge, without mentioning the source or process of retrieval.
-      # - If more information is needed to answer the full question, mark more_chunks_needed.
-      <<~EOS
-        You are an expert research assistant specialized in analyzing long oral-history interview transcripts. Follow these rules carefully. Adherence is mandatory.
-
-        ## RULES
-
-        [NARRATIVE RULES]
-        - Write a concise readable, coherent narrative answer for end-users.
-        - If you mention a person in an answer, always give their name, never just a role, description, pronoun, or relationship.
-        - Only use evidence from the retrieved chunks. Never hallucinate or speculate or use outside information.
-        - Reason internally, but do NOT show intermediate reasoning.
-        - If the claim cannot be supported by the provided evidence, set "answer_unavailable": true in the JSON, and set narrative to "#{ANSWER_UNAVAILABLE_TEXT}"
-        - Integrate claims from the retrieved chunks with inline footnote numbers [^1], [^2], etc. Only use each footnote once.
-        - Inline footnotes must correspond exactly to the footnotes included.
-        - Do NOT include disclaimers about retrieval, missing evidence, or limitations.
-        - Do NOT mention or imply anything about chunks, retrieved material, context, corpus coverage, or what is not found.
-        - Never mention or refer to: "chunks", "snippets", "passages", "portions", "retrieved" anything, or similar technical details of the storage or retrieval process.
-
-        [MORE CHUNKS RULE]
-        - If fewer than 3 unique oral histories are represented in the supplied chunks, and the question is broad or asks about multiple individuals, set "more_chunks_needed": true.
-        - For questions asking about all scientists, any scientists, groups, long time periods, or the whole collection, default to "more_chunks_needed": true unless evidence clearly covers the question.
-        - Otherwise, determine if the question can be fully answered from the supplied evidence and set "more_chunks_needed" accordingly.
-        - Never mention "more chunks" in the narrative; only reflect it in the JSON key.
-
-        [FOOTNOTE RULES]
-        - Every factual statement must have a footnote citing the exact paragraph(s) that support it.
-        - Chunks may contain multiple paragraphs; always cite the specific supporting paragraph numbers, not the whole chunk unless necessary.
-        - Every footnote should have one direct quote excerpted from the cited evidence, as a short represetative example of evidence. It should
-          be between 30 and 50 words.
-        - The quote must come directly from the cited paragraph(s); do not paraphrase.
-
-        [JSON OUTPUT RULES]
-        - JSON structure:
-
-        {
-          "narrative": "<full readable answer>",
-          "footnotes": [
-            {
-              "number": 1,
-              "chunk_id": "<chunk_id>",
-              "oral_history_title": "<oral_history_title>",
-              "paragraph_start": <number>,
-              "paragraph_end": <number>,
-              "quote": "<≤50-word excerpt>"
-            }
-          ],
-          "more_chunks_needed": true | false,
-          "answer_unavailable": true | false
-        }
-
-        - Output a single valid JSON object ONLY.
-        - Do NOT include narrative, explanations, summaries, or code fences outside the JSON.
-        - The "narrative" field inside the JSON contains the full readable answer.
-        - Do NOT output any text before or after the JSON object.
-
-        [SELF-CHECK RULES]
-        - Before returning JSON, verify all rules are followed.
-        - Ensure all required footnote keys are present and correctly spelled.
-        - Ensure narrative does not contain forbidden phrases: "chunk", "retrieved material", "context", "corpus", "based on the retrieved context", "available evidence", "no other interviews", "not found", "the model", "AI", "as an AI", "the system", "limitations".
-        - If any rule is violated, revise the answer before outputting JSON.
-        - If any text appears outside the JSON object, revise the output so that only a single JSON object is returned.
-      EOS
+    # find template in eg  ./claude_interactor/system_instructions.txt.erb
+    def render_system_instructions
+      # In Rails 8.1, could switch to .md.erb and :md format if we wanted. no real difference.
+      ApplicationController.render( template: "claude_interactor/system_instructions",
+                                    locals: {
+                                      answer_unavailable_text: ANSWER_UNAVAILABLE_TEXT
+                                    },
+                                    formats: [:text])
     end
 
-    def construct_user_prompt(chunks)
-      <<~EOS
-        USER QUESTION:
-        #{question}
-
-        RETRIEVED CONTEXT CHUNKS:
-        #{format_chunks chunks}
-
-        TASK:
-
-        - Provide the concise readable narrative **inside the JSON field "narrative" only**.
-        - The narrative should only use the text in the supplied chunks to answer the question.
-        - The narrative should include inline citations matching the footnotes ([^1], [^2], etc.).
-        - Footnotes must follow the JSON structure specified in the system prompt.
-      EOS
+    def render_user_prompt(chunks)
+      # In Rails 8.1, could switch to .md.erb and :md format if we wanted. no real difference.
+      ApplicationController.render( template: "claude_interactor/initial_user_prompt",
+                                    locals: {
+                                      question: question,
+                                      formatted_chunks: format_chunks(chunks)
+                                    },
+                                    formats: [:text]
+                                  )
     end
 
     # @param k [Integer] how many chunks to get
