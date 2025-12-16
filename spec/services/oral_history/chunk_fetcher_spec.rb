@@ -81,6 +81,9 @@ describe OralHistory::ChunkFetcher do
 
       # everything included has more similarity than anything excluded!
       expect(included_similarity.min).to be >= excluded_similarity.max
+
+      # make sure we can follow associations without triggering strict loading error
+      results.collect(&:oral_history_content).flatten.collect(&:work)
     end
   end
 

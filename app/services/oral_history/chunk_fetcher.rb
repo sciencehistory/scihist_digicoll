@@ -106,7 +106,8 @@ module OralHistory
         select("*").
         from("ranked_chunks").
         where("doc_rank <= ?", max_per_interview).
-        order("neighbor_distance")
+        order("neighbor_distance").
+        includes(oral_history_content: :work)
     end
   end
 end
