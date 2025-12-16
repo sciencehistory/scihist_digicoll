@@ -6,7 +6,7 @@ module OralHistory
   # other constraints.
   class ChunkFetcher
     attr_reader :top_k, :question_embedding, :per_document_limit, :oversample_factor
-    attr_reader :exclude_oral_history_chunk_ids
+    attr_reader :exclude_oral_history_chunk_ids, :exclude_oral_history_content_ids
 
 
     # @param top_k [Integer] how many chunks do you want back
@@ -18,8 +18,11 @@ module OralHistory
     #     fetch more than that, so we can then apply the per_document limit and still have enough.
     #     It all happens inside a SQL subquery, but we can't actually rank _everything_.
     #
-    # @param exclude_chunks[Array<OralHistoryChunk,Integer>] Array of OralHistoryChunk, or OralHistoryChunk#id, exclude these
-    def initialize(top_k:, question_embedding:, per_document_limit: nil, oversample_factor: 3, exclude_chunks: nil)
+    # @param exclude_chunks [Array<OralHistoryChunk,Integer>] Array of OralHistoryChunk, or OralHistoryChunk#id, exclude these
+    #
+    # @param exclude_interviews [Array<Work,OralHistoryContent,Integer>] Interviews to exclude. can be as Work, OralHistoryContent,
+    #   or OralHistoryContent#id
+    def initialize(top_k:, question_embedding:, per_document_limit: nil, oversample_factor: 3, exclude_chunks: nil, exclude_interviews: nil)
       @top_k = top_k
       @question_embedding = question_embedding
       @per_document_limit = per_document_limit
@@ -27,6 +30,18 @@ module OralHistory
 
       if exclude_chunks
         @exclude_oral_history_chunk_ids = exclude_chunks.collect {|i| i.kind_of?(OralHistoryChunk) ? i.id : i }
+      end
+
+      if exclude_interviews
+        @exclude_oral_history_content_ids = exclude_interviews.collect do |i|
+          if i.kind_of?(Work)
+            i.oral_history_content.id
+          elsif i.kind_of?(OralHistoryContent)
+            i.id
+          else
+            i
+          end
+        end
       end
     end
 
@@ -48,9 +63,14 @@ module OralHistory
       # Preload work, so we can get title or other metadata we might want.
       relation = OralHistoryChunk.neighbors_for_embedding(question_embedding).includes(oral_history_content: :work)
 
-      # exclude chunks?
+      # exclude specific chunks?
       if exclude_oral_history_chunk_ids.present?
         relation = relation.where.not(id: exclude_oral_history_chunk_ids)
+      end
+
+      # exclude interviews?
+      if exclude_oral_history_content_ids.present?
+        relation = relation.where.not(oral_history_content_id: exclude_oral_history_content_ids)
       end
 
       relation

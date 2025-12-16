@@ -99,4 +99,12 @@ describe OralHistory::ChunkFetcher do
       expect(results.collect(&:id)).to match_array expected_ids
     end
   end
+
+  describe "exclude_interviews" do
+    it "can exclude interviews by OralHistoryContent model" do
+      results = described_class.new(question_embedding: fake_question_embedding, top_k: 100, exclude_interviews: [work1.oral_history_content]).fetch_chunks
+
+      expect(results.collect(&:oral_history_content_id)).not_to include(work1.oral_history_content.id)
+    end
+  end
 end
