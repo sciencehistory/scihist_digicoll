@@ -99,7 +99,7 @@ module OralHistory
     #
     # Returns false if not wait-retyable cause we don't have enough wait time.
     def should_retry_openai_rate_limit(e)
-      log_msg = "#{self.class.name} #{job_id}: Error getting embeddings? #{e}:"
+      log_msg = "#{self.class.name}: Error getting embeddings? #{e}:"
 
       if allow_embedding_wait_seconds > 0
         log_msg += "WILL RETRY AFTER WAIT: "
