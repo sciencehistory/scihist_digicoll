@@ -101,7 +101,7 @@ module OralHistory
     def should_retry_openai_rate_limit(e)
       log_msg = "#{self.class.name}: Error getting embeddings? #{e}:"
 
-      if allow_embedding_wait_seconds > 0
+      if @allow_embedding_wait_seconds > 0
         log_msg += "WILL RETRY AFTER WAIT: "
       else
         log_msg += "ABORTING: "
@@ -114,7 +114,7 @@ module OralHistory
 
       if allow_embedding_wait_seconds > 0
         wait = [EMBEDDING_RETRY_WAIT, allow_embedding_wait_seconds].min
-        allow_embedding_wait_seconds = allow_embedding_wait_seconds - wait
+        @allow_embedding_wait_seconds = @allow_embedding_wait_seconds - wait
         sleep wait
         return true
       else
