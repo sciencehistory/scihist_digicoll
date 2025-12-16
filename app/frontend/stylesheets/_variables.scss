@@ -223,6 +223,7 @@ $headings-color: $shi-blackish;
 // The variations are used in alerts among other places.
 $primary: $shi-teal; // main buttons actually use $shi-yellow, but we don't want to put that everywhere bootstrap primary goes
 $secondary: $shi-blackish;
+$secondary-subtle: $shi-bg-gray; // not really a subtle version, but works for us.
 $info: $shi-bg-turquoise;
   $info-bg-subtle: $shi-teal-1;
   $info-border-subtle: $shi-teal-3;
@@ -289,6 +290,8 @@ $pagination-active-border-color:    $pagination-active-bg;
 
 $popover-font-size: 1rem;
 $popover-border-radius: 9px;
+// We use popovers for some lengthy stuff, default 276px
+$popover-max-width: min(70vw, ($max-readable-width * 0.95));
 
 // This variable is used in Blacklight gem CSS, and
 // causes a mysterious bug we don't entirely understand. We don't use the portion

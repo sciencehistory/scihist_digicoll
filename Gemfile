@@ -70,6 +70,7 @@ gem "aws-sdk-cloudwatchlogs", "~> 1.0"
 gem "aws-sdk-mediaconvert", "~> 1.0"
 gem "aws-sdk-s3", "~> 1.0"
 gem "aws-sdk-cloudfront", "~> 1.91"
+gem 'aws-sdk-bedrockruntime', '~> 1.66'
 
 gem "google-cloud-storage", "~> 1.57.1"
 gem "google-api-client", "~> 0.7.1"
@@ -165,9 +166,6 @@ gem 'sitemap_generator', '~> 6.0' # google sitemap generation
 
 gem 'sane_patch', '< 2.0' # time-limited monkey patches
 
-gem 'activerecord-postgres_enum', '~> 2.0' # can record postgres enums in schema.rb dump
-
-
 # For autoscaling on heroku via hirefire.io service, but hopefully won't cause any problems
 # when running not on heroku.
 #
@@ -261,6 +259,9 @@ end
  gem "faraday-retry", "~> 2.0"
 
  gem "csv", "~> 3.3.0"
+
+# for LLM embedding vectors in ActiveRecord databases, such as pg_vector
+gem "neighbor", "< 2"
 
 
 # Barnes reports Ruby runtime metrics to Heroku, where we can monitor them.

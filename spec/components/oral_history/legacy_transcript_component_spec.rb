@@ -18,6 +18,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
     expect(parsed.css("span.ohms-transcript-line").count).to eq(transcript_text.split("\n").count)
     expect(parsed.css("p.ohms-transcript-paragraph").count).to eq(transcript_text.split("\n\n").count)
+
     # plus one because we have added one for the 0 timestamp
     expect(parsed.css("a.ohms-transcript-timestamp").count).to eq(ohms_xml.legacy_transcript.sync_timecodes.count + 1)
 
@@ -26,6 +27,14 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     expect(first_line.to_html).to eq(
       %Q{<span class="ohms-transcript-line" id="ohms_line_1" data-searchable-transcript-line="true"><a href="#t=0" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="transcript-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}
     )
+  end
+
+  it "includes unique paragraph ids" do
+    parsed = render_inline(ohms_transcript_display)
+
+    ids = parsed.css("p.ohms-transcript-paragraph/@id").collect(&:text)
+    expect(ids).to all(be_present)
+    expect(ids.uniq).to eq ids # no duplicates
   end
 
   it "properly renders footnotes and references to them" do
@@ -37,6 +46,9 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     expect(line_with_first_footnote).to include "[1]"
 
     expect(parsed.css(".footnote").count).to eq 2
+
+    expect(parsed.css(".footnote-list .footnote-page-bottom-container").count).to eq 2
+    expect(parsed.css(".footnote-list .footnote-page-bottom-container").text). to include("U.S. Patent 2,281,576, issued 5 May 1942")
   end
 
   # Footnotes and footnote references are expected
@@ -57,10 +69,11 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
     allow(ohms_xml_with_footnotes.legacy_transcript).
       to receive(:footnote_array).
       and_return(["one", "two", "three"])
-    line = {
-      :text => "DUARTE: My grandfather Duarte [[footnote]] 1[[/footnote]] was Portuguese  [[footnote]]2 [[/footnote]] from the Azores  [[footnote]] 3   [[/footnote]] ",
-      :line_num=>10
-    }
+
+    line = OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(
+      text: "DUARTE: My grandfather Duarte [[footnote]] 1[[/footnote]] was Portuguese  [[footnote]]2 [[/footnote]] from the Azores  [[footnote]] 3   [[/footnote]] ",
+      line_num: 10
+    )
 
     render_inline ohms_transcript_display_with_footnotes
 
@@ -123,8 +136,12 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
         render_inline ohms_transcript_display
 
-        expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
-          to eq("<a href=\"#t=0\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
+        expect(
+          ohms_transcript_display.format_ohms_line(
+            OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: "some text", line_num: 1)
+          )
+        ).to eq("<a href=\"#t=0\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
+
         expect(shown_timecodes).to eq(["00:00:00", "", ""])
       end
     end
@@ -153,8 +170,11 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
         render_inline ohms_transcript_display
 
-        expect(ohms_transcript_display.format_ohms_line({text: "some text", line_num: 1})).
-          to eq("<a href=\"#t=120\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
+        expect(
+          ohms_transcript_display.format_ohms_line(
+            OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: "some text", line_num: 1)
+          )
+        ).to eq("<a href=\"#t=120\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
       end
     end
 

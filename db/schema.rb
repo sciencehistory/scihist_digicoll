@@ -10,15 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_08_171351) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_01_161421) do
   # These are extensions that must be enabled in order to support this database
-  enable_extension "plpgsql"
+  enable_extension "vector"
 
-  create_enum :available_by_request_mode_type, [
-    "off",
-    "automatic",
-    "manual_review",
-  ], force: :cascade
+  # Custom types defined in this database.
+  # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "available_by_request_mode_type", ["off", "automatic", "manual_review"]
 
   create_function :kithe_models_friendlier_id_gen, sql_definition: <<-'SQL'
       CREATE OR REPLACE FUNCTION public.kithe_models_friendlier_id_gen(min_value bigint, max_value bigint)
@@ -232,6 +230,35 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_171351) do
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
   end
 
+  create_table "oral_history_ai_conversations", force: :cascade do |t|
+    t.string "status", default: "queued", null: false
+    t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
+    t.string "session_id"
+    t.string "question", null: false
+    t.vector "question_embedding", limit: 3072
+    t.jsonb "response_metadata", default: {}
+    t.jsonb "chunks_used", default: {}
+    t.jsonb "error_info"
+    t.jsonb "answer_json"
+    t.datetime "request_sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "oral_history_chunks", force: :cascade do |t|
+    t.vector "embedding", limit: 3072, null: false
+    t.bigint "oral_history_content_id", null: false
+    t.integer "start_paragraph_number", null: false
+    t.integer "end_paragraph_number", null: false
+    t.text "text", null: false
+    t.string "speakers", default: [], array: true
+    t.jsonb "other_metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index "((embedding)::halfvec(3072)) halfvec_cosine_ops", name: "idx_on_embedding_halfvec_3072_halfvec_cosine_ops_4742ee9fb6", using: :hnsw
+    t.index ["oral_history_content_id"], name: "index_oral_history_chunks_on_oral_history_content_id"
+  end
+
   create_table "oral_history_content", force: :cascade do |t|
     t.uuid "work_id", null: false
     t.string "combined_audio_fingerprint"
@@ -317,6 +344,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_08_171351) do
   add_foreign_key "on_demand_derivatives", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "oral_history_requester_emails"
+  add_foreign_key "oral_history_chunks", "oral_history_content"
   add_foreign_key "oral_history_content", "kithe_models", column: "work_id"
   add_foreign_key "queue_item_comments", "digitization_queue_items"
 end

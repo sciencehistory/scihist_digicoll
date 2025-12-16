@@ -1,0 +1,36 @@
+<%# hacky and also not accessible way to reload every 3 seconds until we are done, temporary %>
+<% unless @conversation.complete? %>
+  <%= content_for(:head) do %>
+    <meta http-equiv="refresh" content="4">
+  <% end %>
+<% end %>
+
+<div class="text-page">
+  <h2>Ask <code>ARCHOMAT</code> the Robot Research Assistant about the contents of our Oral History collections</h2>
+
+  <p>
+    <%= link_to new_oral_history_ai_conversation_path do %>
+      <i class="fa fa-undo" aria-hidden="true"></i>
+      Ask another question
+    <% end %>
+  </p>
+
+  <div class="alert alert-warning mb-4 mt-4">
+    <span class="fw-bold">Q:</span> <%=  @conversation.question %>
+  </div>
+
+  <% if !@conversation.complete? %>
+    <div class="d-flex align-items-center">
+      <i class="fa fa-circle-o-notch fa-spin fa-2x me-2" aria-hidden="true"></i>
+      Computing...
+    </div>
+  <% elsif @conversation.status_error? %>
+    <div class="alert alert-danger">
+      Sorry, an error happened!  Error object <%= @conversation.external_id %>.
+    </div>
+  <% else %>
+    <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
+  <% end %>
+
+
+</div>

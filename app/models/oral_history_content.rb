@@ -45,6 +45,12 @@ class OralHistoryContent < ApplicationRecord
   has_and_belongs_to_many :interviewer_profiles
   has_and_belongs_to_many :interviewee_biographies
 
+  # Delete all embedding chunks if we get deleted, should be fine `delete` instead of `destroy`,
+  # we don't need callbacks?
+  has_many :oral_history_chunks, -> { order(start_paragraph_number: :asc) }, inverse_of: :oral_history_content, dependent: :delete_all
+
+  after_save :delete_chunks_on_transcript_change
+
   include CombinedAudioUploader::Attachment.new(:combined_audio_m4a, store: :combined_audio_derivatives)
 
   # Generic attachment with with no custom uploader behavior at all
@@ -152,5 +158,13 @@ class OralHistoryContent < ApplicationRecord
     self.combined_audio_derivatives_job_status = "failed"
     self.save!
     raise e
+  end
+
+  def delete_chunks_on_transcript_change
+    # if our transcript has changed, our chunks and embeddings are likely no longer valid, delete them.
+    if saved_change_to_ohms_xml_text?
+      # use delete without callbacks, it's okay and more efficient
+      oral_history_chunks.delete_all
+    end
   end
 end

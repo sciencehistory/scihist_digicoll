@@ -1,0 +1,10 @@
+
+<div class="text-page">
+  <h2>Ask <code>ARCHOMAT</code> the Robot Research Assistant about the contents of our Oral History collections</h2>
+  <%= simple_form_for :"", url: oral_history_ai_conversation_index_path, method: :post do |f| %>
+    <%= f.input :q, as: :text, label: "Question", hint: "\"List interviewees who…?\"; \"I'm looking for experiencies about…\"; \"Which scientists were…?\"", input_html: { rows: 3 } %>
+    <div class="d-flex justify-content-end">
+      <%= f.button :submit, "Ask", class: "btn btn-brand-main" %>
+    </div>
+  <% end %>
+</div>

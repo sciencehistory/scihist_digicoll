@@ -352,3 +352,12 @@ hr.brand {
     opacity: 0.7;
   }
 }
+
+// override bootstrap a bit for modals with embedded alert coloring
+.modal-body.alert {
+  margin-bottom: 0;
+}
+
+.badge.bg-secondary-subtle {
+  color: $body-color;
+}
