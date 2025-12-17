@@ -6,7 +6,7 @@
 class OhTranscriptChunkerJob < ApplicationJob
   def perform(oral_history_content, delete_existing: false)
     if oral_history_content.oral_history_chunks.exists?
-      if force
+      if delete_existing
         oral_history_content.oral_history_chunks.delete_all
       else
         raise RuntimeError.new("Can't create chunks when chunks already exist! It would create a mess. Or use delete_existing:true to auto-delete. For OralHistoryContent #{oral_history_content.id}")
