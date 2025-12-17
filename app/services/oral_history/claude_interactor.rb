@@ -177,10 +177,8 @@ module OralHistory
       # check all footnotes are present in both directions
       footnote_refs = json["narrative"].scan(/\[\^(\d+)\]/).flatten.collect(&:to_i)
       footnotes = json["footnotes"].collect { |h| h["number"] }
-      footnote_refs.zip(footnotes) do |pair|
-        unless pair.first == pair.second
-          raise OutputFormattingError.new("Footnotes don't match up at note: #{pair}", output: json)
-        end
+      unless footnote_refs == footnotes
+        raise OutputFormattingError.new("Footnotes don't match up at notes #{(footnotes + footnote_refs) - (footnotes & footnote_refs)}", output: json)
       end
 
       json
