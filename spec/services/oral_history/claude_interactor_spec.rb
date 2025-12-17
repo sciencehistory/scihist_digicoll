@@ -50,7 +50,7 @@ describe OralHistory::ClaudeInteractor do
     let(:json_return) {
       # we're only passing it through, it doesn't matter
       {
-        "narrative" => "Some kind of answer [1]",
+        "narrative" => "Some kind of answer [^1]",
         "footnotes" => [
           { "number" => 1,
             "oral_history_title" => "Some title, 2001",
