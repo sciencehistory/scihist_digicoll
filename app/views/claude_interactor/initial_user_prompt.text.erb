@@ -1,0 +1,12 @@
+USER QUESTION:
+<%= question %>
+
+RETRIEVED CONTEXT CHUNKS:
+<%= formatted_chunks %>
+
+TASK:
+
+- Provide the concise readable narrative **inside the JSON field "narrative" only**.
+- The narrative should only use the text in the supplied chunks to answer the question.
+- The narrative should include inline citations matching the footnotes ([^1], [^2], etc.).
+- Footnotes must follow the JSON structure specified in the system prompt.

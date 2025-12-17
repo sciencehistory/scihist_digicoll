@@ -10,8 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_01_161421) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_15_162911) do
   # These are extensions that must be enabled in order to support this database
+  enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
 
   # Custom types defined in this database.
@@ -243,6 +244,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_01_161421) do
     t.datetime "request_sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "project_source_version"
   end
 
   create_table "oral_history_chunks", force: :cascade do |t|
