@@ -3,9 +3,7 @@
 </div>
 
 <% if footnote_list.present? %>
-  <hr class="mt-5 mb-4">
-
-  <h3 class="fw-bold mb-4">Interviews Referenced</h3>
+  <h3 class="fw-bold mt-5 mb-4">Interviews Referenced</h3>
 
   <% footnote_list.each do |footnote_item_data| %>
     <p id="<%= footnote_item_data.anchor %>">
