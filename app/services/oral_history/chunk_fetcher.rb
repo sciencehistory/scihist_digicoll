@@ -84,6 +84,26 @@ module OralHistory
     #
     # @return [ActiveRecord::Relation] that's been wrapped with a CTE to enforce max_per_interview limits.
     def wrap_relation_for_max_per_interview(base_relation:, max_per_interview:, inner_limit:)
+      # We are creating a SQL of this form:
+      #
+      #     WITH ranked_chunks AS (
+      #     SELECT
+      #             chunks.*,
+      #             chunks.embedding <=> ? as distance,
+      #             ROW_NUMBER() OVER (PARTITION BY document_id ORDER BY chunks.embedding <=> ?) as doc_rank
+      #           FROM chunks
+      #           ORDER BY chunks.embedding <=> ?
+      #           LIMIT <big limit to get enough to choose from>
+      #     )
+      #         SELECT *
+      #         FROM ranked_chunks
+      #         WHERE doc_rank <= <max_per_interview>
+      #         ORDER BY distance
+      #         LIMIT <actual limit>
+      #
+      # Where the thing inside teh ranked_chunks CTE is the original neighbor query (base_relation),
+      # with the ROW_NUMBER and a limit added to it
+
       base_relation = base_relation.dup # cause we're gonna mutate it, avoid confusion.
 
       # add a 'select' using semi-private select_values API
