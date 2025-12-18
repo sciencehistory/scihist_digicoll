@@ -9,7 +9,9 @@
 
   <% footnote_list.each do |footnote_item_data| %>
     <p id="<%= footnote_item_data.anchor %>">
-      <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
+      <%= link_to "##{footnote_item_data.ref_anchor}" do %>
+        <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
+      <% end %>
 
       <%= link_to(link_from_ai_conversation_footnote(footnote_item_data), target: "_blank") do  -%>
         <%= footnote_item_data.short_citation_title -%> —
