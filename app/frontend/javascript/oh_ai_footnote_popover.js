@@ -27,7 +27,7 @@ domready(function() {
         <div class="popover-body"></div>
         <div class="popover-header"></div>
       </div>`,
-      customClass: "oh-ai-footnote-popover"
+      customClass: "oh-ai-footnote-popover popover-deep-shadow"
     });
 
   });

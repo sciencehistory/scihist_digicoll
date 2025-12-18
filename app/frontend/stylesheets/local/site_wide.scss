@@ -356,6 +356,10 @@ hr.brand {
   }
 }
 
+.popover-deep-shadow {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
 // override bootstrap a bit for modals with embedded alert coloring
 .modal-body.alert {
   margin-bottom: 0;

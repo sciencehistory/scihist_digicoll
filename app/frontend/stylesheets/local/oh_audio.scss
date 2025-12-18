@@ -337,7 +337,7 @@
 }
 
 .transcript-footnote-popover {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  @extend .popover-deep-shadow;
 
   a {
     // Make it look like a link, not sure why it wasn't looking like any kind
