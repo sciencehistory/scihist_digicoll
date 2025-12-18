@@ -4,10 +4,8 @@
   <%- end -%>
   <%= link_to(link_from_ai_conversation_footnote(footnote_item),
               target: "_blank",
-              "data-bs-toggle" => "popover",
-              "data-bs-content" => "“#{footnote_item.quote}”",
-              "data-bs-trigger" => "hover focus",
-              "data-bs-placement" => "bottom"
+              "data-shi-toggle" => "oh-ai-footnote-popover",
+              "data-shi-footnote-ref" => footnote_item.anchor,
               ) do -%>
     <span class="badge bg-secondary-subtle rounded-pill"><%= footnote_item.short_citation_title %></span>
   <%- end -%>

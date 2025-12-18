@@ -20,3 +20,14 @@
     border-bottom-left-radius: 0 !important;
   }
 }
+
+
+// We put the so-called "header" on bottom, so need to fix corners
+.oh-ai-footnote-popover {
+  .popover-header {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-left-radius: var(--bs-popover-inner-border-radius);
+    border-bottom-right-radius: var(--bs-popover-inner-border-radius);
+  }
+}

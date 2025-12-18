@@ -6,18 +6,20 @@
   <h3 class="fw-bold mt-5 mb-4">Interviews Referenced</h3>
 
   <% footnote_list.each do |footnote_item_data| %>
-    <p id="<%= footnote_item_data.anchor %>">
+    <div id="<%= footnote_item_data.anchor %>" class="mb-3">
       <%= link_to "##{footnote_item_data.ref_anchor}" do %>
         <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
       <% end %>
 
-      <%= link_to(link_from_ai_conversation_footnote(footnote_item_data), target: "_blank") do  -%>
+      <%= link_to(link_from_ai_conversation_footnote(footnote_item_data), target: "_blank", "data-shi-slot" => "footnote-title") do  -%>
         <%= footnote_item_data.short_citation_title -%> —
         ¶<%= footnote_item_data.short_citation_paragraphs -%>
         <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <span>#{footnote_item_data.nearest_timecode_formatted}</span>".html_safe :  "" -%>
       <%- end -%> —
-      “<%= footnote_item_data.quote %>”
-    </p>
+      <div data-shi-slot="footnote-quote">
+        “<%= footnote_item_data.quote %>”
+      </div>
+    </div>
   <% end %>
 <% end %>
 
