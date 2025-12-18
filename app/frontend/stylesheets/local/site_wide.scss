@@ -169,7 +169,7 @@ hr.brand {
     margin-bottom: 1rem;
   }
 
-  a {
+  a:not(.default-link-style) {
     @extend .text-link;
   }
 }
