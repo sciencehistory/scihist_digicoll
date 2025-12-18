@@ -11,8 +11,6 @@ module OralHistory
     # claude sonnet 4.5
     MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
-    INITIAL_CHUNK_COUNT = 8
-
     ANSWER_UNAVAILABLE_TEXT = "I am unable to answer this question with the methods and sources available."
 
     # should e threadsafe, and better to re-use for re-used connections maybe
@@ -63,7 +61,7 @@ module OralHistory
     #
     # can raise a Aws::Errors::ServiceError
     def get_response(conversation_record:nil)
-      chunks = get_chunks(k: INITIAL_CHUNK_COUNT)
+      chunks = get_chunks
 
       conversation_record&.record_chunks_used(chunks)
       conversation_record&.request_sent_at = Time.current
@@ -106,11 +104,18 @@ module OralHistory
                                   )
     end
 
-    # @param k [Integer] how many chunks to get
-    def get_chunks(k: INITIAL_CHUNK_COUNT)
-      # TODO: the SQL log for the neighbor query is too huge!!
-      # Preload work, so we can get title or other metadata we might want.
-      OralHistoryChunk.neighbors_for_embedding(question_embedding).limit(k).includes(oral_history_content: :work).strict_loading
+
+    def get_chunks
+      # fetch first 8 closest-vector chunks
+      chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 8).fetch_chunks
+
+      # now fetch another 8, but only 1-per-interview, not including any interviews from above
+      chunks += OralHistory::ChunkFetcher.new(question_embedding: question_embedding,
+                                              top_k: 8,
+                                              max_per_interview: 1,
+                                              exclude_interviews: chunks.collect(&:oral_history_content_id).uniq).fetch_chunks
+
+      chunks
     end
 
     def format_chunks(chunks)
