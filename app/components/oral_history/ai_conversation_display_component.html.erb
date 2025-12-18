@@ -3,17 +3,19 @@
 </div>
 
 <% if footnote_list.present? %>
-  <hr class="mt-4 mb-4">
+  <hr class="mt-5 mb-4">
+
+  <h3 class="fw-bold mb-4">Interviews Referenced</h3>
 
   <% footnote_list.each do |footnote_item_data| %>
     <p id="<%= footnote_item_data.anchor %>">
       <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
 
-      <%= link_to(link_from_ai_conversation_footnote(footnote_item_data), class: "fs-5", target: "_blank") do  %>
-        <%= footnote_item_data.short_citation_title %>
-        ¶<%= footnote_item_data.short_citation_paragraphs %>
-        <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
-      <%- end %>
+      <%= link_to(link_from_ai_conversation_footnote(footnote_item_data), target: "_blank") do  -%>
+        <%= footnote_item_data.short_citation_title -%> —
+        ¶<%= footnote_item_data.short_citation_paragraphs -%>
+        <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <span>#{footnote_item_data.nearest_timecode_formatted}</span>".html_safe :  "" -%>
+      <%- end -%> —
       “<%= footnote_item_data.quote %>”
     </p>
   <% end %>
