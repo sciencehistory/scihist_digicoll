@@ -13,11 +13,6 @@ class OhTranscriptChunkerJob < ApplicationJob
       end
     end
 
-    # check to make sure we are OHMS legacy, that's all we can do right now.
-    unless oral_history_content.ohms_xml.present? && oral_history_content.ohms_xml.legacy_transcript.present?
-      raise RuntimeError.new("We only know how to process legacy OHMS xml at present, can't process OralHistoryContent #{oral_history_content.id}")
-    end
-
     OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records
   end
 

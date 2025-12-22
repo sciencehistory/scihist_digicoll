@@ -37,14 +37,24 @@ module OralHistory
         raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
       end
 
-      unless oral_history_content.ohms_xml.legacy_transcript.present?
-        raise ArgumentError.new("#{self.class.name} can only be used with a LegacyTranscript, but argument does not have one: #{oral_history_content.inspect}")
-      end
-
       @oral_history_content = oral_history_content
 
-      @paragraphs = oral_history_content.ohms_xml.legacy_transcript.paragraphs
+      # different ways of extracting paragraphs, they all should return array of OralHistoryContent::Paragraph
+      @paragraphs = if oral_history_content.ohms_xml&.legacy_transcript.present?
+        oral_history_content.ohms_xml.legacy_transcript.paragraphs
 
+      elsif oral_history_content.ohms_xml
+        # TODO, new style transcript
+        raise ArgumentError.new("#{self.class.name} can only be used with OHMS transcripts if they are legacy: #{oral_history_content.inspect}")
+
+      elsif oral_history_content.searchable_transcript_source.present?
+        OralHistory::PlainTextParagraphSplitter.new(
+          plain_text: oral_history_content.searchable_transcript_source
+        ).paragraphs
+
+      else
+        raise ArgumentError.new("#{self.class.name} can't find paragraph source content for: #{oral_history_content.inspect}")
+      end
 
       # For matching to speaker names, assume it's "lastname, first dates" type heading,
       # take last name and upcase
