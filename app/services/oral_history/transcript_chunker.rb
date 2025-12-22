@@ -173,8 +173,8 @@ module OralHistory
         # one with the presumed question. end_with? is used for some weird "multi-interviewee with
         # same name" use cases, good enough.
         elsif prospective_count >= WORD_GOAL &&
-              !interviewee_names.find { |n| paragraph_speaker_name.end_with? n }  &&
-              interviewee_names.find { |n| last_paragraph_speaker_name.end_with? n }
+              !interviewee_names.find { |n| paragraph_speaker_name&.end_with? n }  &&
+              interviewee_names.find { |n| last_paragraph_speaker_name&.end_with? n }
           chunks << current_chunk
 
           overlap_paragraphs = (chunks.last || []).last(1)
