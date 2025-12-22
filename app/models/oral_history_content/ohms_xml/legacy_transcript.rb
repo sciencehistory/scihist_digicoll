@@ -217,6 +217,8 @@ class OralHistoryContent
         # @return [Array<OralHistoryContent::LegacyTranscript::Line>] ordered list of Line objects
         attr_reader :lines
 
+        attr_reader :transcript_id
+
         def initialize(lines = nil, paragraph_index:)
           @lines = lines || []
           @paragraph_index = paragraph_index
@@ -245,6 +247,12 @@ class OralHistoryContent
         #                  SHOULD be true, but weird things may happen if it ain't.
         def speaker_name
           lines.first&.speaker_label&.chomp(":")
+        end
+
+        # @return [String] to be used as an `id` attribute within an HTML doc, identifying a particular
+        #         paragraph.
+        def fragment_id
+          "oh-t#{transcript_id}-p#{paragraph_index}"
         end
       end
 
