@@ -73,7 +73,9 @@ module OralHistory
       # Interview ends with [END OF INTERVIEW] *or* [END OF INTERVIEW 4] etc.
       # We want to strip the LAST one in the transcript and anythi8ng after it
       # , we'll use negative lookahead to be "last one, not another one after it"
-      plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '').strip
+      plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
+
+      plain_text.strip!
 
       plain_text
     end
