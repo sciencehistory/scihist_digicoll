@@ -26,13 +26,14 @@ class OralHistoryContent
     #    from previous paragraph here.
     attr_accessor :assumed_speaker_name
 
-    def initialize(text:, paragraph_index:)
-      @paragraph_index = paragraph_index
-    end
+    # OHMS transcript sub-classes get these from OHMS transcript model classes
+    attr_accessor :speaker_name, :text, :transcript_id
 
-    # @return [String] just text of all lines joined by space
-    def text
-      @text
+    def initialize(text:, paragraph_index:, speaker_name:, transcript_id:)
+      @text = text
+      @paragraph_index = paragraph_index
+      @speaker_name = speaker_name
+      @transcript_id = transcript_id
     end
 
     def word_count
