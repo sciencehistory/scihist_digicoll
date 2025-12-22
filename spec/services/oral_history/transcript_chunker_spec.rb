@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe OralHistory::OhmsLegacyTranscriptChunker do
+describe OralHistory::TranscriptChunker do
   let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
 
   let(:work) {

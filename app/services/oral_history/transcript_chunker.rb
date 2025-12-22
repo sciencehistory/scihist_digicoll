@@ -6,7 +6,7 @@ module OralHistory
   # a few transcripts have multiple interviewers or intervieweees!), but that is just done
   # approximately while also staying within a minimum and max word count for a chunk more strictly.
   #
-  class OhmsLegacyTranscriptChunker
+  class TranscriptChunker
     # always want more than this many words
     LOWER_WORD_LIMIT = 260
 
