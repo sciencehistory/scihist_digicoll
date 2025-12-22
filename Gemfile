@@ -68,7 +68,7 @@ gem "active_encode", "~> 2.0"
 gem "aws-sdk-cloudwatchevents", "~> 1.0"
 gem "aws-sdk-cloudwatchlogs", "~> 1.0"
 gem "aws-sdk-mediaconvert", "~> 1.0"
-gem "aws-sdk-s3", "~> 1.0"
+gem "aws-sdk-s3", "~> 1.208"
 gem "aws-sdk-cloudfront", "~> 1.91"
 gem 'aws-sdk-bedrockruntime', '~> 1.66'
 
