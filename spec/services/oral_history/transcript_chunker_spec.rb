@@ -2,27 +2,25 @@ require 'rails_helper'
 
 describe OralHistory::TranscriptChunker do
   let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
+  let(:oral_history_content) { work.oral_history_content }
+  let(:chunker) { described_class.new(oral_history_content: oral_history_content) }
 
-  let(:work) {
-    build(:oral_history_work, :ohms_xml,
-      ohms_xml_text: File.read(ohms_xml_path),
-      creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
-                { category: "interviewer", value: "Bohning, James J."}]
-    )
-  }
+  def word_count(*strings)
+    # use consistent word count algorithm
+    OralHistoryContent::OhmsXml::LegacyTranscript.word_count(*strings)
+  end
 
   describe "OHMS Legacy Transcript" do
+    let(:work) {
+        build(:oral_history_work, :ohms_xml,
+          ohms_xml_text: File.read(ohms_xml_path),
+          creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
+                    { category: "interviewer", value: "Bohning, James J."}]
+        )
+      }
+
     let(:interviewee_speaker_label) { "HANFORD" }
-
-    let(:oral_history_content) { work.oral_history_content }
     let(:legacy_transcript) { oral_history_content.ohms_xml.legacy_transcript }
-
-    let(:chunker) { described_class.new(oral_history_content: oral_history_content) }
-
-    def word_count(*strings)
-      # use consistent word count algorithm
-      OralHistoryContent::OhmsXml::LegacyTranscript.word_count(*strings)
-    end
 
     describe "#split_chunks" do
       let(:chunks) { chunker.split_chunks }
@@ -33,7 +31,7 @@ describe OralHistory::TranscriptChunker do
 
         expect(chunks).to all satisfy { |chunk| chunk.kind_of?(Array) }
         expect(chunks).to all satisfy { |chunk| chunk.present? }
-        expect(chunks).to all satisfy { |chunk| chunk.all? {|item| item.kind_of?(OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph) } }
+        expect(chunks).to all satisfy { |chunk| chunk.all? {|item| item.kind_of?(OralHistoryContent::Paragraph) } }
       end
 
       it "begins with first paragraph" do
@@ -65,7 +63,7 @@ describe OralHistory::TranscriptChunker do
       end
 
       it "chunks mostly start with questioner" do
-        # third paragraph is the first uniquely new one, first two are overlap. We try
+        # second paragraph is the first uniquely new one, first one are overlap. We try
         # to make that first unique one be the interviewer, not the interviewee.
         #
         # But it's definitely not invariant, depends on paragraph size, depends on transcript, with
@@ -122,6 +120,51 @@ describe OralHistory::TranscriptChunker do
           expect(chunks).to be_present
           expect(chunks.first.start_paragraph_number).to eq 1
           expect(chunks.last.end_paragraph_number).to eq legacy_transcript.paragraphs.count
+        end
+      end
+    end
+  end
+
+  describe "searchable_transcript_source plain text" do
+    let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/ohms_xml/baltimore_plain_text_transcript_sample.txt")}
+
+    let(:work) {
+        build(:oral_history_work,
+          creator: [{ category: "interviewee", value: "Baltimore, David, 1938-"},
+                    { category: "interviewer", value: "Schlesinger, Sondra"}]
+        ).tap { |w| w.oral_history_content.searchable_transcript_source = raw_transcript_text }
+    }
+
+    let(:interviewee_speaker_label) { "BALTIMORE" }
+
+
+    describe "#split_chunks" do
+      let(:chunks) { chunker.split_chunks }
+      let(:splitter) { OralHistory::PlainTextParagraphSplitter.new(plain_text: raw_transcript_text)}
+
+      it "creates chunks as arrays of Paragraphs" do
+        expect(chunks).to be_kind_of(Array)
+        expect(chunks).to be_present
+
+        expect(chunks).to all satisfy { |chunk| chunk.kind_of?(Array) }
+        expect(chunks).to all satisfy { |chunk| chunk.present? }
+        expect(chunks).to all satisfy { |chunk| chunk.all? {|item| item.kind_of?(OralHistoryContent::Paragraph) } }
+      end
+
+      it "begins with first paragraph" do
+        expect(chunks.first.first.text).to eq splitter.paragraphs.first.text
+      end
+
+      it "ends with last paragraph" do
+        expect(chunks.last.last.text).to eq splitter.paragraphs.last.text
+      end
+
+      it "has two paragraphs of overlap in each chunk" do
+        0.upto(chunks.length - 2).each do |index|
+          first_chunk = chunks[index]
+          second_chunk = chunks[index + 1]
+
+          expect(second_chunk.first(1)).to eq (first_chunk.last(1))
         end
       end
     end
