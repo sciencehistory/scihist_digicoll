@@ -3,19 +3,30 @@
 </div>
 
 <% if footnote_list.present? %>
-  <hr class="mt-4 mb-4">
+  <h3 class="fw-bold mt-5 mb-4">Interviews Referenced</h3>
 
   <% footnote_list.each do |footnote_item_data| %>
-    <p id="<%= footnote_item_data.anchor %>">
-      <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
+    <div id="<%= footnote_item_data.anchor %>" class="mb-3">
 
-      <%= link_to(link_from_ai_conversation_footnote(footnote_item_data), class: "fs-5", target: "_blank") do  %>
-        <%= footnote_item_data.short_citation_title %>
-        ¶<%= footnote_item_data.short_citation_paragraphs %>
-        <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <code>#{footnote_item_data.nearest_timecode_formatted}</code>".html_safe :  "" -%>:
-      <%- end %>
-      “<%= footnote_item_data.quote %>”
-    </p>
+      <h4 class="fs-6 fw-semibold text-decoration-underline mb-1 mt-4">
+        <%= link_to "##{footnote_item_data.ref_anchor}", class: "default-link-style" do %>
+          <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
+        <% end %>
+
+        <%= link_to(link_from_ai_conversation_footnote(footnote_item_data),
+                    target: "_blank",
+                    "data-shi-slot" => "footnote-title",
+                    class: "default-link-style") do  -%>
+          <%= footnote_item_data.short_citation_title -%> —
+          ¶<%= footnote_item_data.short_citation_paragraphs -%>
+          <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <span>#{footnote_item_data.nearest_timecode_formatted}</span>".html_safe :  "" -%>
+        <%- end %>
+      </h4>
+
+      <div data-shi-slot="footnote-quote">
+        “<%= footnote_item_data.quote %>”
+      </div>
+    </div>
   <% end %>
 <% end %>
 
@@ -42,9 +53,9 @@
     </dl>
 
     <h3>Chunks (passages) retrieved</h3>
-    <% debug_chunks_list.each do |chunk| %>
+    <% debug_chunks_list.each_with_index do |chunk, index| %>
         <details class="mt-2">
-          <summary><%= chunk.id %>: <%= chunk.oral_history_content.work.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= cosine_distance_for_chunk(chunk.id) %></summary>
+          <summary><%= index + 1 %> (<%= chunk.id %>) <%= chunk.oral_history_content.work.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= cosine_distance_for_chunk(chunk.id) %></summary>
 
             <div class="ms-5 mt-2">
               <%= simple_format chunk.text %>
