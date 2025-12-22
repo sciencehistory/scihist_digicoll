@@ -23,7 +23,10 @@ module OralHistory
 
     EMBEDDING_RETRY_WAIT = 5
 
-    attr_reader :transcript,  :interviewee_names, :oral_history_content
+    attr_reader :interviewee_names, :oral_history_content
+
+    # @attribute paragraphs [Array<OralHistoryContent::Paragraph>]
+    attr_reader :paragraphs
 
 
     # @param allow_embedding_wait_seconds [Integer] if we exceed open ai rate limit for getting
@@ -39,7 +42,9 @@ module OralHistory
       end
 
       @oral_history_content = oral_history_content
-      @transcript = oral_history_content.ohms_xml.legacy_transcript
+
+      @paragraphs = oral_history_content.ohms_xml.legacy_transcript.paragraphs
+
 
       # For matching to speaker names, assume it's "lastname, first dates" type heading,
       # take last name and upcase
@@ -133,7 +138,7 @@ module OralHistory
       current_chunk = []
       paragraph_speaker_name = nil
 
-      transcript.paragraphs.each do |paragraph|
+      paragraphs.each do |paragraph|
         last_paragraph_speaker_name = paragraph_speaker_name
 
         # only change speaker name if we have one, otherwise leave last one
