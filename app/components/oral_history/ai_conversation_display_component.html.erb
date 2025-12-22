@@ -8,7 +8,7 @@
   <% footnote_list.each do |footnote_item_data| %>
     <div id="<%= footnote_item_data.anchor %>" class="mb-3">
 
-      <h4 class="fs-6 fw-semibold text-decoration-underline mb-1">
+      <h4 class="fs-6 fw-semibold text-decoration-underline mb-1 mt-4">
         <%= link_to "##{footnote_item_data.ref_anchor}", class: "default-link-style" do %>
           <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
         <% end %>
