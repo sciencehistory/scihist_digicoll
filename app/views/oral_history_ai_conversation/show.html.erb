@@ -19,6 +19,10 @@
     <span class="fw-bold">Q:</span> <%=  @conversation.question %>
   </div>
 
+  <div class="alert alert-info mb-4 mt-4">
+    <%= @conversation.search_params.inspect %>
+  </div>
+
   <% if !@conversation.complete? %>
     <div class="d-flex align-items-center">
       <i class="fa fa-circle-o-notch fa-spin fa-2x me-2" aria-hidden="true"></i>

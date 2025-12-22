@@ -20,11 +20,12 @@ module OralHistory
       region:             ScihistDigicoll::Env.lookup(:aws_region)
     )
 
-    attr_reader :question, :question_embedding
+    attr_reader :question, :question_embedding, :limited_start_relation
 
-    def initialize(question:, question_embedding:)
+    def initialize(question:, question_embedding:, limited_start_relation: OralHistoryChunk)
       @question = question
       @question_embedding = question_embedding
+      @limited_start_relation = limited_start_relation
     end
 
     # convenience to look up the embedding
@@ -107,13 +108,14 @@ module OralHistory
 
     def get_chunks
       # fetch first 8 closest-vector chunks
-      chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 8).fetch_chunks
+      chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 8, limited_start_relation: limited_start_relation).fetch_chunks
 
       # now fetch another 8, but only 1-per-interview, not including any interviews from above
       chunks += OralHistory::ChunkFetcher.new(question_embedding: question_embedding,
                                               top_k: 8,
                                               max_per_interview: 1,
-                                              exclude_interviews: chunks.collect(&:oral_history_content_id).uniq).fetch_chunks
+                                              exclude_interviews: chunks.collect(&:oral_history_content_id).uniq,
+                                              limited_start_relation: limited_start_relation).fetch_chunks
 
       chunks
     end

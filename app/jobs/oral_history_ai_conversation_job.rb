@@ -1,7 +1,7 @@
 # Try to be idempotent!
 class OralHistoryAiConversationJob < ApplicationJob
-  def self.launch(question:, session_id:)
-    conversation = OralHistory::AiConversation.create!(question: question.strip, session_id: session_id)
+  def self.launch(question:, session_id:, search_params: {})
+    conversation = OralHistory::AiConversation.create!(question: question.strip, session_id: session_id, search_params: search_params)
     self.perform_later(conversation)
 
     return conversation
