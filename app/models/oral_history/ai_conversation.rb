@@ -42,7 +42,7 @@ class OralHistory::AiConversation < ApplicationRecord
     self.save!
 
     # Start the conversation, could take 10-20 seconds even.
-    interactor = OralHistory::ClaudeInteractor.new(question: self.question, question_embedding: self.question_embedding)
+    interactor = OralHistory::ClaudeInteractor.new(question: self.question, question_embedding: self.question_embedding, limited_start_relation: limited_start_relation)
     response = interactor.get_response(conversation_record: self)
 
     self.answer_json = interactor.extract_answer(response)
@@ -95,4 +95,24 @@ class OralHistory::AiConversation < ApplicationRecord
       }
     end
   end
+
+  # based on search_params or logged in user, we might want to limit to only certain records
+  # For now just search_params
+  #
+  # TODO WARNING this needs to be checked, there are those weird ones with requet mode "OFF" cause they
+  # aren't requestable at all now!!!
+  def limited_start_relation
+    case self.search_params["collection_limit"]
+    when "ohms"
+      OralHistoryChunk.joins(:oral_history_content).where.not(oral_history_content: { ohms_xml_text: [nil, ""]})
+    when "immediate"
+      OralHistoryChunk.joins(:oral_history_content).where(oral_history_content: { available_by_request_mode: ["off"] })
+    when "upon_request"
+      OralHistoryChunk.joins(:oral_history_content).where(oral_history_content: { available_by_request_mode: ["off", "automatic"] })
+    else
+      # unrestricted, all of em
+      OralHistoryChunk
+    end
+  end
+
 end

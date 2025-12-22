@@ -8,6 +8,8 @@ module OralHistory
     attr_reader :top_k, :question_embedding, :max_per_interview, :oversample_factor
     attr_reader :exclude_oral_history_chunk_ids, :exclude_oral_history_content_ids
 
+    attr_reader :limited_start_relation
+
 
     # @param top_k [Integer] how many chunks do you want back
     #
@@ -22,11 +24,13 @@ module OralHistory
     #
     # @param exclude_interviews [Array<Work,OralHistoryContent,Integer>] Interviews to exclude. can be as Work, OralHistoryContent,
     #   or OralHistoryContent#id
-    def initialize(top_k:, question_embedding:, max_per_interview: nil, oversample_factor: 3, exclude_chunks: nil, exclude_interviews: nil)
+    def initialize(top_k:, question_embedding:, max_per_interview: nil, oversample_factor: 3, exclude_chunks: nil, exclude_interviews: nil, limited_start_relation:)
       @top_k = top_k
       @question_embedding = question_embedding
       @max_per_interview = max_per_interview
       @oversample_factor = oversample_factor
+
+      @limited_start_relation = limited_start_relation
 
       if exclude_chunks
         @exclude_oral_history_chunk_ids = exclude_chunks.collect {|i| i.kind_of?(OralHistoryChunk) ? i.id : i }
@@ -61,7 +65,7 @@ module OralHistory
     # Without limit count, we'll add that later.
     def base_relation
       # Preload work, so we can get title or other metadata we might want.
-      relation = OralHistoryChunk.neighbors_for_embedding(question_embedding).includes(oral_history_content: :work)
+      relation = limited_start_relation.neighbors_for_embedding(question_embedding).includes(oral_history_content: :work)
 
       # exclude specific chunks?
       if exclude_oral_history_chunk_ids.present?
