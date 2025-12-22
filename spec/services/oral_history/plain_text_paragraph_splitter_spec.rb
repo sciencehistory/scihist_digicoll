@@ -2,9 +2,8 @@ require 'rails_helper'
 
 describe OralHistory::PlainTextParagraphSplitter do
   let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/ohms_xml/baltimore_plain_text_transcript_sample.txt")}
-  let(:transcript_id) { "OH0198" }
 
-  let(:splitter) { described_class.new(plain_text: raw_transcript_text, oral_history_id: transcript_id)}
+  let(:splitter) { described_class.new(plain_text: raw_transcript_text)}
   let(:paragraphs) { splitter.paragraphs }
 
   it "splits into good paragraphs" do
@@ -33,9 +32,5 @@ describe OralHistory::PlainTextParagraphSplitter do
 
     # no blank ones
     expect(paragraphs).to all satisfy { |p| ! (p.text =~ /\A\s*\Z/) }
-  end
-
-  it "all has good fragment_ids" do
-    expect(paragraphs).to all satisfy { |p| p.fragment_id =~ /\Aoh-t#{transcript_id}-p\d+/ }
   end
 end

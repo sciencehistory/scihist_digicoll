@@ -27,23 +27,16 @@ class OralHistoryContent
     attr_accessor :assumed_speaker_name
 
     # OHMS transcript sub-classes get these from OHMS transcript model classes
-    attr_accessor :speaker_name, :text, :transcript_id
+    attr_accessor :speaker_name, :text
 
-    def initialize(text:, paragraph_index:, speaker_name:, transcript_id:)
+    def initialize(text:, paragraph_index:, speaker_name:)
       @text = text
       @paragraph_index = paragraph_index
       @speaker_name = speaker_name
-      @transcript_id = transcript_id
     end
 
     def word_count
       @word_count ||= OralHistoryContent::OhmsXml::LegacyTranscript.word_count(text)
-    end
-
-    # @return [String] to be used as an anchor within an HTML doc, that can be targeted
-    #                  with a link
-    def fragment_id
-      "oh-t#{transcript_id}-p#{paragraph_index}"
     end
   end
 end

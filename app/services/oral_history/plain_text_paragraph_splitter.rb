@@ -9,11 +9,10 @@ module OralHistory
   # while we figure out how we want to do better citing/linking.
   #
   class PlainTextParagraphSplitter
-    attr_reader :plain_text, :oral_history_id
+    attr_reader :plain_text
 
-    def initialize(plain_text:, oral_history_id:)
+    def initialize(plain_text:)
       @plain_text = plain_text
-      @oral_history_id = oral_history_id
     end
 
     # @return OralHistoryContent::Paragraph
@@ -43,8 +42,7 @@ module OralHistory
 
         paragraph = OralHistoryContent::Paragraph.new(speaker_name: current_speaker_name,
                                                       paragraph_index: paragraph_index,
-                                                      text: raw_paragraph,
-                                                      transcript_id: oral_history_id)
+                                                      text: raw_paragraph)
         if paragraph.speaker_name.blank?
           paragraph.assumed_speaker_name = last_speaker_name
         end
