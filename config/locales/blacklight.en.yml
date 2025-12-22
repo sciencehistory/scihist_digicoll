@@ -5,6 +5,10 @@ en:
       form:
         search_field:
           label: "Search"
+      facets:
+        suggest:
+          # we don't want a placeholder there, it's not helpful.
+          placeholder: ""
       # see overridden _zero_results.html.erb
       zero_results:
         title: "Sorry, we couldn't find any records for your search."

@@ -6,7 +6,7 @@
 <% end %>
 
 <div class="text-page">
-  <h2>Ask <code>ARCHOMAT</code> the Robot Research Assistant about the contents of our Oral History collections</h2>
+  <h2>Use this software-powered research tool to <span class="emphasis-color">ask about</span> the contents of our <span class="emphasis-color">Oral History</span> collections</h2>
 
   <p>
     <%= link_to new_oral_history_ai_conversation_path do %>
@@ -22,7 +22,7 @@
   <% if !@conversation.complete? %>
     <div class="d-flex align-items-center">
       <i class="fa fa-circle-o-notch fa-spin fa-2x me-2" aria-hidden="true"></i>
-      Computing...
+      Searching...
     </div>
   <% elsif @conversation.status_error? %>
     <div class="alert alert-danger">

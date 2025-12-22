@@ -71,10 +71,10 @@ describe OralHistory::AiConversationDisplayComponent, type: :component do
   end
 
   it "includes footnotes" do
-    render_inline(component)
+    rendered = render_inline(component)
 
     component.footnote_list.each do |footnote_data|
-      expect(page).to have_css("p##{footnote_data.anchor}")
+      expect(page).to have_css("##{footnote_data.anchor}")
     end
   end
 end

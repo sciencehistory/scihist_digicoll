@@ -205,4 +205,61 @@ RSpec.describe CatalogController, solr: true, type: :controller do
       expect(response.status).to eq(406)
     end
   end
+
+  describe "#facets for more", solr: true do
+    render_views
+
+    let(:response_noko) { Nokogiri::HTML(response.body) }
+
+    let!(:work) do
+      # Gah, forget why/how we turn off autoindexing and how to turn it back on,
+      # this is good enough.
+      create(:public_work,
+        subject: ["one", "onetwo", "onethree", "three", "four", "josé"],
+      ).tap { |w| w.update_index }
+    end
+
+    # making sure we haven't broken the built-in stuff
+    it "can fetch facets" do
+      get :facet, params: { id: "subject_facet" }
+
+      expect(response_noko).to have_selector("a.facet-select", text: "three")
+      expect(response_noko).to have_selector("a.facet-select", text: "three")
+      expect(response_noko).to have_selector("a.facet-select", text: "four")
+      expect(response_noko).to have_selector("a.facet-select", text: "josé")
+    end
+
+    # making sure we haven't broken the built-in stuff
+    it "can fetch filtered" do
+      get :facet, params: { id: "subject_facet", query_fragment: "one" }
+
+      expect(response_noko).to have_selector("a.facet-select", text: "one")
+      expect(response_noko).to have_selector("a.facet-select", text: "onetwo")
+      expect(response_noko).to have_selector("a.facet-select", text: "onethree")
+
+      expect(response_noko).not_to have_selector("a.facet-select", exact_text: "three")
+    end
+
+    describe "additional custom functionality" do
+      describe "normalizes unicode" do
+        it "can find with NFC" do
+          get :facet, params: { id: "subject_facet", query_fragment: "josé".unicode_normalize(:nfc) }
+          expect(response_noko).to have_selector("a.facet-select", text: "josé")
+        end
+
+        it "can find with NFD" do
+          get :facet, params: { id: "subject_facet", query_fragment: "josé".unicode_normalize(:nfd) }
+          expect(response_noko).to have_selector("a.facet-select", text: "josé")
+        end
+      end
+
+      it "can only find at beginning of words" do
+        get :facet, params: { id: "subject_facet", query_fragment: "three" }
+
+        expect(response_noko).to have_selector("a.facet-select", text: "three")
+
+        expect(response_noko).not_to have_selector("a.facet-select", text: "onethree")
+      end
+    end
+  end
 end

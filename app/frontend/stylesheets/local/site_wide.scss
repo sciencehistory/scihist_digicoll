@@ -101,6 +101,9 @@ hr.brand {
   margin-bottom: 3em;
 }
 
+.emphasis-color {
+  color: $shi-red;
+}
 
 // meant to be on a font-awesome icon
 .social-media-link {
@@ -166,7 +169,7 @@ hr.brand {
     margin-bottom: 1rem;
   }
 
-  a {
+  a:not(.default-link-style) {
     @extend .text-link;
   }
 }
@@ -351,6 +354,10 @@ hr.brand {
     background-color: white;
     opacity: 0.7;
   }
+}
+
+.popover-deep-shadow {
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
 // override bootstrap a bit for modals with embedded alert coloring

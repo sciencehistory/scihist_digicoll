@@ -56,8 +56,8 @@ gem 'scout_apm'
 # NOTE ALSO: We are using `blacklight-frontend` JS NPM package, updating blacklight
 # version may require an update with yarn to `blacklight-frontend`, has to be
 # checked manually.
-gem "blacklight", "~> 9.0.0.beta8"
-gem "blacklight_range_limit", "~> 9.1.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
+gem "blacklight", "~> 9.0.0"
+gem "blacklight_range_limit", "~> 9.2.0" # version no longer sync'd with blacklight, not sure how we tell what version works with what version of BL
 
 # for some code to deal with transcoding video, via AWS MediaConvert
 # Lower than 1.2.1 had far too big gem builds! https://github.com/samvera-labs/active_encode/issues/126
@@ -68,7 +68,7 @@ gem "active_encode", "~> 2.0"
 gem "aws-sdk-cloudwatchevents", "~> 1.0"
 gem "aws-sdk-cloudwatchlogs", "~> 1.0"
 gem "aws-sdk-mediaconvert", "~> 1.0"
-gem "aws-sdk-s3", "~> 1.0"
+gem "aws-sdk-s3", "~> 1.208"
 gem "aws-sdk-cloudfront", "~> 1.91"
 gem 'aws-sdk-bedrockruntime', '~> 1.66'
 
