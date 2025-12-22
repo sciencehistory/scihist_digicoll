@@ -70,10 +70,15 @@ module OralHistory
       # we sometimes have unicode BOM and nonsense in there
       plain_text.gsub!(/[\u200B\uFEFF]/, '')
 
-      # Interview ends with [END OF INTERVIEW] *or* [END OF INTERVIEW 4] etc.
-      # We want to strip the LAST one in the transcript and anythi8ng after it
+      # Interview often  strip the LAST one in the transcript and anythi8ng after it
       # , we'll use negative lookahead to be "last one, not another one after it"
-      plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
+      if plain_text =~ /\[END OF INTERVIEW( \d+)?\]/
+        plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
+      elsif plain_text =~ /NOTES|INDEX/
+        # But sometimes they don't, but still have a NOTES and/OR INDEX? On a line by itself,
+        # eliminate with everything afterwords.
+        plain_text.gsub!(/^NOTES|INDEX$.*/m, '')
+      end
 
       plain_text.strip!
 
