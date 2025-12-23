@@ -127,10 +127,14 @@ module ScihistDigicoll
     # This is effectively a password - a shared secret.
     define_key :microsoft_sso_client_secret
 
+    # Official SHI google arts and culture project:
     define_key :google_arts_and_culture_project_id
     define_key :google_arts_and_culture_bucket_name
     define_key :google_arts_and_culture_credentials
 
+    # Test Google project, just for testing uploads in this project
+    define_key :test_google_project_credentials
+    define_key :test_google_project_user_id
 
     # MediaConvert requires a special role to be passed to MediaConvert
     # jobs, that has access to input/output buckets, and MediaConvert itself.
