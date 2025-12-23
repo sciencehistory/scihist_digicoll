@@ -75,6 +75,7 @@ gem 'aws-sdk-bedrockruntime', '~> 1.66'
 gem "google-cloud-storage", "~> 1.57.1"
 gem "google-api-client", "~> 0.7.1"
 gem "googleauth", "~> 1.15.0"
+gem 'google-apis-sheets_v4', "~> 0.46"
 
 
 # Use postgresql as the database for Active Record
