@@ -5,6 +5,22 @@ require 'fileutils'
 require 'csv'
 require 'google/apis/sheets_v4'
 
+# Sample value for ScihistDigicoll::Env.lookup(:test_google_project_credentials)
+# {
+#   "installed": {
+#     "client_id": "BLABLABLA.apps.googleusercontent.com",
+#     "project_id": "BLABLABLA",
+#     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+#     "token_uri": "https://oauth2.googleapis.com/token",
+#     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+#     "client_secret": "BLABLABLA",
+#     "redirect_uris": [
+#       "http://localhost"
+#     ]
+#   }
+# }
+
+# Sample value for ScihistDigicoll::Env.lookup(:test_google_project_user_id): email address of a user created for this project.
 
 module GoogleArtsAndCulture
   class SpreadsheetCreator
@@ -55,7 +71,6 @@ module GoogleArtsAndCulture
       credentials
     end
 
-
     def authorized_service
       @authorized_service ||= begin
         service = Google::Apis::SheetsV4::SheetsService.new
@@ -64,7 +79,6 @@ module GoogleArtsAndCulture
         service
       end
     end
-
 
     def blank_spreadsheet
       spreadsheet_properties = Google::Apis::SheetsV4::SpreadsheetProperties.new(title: "Metadata #{DateTime.now.strftime("%Y-%m-%d %H:%M:%S")}")
