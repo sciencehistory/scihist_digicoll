@@ -27,7 +27,9 @@ module OralHistory
       current_speaker_name = nil
       paragraph_index = 0
 
-      things = trim_transcript(plain_text).split(/(?:\r?\n\s*){2,}/).collect do |raw_paragraph|
+      # some transcripts have paragraphs split only by 2 `\r` -- like 90s MacOS?  Not sure
+      # where this comes from but okay. So two (or more) \r or two \n or two \r\n
+      trim_transcript(plain_text).split(/(?:(?:\r|\n|\r\n)\s*){2,}/).collect do |raw_paragraph|
         raw_paragraph.strip!
 
         # There is some metadata that comes not only at beginning but sometimes in the middle
