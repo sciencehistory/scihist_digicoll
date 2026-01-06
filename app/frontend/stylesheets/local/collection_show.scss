@@ -11,7 +11,7 @@
     display: flex;
 
     // smaller screens one column with image first, full width, limited to only so high
-    @include media-breakpoint-down(sm) {
+    @include media-breakpoint-down(md) {
       flex-direction: column;
 
       @include full-bleed;
