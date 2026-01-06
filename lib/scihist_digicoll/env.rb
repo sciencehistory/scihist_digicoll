@@ -491,7 +491,20 @@ module ScihistDigicoll
           prefix:            "#{lookup(:s3_dev_prefix)}/#{shared_bucket_path_prefix}",
           access_key_id:     lookup(:aws_access_key_id),
           secret_access_key: lookup(:aws_secret_access_key),
-          region:            lookup(:aws_region)
+          region:            lookup(:aws_region),
+          # Force a concrete, known-good CA bundle.
+          # Fixes a bug with Ruby 3.4 + OpenSSL 3.5 on macOS in
+          # which:
+          #   SSLContext#cert_store starts out nil;
+          #   somewhere in the AWS SDK / Net::HTTP stack,
+          #     a cert store was being constructed implicitly,
+          #     which triggered CRL expectations,
+          #       leading to an "unable to get certificate CRL" error
+          #       even though the certificate chain was valid.
+          #
+          # See also https://github.com/sciencehistory/scihist_digicoll/issues/3236
+          #
+          ssl_ca_bundle:     OpenSSL::X509::DEFAULT_CERT_FILE
         }.merge(s3_storage_options))
       elsif mode == "production"
         if host.present?
