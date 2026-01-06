@@ -6,7 +6,7 @@ RSpec.describe "Digitization Queue", logged_in_user: :editor, type: :system, js:
     click_on "New Queue Item"
     fill_in "Title", with: "Test Item"
     select "library", from: "admin_digitization_queue_item_collecting_area"
-    select "2020", from: "admin_digitization_queue_item_deadline_1i"
+    select Date.current.year.to_s, from: "admin_digitization_queue_item_deadline_1i"
     select "February", from: "admin_digitization_queue_item_deadline_2i"
     select "3", from: "admin_digitization_queue_item_deadline_3i"
 
@@ -25,7 +25,7 @@ RSpec.describe "Digitization Queue", logged_in_user: :editor, type: :system, js:
 
     expect(page).to have_text("was successfully created")
     dq  = Admin::DigitizationQueueItem.order(created_at: :desc).last
-    expect(dq.deadline).to eq Date.new(2020, 2, 3)
+    expect(dq.deadline).to eq Date.new(Time.now.year, 2, 3)
 
     ######
     ######
