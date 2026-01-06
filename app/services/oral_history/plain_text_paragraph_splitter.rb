@@ -1,0 +1,90 @@
+module OralHistory
+  # Takes a plain text OH transcript, such as included for searching in the OralHistoryContent#searchable_transcript_source
+  # field, and splits it into OralHistoryContent::Paragraph objects, for use by chunker.
+  #
+  # Note that this does not let us know what PDF page the paragraph is on, which might be nice
+  # for citing. And we have no timestamps, no sync timestamps in these transcripts.
+  #
+  # This may be a temporary interim implementation, to demo AI vector search of this content,
+  # while we figure out how we want to do better citing/linking.
+  #
+  class PlainTextParagraphSplitter
+    attr_reader :plain_text
+
+    def initialize(plain_text:)
+      @plain_text = plain_text
+    end
+
+    # @return OralHistoryContent::Paragraph
+    def paragraphs
+      @paragraphs ||= split_paragraphs
+    end
+
+    private
+
+    def split_paragraphs
+      last_speaker_name = nil
+      current_speaker_name = nil
+      paragraph_index = 0
+
+      # some transcripts have paragraphs split only by 2 `\r` -- like 90s MacOS?  Not sure
+      # where this comes from but okay. So two (or more) \r or two \n or two \r\n
+      trim_transcript(plain_text).split(/(?:(?:\r|\n|\r\n)\s*){2,}/).collect do |raw_paragraph|
+        raw_paragraph.strip!
+
+        # There is some metadata that comes not only at beginning but sometimes in the middle
+        # after new tape/interview session. We don't want it.
+        next if looks_like_metadata_line?(raw_paragraph)
+
+        current_speaker_name = nil
+        # While this is not an OHMS transcript, the regex extracted from OHMS works well
+        if raw_paragraph =~ OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
+          current_speaker_name = $1.chomp(":")
+        end
+
+        paragraph = OralHistoryContent::Paragraph.new(speaker_name: current_speaker_name,
+                                                      paragraph_index: paragraph_index,
+                                                      text: raw_paragraph)
+        if paragraph.speaker_name.blank?
+          paragraph.assumed_speaker_name = last_speaker_name
+        end
+
+
+        last_speaker_name = current_speaker_name
+        paragraph_index +=1
+
+        paragraph
+      end.compact
+    end
+
+    def looks_like_metadata_line?(str)
+      # if it's one line, with one of our known metadata labels, colon, some info
+      str =~ /\A\s*(INTERVIEWEE|INTERVIEWER|DATE|LOCATION):.+$/ ||
+        # Also for now just avoid the [END OF ...] markers.
+        str =~ /\A\[END OF INTERVIEW.*\]\s*$/ ||
+        str =~ /\A\[END OF TAPE.*\]\s*$/
+    end
+
+    # Trim END after last [END OF INTERVEW] marker -- get rid of footnote and index.
+    def trim_transcript(plain_text)
+      plain_text = plain_text.dup
+
+      # we sometimes have unicode BOM and nonsense in there
+      plain_text.gsub!(/[\u200B\uFEFF]/, '')
+
+      # Interview often  strip the LAST one in the transcript and anythi8ng after it
+      # , we'll use negative lookahead to be "last one, not another one after it"
+      if plain_text =~ /\[END OF INTERVIEW( \d+)?\]/
+        plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
+      elsif plain_text =~ /NOTES|INDEX/
+        # But sometimes they don't, but still have a NOTES and/OR INDEX? On a line by itself,
+        # eliminate with everything afterwords.
+        plain_text.gsub!(/^NOTES|INDEX$.*/m, '')
+      end
+
+      plain_text.strip!
+
+      plain_text
+    end
+  end
+end

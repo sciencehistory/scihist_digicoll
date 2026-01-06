@@ -6,7 +6,7 @@ module OralHistory
   # a few transcripts have multiple interviewers or intervieweees!), but that is just done
   # approximately while also staying within a minimum and max word count for a chunk more strictly.
   #
-  class OhmsLegacyTranscriptChunker
+  class TranscriptChunker
     # always want more than this many words
     LOWER_WORD_LIMIT = 260
 
@@ -23,7 +23,10 @@ module OralHistory
 
     EMBEDDING_RETRY_WAIT = 5
 
-    attr_reader :transcript,  :interviewee_names, :oral_history_content
+    attr_reader :interviewee_names, :oral_history_content
+
+    # @attribute paragraphs [Array<OralHistoryContent::Paragraph>]
+    attr_reader :paragraphs
 
 
     # @param allow_embedding_wait_seconds [Integer] if we exceed open ai rate limit for getting
@@ -34,12 +37,24 @@ module OralHistory
         raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
       end
 
-      unless oral_history_content.ohms_xml.legacy_transcript.present?
-        raise ArgumentError.new("#{self.class.name} can only be used with a LegacyTranscript, but argument does not have one: #{oral_history_content.inspect}")
-      end
-
       @oral_history_content = oral_history_content
-      @transcript = oral_history_content.ohms_xml.legacy_transcript
+
+      # different ways of extracting paragraphs, they all should return array of OralHistoryContent::Paragraph
+      @paragraphs = if oral_history_content.ohms_xml&.legacy_transcript.present?
+        oral_history_content.ohms_xml.legacy_transcript.paragraphs
+
+      elsif oral_history_content.ohms_xml
+        # TODO, new style transcript
+        raise ArgumentError.new("#{self.class.name} can only be used with OHMS transcripts if they are legacy: #{oral_history_content.inspect}")
+
+      elsif oral_history_content.searchable_transcript_source.present?
+        OralHistory::PlainTextParagraphSplitter.new(
+          plain_text: oral_history_content.searchable_transcript_source
+        ).paragraphs
+
+      else
+        raise ArgumentError.new("#{self.class.name} can't find paragraph source content for: #{oral_history_content.inspect}")
+      end
 
       # For matching to speaker names, assume it's "lastname, first dates" type heading,
       # take last name and upcase
@@ -133,7 +148,7 @@ module OralHistory
       current_chunk = []
       paragraph_speaker_name = nil
 
-      transcript.paragraphs.each do |paragraph|
+      paragraphs.each do |paragraph|
         last_paragraph_speaker_name = paragraph_speaker_name
 
         # only change speaker name if we have one, otherwise leave last one
@@ -158,8 +173,8 @@ module OralHistory
         # one with the presumed question. end_with? is used for some weird "multi-interviewee with
         # same name" use cases, good enough.
         elsif prospective_count >= WORD_GOAL &&
-              !interviewee_names.find { |n| paragraph_speaker_name.end_with? n }  &&
-              interviewee_names.find { |n| last_paragraph_speaker_name.end_with? n }
+              !interviewee_names.find { |n| paragraph_speaker_name&.end_with? n }  &&
+              interviewee_names.find { |n| last_paragraph_speaker_name&.end_with? n }
           chunks << current_chunk
 
           overlap_paragraphs = (chunks.last || []).last(1)

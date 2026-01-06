@@ -211,27 +211,13 @@ class OralHistoryContent
         strings.collect { |s| s.scan(/\w+/).count }.sum
       end
 
-      # holds an ordered list of Line's, and can describe
-      class Paragraph
+      # subclass for describing our paragraphs, with extra behaivor that is line-based,
+      # as Legacy OHMS format is line-based.
+      class Paragraph < ::OralHistoryContent::Paragraph
         # @return [Array<OralHistoryContent::LegacyTranscript::Line>] ordered list of Line objects
         attr_reader :lines
 
         attr_reader :transcript_id
-
-        # @return [integer] 1-based index of paragraph in document
-        attr_reader :paragraph_index
-
-        # @return [Array<Integer>] list of timestamps (as seconds) included in ths paragraph
-        attr_accessor :included_timestamps
-
-        # @return [Integer] timestamp in seconds of the PREVIOUS timestamp to this paragraph,
-        #                   to latest the timestamp sure not to miss beginning of paragraph.
-        attr_accessor :previous_timestamp
-
-        # @return [String] when the paragraph has no speaker name internally, we guess/assume
-        #    it has the same speaker as previous paragraph. Store such an assumed speaker name
-        #    from previous paragraph here.
-        attr_accessor :assumed_speaker_name
 
         def initialize(lines = nil, paragraph_index:)
           @lines = lines || []
@@ -250,20 +236,10 @@ class OralHistoryContent
           @lines.collect {|s| s.text.chomp }.join(" ").strip
         end
 
-        def word_count
-          @word_count ||= OralHistoryContent::OhmsXml::LegacyTranscript.word_count(text)
-        end
-
         # @return [Range] from first to last line number, with line numbers being 1-indexed
         #                 in entire document.
         def line_number_range
           (@lines.first.line_num..@lines.last.line_num)
-        end
-
-        # @return [String] to be used as an anchor within an HTML doc, that can be targeted
-        #                  with a link
-        def fragment_id
-          "oh-t#{transcript_id}-p#{paragraph_index}"
         end
 
         # @return [String] speaker name from any speaker label. Can be nil. Assumes
@@ -271,6 +247,12 @@ class OralHistoryContent
         #                  SHOULD be true, but weird things may happen if it ain't.
         def speaker_name
           lines.first&.speaker_label&.chomp(":")
+        end
+
+        # @return [String] to be used as an `id` attribute within an HTML doc, identifying a particular
+        #         paragraph.
+        def fragment_id
+          "oh-t#{transcript_id}-p#{paragraph_index}"
         end
       end
 
