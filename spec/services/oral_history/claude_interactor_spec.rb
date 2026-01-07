@@ -9,18 +9,19 @@ describe OralHistory::ClaudeInteractor do
 
   let(:interaction) { described_class.new(question: "What are scientists like?", question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
 
-  describe "#format_chunks" do
-    it "formats" do
-      expect(interaction.format_chunks([chunk1, chunk2]).strip).to eq <<~EOS.strip
+  describe "render_user_promopt" do
+    it "includes formatted chunks" do
+      expect(interaction.render_user_prompt([chunk1, chunk2])).to include <<~EOS.strip
+       RETRIEVED CONTEXT CHUNKS:
        ------------------------------
-       ORAL HISTORY TITLE: Oral history interview with William John Bailey, 1986
+       ORAL HISTORY TITLE: Oral history interview with William John Bailey
        CHUNK ID: #{chunk1.id}
        SPEAKERS: SMITH
        PARAGRAPH NUMBERS: 12, 13, 14, 15
        TEXT:
        #{chunk1.text.chomp}
        ------------------------------
-       ORAL HISTORY TITLE: Oral history interview with William John Bailey, 1986
+       ORAL HISTORY TITLE: Oral history interview with William John Bailey
        CHUNK ID: #{chunk2.id}
        SPEAKERS: SMITH, JONES
        PARAGRAPH NUMBERS: 12, 13, 14, 15

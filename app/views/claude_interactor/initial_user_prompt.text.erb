@@ -2,7 +2,16 @@ USER QUESTION:
 <%= question %>
 
 RETRIEVED CONTEXT CHUNKS:
-<%= formatted_chunks %>
+<% chunks.each do |chunk| -%>
+------------------------------
+ORAL HISTORY TITLE: <%= chunk.oral_history_content.work.title %>
+CHUNK ID: <%= chunk.id %>
+SPEAKERS: <%= chunk.speakers.join(", ") %>
+PARAGRAPH NUMBERS: <%= chunk.start_paragraph_number.upto(chunk.end_paragraph_number).to_a.join(", ") %>
+TEXT:
+<%= chunk.text.chomp %>
+<%- end -%>
+------------------------------
 
 TASK:
 
