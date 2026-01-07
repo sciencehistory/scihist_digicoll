@@ -5,6 +5,7 @@ RETRIEVED CONTEXT CHUNKS:
 <% chunks.each do |chunk| -%>
 ------------------------------
 ORAL HISTORY TITLE: <%= chunk.oral_history_content.work.title %>
+ORAL HISTORY ID: OH<%= chunk.oral_history_content.work.oral_history_number %>
 CHUNK ID: <%= chunk.id %>
 SPEAKERS: <%= chunk.speakers.join(", ") %>
 PARAGRAPH NUMBERS: <%= chunk.start_paragraph_number.upto(chunk.end_paragraph_number).to_a.join(", ") %>

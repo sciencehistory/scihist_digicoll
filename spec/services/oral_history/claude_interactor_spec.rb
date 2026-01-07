@@ -15,6 +15,7 @@ describe OralHistory::ClaudeInteractor do
        RETRIEVED CONTEXT CHUNKS:
        ------------------------------
        ORAL HISTORY TITLE: Oral history interview with William John Bailey
+       ORAL HISTORY ID: OH#{chunk1.oral_history_content.work.oral_history_number}
        CHUNK ID: #{chunk1.id}
        SPEAKERS: SMITH
        PARAGRAPH NUMBERS: 12, 13, 14, 15
@@ -22,6 +23,7 @@ describe OralHistory::ClaudeInteractor do
        #{chunk1.text.chomp}
        ------------------------------
        ORAL HISTORY TITLE: Oral history interview with William John Bailey
+       ORAL HISTORY ID: OH#{chunk2.oral_history_content.work.oral_history_number}
        CHUNK ID: #{chunk2.id}
        SPEAKERS: SMITH, JONES
        PARAGRAPH NUMBERS: 12, 13, 14, 15
