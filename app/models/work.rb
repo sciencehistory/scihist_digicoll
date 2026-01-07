@@ -132,6 +132,11 @@ class Work < Kithe::Work
     ocr_requested? || pdf_text_extraction?
   end
 
+  # Does not cache, looks up everytime, first external_id with category "interview", if present
+  def oral_history_number
+    self.external_id&.find { |id| id.category == "interview" }&.value
+  end
+
   # With one pg recursive CTE find _all_ descendent members, through
   # multiple levels.
   #

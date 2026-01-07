@@ -273,7 +273,7 @@ class Admin::WorksController < AdminController
   # GET /admin/works/ab2323ac/download_searchable_transcript_source
   def download_searchable_transcript_source
     authorize! :read, @work
-    id = @work.external_id.find { |id| id.category == "interview" }&.value
+    id = @work.oral_history_number
     id ||= @work.friendlier_id
     filename =  "#{id}_transcript.txt"
     send_data @work.oral_history_content!.searchable_transcript_source,
