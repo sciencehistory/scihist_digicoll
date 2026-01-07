@@ -25,18 +25,12 @@ class OralHistoryRequest < ApplicationRecord
   end
 
   def oral_history_number
-    return nil if self.work.external_id.nil?
-    oh_id =  self.work.external_id.find {|id| id.attributes["category"] == "interview"}
-    return nil if oh_id.nil?
-    oh_id.attributes['value']
+    self.work.oral_history_number
   end
-
 
   # delegate to oral_history_requester, or while we're migrating default to
   # local attributes
   def requester_email
     oral_history_requester&.email
   end
-
-
 end

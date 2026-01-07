@@ -172,7 +172,7 @@ class WorkShowInfoComponent < ApplicationComponent
   end
 
   def oral_history_number
-    @oral_history_number ||= work.external_id.find { |id| id.category == "interview"}&.value
+    @oral_history_number ||= work.oral_history_number
   end
 
   private

@@ -581,9 +581,7 @@ class CitableAttributes
     end
 
     def interview_id
-      interview_ids = CitableAttributes::work_lookup(work, "external_id", "interview")
-      return nil if interview_ids.blank?
-      interview_ids.first
+      work.oral_history_number
     end
 
   end

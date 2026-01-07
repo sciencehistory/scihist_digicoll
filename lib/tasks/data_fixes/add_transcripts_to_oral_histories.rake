@@ -33,7 +33,7 @@ namespace :scihist do
           end
         end
 
-        accession_num =  w.external_id.find { |id| id.category == "interview" }&.value
+        accession_num =  w.oral_history_number
         unless accession_num
           progress_bar.log("ERROR: #{w.title}: no accession number.")
           progress_bar.increment
