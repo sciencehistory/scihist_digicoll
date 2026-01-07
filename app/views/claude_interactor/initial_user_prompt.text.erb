@@ -10,7 +10,10 @@ CHUNK ID: <%= chunk.id %>
 SPEAKERS: <%= chunk.speakers.join(", ") %>
 PARAGRAPH NUMBERS: <%= chunk.start_paragraph_number.upto(chunk.end_paragraph_number).to_a.join(", ") %>
 TEXT:
-<%= chunk.text.chomp %>
+<% chunk.text.chomp.split("\n\n").each_with_index do |paragraph, index| %>
+[OH<%= chunk.oral_history_content.work.oral_history_number %>|P<%= chunk.start_paragraph_number + index %>] <%= paragraph %>
+
+<% end %>
 <%- end -%>
 ------------------------------
 
