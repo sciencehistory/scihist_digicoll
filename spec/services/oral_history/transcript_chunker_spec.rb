@@ -101,6 +101,23 @@ describe OralHistory::TranscriptChunker do
           expect(timestamp_data["previous"]).to eq paragraph.previous_timestamp
         end
       end
+
+      describe "paragraphs without speaker labels" do
+        let(:speaker_label_regexp) { /\A[A-Z]+\:/ }
+
+        let(:list_of_paragraphs) do
+          legacy_transcript.paragraphs.slice(326, 4).tap do |list|
+            expect(list.first).not_to match speaker_label_regexp
+          end
+        end
+
+        it "get their assumed speaker labels included" do
+          record = chunker.build_chunk_record(list_of_paragraphs)
+
+          expect(record.text).to match speaker_label_regexp
+          expect(record.text.split("\n\n")).to all match speaker_label_regexp
+        end
+      end
     end
 
     describe "#create_db_records" do

@@ -38,5 +38,15 @@ class OralHistoryContent
     def word_count
       @word_count ||= OralHistoryContent::OhmsXml::LegacyTranscript.word_count(text)
     end
+
+    # If a paragraph does not begin with a `SPEAKER:` label (usually cause same as last
+    # one), add it -- for LLM, helpful if every paragraph begins, no assumptions.
+    def text_with_forced_speaker_label
+      if text =~ OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
+        text
+      else
+        "#{speaker_name.presence || assumed_speaker_name}: #{text}"
+      end
+    end
   end
 end
