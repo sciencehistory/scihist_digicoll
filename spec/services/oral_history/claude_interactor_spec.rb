@@ -4,28 +4,47 @@ describe OralHistory::ClaudeInteractor do
   include AwsBedrockClaudeMockResponse
 
   let(:work) { create(:oral_history_work) }
-  let(:chunk1) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH"])}
-  let(:chunk2) { create(:oral_history_chunk, oral_history_content: work.oral_history_content, speakers: ["SMITH", "JONES"], text: "Chunk 2")}
+
+  let(:chunk1) { create(:oral_history_chunk,
+    oral_history_content: work.oral_history_content,
+    speakers: ["SMITH"],
+    start_paragraph_number: 12,
+    end_paragraph_number: 12,
+    text: "SMITH: If you think back to your time together at school, what kind of a student was Gordon?")}
+
+  let(:chunk2) { create(:oral_history_chunk,
+    oral_history_content: work.oral_history_content,
+    speakers: ["SMITH", "JONES"],
+    start_paragraph_number: 12,
+    end_paragraph_number: 13,
+    text: "SMITH: If you think back to your time together at school, what kind of a student was Gordon?\n\nJONES: He was a good student. He has always been a tremendous student. Even in grammar school. But, he was a year ahead of me. I wasn't in his class.")}
 
   let(:interaction) { described_class.new(question: "What are scientists like?", question_embedding: OralHistoryChunk::FAKE_EMBEDDING) }
 
-  describe "#format_chunks" do
-    it "formats" do
-      expect(interaction.format_chunks([chunk1, chunk2]).strip).to eq <<~EOS.strip
+  describe "render_user_promopt" do
+    it "includes formatted chunks" do
+      expect(interaction.render_user_prompt([chunk1, chunk2])).to include <<~EOS.strip
+       RETRIEVED CONTEXT CHUNKS:
        ------------------------------
-       ORAL HISTORY TITLE: Oral history interview with William John Bailey, 1986
+       ORAL HISTORY TITLE: Oral history interview with William John Bailey
+       ORAL HISTORY ID: OH#{chunk1.oral_history_content.work.oral_history_number}
        CHUNK ID: #{chunk1.id}
        SPEAKERS: SMITH
-       PARAGRAPH NUMBERS: 12, 13, 14, 15
+       PARAGRAPH NUMBERS: 12
        TEXT:
-       #{chunk1.text.chomp}
+       [OH0012|P12] SMITH: If you think back to your time together at school, what kind of a student was Gordon?
+
        ------------------------------
-       ORAL HISTORY TITLE: Oral history interview with William John Bailey, 1986
+       ORAL HISTORY TITLE: Oral history interview with William John Bailey
+       ORAL HISTORY ID: OH#{chunk2.oral_history_content.work.oral_history_number}
        CHUNK ID: #{chunk2.id}
        SPEAKERS: SMITH, JONES
-       PARAGRAPH NUMBERS: 12, 13, 14, 15
+       PARAGRAPH NUMBERS: 12, 13
        TEXT:
-       #{chunk2.text.chomp}
+       [OH0012|P12] SMITH: If you think back to your time together at school, what kind of a student was Gordon?
+
+       [OH0012|P13] JONES: He was a good student. He has always been a tremendous student. Even in grammar school. But, he was a year ahead of me. I wasn't in his class.
+
        ------------------------------
       EOS
     end

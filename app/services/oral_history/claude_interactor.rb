@@ -98,7 +98,7 @@ module OralHistory
       ApplicationController.render( template: "claude_interactor/initial_user_prompt",
                                     locals: {
                                       question: question,
-                                      formatted_chunks: format_chunks(chunks)
+                                      chunks: chunks
                                     },
                                     formats: [:text]
                                   )
@@ -116,42 +116,6 @@ module OralHistory
                                               exclude_interviews: chunks.collect(&:oral_history_content_id).uniq).fetch_chunks
 
       chunks
-    end
-
-    def format_chunks(chunks)
-      separator = "------------------------------"
-
-      chunks.collect do |chunk|
-        # Title is really just for debugging, it can always be fetched by chunk_id, but
-        # it does make debugging a lot easier to keep the title in the pipeline, to
-        # footnote.
-
-        title = chunk.oral_history_content.work.title
-
-        # hackily get a date range
-        dates = chunk.oral_history_content.work.date_of_work.collect { |d| [d.start, d.finish]}.
-          flatten.collect(&:presence).compact.uniq.sort
-
-        date_string = if dates.length > 1
-          ", #{dates.first.slice(0, 4)}-#{dates.last.slice(0, 4)}"
-        elsif dates.length > 0
-          ", #{dates.first.slice(0, 4)}"
-        else
-          ""
-        end
-
-        title = title += date_string
-
-        <<~EOS
-          #{separator}
-          ORAL HISTORY TITLE: #{title}
-          CHUNK ID: #{chunk.id}
-          SPEAKERS: #{chunk.speakers.join(", ")}
-          PARAGRAPH NUMBERS: #{chunk.start_paragraph_number.upto(chunk.end_paragraph_number).to_a.join(", ")}
-          TEXT:
-          #{chunk.text.chomp}
-        EOS
-      end.join + "#{separator}"
     end
 
     # The thing we asked Claude for, does it look like we asked?
