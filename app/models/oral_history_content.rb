@@ -103,6 +103,16 @@ class OralHistoryContent < ApplicationRecord
   # IMMEDIATE after request, no approval needed, unlike needs_approval.
   scope :upon_request, -> { where(available_by_request_mode: "automatic").distinct  }
 
+  scope :needs_approval, -> { where(available_by_request_mode: "manual_review").distinct  }
+
+  # available_by_request_mode off and no public PDFs is totally embargoed private
+  scope :fully_embargoed,  -> {
+    where(available_by_request_mode: ["off", nil]).
+    joins(work: :members).
+    where.not(members: { published: true}).
+    distinct
+  }
+
   after_commit :after_commit_update_work_index_if_needed
 
   # Sets IO to be combined_audio_m4a, writing directly to "store" storage,
