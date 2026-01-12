@@ -10,19 +10,14 @@
 # that will be simpler overall, and allow them to diverge as more features are added.
 class WorkVideoShowComponent < ApplicationComponent
   delegate :construct_page_title, :can_see_unpublished_records?, to: :helpers
-
   attr_reader :work
 
   def initialize(work)
     @work = work
-
-    unless work.leaf_representative&.content_type&.start_with?("video/")
-    	raise ArgumentError.new("work.leaf_representative must be a video to use #{self.class.name}")
-    end
   end
 
   def poster_src
-    video_asset.file_derivatives(:thumb_large)&.url || asset_path("placeholderbox.svg")
+    @work.leaf_representative&.file_derivatives(:thumb_large)&.url || video_asset.file_derivatives(:thumb_large)&.url || asset_path("placeholderbox.svg")
   end
 
   def video_src_url
@@ -53,12 +48,10 @@ class WorkVideoShowComponent < ApplicationComponent
     end
   end
 
-  # the representative, if it's visible to current user, otherwise nil!
+  # the first video member we find. otherwise nil.
   def video_asset
-    return @video_asset if defined?(@video_asset)
-  	@video_asset = (work.leaf_representative &&
-      (work.leaf_representative.published? || can_see_unpublished_records?) &&
-      work.leaf_representative) || nil
+    candidate = @work.members.find { |w| w&.content_type&.start_with?("video/") }
+    candidate if (candidate.published? || can_see_unpublished_records?)
   end
 
   def private_label
