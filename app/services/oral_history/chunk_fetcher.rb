@@ -5,7 +5,9 @@ module OralHistory
   # Can also use fancy SQL to limit to only so many per document, and add
   # other constraints.
   class ChunkFetcher
-    attr_reader :top_k, :question_embedding, :max_per_interview, :oversample_factor
+    ACCESS_LIMITS = %i{immediate_ohms_only immediate_only immediate_or_automatic} + [nil] # symbols
+
+    attr_reader :top_k, :question_embedding, :max_per_interview, :oversample_factor, :access_limit
     attr_reader :exclude_oral_history_chunk_ids, :exclude_oral_history_content_ids
 
 
@@ -22,11 +24,25 @@ module OralHistory
     #
     # @param exclude_interviews [Array<Work,OralHistoryContent,Integer>] Interviews to exclude. can be as Work, OralHistoryContent,
     #   or OralHistoryContent#id
-    def initialize(top_k:, question_embedding:, max_per_interview: nil, oversample_factor: 3, exclude_chunks: nil, exclude_interviews: nil)
+    #
+    # @param access_limit [Symbol,nil] should we limit to only certain oral histories? Either on
+    #   having OHMS attached, or on access/availability level. See ACCESS_LIMITS for values.
+    def initialize(top_k:, question_embedding:,
+        access_limit: nil,
+        max_per_interview: nil,
+        oversample_factor: 3,
+        exclude_chunks: nil,
+        exclude_interviews: nil)
       @top_k = top_k
       @question_embedding = question_embedding
       @max_per_interview = max_per_interview
       @oversample_factor = oversample_factor
+
+
+      @access_limit = access_limit
+      unless @access_limit.in?(ACCESS_LIMITS)
+        raise ArgumentError.new("access_limit is #{access_limit.inspect}, but must be in #{ACCESS_LIMITS.inspect}")
+      end
 
       if exclude_chunks
         @exclude_oral_history_chunk_ids = exclude_chunks.collect {|i| i.kind_of?(OralHistoryChunk) ? i.id : i }
@@ -60,8 +76,29 @@ module OralHistory
 
     # Without limit count, we'll add that later.
     def base_relation
+      relation = OralHistoryChunk
+
+      # Apply any limits to certain OH's
+      case access_limit
+      when :immediate_ohms_only
+        # right now all OHMS are immediate, so.
+        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.with_ohms)
+      when :immediate_only
+        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.available_immediate)
+      when :immediate_or_automatic
+        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.available_immediate).or( OralHistoryContent.upon_request )
+      else
+        # still need to exclude totally private, although we shoudln't have any chunks made
+        # for these anyway, it's important enough we want to be sure! Hopefully won't hurt performance too bad.
+        # TODO
+        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.all_except_fully_embargoed)
+      end
+
+      # Add our nearnest neighbor embedding query!
+      relation = relation.neighbors_for_embedding(question_embedding)
+
       # Preload work, so we can get title or other metadata we might want.
-      relation = OralHistoryChunk.neighbors_for_embedding(question_embedding).includes(oral_history_content: :work)
+      relation = relation.includes(oral_history_content: :work)
 
       # exclude specific chunks?
       if exclude_oral_history_chunk_ids.present?
