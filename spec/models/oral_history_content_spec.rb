@@ -220,5 +220,16 @@ describe OralHistoryContent do
       expect(results).not_to include(ohms_oh.oral_history_content)
       expect(results).not_to include(immediate_oh.oral_history_content)
     end
+
+    it "fetches all except fully embargoed" do
+      results = OralHistoryContent.all_except_fully_embargoed.to_a
+
+      expect(results).to include(needs_approval_oh.oral_history_content)
+      expect(results).to include(upon_request_oh.oral_history_content)
+      expect(results).to include(ohms_oh.oral_history_content)
+      expect(results).to include(immediate_oh.oral_history_content)
+
+      expect(results).not_to include(private_oh.oral_history_content)
+    end
   end
 end

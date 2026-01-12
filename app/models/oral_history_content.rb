@@ -113,6 +113,19 @@ class OralHistoryContent < ApplicationRecord
     distinct
   }
 
+  # Have to write the confusing opposite of above
+  # Everything that either doesn't have request mode OFF, OR has a published non-portrait
+  # member. GAH.
+  scope :all_except_fully_embargoed, -> {
+    where.not(available_by_request_mode: ["off", nil]).
+      joins(work: :members).
+      or(
+        OralHistoryContent.joins(work: :members).
+        where(members: {  published: true } ).
+        where.not(members: { role: "portrait" })
+      ).distinct
+  }
+
   after_commit :after_commit_update_work_index_if_needed
 
   # Sets IO to be combined_audio_m4a, writing directly to "store" storage,
