@@ -79,6 +79,30 @@ class OralHistoryContent < ApplicationRecord
   # along with scopes like `OralHistoryContent.available_by_request_automatic`
   enum :available_by_request_mode, {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, prefix: :available_by_request
 
+
+  # scopes for finding certain kinds of OH's. We add ".distinct" to them all to make them all composable,
+  # even though really only needed for available_immediate, does not hurt.
+
+  # has ohms, non-empty ohms text. Could be legacy or new
+  scope :with_ohms, -> { where.not(ohms_xml_text: [nil, ""]).distinct }
+
+  # Immediate availability, fully public. Has no request mode turned on -- currently
+  # this is a mess TECHNICAL DEBT we need to amke sure it ALSO has at least one
+  # non-portrait member that is public, to distinguish from totally secret non-published
+  # non-requestable OH.
+  #
+  scope :available_immediate, -> {
+    # empty available_by_request_mode is assumed off
+    where(available_by_request_mode: ["off", nil]).
+    joins(work: :members).
+    where(members: { published: true})
+    .where.not(members: { role: 'portrait' } ).
+    distinct # needed cause of the join to avoid dups
+  }
+
+  # IMMEDIATE after request, no approval needed, unlike needs_approval.
+  scope :upon_request, -> { where(available_by_request_mode: "automatic").distinct  }
+
   after_commit :after_commit_update_work_index_if_needed
 
   # Sets IO to be combined_audio_m4a, writing directly to "store" storage,

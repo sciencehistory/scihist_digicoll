@@ -134,4 +134,70 @@ describe OralHistoryContent do
       expect(oral_history_content.has_ohms_transcript?).to be(false)
     end
   end
+
+
+  describe "scopes" do
+    let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH")}
+    let!(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH") }
+    let!(:needs_approval_oh) { create(:oral_history_work, :available_by_request, title: "Needs approval OH", available_by_request_mode: "manual_review")}
+    let!(:upon_request_oh) { create(:oral_history_work, :available_by_request, title: "Automatic Approval OH", available_by_request_mode: "automatic") }
+    let!(:private_oh) {
+      create(:oral_history_work,
+        title: "NOT available OH",
+        members: [
+          create(:asset, role: :portrait, published: true),
+          create(:asset_with_faked_file, :pdf, role: :transcript, published: false)
+        ]
+      )
+    }
+
+    it "fetches ohms" do
+      results = OralHistoryContent.with_ohms.to_a
+
+      expect(results).to include(ohms_oh.oral_history_content)
+
+      expect(results).not_to include(immediate_oh.oral_history_content)
+      expect(results).not_to include(needs_approval_oh.oral_history_content)
+      expect(results).not_to include(upon_request_oh.oral_history_content)
+      expect(results).not_to include(private_oh.oral_history_content)
+    end
+
+    it "fetches immediate" do
+      results = OralHistoryContent.available_immediate.to_a
+
+      expect(results).to include(immediate_oh.oral_history_content)
+      expect(results).to include(ohms_oh.oral_history_content)
+      expect(results.count).to eq 2
+
+      expect(results).not_to include(needs_approval_oh.oral_history_content)
+      expect(results).not_to include(upon_request_oh.oral_history_content)
+      expect(results).not_to include(private_oh.oral_history_content)
+    end
+
+    it "fetches upon_request" do
+      results = OralHistoryContent.upon_request.to_a
+
+      expect(results).to include(upon_request_oh.oral_history_content)
+
+      expect(results).not_to include(ohms_oh.oral_history_content)
+      expect(results).not_to include(immediate_oh.oral_history_content)
+
+      expect(results).not_to include(needs_approval_oh.oral_history_content)
+      expect(results).not_to include(private_oh.oral_history_content)
+    end
+
+    it "fetches (upon_request OR immediate)" do
+      # have to do crazy thing with removing then adding DISTICNT to get it to work
+      results = OralHistoryContent.available_immediate.or( OralHistoryContent.upon_request ).to_a
+
+      expect(results).to include(upon_request_oh.oral_history_content)
+      expect(results).to include(ohms_oh.oral_history_content)
+      expect(results).to include(immediate_oh.oral_history_content)
+
+      expect(results).not_to include(needs_approval_oh.oral_history_content)
+      expect(results).not_to include(private_oh.oral_history_content)
+
+    end
+  end
+
 end
