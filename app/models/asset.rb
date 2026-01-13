@@ -97,7 +97,7 @@ class Asset < Kithe::Asset
   # * front_matter: used for OH, the limited excerpts "front matter" PDF
   # * work_source_pdf: single PDF asset that effective is the work, will have individual pages auto extracted
   # * extracted_pdf_page: An Asset with a rendered page image of a single page from a PDF marked work_source_pdf
-  enum :role, %w{portrait transcript front_matter work_source_pdf extracted_pdf_page}.collect {|v| [v, v]}.to_h, prefix: true
+  enum :role, %w{portrait transcript front_matter work_source_pdf extracted_pdf_page video_poster_frame}.collect {|v| [v, v]}.to_h, prefix: true
   validates :role, unless: Proc.new { |a| a.content_type == "application/pdf"},
     exclusion: {
       within: ["work_source_pdf"],
