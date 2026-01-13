@@ -91,6 +91,9 @@ class OralHistoryContent < ApplicationRecord
   # non-portrait member that is public, to distinguish from totally secret non-published
   # non-requestable OH.
   #
+  # WARNING:  THESE MAY NOT WORK WITHOUT PERFORMANCE ISSUES, SEE
+  # https://github.com/sciencehistory/scihist_digicoll/issues/3253
+
   scope :available_immediate, -> {
     # empty available_by_request_mode is assumed off
     where(available_by_request_mode: ["off", nil]).

@@ -79,19 +79,22 @@ module OralHistory
       relation = OralHistoryChunk
 
       # Apply any limits to certain OH's
+      #
+      # NOTE:  We can't use full logic for elminating "fully embargoed" that we implemented in scopes,
+      #        crashes postgres. See https://github.com/sciencehistory/scihist_digicoll/issues/3253
+      #
+      #        For now we RELY upon fully embargoed OH's not being chunked.
+      #
       case access_limit
       when :immediate_ohms_only
         # right now all OHMS are immediate, so.
-        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.with_ohms)
+        relation = relation.joins(:oral_history_content).where.not(oral_history_content: { ohms_xml_text: [nil, ""]})
       when :immediate_only
-        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.available_immediate)
+        relation = relation.joins(:oral_history_content).where(oral_history_content: { available_by_request_mode: ["off", nil] })
       when :immediate_or_automatic
-        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.available_immediate).or( OralHistoryContent.upon_request )
+        relation = relation.joins(:oral_history_content).where(oral_history_content: { available_by_request_mode: ["off", "automatic"] })
       else
-        # still need to exclude totally private, although we shoudln't have any chunks made
-        # for these anyway, it's important enough we want to be sure! Hopefully won't hurt performance too bad.
-        # TODO
-        relation = relation.joins(:oral_history_content).merge(OralHistoryContent.all_except_fully_embargoed)
+        # TODO not excluding totally embargoed, see https://github.com/sciencehistory/scihist_digicoll/issues/3253
       end
 
       # Add our nearnest neighbor embedding query!
