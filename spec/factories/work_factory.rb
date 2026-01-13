@@ -341,7 +341,20 @@ FactoryBot.define do
         published_at { Time.now - 86400}
         genre { ["Video Recordings"] }
       end
-    end
 
+      trait :with_poster_frame do
+        members { [
+          # video
+          build(:asset_with_faked_file, :video, published: true),
+          # poster frame:
+          build(:asset_with_faked_file, published: true)
+        ] }
+        # We use the representative as both the search results thumbnail *and* the poster frame.
+        representative { members[1] }
+        published { true }
+        published_at { Time.now - 86400}
+        genre { ["Video Recordings"] }
+      end
+    end
   end
 end
