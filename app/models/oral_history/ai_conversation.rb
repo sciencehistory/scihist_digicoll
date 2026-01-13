@@ -42,7 +42,12 @@ class OralHistory::AiConversation < ApplicationRecord
     self.save!
 
     # Start the conversation, could take 10-20 seconds even.
-    interactor = OralHistory::ClaudeInteractor.new(question: self.question, question_embedding: self.question_embedding)
+    interactor = OralHistory::ClaudeInteractor.new(
+      question: self.question,
+      question_embedding: self.question_embedding,
+      access_limit: search_params["access_limit"].presence && search_params["access_limit"].to_sym
+    )
+
     response = interactor.get_response(conversation_record: self)
 
     self.answer_json = interactor.extract_answer(response)
