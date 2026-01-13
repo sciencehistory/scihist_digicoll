@@ -151,7 +151,8 @@ class WorksController < ApplicationController
   end
 
   def show_video_player?
-    @work.format.include?('moving_image') && @work.members.any? { |m| m&.content_type&.start_with?("video/") }
+    return @show_video_player if defined?(@show_video_player)
+    @show_video_player = @work.format.include?('moving_image') && @work.members.any? { |m| m&.content_type&.start_with?("video/") }
   end
 
   def set_work
