@@ -92,9 +92,9 @@ en:
     sign_in_prompt: "You can view the status of all of your oral history requests and download materials from approved requests using this special sign-in link:"
     sign_in_link_label: "Access Science History Institute Requests"
     access_limit:
-      immediate_ohms_only: "OHMS-enabled Only"
-      immediate_only: "Available without request"
-      immediate_or_automatic: "Available without request or with automatic request"
+      immediate_ohms_only: "Only with synchronized audio"
+      immediate_only: "Only fully public"
+      immediate_or_automatic: "Fully public or with automatically approved request"
 
 
 
