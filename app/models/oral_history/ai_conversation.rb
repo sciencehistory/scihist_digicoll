@@ -45,7 +45,7 @@ class OralHistory::AiConversation < ApplicationRecord
     interactor = OralHistory::ClaudeInteractor.new(
       question: self.question,
       question_embedding: self.question_embedding,
-      access_limit: search_params["access_limit"].presence && search_params["access_limit"].to_sym
+      access_limit: search_params&.dig("access_limit").presence && search_params["access_limit"].to_sym
     )
 
     response = interactor.get_response(conversation_record: self)

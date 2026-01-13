@@ -26,7 +26,7 @@
       <span class="constraint-value btn btn-outline-secondary">
           <span class="filter-name">Including</span>
           <span class="filter-value">
-            <%= @conversation.search_params["access_limit"].presence ? t(@conversation.search_params["access_limit"], scope: "oral_history.access_limit") : "All" %>
+            <%= @conversation.search_params&.dig("access_limit").presence ? t(@conversation.search_params["access_limit"], scope: "oral_history.access_limit") : "All" %>
           </span>
       </span>
     </span>
