@@ -49,10 +49,10 @@ class WorkVideoShowComponent < ApplicationComponent
     end
   end
 
-  # the first video member we find. otherwise nil.
+  # the first video member we find; otherwise nil.
   def video_asset
     @video_asset ||= begin
-      candidate = @work.members.find { |w| w&.content_type&.start_with?("video/") }
+      candidate = @work.members.find { |mem| mem&.content_type&.start_with?("video/") }
       candidate if (candidate.published? || can_see_unpublished_records?)
     end
   end
