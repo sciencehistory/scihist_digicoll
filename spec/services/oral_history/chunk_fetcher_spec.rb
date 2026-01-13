@@ -20,7 +20,7 @@ describe OralHistory::ChunkFetcher do
   let(:fake_question_embedding) { fake_vector(0.03263719,-0.021255592,-0.018256947,0.012259656,0.008308401)}
 
 
-  let(:work1) { create(:oral_history_work, :public_files) }
+  let(:work1) { create(:oral_history_work, :public_files, published: true) }
 
 
   let!(:chunk1) { create(:oral_history_chunk,
@@ -34,7 +34,7 @@ describe OralHistory::ChunkFetcher do
                         speakers: ["SMITH", "JONES"], text: "Chunk 2")}
 
 
-  let(:work2) { create(:oral_history_work, :public_files) }
+  let(:work2) { create(:oral_history_work, :public_files, published: true) }
 
 
   let!(:chunk3) { create(:oral_history_chunk,
@@ -115,10 +115,10 @@ describe OralHistory::ChunkFetcher do
   # Duplicates what's in OralHistoryCotent scope checks and is slow, but important
   # enough to ensure coverage here too sorry.
   describe "access limits" do
-    let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH") }
-    let!(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH") }
-    let!(:needs_approval_oh) { create(:oral_history_work, :available_by_request, title: "Needs approval OH", available_by_request_mode: "manual_review")}
-    let!(:upon_request_oh) { create(:oral_history_work, :available_by_request, title: "Automatic Approval OH", available_by_request_mode: "automatic") }
+    let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH", published: true) }
+    let!(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH", published: true) }
+    let!(:needs_approval_oh) { create(:oral_history_work, :available_by_request, title: "Needs approval OH", available_by_request_mode: "manual_review", published: true)}
+    let!(:upon_request_oh) { create(:oral_history_work, :available_by_request, title: "Automatic Approval OH", available_by_request_mode: "automatic", published: true) }
     let!(:private_oh) {
       create(:oral_history_work,
         title: "NOT available OH",
@@ -185,4 +185,20 @@ describe OralHistory::ChunkFetcher do
       }.to raise_error(ArgumentError)
     end
   end
+
+  describe "unpublished works" do
+    let(:unpublished_work) { create(:oral_history_work, :public_files, published: false) }
+    let!(:unpublished_chunk) { create(:oral_history_chunk,
+                                  oral_history_content: unpublished_work.oral_history_content,
+                                  embedding: fake_vector(0.01759516,-0.0453438, -0.029577527, -0.032289326, 0.012045433),
+                                  speakers: ["BADGUY"])}
+
+    it "are never included" do
+      results = OralHistory::ChunkFetcher.new(top_k: 10, question_embedding: fake_vector).fetch_chunks
+
+      expect(results).not_to include(unpublished_chunk)
+    end
+
+  end
+
 end

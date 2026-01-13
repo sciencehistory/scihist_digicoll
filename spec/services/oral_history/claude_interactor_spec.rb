@@ -3,7 +3,7 @@ require 'rails_helper'
 describe OralHistory::ClaudeInteractor do
   include AwsBedrockClaudeMockResponse
 
-  let(:work) { create(:oral_history_work) }
+  let(:work) { create(:oral_history_work, published: true) }
 
   let(:chunk1) { create(:oral_history_chunk,
     oral_history_content: work.oral_history_content,

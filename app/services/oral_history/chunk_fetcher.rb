@@ -78,6 +78,9 @@ module OralHistory
     def base_relation
       relation = OralHistoryChunk
 
+      # only published works, which requires a join
+      relation = relation.joins(oral_history_content: :work).where(work: { published: true })
+
       # Apply any limits to certain OH's
       #
       # NOTE:  We can't use full logic for elminating "fully embargoed" that we implemented in scopes,
