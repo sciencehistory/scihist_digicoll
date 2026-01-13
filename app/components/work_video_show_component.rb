@@ -51,8 +51,10 @@ class WorkVideoShowComponent < ApplicationComponent
 
   # the first video member we find. otherwise nil.
   def video_asset
-    candidate = @work.members.find { |w| w&.content_type&.start_with?("video/") }
-    candidate if (candidate.published? || can_see_unpublished_records?)
+    @video_asset ||= begin
+      candidate = @work.members.find { |w| w&.content_type&.start_with?("video/") }
+      candidate if (candidate.published? || can_see_unpublished_records?)
+    end
   end
 
   def private_label
