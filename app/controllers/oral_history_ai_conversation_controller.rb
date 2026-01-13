@@ -16,7 +16,9 @@ class OralHistoryAiConversationController < ApplicationController
   end
 
   def create
-    conversation = OralHistoryAiConversationJob.launch(session_id: session.id, question: params.require(:q))
+    search_params = params.slice(:access_limit).to_unsafe_h
+
+    conversation = OralHistoryAiConversationJob.launch(session_id: session.id, question: params.require(:q), search_params: search_params)
 
     redirect_to oral_history_ai_conversation_path(conversation.external_id)
   end
