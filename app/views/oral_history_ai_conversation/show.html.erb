@@ -32,6 +32,14 @@
     </span>
   </div>
 
+  <% if @conversation.request_sent_at %>
+    <div class="d-flex justify-content-end mb-3">
+      <span class="ai-conversation-date fw-semibold" data-iso8601="<%= @conversation.request_sent_at&.iso8601 %>">
+          Prepared <%= l(@conversation.request_sent_at.to_date, format: :long) %>
+      </span>
+    </div>
+  <% end %>
+
   <% if !@conversation.complete? %>
     <div class="d-flex align-items-center">
       <i class="fa fa-circle-o-notch fa-spin fa-2x me-2" aria-hidden="true"></i>
