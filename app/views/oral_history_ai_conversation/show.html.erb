@@ -19,6 +19,19 @@
     <span class="fw-bold">Q:</span> <%=  @conversation.question %>
   </div>
 
+
+  <%# have to match the DOM of the Blacklight search results filters. Fragile? Maybe. %>
+  <div id="appliedParams" class="constraints-container">
+    <span class="applied-filter">
+      <span class="constraint-value btn btn-outline-secondary">
+          <span class="filter-name">Including</span>
+          <span class="filter-value">
+            <%= @conversation.search_params["access_limit"].presence ? t(@conversation.search_params["access_limit"], scope: "oral_history.access_limit") : "All" %>
+          </span>
+      </span>
+    </span>
+  </div>
+
   <% if !@conversation.complete? %>
     <div class="d-flex align-items-center">
       <i class="fa fa-circle-o-notch fa-spin fa-2x me-2" aria-hidden="true"></i>
