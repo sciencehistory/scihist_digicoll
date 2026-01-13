@@ -10,6 +10,7 @@
 # that will be simpler overall, and allow them to diverge as more features are added.
 class WorkVideoShowComponent < ApplicationComponent
   delegate :construct_page_title, :can_see_unpublished_records?, to: :helpers
+
   attr_reader :work
 
   def initialize(work)
