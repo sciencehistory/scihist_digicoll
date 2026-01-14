@@ -123,6 +123,7 @@ describe OralHistory::ClaudeInteractor do
             retrieved_chunk_info['oral_history_content_id'].present? &&
             retrieved_chunk_info['text'].present?
           }
+          expect(ai_conversation.rehydrate_chunks_used!).to eq [chunk1, chunk2]
 
           expect(ai_conversation.response_metadata["usage"]).to be_present
           expect(ai_conversation.response_metadata["metrics"]).to be_present

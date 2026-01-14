@@ -83,5 +83,23 @@ RSpec.describe OralHistory::AiConversation, type: :model do
         }.to raise_error(RuntimeError).with_message("can't exec_and_record_interaction on status in_process")
       end
     end
+
+    describe "preserving serialized chunks" do
+      let(:chunks) { [create(:oral_history_chunk, :with_oral_history_content), create(:oral_history_chunk, :with_oral_history_content)] }
+      let(:conversation) { OralHistory::AiConversation.new }
+
+      it "preserves and rehydrates" do
+        conversation.record_chunks_used(chunks)
+
+        # delete em from DB to make sure we can still rehydrate!
+        chunks.each(&:delete)
+
+        rehydrated = conversation.rehydrate_chunks_used!
+
+        expect(rehydrated.length).to eq chunks.length
+        expect(rehydrated).to all be_valid
+        expect(rehydrated).to all(have_attributes(id: be_present, text: be_present))
+      end
+    end
   end
 end

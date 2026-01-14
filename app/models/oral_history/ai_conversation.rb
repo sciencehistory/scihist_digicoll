@@ -108,7 +108,7 @@ class OralHistory::AiConversation < ApplicationRecord
   # @return [Array<OralHistoryChunk>] ordered by original presence in chunks_used, which
   #     should be original ranking. Should have neighbors_present serialized from original
   #     chunks_used.
-  def rehydrated_chunks_used!
+  def rehydrate_chunks_used!
     # Do we need to try to fetch Chunks from the db for incomplete legacy
     # hashes?  If so, they NEED to be in DB, or we're gonna error.
     legacy_hashes = chunks_used.find_all { |h| h["chunk_id"].present? }
@@ -124,6 +124,9 @@ class OralHistory::AiConversation < ApplicationRecord
       else
         # doc_rank winds up in there from our weird sql, but isn't an attribute
         attributes.delete("doc_rank")
+        # we didn't serialize long vector embedding we don't need, but let's add in
+        # a fake one just to make it a valid record.
+        attributes["embedding"] ||= OralHistoryChunk::FAKE_EMBEDDING
         OralHistoryChunk.new(attributes)
       end
     end.tap do |list|

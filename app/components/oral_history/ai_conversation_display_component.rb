@@ -86,7 +86,7 @@ module OralHistory
     end
 
     def preserved_chunks_list
-      @preserved_chunks_list ||= ai_conversation.rehydrated_chunks_used!
+      @preserved_chunks_list ||= ai_conversation.rehydrate_chunks_used!
     end
 
     class FootnoteItem
