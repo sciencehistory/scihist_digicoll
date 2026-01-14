@@ -102,16 +102,30 @@ class OralHistory::AiConversation < ApplicationRecord
   end
 
   # Deserializes json self.chunks_used to OralHistoryChunks, taking care of some legacy data.
-  def rehydrated_chunks_used
-    self.chunks_used.collect do |attributes|
-        # migrate from old stored format that was not a serialized model,
-        # to at least partial serialized model.
-        attributes.delete("doc_rank")
-        attributes.delete("rank")
-        attributes["id"] ||= attributes.delete("chunk_id")
-        attributes["neighbor_distance"] ||= attributes.delete("cosine_distance")
+  #
+  # May go to DB for legacy data, could be an expensive operation.
+  #
+  # @return [Array<OralHistoryChunk>] ordered by original presence in chunks_used, which
+  #     should be original ranking. Should have neighbors_present serialized from original
+  #     chunks_used.
+  def rehydrated_chunks_used!
+    # Do we need to try to fetch Chunks from the db for incomplete legacy
+    # hashes?  If so, they NEED to be in DB, or we're gonna error.
+    legacy_hashes = chunks_used.find_all { |h| h["chunk_id"].present? }
+    if legacy_hashes
+      fetched_chunks = OralHistoryChunk.find(legacy_hashes.collect { |h| h["chunk_id"].to_i })
+    end
 
+    self.chunks_used.collect do |attributes|
+      if attributes["chunk_id"].present?
+        # old stored format that was not a serialized model,
+        # to at least partial serialized model.
+        fetched_chunks.find { |c| c.id == attributes["chunk_id"]}
+      else
+        # doc_rank winds up in there from our weird sql, but isn't an attribute
+        attributes.delete("doc_rank")
         OralHistoryChunk.new(attributes)
+      end
     end.tap do |list|
       # preload their works please
       ActiveRecord::Associations::Preloader.new(
