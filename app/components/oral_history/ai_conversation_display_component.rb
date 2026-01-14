@@ -86,28 +86,7 @@ module OralHistory
     end
 
     def preserved_chunks_list
-      @preserved_chunks_list ||= ai_conversation.chunks_used.collect do |attributes|
-        # migrate from old stored format that was not a serialized model,
-        # to at least partial serialized model.
-        attributes.delete("doc_rank")
-        attributes.delete("rank")
-        attributes["id"] ||= attributes.delete("chunk_id")
-        attributes["neighbor_distance"] ||= attributes.delete("cosine_distance")
-
-        OralHistoryChunk.new(attributes)
-      end.tap do |list|
-        # preload their works please
-        ActiveRecord::Associations::Preloader.new(
-          records: list,
-          associations: { oral_history_content: :work }
-        ).call
-
-        # and make em all strict loading so we can't load any more n+1
-        list.each(&:strict_loading!)
-
-        # and prevent saving, these are preserved historical records
-        list.each(&:readonly!)
-      end
+      @preserved_chunks_list ||= ai_conversation.rehydrated_chunks_used
     end
 
     def debug_chunks_list

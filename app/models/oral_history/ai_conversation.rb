@@ -100,4 +100,30 @@ class OralHistory::AiConversation < ApplicationRecord
       chunk.as_json.except("embedding")
     end
   end
+
+  # Deserializes json self.chunks_used to OralHistoryChunks, taking care of some legacy data.
+  def rehydrated_chunks_used
+    self.chunks_used.collect do |attributes|
+        # migrate from old stored format that was not a serialized model,
+        # to at least partial serialized model.
+        attributes.delete("doc_rank")
+        attributes.delete("rank")
+        attributes["id"] ||= attributes.delete("chunk_id")
+        attributes["neighbor_distance"] ||= attributes.delete("cosine_distance")
+
+        OralHistoryChunk.new(attributes)
+    end.tap do |list|
+      # preload their works please
+      ActiveRecord::Associations::Preloader.new(
+        records: list,
+        associations: { oral_history_content: :work }
+      ).call
+
+      # and make em all strict loading so we can't load any more n+1
+      list.each(&:strict_loading!)
+
+      # and prevent saving, these are preserved historical records
+      list.each(&:readonly!)
+    end
+  end
 end
