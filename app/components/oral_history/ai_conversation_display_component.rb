@@ -89,10 +89,6 @@ module OralHistory
       @preserved_chunks_list ||= ai_conversation.rehydrated_chunks_used
     end
 
-    def debug_chunks_list
-      preserved_chunks_list
-    end
-
     class FootnoteItem
       attr_reader :response_hash, :chunk
 
