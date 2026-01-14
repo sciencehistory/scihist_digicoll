@@ -85,14 +85,19 @@ class OralHistory::AiConversation < ApplicationRecord
   end
 
 
-  # @param chunks [Array<OralHistoryChunk>] as fetched from neigbor gem, with a #neighbor_distance attribute
+  # @param chunks [Array<Hash>] json serialized OralHistoryChunk as fetched from neigbor gem,
+  #   with a #neighbor_distance attribute
   def record_chunks_used(chunks)
-    self.chunks_used = chunks.collect.with_index do |chunk, index|
-      {
-        "rank" => index + 1,
-        "chunk_id" => chunk.id,
-        "cosine_distance" => (chunk.neighbor_distance.nil? || chunk.neighbor_distance.nan?) ? 0 : chunk.neighbor_distance
-      }
+    # we are going to record the whole chunk, so we can still show historical Q&A if chunks in db
+    # have changed. especially relevant when we're prototyping and testing.
+    #
+    # Chunks should already have "neighbor_distance" attribute with cosine distance.  Order is preserved.
+    #
+    # We also use chunks metadata for citation references, so we know what paragraph etc.
+    #
+    # We remove `embedding` cause it is huge and we don't need original embedding vector.
+    self.chunks_used = chunks.collect do |chunk|
+      chunk.as_json.except("embedding")
     end
   end
 end

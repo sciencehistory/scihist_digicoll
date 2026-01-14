@@ -40,12 +40,9 @@ module OralHistory
       chunk_ids = @ai_conversation.answer_footnotes_json&.collect {|h| h["chunk_id"]}
       return [] unless chunk_ids
 
-      chunks = OralHistoryChunk.where(id: chunk_ids).includes(oral_history_content: :work).strict_loading
-
-      chunks_by_id = chunks.collect { |c| [c.id.to_s, c] }.to_h
-
       @ai_conversation.answer_footnotes_json.collect do |response_hash|
-        FootnoteItem.new(response_hash: response_hash, chunk: chunks_by_id[response_hash["chunk_id"].to_s])
+        chunk = preserved_chunks_list.find { |c| c.id == response_hash["chunk_id"].to_i }
+        FootnoteItem.new(response_hash: response_hash, chunk: chunk)
       end
     end
 
@@ -88,16 +85,33 @@ module OralHistory
       ).compact
     end
 
-    def debug_chunks_list
-      @debug_chunks_list ||= begin
-        ids = ai_conversation.chunks_used.collect { |h| h["chunk_id"] }
-        OralHistoryChunk.where(id: ids).in_order_of(:id, ids).includes(oral_history_content: :work).strict_loading
+    def preserved_chunks_list
+      @preserved_chunks_list ||= ai_conversation.chunks_used.collect do |attributes|
+        # migrate from old stored format that was not a serialized model,
+        # to at least partial serialized model.
+        attributes.delete("doc_rank")
+        attributes.delete("rank")
+        attributes["id"] ||= attributes.delete("chunk_id")
+        attributes["neighbor_distance"] ||= attributes.delete("cosine_distance")
+
+        OralHistoryChunk.new(attributes)
+      end.tap do |list|
+        # preload their works please
+        ActiveRecord::Associations::Preloader.new(
+          records: list,
+          associations: { oral_history_content: :work }
+        ).call
+
+        # and make em all strict loading so we can't load any more n+1
+        list.each(&:strict_loading!)
+
+        # and prevent saving, these are preserved historical records
+        list.each(&:readonly!)
       end
     end
 
-    # for admin debug info
-    def cosine_distance_for_chunk(chunk_id)
-      ai_conversation.chunks_used.find { |h| h["chunk_id"] == chunk_id }&.dig("cosine_distance")
+    def debug_chunks_list
+      preserved_chunks_list
     end
 
     class FootnoteItem

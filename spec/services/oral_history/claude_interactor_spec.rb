@@ -115,11 +115,13 @@ describe OralHistory::ClaudeInteractor do
           expect(ai_conversation.request_sent_at).to be_present
 
           expect(ai_conversation.chunks_used).to be_present
+
           expect(ai_conversation.chunks_used).to all satisfy { |retrieved_chunk_info|
+            # serialized OralHistoryChunk, without embedding attribute.
             retrieved_chunk_info.kind_of?(Hash) &&
-            retrieved_chunk_info['rank'].present? &&
-            retrieved_chunk_info['chunk_id'].present? &&
-            retrieved_chunk_info['cosine_distance'].present?
+            retrieved_chunk_info['id'].present? &&
+            retrieved_chunk_info['oral_history_content_id'].present? &&
+            retrieved_chunk_info['text'].present?
           }
 
           expect(ai_conversation.response_metadata["usage"]).to be_present
