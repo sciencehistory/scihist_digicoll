@@ -13,6 +13,25 @@ class OralHistoryAiConversationController < ApplicationController
 
   # empty question form
   def new
+    # counts for categories. TODO replace with DRY scopes, see #3253.
+
+    valid_chunks_scope = OralHistoryContent.joins(:work).where(work: { published: true }).where.associated(:oral_history_chunks).distinct
+
+    @immediate_ohms_only_count = Rails.cache.fetch("oh_access_limit_count/immediate_ohms_only", expires_in: 12.hours) do
+      valid_chunks_scope.where.not( ohms_xml_text: [nil, ""]).count
+    end
+
+    @immediate_only_count = Rails.cache.fetch("oh_access_limit_count/immediate_only", expires_in: 12.hours) do
+      valid_chunks_scope.where(available_by_request_mode: ["off", nil]).count
+    end
+
+    @immediate_or_automatic_count = Rails.cache.fetch("oh_access_limit_count/immediate_or_automatic", expires_in: 12.hours) do
+      valid_chunks_scope.where(available_by_request_mode: ["off", nil, "automatic"]).count
+    end
+
+    @all_count = Rails.cache.fetch("oh_access_limit_count/all", expires_in: 12.hours) do
+      valid_chunks_scope.count
+    end
   end
 
   def create
