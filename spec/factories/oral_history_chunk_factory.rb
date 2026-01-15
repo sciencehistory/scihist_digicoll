@@ -37,7 +37,7 @@ FactoryBot.define do
     end
 
     trait :with_oral_history_content do
-      oral_history_content { create(:oral_history_work).oral_history_content }
+      oral_history_content { build(:oral_history_work).oral_history_content }
     end
   end
 end

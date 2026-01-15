@@ -40,12 +40,9 @@ module OralHistory
       chunk_ids = @ai_conversation.answer_footnotes_json&.collect {|h| h["chunk_id"]}
       return [] unless chunk_ids
 
-      chunks = OralHistoryChunk.where(id: chunk_ids).includes(oral_history_content: :work).strict_loading
-
-      chunks_by_id = chunks.collect { |c| [c.id.to_s, c] }.to_h
-
       @ai_conversation.answer_footnotes_json.collect do |response_hash|
-        FootnoteItem.new(response_hash: response_hash, chunk: chunks_by_id[response_hash["chunk_id"].to_s])
+        chunk = preserved_chunks_list.find { |c| c.id == response_hash["chunk_id"].to_i }
+        FootnoteItem.new(response_hash: response_hash, chunk: chunk)
       end
     end
 
@@ -88,16 +85,20 @@ module OralHistory
       ).compact
     end
 
-    def debug_chunks_list
-      @debug_chunks_list ||= begin
-        ids = ai_conversation.chunks_used.collect { |h| h["chunk_id"] }
-        OralHistoryChunk.where(id: ids).in_order_of(:id, ids).includes(oral_history_content: :work).strict_loading
-      end
+    def preserved_chunks_list
+      @preserved_chunks_list ||= ai_conversation.rehydrate_chunks_used!
     end
 
-    # for admin debug info
-    def cosine_distance_for_chunk(chunk_id)
-      ai_conversation.chunks_used.find { |h| h["chunk_id"] == chunk_id }&.dig("cosine_distance")
+    def calculated_timings
+      @calculated_timings ||= begin
+        timings = @ai_conversation.timings || []
+
+        start = Time.parse(timings.first.second).to_f if timings.first&.second
+
+        timings.collect do |timing|
+          [timing.first, Time.parse(timing.second).to_f - start]
+        end.compact
+      end
     end
 
     class FootnoteItem
