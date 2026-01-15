@@ -61,7 +61,11 @@ module OralHistory
     #
     # can raise a Aws::Errors::ServiceError
     def get_response(conversation_record:nil)
+      conversation_record&.add_timing("about to fetch chunks")
+
       chunks = get_chunks
+
+      conversation_record&.add_timing("chunks fetched")
 
       conversation_record&.record_chunks_used(chunks)
       conversation_record&.request_sent_at = Time.current
@@ -72,6 +76,8 @@ module OralHistory
         system: [{ text: render_system_instructions }],
         messages: [{ role: 'user', content: [{ text: render_user_prompt(chunks) }] }]
       )
+
+      conversation_record&.add_timing("LLM response received")
 
       # store certain parts of response as metrics
 

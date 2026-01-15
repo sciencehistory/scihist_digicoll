@@ -34,6 +34,8 @@ class OralHistory::AiConversation < ApplicationRecord
       raise RuntimeError.new("can't exec_and_record_interaction on status #{status}")
     end
 
+    self.add_timing("start")
+
     # Get and save embedding if it's not already there (it costs money, so we want to cache it!),
     # and set status to in_process
     self.question_embedding ||= OralHistoryChunk.get_openai_embedding(self.question)
@@ -47,6 +49,7 @@ class OralHistory::AiConversation < ApplicationRecord
 
     self.answer_json = interactor.extract_answer(response)
     self.status = :success
+    self.add_timing("finish")
     self.save!
 
   rescue Aws::Errors::ServiceError, OralHistory::ClaudeInteractor::OutputFormattingError => e
@@ -142,5 +145,9 @@ class OralHistory::AiConversation < ApplicationRecord
       # and prevent saving, these are preserved historical records
       list.each(&:readonly!)
     end
+  end
+
+  def add_timing(label, timestamp=Time.now)
+    self.timings << [label, timestamp.utc.iso8601(3)]
   end
 end

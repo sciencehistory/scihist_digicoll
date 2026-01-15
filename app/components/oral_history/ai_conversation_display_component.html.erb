@@ -50,6 +50,15 @@
         <dt><%= key %></dt>
         <dd><%= value %></dd>
       <% end %>
+
+      <dt>Timing</dt>
+      <dd>
+        <ul>
+        <% calculated_timings.each do |label, seconds| %>
+          <li><%= label %> @ <%= "%.2f" % seconds %> s</li>
+        <% end %>
+        </ul>
+      </dd>
     </dl>
 
     <h3>Chunks (passages) retrieved</h3>

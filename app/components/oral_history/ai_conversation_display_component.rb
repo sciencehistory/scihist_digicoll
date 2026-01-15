@@ -89,6 +89,18 @@ module OralHistory
       @preserved_chunks_list ||= ai_conversation.rehydrate_chunks_used!
     end
 
+    def calculated_timings
+      @calculated_timings ||= begin
+        timings = @ai_conversation.timings || []
+
+        start = Time.parse(timings.first.second).to_f if timings.first&.second
+
+        timings.collect do |timing|
+          [timing.first, Time.parse(timing.second).to_f - start]
+        end.compact
+      end
+    end
+
     class FootnoteItem
       attr_reader :response_hash, :chunk
 
