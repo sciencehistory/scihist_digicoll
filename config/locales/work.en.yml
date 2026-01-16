@@ -91,7 +91,7 @@ en:
         file_creator: >
           Select the individual, group, or organization responsible for producing the digital representation of the work, such as the digitizing agent or file author. If a desired entry is not available, contact the Digital Collections Librarian. Required.
         admin_note: "Use for any internal notes about the digital object or physical work, such as copyright concerns, digitization errors, legacy metadata, etc. Record first initial, last name, and date with the note in case a follow-up is necessary."
-        representative: "Select the file with media that represents this Work and is used as a thumbnail. If the work is a video, the representative will also be used as a poster frame in the video player; for best results, use the same aspect ratio as the video itself."
+        representative: "Select the file with media that represents this Work and will be used as a thumbnail. If the work is a video, the representative will also be used as a poster frame in the video player; for best results, use the same aspect ratio as the video itself."
         contained_by: >
           The sub-Collection within the Digital Collections Application to which the digital work belongs. Select the named collection that the work is part of, if applicable. If a desired entry is not available, contact the Digital Collections Librarian. Required if applicable.
         text_extraction: >
