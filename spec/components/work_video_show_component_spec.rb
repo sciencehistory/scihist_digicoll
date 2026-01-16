@@ -60,6 +60,19 @@ describe WorkVideoShowComponent, type: :component do
     end
   end
 
+  describe "separate poster frame" do
+    let(:work) do
+      create(:video_work, :published, :with_poster_frame)
+    end
+
+    it "can override the video's automatically generated poster frame using a separate representative image." do
+      render_inline described_class.new(work)
+      video_element = page.first("video")
+      expect(video_element).to be_present
+      expect(video_element["poster"]).to eq work.representative.file_derivatives[:thumb_large].url
+    end
+  end
+
   describe "when representative is private but visible to staff", logged_in_user: true do
     let(:work) do
       create(:video_work, :published).tap do |work|
