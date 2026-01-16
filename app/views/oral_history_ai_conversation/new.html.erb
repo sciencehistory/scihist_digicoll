@@ -7,5 +7,22 @@
     <div class="d-flex justify-content-end">
       <%= f.button :submit, "Ask", class: "btn btn-brand-main" %>
     </div>
+
+
+
+    <div>
+      <%= f.input :access_limit, as: :radio_buttons, required: false,
+            collection: [
+              ['immediate_ohms_only', "Only those with synchronized audio (OHMS) — #{@immediate_ohms_only_count}"],
+              ['immediate_only', "Only those fully public (do not require request) — #{@immediate_only_count}"],
+              ['immediate_or_automatic', "Both fully public and those with automatically approved request — #{@immediate_or_automatic_count}"],
+              ['', "All: Includes those which require request approval — #{@all_count}"]
+            ],
+            label_method: ->(item) { item[1].html_safe },
+            value_method: ->(item) { item[0] },
+            checked: '',
+            label: "Which Oral Histories to consider in search" %>
+    </div>
+
   <% end %>
 </div>

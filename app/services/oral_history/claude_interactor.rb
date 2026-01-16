@@ -20,11 +20,16 @@ module OralHistory
       region:             ScihistDigicoll::Env.lookup(:aws_region)
     )
 
-    attr_reader :question, :question_embedding
+    attr_reader :question, :question_embedding, :access_limit
 
-    def initialize(question:, question_embedding:)
+    def initialize(question:, question_embedding:, access_limit: nil)
       @question = question
       @question_embedding = question_embedding
+      @access_limit = access_limit
+
+      unless @access_limit.in?(OralHistory::ChunkFetcher::ACCESS_LIMITS)
+        raise ArgumentError.new("access_limit is #{access_limit.inspect}, but must be in #{OralHistory::ChunkFetcher::ACCESS_LIMITS.inspect}")
+      end
     end
 
     # convenience to look up the embedding
@@ -61,7 +66,11 @@ module OralHistory
     #
     # can raise a Aws::Errors::ServiceError
     def get_response(conversation_record:nil)
+      conversation_record&.add_timing("about to fetch chunks")
+
       chunks = get_chunks
+
+      conversation_record&.add_timing("chunks fetched")
 
       conversation_record&.record_chunks_used(chunks)
       conversation_record&.request_sent_at = Time.current
@@ -72,6 +81,8 @@ module OralHistory
         system: [{ text: render_system_instructions }],
         messages: [{ role: 'user', content: [{ text: render_user_prompt(chunks) }] }]
       )
+
+      conversation_record&.add_timing("LLM response received")
 
       # store certain parts of response as metrics
 
@@ -98,7 +109,7 @@ module OralHistory
       ApplicationController.render( template: "claude_interactor/initial_user_prompt",
                                     locals: {
                                       question: question,
-                                      formatted_chunks: format_chunks(chunks)
+                                      chunks: chunks
                                     },
                                     formats: [:text]
                                   )
@@ -107,51 +118,16 @@ module OralHistory
 
     def get_chunks
       # fetch first 8 closest-vector chunks
-      chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 8).fetch_chunks
+      chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 8, access_limit: access_limit).fetch_chunks
 
       # now fetch another 8, but only 1-per-interview, not including any interviews from above
       chunks += OralHistory::ChunkFetcher.new(question_embedding: question_embedding,
                                               top_k: 8,
                                               max_per_interview: 1,
-                                              exclude_interviews: chunks.collect(&:oral_history_content_id).uniq).fetch_chunks
+                                              exclude_interviews: chunks.collect(&:oral_history_content_id).uniq,
+                                              access_limit: access_limit).fetch_chunks
 
       chunks
-    end
-
-    def format_chunks(chunks)
-      separator = "------------------------------"
-
-      chunks.collect do |chunk|
-        # Title is really just for debugging, it can always be fetched by chunk_id, but
-        # it does make debugging a lot easier to keep the title in the pipeline, to
-        # footnote.
-
-        title = chunk.oral_history_content.work.title
-
-        # hackily get a date range
-        dates = chunk.oral_history_content.work.date_of_work.collect { |d| [d.start, d.finish]}.
-          flatten.collect(&:presence).compact.uniq.sort
-
-        date_string = if dates.length > 1
-          ", #{dates.first.slice(0, 4)}-#{dates.last.slice(0, 4)}"
-        elsif dates.length > 0
-          ", #{dates.first.slice(0, 4)}"
-        else
-          ""
-        end
-
-        title = title += date_string
-
-        <<~EOS
-          #{separator}
-          ORAL HISTORY TITLE: #{title}
-          CHUNK ID: #{chunk.id}
-          SPEAKERS: #{chunk.speakers.join(", ")}
-          PARAGRAPH NUMBERS: #{chunk.start_paragraph_number.upto(chunk.end_paragraph_number).to_a.join(", ")}
-          TEXT:
-          #{chunk.text.chomp}
-        EOS
-      end.join + "#{separator}"
     end
 
     # The thing we asked Claude for, does it look like we asked?
