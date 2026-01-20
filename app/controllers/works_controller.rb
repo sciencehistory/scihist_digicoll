@@ -106,7 +106,7 @@ class WorksController < ApplicationController
     elsif @work.is_oral_history?
       # OH with no playable audio, either becuae it's by-request or it's not there at all.
       WorkFileListShowComponent.new(@work)
-    elsif has_video_representative?
+    elsif show_video_player?
       WorkVideoShowComponent.new(@work)
     else
       # standard image-based template.
@@ -150,11 +150,9 @@ class WorksController < ApplicationController
     end
   end
 
-  # used for determining whether to use our video display component
-  def has_video_representative?
-    return @has_video_representative if defined?(@has_video_representative)
-
-    @work.leaf_representative&.content_type&.start_with?("video/")
+  def show_video_player?
+    return @show_video_player if defined?(@show_video_player)
+    @show_video_player = @work.format.include?('moving_image') && @work.members.any? { |m| m&.content_type&.start_with?("video/") }
   end
 
   def set_work
