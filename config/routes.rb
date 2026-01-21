@@ -99,8 +99,7 @@ Rails.application.routes.draw do
 
   scope :oral_histories do
     # /oral_histories/ask
-    # NOTE: When we make public, make sure INDEX is protetected to staff only (move to other controller?)
-    resources :oral_history_ai_conversation, only: [:show, :index, :create, :new], path: :ask
+    resources :oral_history_ai_conversation, only: [:show, :create, :new], path: :ask
   end
 
   # public-facing routes
@@ -399,6 +398,8 @@ Rails.application.routes.draw do
 
     resources :interviewer_profiles, except: [:show]
     resources :interviewee_biographies, except: [:show]
+
+    get :oh_ai_conversations, to: "oh_ai_conversation#index"
 
 
     # These 'sub-apps' are for admin-use only, but since they are sub-apps
