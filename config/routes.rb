@@ -99,6 +99,7 @@ Rails.application.routes.draw do
 
   scope :oral_histories do
     # /oral_histories/ask
+    # NOTE: When we make public, make sure INDEX is protetected to staff only (move to other controller?)
     resources :oral_history_ai_conversation, only: [:show, :index, :create, :new], path: :ask
   end
 

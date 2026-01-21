@@ -49,5 +49,12 @@ class OralHistoryAiConversationController < ApplicationController
 
   # list existing questions, only for admin!
   def index
+    relation = OralHistory::AiConversation.order(created_at: :desc).page(params[:page])
+
+    if params[:q].present?
+      relation = relation.where("question ILIKE ?", "%#{params[:q]}%")
+    end
+
+    @ai_conversations = relation.all
   end
 end

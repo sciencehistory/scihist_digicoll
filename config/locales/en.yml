@@ -41,6 +41,7 @@ en:
   time:
     formats:
       admin: '%Y-%b-%d %H:%M:%S %Z'
+      admin_compact: '%Y-%b-%d %H:%M'
 
   honeybadger:
     feedback:
