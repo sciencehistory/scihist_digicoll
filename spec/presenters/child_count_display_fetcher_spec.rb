@@ -75,6 +75,17 @@ describe ChildCountDisplayFetcher do
       end
     end
 
+
+    describe "video work with a separate poster frame" do
+      let(:item) { create(:video_work, :published, :with_poster_frame) }
+
+      it "does not count the poster frame" do
+        expect(item.members.count).to eq(2)
+        expect(item_counter.member_count_for_friendlier_id(item.friendlier_id)).to eq(2)
+        expect(item_counter.display_count_for(item)).to eq(1)
+      end
+    end
+
     describe "with no contained" do
       let(:item) { create(:collection) }
 
