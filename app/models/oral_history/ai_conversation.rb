@@ -73,7 +73,7 @@ class OralHistory::AiConversation < ApplicationRecord
   end
 
   def answer_narrative
-    answer_json["narrative"]
+    answer_json&.dig("narrative").presence
   end
 
   # Array of hashes, the format of the hash is still not formally specified, sorry
