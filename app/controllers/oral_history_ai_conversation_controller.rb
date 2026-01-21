@@ -46,8 +46,4 @@ class OralHistoryAiConversationController < ApplicationController
   def show
     @conversation = OralHistory::AiConversation.find_by_external_id(params.require(:id))
   end
-
-  # list existing questions, only for admin!
-  def index
-  end
 end

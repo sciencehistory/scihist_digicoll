@@ -1,0 +1,55 @@
+<h1>Oral History AI Conversation Log</h1>
+
+<%= form_with(url: admin_oh_ai_conversations_path, method: :get) do |f| %>
+  <div class="input-group mb-4 mt-5">
+    <div class="input-group-prepend">
+      <%= f.label :q, "Questions containing", class: "input-group-text" %>
+    </div>
+
+    <%= f.search_field "q", value: params[:q] %>
+
+    <div class="input-group-append">
+      <%= f.submit value: "Search", class: "input-group-text btn btn-brand-dark" %>
+    </div>
+
+  </div>
+<% end %>
+
+<div class="mt-5 mb-3">
+  <%= render PageEntriesInfoComponent.new(@ai_conversations) %>
+
+  <%= paginate @ai_conversations, theme: 'twitter-bootstrap-4' %>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+      <th scope="col">Created at</th>
+      <th scope="col">Question</th>
+      <th scope="col">Answer</th>
+    </tr>
+  </thead>
+  <% @ai_conversations.each do |ai_conversation| %>
+    <tr>
+      <td class="text-nowrap">
+        <%= link_to oral_history_ai_conversation_path(ai_conversation.external_id) do %>
+          <%= l(ai_conversation.created_at, format: :admin_compact) %>
+        <% end %>
+      </td>
+      <td>
+        <%= truncate(ai_conversation.question, length: 100, separator: /\b/) %>
+        <small class="text-muted">(<%= t(ai_conversation.search_params&.dig("access_limit").presence || "__none", scope: "oral_history.access_limit", default: "All") %>)</small>
+      </td>
+      <td class="w-50">
+        <%= truncate(ai_conversation.answer_narrative, length: 140, separator: /\b/).presence ||
+              ai_conversation.error_info&.slice("exception_class", "message").presence
+        %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<div class="mb-3 mt-3">
+  <%= paginate @ai_conversations, theme: 'twitter-bootstrap-4' %>
+</div>
+
