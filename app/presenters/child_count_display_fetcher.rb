@@ -32,9 +32,15 @@ class ChildCountDisplayFetcher
   # Convenience method you can pass in a Work or a Collection, and it will return the
   # correct "child count" for search results display -- for a Collection a *contains* count,
   # for a Work, a *members* count.
+  #
+  # One exception: we currently display a count of one work for video works, even if we upload a separate
+  # representative image to use as a poster frame. (Should we decide to allow works with more than
+  # one video, this will have to be rethought.)
   def display_count_for(model)
     if model.kind_of?(Collection)
       contains_count_for_friendlier_id(model.friendlier_id)
+    elsif model&.format.include?('moving_image')
+      1
     else
       member_count_for_friendlier_id(model.friendlier_id)
     end

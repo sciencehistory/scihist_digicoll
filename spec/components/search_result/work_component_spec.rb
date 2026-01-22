@@ -98,8 +98,8 @@ describe SearchResult::WorkComponent, type: :component do
         members: [create(:asset), create(:asset), create(:asset)]
       )
     end
-    it "displays both extents and the asset count under the image" do
-      copy_under_image = work.extent + [ "#{work.members.count} items" ]
+    it "displays both extents under the image" do
+      copy_under_image = work.extent
       expect(rendered).to have_content(copy_under_image.join(", "))
     end
   end
