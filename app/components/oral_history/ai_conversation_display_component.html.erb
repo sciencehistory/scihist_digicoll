@@ -8,7 +8,7 @@
   <% footnote_list.each do |footnote_item_data| %>
     <div id="<%= footnote_item_data.anchor %>" class="mb-3">
 
-      <h4 class="fs-6 fw-semibold text-decoration-underline mb-1 mt-4">
+      <h4 class="fs-6 fw-semibold  mb-1 mt-4">
         <%= link_to "##{footnote_item_data.ref_anchor}", class: "default-link-style" do %>
           <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
         <% end %>
@@ -16,11 +16,26 @@
         <%= link_to(link_from_ai_conversation_footnote(footnote_item_data),
                     target: "_blank",
                     "data-shi-slot" => "footnote-title",
-                    class: "default-link-style") do  -%>
+                    class: "default-link-style text-decoration-underline") do  -%>
           <%= footnote_item_data.short_citation_title -%> —
           ¶<%= footnote_item_data.short_citation_paragraphs -%>
           <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <span>#{footnote_item_data.nearest_timecode_formatted}</span>".html_safe :  "" -%>
         <%- end %>
+
+        <span class="ms-2">
+          <% if footnote_item_data.oral_history_content.has_ohms_transcript? %>
+            <span class="badge bg-info text-body border-info me-2">Synchronized Audio</span>
+          <% end %>
+
+          <% case footnote_item_data.oral_history_content.available_by_request_mode %>
+            <% when "off" %>
+              <span class="badge bg-success-subtle text-body border-success-subtle">Immediate</span>
+            <% when "automatic" %>
+              <span class="badge bg-warning border-warning text-body">Upon request</span>
+            <% when "manual_review" %>
+              <span class="badge bg-danger-subtle border-danger text-body">With approval</span>
+          <% end %>
+        </span>
       </h4>
 
       <div data-shi-slot="footnote-quote">
