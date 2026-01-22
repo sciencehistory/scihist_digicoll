@@ -22,18 +22,18 @@
           <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <span>#{footnote_item_data.nearest_timecode_formatted}</span>".html_safe :  "" -%>
         <%- end %>
 
-        <span class="ms-2">
+        <span data-shi-slot="footnote-badges">
           <% if footnote_item_data.oral_history_content.has_ohms_transcript? %>
-            <span class="badge bg-info text-body border-info me-2">Synchronized Audio</span>
+            <span class="badge bg-info text-body border-info ms-2">Synchronized Audio</span>
           <% end %>
 
           <% case footnote_item_data.oral_history_content.available_by_request_mode %>
             <% when "off" %>
-              <span class="badge bg-success-subtle text-body border-success-subtle">Immediate</span>
+              <span class="badge bg-success-subtle text-body border-success-subtle ms-2">Immediate</span>
             <% when "automatic" %>
-              <span class="badge bg-warning border-warning text-body">Upon request</span>
+              <span class="badge bg-warning border-warning text-body ms-2">Upon request</span>
             <% when "manual_review" %>
-              <span class="badge bg-danger-subtle border-danger text-body">With approval</span>
+              <span class="badge bg-danger-subtle border-danger text-body ms-2">With approval</span>
           <% end %>
         </span>
       </h4>
