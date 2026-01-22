@@ -40,8 +40,8 @@
 
     <div class="col-md alert alert-info">
       <ul>
-        <li>We intend to schedule checks such that every file is checked at least once every <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>.</li>
-        <li>Fixity checks run <b>nightly</b> and will check 1/<%= FixityReport::STALE_IN_DAYS %> of our total assets (~<%= @fixity_report[:asset_count] / FixityReport::STALE_IN_DAYS %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
+        <li>We intend to schedule checks such that every file is checked at least once every <%= pluralize @stale_in_days, 'day' %>.</li>
+        <li>Fixity checks run <b>nightly</b> and will check 1/<%= @stale_in_days %> of our total assets (~<%= @fixity_report[:asset_count] / @stale_in_days %> assets) each night, choosing the assets with missing or most stale checks to run checks on.</li>
         <li>Can only run fixity checks on assets that are <i>fully ingested</i> and have attached files.</li>
         <li>For assets created within last <%= pluralize FixityReport::EXPECTED_FRESH_IN_DAYS, 'day' %>, we tolerate missing fixity checks, as they may not have run yet.</li>
       </ul>
@@ -103,7 +103,7 @@
         </tr>
 
         <tr>
-          <td>Fully ingested without <em>fresh</em> (within past <%= pluralize FixityReport::STALE_IN_DAYS, 'day' %>) fixity check</td>
+          <td>Fully ingested without <em>fresh</em> (within past <%= pluralize @stale_in_days, 'day' %>) fixity check</td>
           <td><%= number_with_delimiter(@fixity_report[:not_recent_with_no_checks_or_stale_checks]) %></td>
           <% if @fixity_report[:not_recent_with_no_checks_or_stale_checks] == 0 %>
             <td class="bg-success text-white">
@@ -165,12 +165,12 @@
       </tr>
 
       <tr>
-        <td>Fully ingested, checked in the past <%= FixityReport::STALE_IN_DAYS %> days</td>
+        <td>Fully ingested, checked in the past <%= @stale_in_days %> days</td>
         <td><%= number_with_delimiter(@fixity_report[:recent_checks]) %></td>
       </tr>
 
       <tr>
-        <td>Fully ingested, stale checks (have not been checked for <%= FixityReport::STALE_IN_DAYS %> days, or ever)</td>
+        <td>Fully ingested, stale checks (have not been checked for <%= @stale_in_days %> days, or ever)</td>
         <td><%= number_with_delimiter(@fixity_report[:no_checks_or_stale_checks]) %></td>
       </tr>
 
