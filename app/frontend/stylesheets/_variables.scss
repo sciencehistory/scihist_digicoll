@@ -223,13 +223,14 @@ $headings-color: $shi-blackish;
 // The variations are used in alerts among other places.
 $primary: $shi-teal; // main buttons actually use $shi-yellow, but we don't want to put that everywhere bootstrap primary goes
 $secondary: $shi-blackish;
-$secondary-subtle: $shi-bg-gray; // not really a subtle version, but works for us.
+  $body-secondary-bg: $shi-bg-gray;
+  $secondary-subtle: $shi-bg-gray; // not really a subtle version, but works for us.
 $info: $shi-bg-turquoise;
   $info-bg-subtle: $shi-teal-1;
   $info-border-subtle: $shi-teal-3;
   $info-text-emphasis: #204C5A; // shade-color($shi-teal-4, 20%); for sufficient contrast
 $success: $shi-green;
-  $success-bg-subtle: $shi-green-1;
+  $success-bg-subtle: $shi-green-2;
   $success-border-subtle: $shi-green-3;
 $warning: $shi-yellow;
   $warning-bg-subtle: $shi-chartreuse-2;

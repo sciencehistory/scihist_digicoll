@@ -120,6 +120,10 @@ module OralHistory
         chunk.oral_history_content.work
       end
 
+      def oral_history_content
+        chunk.oral_history_content
+      end
+
       def number
         response_hash["number"]
       end
