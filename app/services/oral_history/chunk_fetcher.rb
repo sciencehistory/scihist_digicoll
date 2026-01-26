@@ -161,7 +161,7 @@ module OralHistory
       # In the inner CTE, have to fetch oversampled, so we can wind up with
       # hopefully enough in outer. Leaving inner unlimited would be peformance,
       # cause of how indexing works it doesn't need to calculate them all.
-      base_relation.limit(inner_limit)
+      base_relation = base_relation.limit(inner_limit)
 
       # copy the order from inner scope, where neighbor gem set it to be vector distance asc
       # We leave the real limit for the caller to set
