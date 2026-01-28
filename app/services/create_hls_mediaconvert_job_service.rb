@@ -29,10 +29,10 @@ class CreateHlsMediaconvertJobService
   #
   # Should be in order from smallest to largest bitrate, we sort as we define it to ensure that
   HLS_PRESETS = [
-    HlsPresetInfo.new(preset_name: "scihist-hls-extra-low", name_modifier: "_extra_low", pixel_height: 240, bitrate: 500_000),
-    HlsPresetInfo.new(preset_name: "scihist-hls-low", name_modifier: "_low", pixel_height: 480, bitrate: 1_500_000),
-    HlsPresetInfo.new(preset_name: "scihist-hls-medium", name_modifier: "_medium", pixel_height: 720, bitrate: 2_500_000),
-    HlsPresetInfo.new(preset_name: "scihist-hls-high", name_modifier: "_high", pixel_height: 1080, bitrate: 4_400_000),
+    HlsPresetInfo.new(preset_name: "scihist-hls-extra-low-with-normalization", name_modifier: "_extra_low", pixel_height: 240, bitrate: 500_000),
+    HlsPresetInfo.new(preset_name: "scihist-hls-low-with-normalization", name_modifier: "_low", pixel_height: 480, bitrate: 1_500_000),
+    HlsPresetInfo.new(preset_name: "scihist-hls-medium-with-normalization", name_modifier: "_medium", pixel_height: 720, bitrate: 2_500_000),
+    HlsPresetInfo.new(preset_name: "scihist-hls-high-with-normalization", name_modifier: "_high", pixel_height: 1080, bitrate: 4_400_000),
   ].sort_by(&:bitrate).freeze
 
   OUTPUT_BASE_NAME = "hls"
