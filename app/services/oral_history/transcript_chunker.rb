@@ -129,8 +129,8 @@ module OralHistory
 
       Rails.logger.warn(log_msg)
 
-      if allow_embedding_wait_seconds > 0
-        wait = [EMBEDDING_RETRY_WAIT, allow_embedding_wait_seconds].min
+      if @allow_embedding_wait_seconds > 0
+        wait = [EMBEDDING_RETRY_WAIT, @allow_embedding_wait_seconds].min
         @allow_embedding_wait_seconds = @allow_embedding_wait_seconds - wait
         sleep wait
         return true
