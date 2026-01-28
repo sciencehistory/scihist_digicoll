@@ -14,12 +14,14 @@ domready(function() {
 
     const footnoteEl = document.getElementById(footnote_id);
 
-    const reference_title = footnoteEl.querySelector("[data-shi-slot=footnote-title]");
-    const reference_quote = footnoteEl.querySelector("[data-shi-slot=footnote-quote]");
+    const reference_title  = footnoteEl.querySelector("[data-shi-slot=footnote-title]");
+    const reference_badges = footnoteEl.querySelector("[data-shi-slot=footnote-badges]");
+    const reference_quote  = footnoteEl.querySelector("[data-shi-slot=footnote-quote]");
 
     const popover = new Popover(element, {
       content: reference_quote,
-      title: reference_title,
+      title: `${reference_title.innerText} ${reference_badges.innerHTML}`,
+      html: true, // for badges in title
       trigger: "hover focus",
       placement: "bottom",
       template: `<div class="popover" role="tooltip">

@@ -59,18 +59,15 @@ module OralHistory
       raise OutputFormattingError.new("Does not parse as JSON: #{e.message};\n\n\n#{raw_text}\n\n" , output: raw_text)
     end
 
-    # @param converesation_record [OralHistory::AiConversation] optiona, if given we'll log
+    # @param converesation_record [OralHistory::AiConversation] optional, if given we'll log
     #   parts of our interaction there.
     #
     # @return [OpenStruct] from the AWS bedrock client
     #
     # can raise a Aws::Errors::ServiceError
     def get_response(conversation_record:nil)
-      conversation_record&.add_timing("about to fetch chunks")
+      chunks = get_chunks(conversation_record: conversation_record)
 
-      chunks = get_chunks
-
-      conversation_record&.add_timing("chunks fetched")
 
       conversation_record&.record_chunks_used(chunks)
       conversation_record&.request_sent_at = Time.current
@@ -116,9 +113,15 @@ module OralHistory
     end
 
 
-    def get_chunks
+    # @param converesation_record [OralHistory::AiConversation] optional, if given we'll log
+    #   parts of our interaction there.
+    def get_chunks(conversation_record: nil)
+      conversation_record&.add_timing("About to fetch chunks")
+
       # fetch first 8 closest-vector chunks
       chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 8, access_limit: access_limit).fetch_chunks
+
+      conversation_record&.add_timing("First chunk fetch complete")
 
       # now fetch another 8, but only 1-per-interview, not including any interviews from above
       chunks += OralHistory::ChunkFetcher.new(question_embedding: question_embedding,
@@ -126,6 +129,8 @@ module OralHistory
                                               max_per_interview: 1,
                                               exclude_interviews: chunks.collect(&:oral_history_content_id).uniq,
                                               access_limit: access_limit).fetch_chunks
+
+      conversation_record&.add_timing("Second chunk fetch complete")
 
       chunks
     end
