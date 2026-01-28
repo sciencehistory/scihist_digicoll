@@ -3,7 +3,8 @@ namespace :scihist do
     bundle exec rake scihist:create_oral_history_chunks
     OVERWRITE_CHUNKS=true bundle exec rake scihist:create_oral_history_chunks
 
-    Will enqueue jobs to create OralHistoryChunks for all allowed oral histories
+    Will enqueue jobs to special_jobs queue, to create OralHistoryChunks for all
+    allowed oral histories
 
     By default will do it lazily only for those which have no chunks, but
     `OVERWRITE_CHUNKS=true` to delete and re-create any existing chunks.
@@ -40,7 +41,9 @@ namespace :scihist do
       end
 
       enqueued_count += 1
-      OhTranscriptChunkerJob.perform_later(oh_content, delete_existing: overwrite_chunks)
+
+      # enqueue to special_jobs so we can control concurrency to avoid rate limit
+      OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oh_content, delete_existing: overwrite_chunks)
     end
 
     puts "skipped #{skipped_count} and enqueued #{enqueued_count} of #{total_count}"
