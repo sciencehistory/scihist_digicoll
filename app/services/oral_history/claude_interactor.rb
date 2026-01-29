@@ -145,27 +145,27 @@ module OralHistory
         raise OutputFormattingError.new("not a hash", output: json)
       end
 
-      required_top_keys = %w[narrative footnotes more_chunks_needed answer_unavailable]
-      required_footnote_keys = %w[number oral_history_title chunk_id paragraph_start paragraph_end quote]
+      required_top_keys = %w[introduction conclusion findings answer_unavailable]
+      required_footnote_keys = %w[oral_history_title chunk_id paragraph_start paragraph_end quote]
 
       missing_top = required_top_keys - json.keys
       if missing_top.any?
         raise OutputFormattingError.new("Missing top-level keys: #{missing_top.join(', ')}", output: json)
       end
 
-      json['footnotes'].each_with_index do |footnote, i|
-        missing_fn_keys = required_footnote_keys - footnote.keys
-        if missing_fn_keys.any?
-          raise OutputFormattingError.new("Missing keys in footnote #{i+1}: #{missing_fn_keys.join(', ')}", output: json)
-        end
-      end
+      # json['findings'].each_with_index do |finding, i|
+      #   missing_fn_keys = required_footnote_keys - footnote.keys
+      #   if missing_fn_keys.any?
+      #     raise OutputFormattingError.new("Missing keys in footnote #{i+1}: #{missing_fn_keys.join(', ')}", output: json)
+      #   end
+      # end
 
-      # check all footnotes are present in both directions
-      footnote_refs = json["narrative"].scan(/\[\^(\d+)\]/).flatten.collect(&:to_i)
-      footnotes = json["footnotes"].collect { |h| h["number"] }
-      unless footnote_refs == footnotes
-        raise OutputFormattingError.new("Footnotes don't match up at notes #{(footnotes + footnote_refs) - (footnotes & footnote_refs)}", output: json)
-      end
+      # # check all footnotes are present in both directions
+      # footnote_refs = json["narrative"].scan(/\[\^(\d+)\]/).flatten.collect(&:to_i)
+      # footnotes = json["footnotes"].collect { |h| h["number"] }
+      # unless footnote_refs == footnotes
+      #   raise OutputFormattingError.new("Footnotes don't match up at notes #{(footnotes + footnote_refs) - (footnotes & footnote_refs)}", output: json)
+      # end
 
       json
     end

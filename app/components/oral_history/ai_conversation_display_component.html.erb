@@ -1,8 +1,24 @@
+
+
 <div class="answer-narrative">
-  <%= answer_narrative %>
+  <%= introduction %>
+
+  <% findings_hashes.each do |hash| %>
+    <hr>
+    <p><%= hash["answer"] %></p>
+
+
+    <% hash["citations"].each do |citation_hash| %>
+      <p><%= render OralHistory::AiConversationCitationComponent.new(citation_hash["citation_item_model"]) %></p>
+    <% end %>
+
+
+  <% end %>
+  <hr>
+  <%= conclusion %>
 </div>
 
-<% if footnote_list.present? %>
+<% if false && footnote_list.present? %>
   <h3 class="fw-bold mt-5 mb-4">Interviews Referenced</h3>
 
   <% footnote_list.each do |footnote_item_data| %>
