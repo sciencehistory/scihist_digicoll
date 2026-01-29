@@ -119,13 +119,13 @@ module OralHistory
       conversation_record&.add_timing("About to fetch chunks")
 
       # fetch first 8 closest-vector chunks
-      chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 8, access_limit: access_limit).fetch_chunks
+      chunks = OralHistory::ChunkFetcher.new(question_embedding: question_embedding, top_k: 6, access_limit: access_limit).fetch_chunks
 
       conversation_record&.add_timing("First chunk fetch complete")
 
       # now fetch another 8, but only 1-per-interview, not including any interviews from above
       chunks += OralHistory::ChunkFetcher.new(question_embedding: question_embedding,
-                                              top_k: 8,
+                                              top_k: 6,
                                               max_per_interview: 1,
                                               exclude_interviews: chunks.collect(&:oral_history_content_id).uniq,
                                               access_limit: access_limit).fetch_chunks
