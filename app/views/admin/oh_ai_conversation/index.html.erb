@@ -1,5 +1,7 @@
 <h1>Oral History AI Conversation Log</h1>
 
+<%= link_to "Ask New Question", new_oral_history_ai_conversation_path, class: "btn btn-brand-main" %>
+
 <%= form_with(url: admin_oh_ai_conversations_path, method: :get) do |f| %>
   <div class="input-group mb-4 mt-5">
     <div class="input-group-prepend">

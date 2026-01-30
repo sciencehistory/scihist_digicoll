@@ -122,13 +122,15 @@ module OralHistory
         log_msg += "ABORTING: "
       end
 
-      relevant_headers = e.response.headers.keys.select { |k| k.start_with?("retry") || k.start_with?("x-retry")}
-      log_msg += "\n\n    #{ e.response.headers.to_h.slice(relevant_headers).inspect }"
+      #relevant_headers = e.response.headers.keys.select { |k| k.start_with?("retry") || k.start_with?("x-retry")}
+      #log_msg += "\n\n    #{ e.response.headers.to_h.slice(relevant_headers).inspect }"
+      # not sure what this object looks like:
+      log_msg += "\n\n#{e.class}: #{e.response.inspect}"
 
       Rails.logger.warn(log_msg)
 
-      if allow_embedding_wait_seconds > 0
-        wait = [EMBEDDING_RETRY_WAIT, allow_embedding_wait_seconds].min
+      if @allow_embedding_wait_seconds > 0
+        wait = [EMBEDDING_RETRY_WAIT, @allow_embedding_wait_seconds].min
         @allow_embedding_wait_seconds = @allow_embedding_wait_seconds - wait
         sleep wait
         return true
