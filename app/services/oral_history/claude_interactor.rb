@@ -145,7 +145,7 @@ module OralHistory
         raise OutputFormattingError.new("not a hash", output: json)
       end
 
-      required_top_keys = %w[introduction conclusion findings answer_unavailable]
+      required_top_keys = %w[introduction findings answer_unavailable]
       required_footnote_keys = %w[oral_history_title chunk_id paragraph_start paragraph_end quote]
 
       missing_top = required_top_keys - json.keys

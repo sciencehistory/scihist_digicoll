@@ -19,10 +19,6 @@ module OralHistory
       ai_conversation.answer_json&.dig("introduction").presence
     end
 
-    def conclusion
-      ai_conversation.answer_json&.dig("conclusion").presence
-    end
-
     # Hash that has metadata about finding, with "citations" array, with more hashes,
     # each of which also will be expanded witih a "citation_item_model" with CitationItem
     def findings_hashes

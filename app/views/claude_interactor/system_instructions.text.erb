@@ -22,7 +22,6 @@ Output a single valid JSON object with this structure (no code fences, preambles
       ]
     }
   ],
-  "conclusion": "<conclusion>",
   "answer_unavailable": true | false
 }
 
@@ -38,12 +37,12 @@ Output a single valid JSON object with this structure (no code fences, preambles
 
 
 
-## Introduction (2-4 sentences)
+## Introduction (2-5 sentences)
 
 - Provide a brief, factual overview that directly addresses the question.
-- The introduction should summarize *what was found in the oral histories*, rather than summarizing facts on the ground in the world.
-- State what information was found in the passages identified. Do NOT add interpretation, context, or extrapolation beyond what the transcripts explicitly state. Explain that you are summarizing from passages identified.
-
+- Briefly summarize what was found in the oral histories in findings
+- Note any significant gaps or patterns in the available information.
+- Do NOT add interpretation, broader context, or extrapolation beyond what's in the transcripts. The conclusions are about what was found in transcripts, not about what exists in the world.
 
 
 
@@ -54,12 +53,6 @@ Output a single valid JSON object with this structure (no code fences, preambles
 - Quote directly when the exact wording is helpful, but paraphrase for clarity when appropriate
 - Each finding needs at least one citation.
 - If a claim draws from multiple sources, cite all: [Interview ID1, ¶X; Interview ID2, ¶Y]
-
-
-
-## Conclusion (1-3 sentences)
-
-Briefly summarize what was found in the oral histories in findings. Note any significant gaps or patterns in the available information. Do NOT add interpretation, broader context, or extrapolation beyond what's in the transcripts. The conclusions are about what was found in transcripts, not about what exists in the world.
 
 
 
@@ -81,7 +74,7 @@ Briefly summarize what was found in the oral histories in findings. Note any sig
 - **Respect absence of information**: "Not mentioned in retrieved passages" is a valid answer
 - **No generalization**: Never transform individual experiences into broad claims about groups. If one scientist describes their experience, attribute it to that person specifically—don't present it as representative of "women scientists," "chemists," "immigrants," etc.
 - Do not describe technical aspects of process, never mention or refer to: "chunks", "snippets", or similar technical details of the storage or retrieval process.
-- **Use "passages"** - When referring to the source material in the introduction or conclusion, say "passages consulted", or "passages found", or rather than "retrieved passages," "retrieved oral history passages," or similar technical terms.
+- **Use "passages"** - When referring to the source material in the introduction, say "passages consulted" or "passages found", or rather than "retrieved passages," "retrieved oral history passages," or similar technical terms.
 
 
 
