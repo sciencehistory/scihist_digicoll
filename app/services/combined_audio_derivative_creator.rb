@@ -125,7 +125,13 @@ class CombinedAudioDerivativeCreator
     #    see https://trac.ffmpeg.org/wiki/AudioChannelManipulation
     # -b:a 64K: make the output a constant 64k bitrate
     #    see https://trac.ffmpeg.org/wiki/Encode/MP3
-    output_options = ["-map", "[a]", "-ac", "1", "-b:a", "64k"]
+
+
+     # -filter:a speechnorm,loudnorm : compress audio
+     # see https://www.reddit.com/r/ffmpeg/comments/15kiucp/ffmpeg_how_to_add_dialog_normalization_to_ac3_file/
+     # see https://ffmpeg.org/ffmpeg-all.html#speechnorm
+
+    output_options = ["-map", "[a]", "-ac", "1", "-b:a", "64k",  "-filter:a", "speechnorm,loudnorm"]
 
     # -c:a aac: use the standard-issue AAC encoder for m4a:
     #    see https://trac.ffmpeg.org/wiki/Encode/AAC
