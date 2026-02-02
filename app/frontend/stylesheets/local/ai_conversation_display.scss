@@ -31,3 +31,30 @@
     border-bottom-right-radius: var(--bs-popover-inner-border-radius);
   }
 }
+
+
+
+// use the fontawesome 4 fa-file-text icon as bullet image
+ul.ai-conversation-findings {
+  list-style: none;
+  padding-left: 0;
+  li {
+    position: relative;
+    padding-left: 1.3em;
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.3em;
+      width: 1.1em;
+      height: 1.1em;
+      background-color: $shi-maroon;
+      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='currentColor' d='M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.3 0-24-10.7-24-24zM64 72c0-4.4 3.6-8 8-8h96c4.4 0 8 3.6 8 8v16c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8V72zm256 368c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zM384 121.9V128H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z'/%3E%3C/svg%3E");
+      mask-size: contain;
+      mask-repeat: no-repeat;
+    }
+  }
+
+}
+
+//<svg aria-hidden="true" focusable="false" data-prefix="fa" data-icon="file-text" class="svg-inline--fa fa-file-text" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em"><path fill="currentColor" d="M128 0v256l128-128 128 128V0zm0-64q-14 0-23 9t-9 23v448q0 14 9 23t23 9h256q14 0 23-9t9-23v-448q0-14-9-23t-23-9h-256zm256 416q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-32q0-14 9-23t23-9h192q14 0 23 9t9 23v32zm0-96q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-32q0-14 9-23t23-9h192q14 0 23 9t9 23v32zm0-96q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-32q0-14 9-23t23-9h192q14 0 23 9t9 23v32z"/></svg>
