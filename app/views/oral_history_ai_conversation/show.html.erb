@@ -50,7 +50,12 @@
       Sorry, an error happened!  Error object <%= @conversation.external_id %>.
     </div>
   <% else %>
-    <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
+    <%# some legacy display for old formats %>
+    <% if @conversation.answer_json.has_key?("narrative") && @conversation.answer_json.has_key?("footnotes") %>
+      <%= render OralHistory::AiConversationDisplayJan2026.new(@conversation)%>
+    <% else %>
+      <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
+    <% end %>
   <% end %>
 
 
