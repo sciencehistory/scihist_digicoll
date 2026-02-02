@@ -3,17 +3,21 @@
 <div class="answer-narrative">
   <%= introduction %>
 
-  <% findings_hashes.each do |hash| %>
-    <hr>
-    <p><%= hash["answer"] %></p>
+  <ul class="mt-4">
+    <% findings_hashes.each do |hash| %>
+
+      <li class="mb-3">
+        <%= hash["answer"] %>
 
 
-    <% hash["citations"].each do |citation_hash| %>
-      <p><%= render OralHistory::AiConversationCitationComponent.new(citation_hash["citation_item_model"]) %></p>
+        <% hash["citations"].each do |citation_hash| %>
+          <div><%= render OralHistory::AiConversationCitationComponent.new(citation_hash["citation_item_model"]) %></div>
+        <% end %>
+      </li>
+
+
     <% end %>
-
-
-  <% end %>
+  </ul>
 </div>
 
 
