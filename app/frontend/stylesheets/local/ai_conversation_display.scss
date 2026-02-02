@@ -1,39 +1,3 @@
-// Make two badges into one capsule badge thing
-.ai-conversation-display-footnote-reference {
-  display: inline-flex;
-  margin-left: 0.25em;
-  margin-right: 0.25em;
-
-  // raise it up a bit to more footnotey, but there isn't tons of room
-  position: relative;
-  bottom: 0.1em;
-
-  a:nth-child(1) .badge {
-    border-top-right-radius: 0 !important;
-    border-bottom-right-radius: 0 !important;
-
-    padding-right: 0.25em;
-  }
-
-  a:nth-child(2) .badge {
-    border-top-left-radius: 0 !important;
-    border-bottom-left-radius: 0 !important;
-  }
-}
-
-
-// We put the so-called "header" on bottom, so need to fix corners
-.oh-ai-footnote-popover {
-  .popover-header {
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    border-bottom-left-radius: var(--bs-popover-inner-border-radius);
-    border-bottom-right-radius: var(--bs-popover-inner-border-radius);
-  }
-}
-
-
-
 // use the fontawesome 4 fa-file-text icon as bullet image
 ul.ai-conversation-findings {
   list-style: none;
@@ -56,5 +20,3 @@ ul.ai-conversation-findings {
   }
 
 }
-
-//<svg aria-hidden="true" focusable="false" data-prefix="fa" data-icon="file-text" class="svg-inline--fa fa-file-text" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="1em" height="1em"><path fill="currentColor" d="M128 0v256l128-128 128 128V0zm0-64q-14 0-23 9t-9 23v448q0 14 9 23t23 9h256q14 0 23-9t9-23v-448q0-14-9-23t-23-9h-256zm256 416q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-32q0-14 9-23t23-9h192q14 0 23 9t9 23v32zm0-96q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-32q0-14 9-23t23-9h192q14 0 23 9t9 23v32zm0-96q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-32q0-14 9-23t23-9h192q14 0 23 9t9 23v32z"/></svg>
