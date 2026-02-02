@@ -4,7 +4,7 @@
   <%= introduction %>
 
   <ul class="mt-4">
-    <% findings_hashes.each do |hash| %>
+    <% findings_hashes&.each do |hash| %>
 
       <li class="mb-3">
         <%= hash["answer"] %>
@@ -14,8 +14,6 @@
           <div><%= render OralHistory::AiConversationCitationComponent.new(citation_hash["citation_item_model"]) %></div>
         <% end %>
       </li>
-
-
     <% end %>
   </ul>
 </div>
