@@ -1,4 +1,4 @@
-<div class="ms-3 mb-3">
+<div class="ms-5 mt-3">
 
   <h4 class="fs-6 fw-semibold  mb-1 mt-2" style="font-size: 1rem">
     <%= link_to(link_to_source,
@@ -26,7 +26,11 @@
     </span>
   </h4>
 
-  <div data-shi-slot="footnote-quote border-left border-2 ps-1" class="small text-muted">
-    “<%= citation_item.quote %>”
+  <div data-shi-slot="footnote-quote border-left border-2 ps-1" class="text-muted" data-scihist-citation-quote-container="true">
+    <span class="citation-quote-truncated" data-scihist-citation-quote-truncated="true">
+      <%= citation_item.quote.truncate(55, separator: /[., \s]+/, omission: "…") %>
+      <%= link_to "Read more", "#", data: { scihist_citation_quote_show: "true" }, class: "default-link-style" %>
+    </span>
+    <span class="citation-quote-full" style="display: none" data-scihist-citation-quote-full="true"><%= citation_item.quote %></span>
   </div>
 </div>
