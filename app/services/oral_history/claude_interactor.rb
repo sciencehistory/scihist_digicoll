@@ -97,10 +97,14 @@ module OralHistory
 
     # find template in eg  ./claude_interactor/system_instructions.txt.erb
     def render_system_instructions
+      category = access_limit || :all  # we use nil instead of :all, oops, translate.
+      oral_history_count = OralHistory::CategoryWithChunksCount.new(category: category).fetch_count
+
       # In Rails 8.1, could switch to .md.erb and :md format if we wanted. no real difference.
       ApplicationController.render( template: "claude_interactor/system_instructions",
                                     locals: {
-                                      answer_unavailable_text: ANSWER_UNAVAILABLE_TEXT
+                                      answer_unavailable_text: ANSWER_UNAVAILABLE_TEXT,
+                                      oral_history_count: oral_history_count,
                                     },
                                     formats: [:text])
     end
