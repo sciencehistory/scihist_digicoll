@@ -17,7 +17,8 @@ module OralHistory
     AWS_BEDROCK_CLIENT = Aws::BedrockRuntime::Client.new(
       access_key_id:      ScihistDigicoll::Env.lookup(:aws_access_key_id),
       secret_access_key:  ScihistDigicoll::Env.lookup(:aws_secret_access_key),
-      region:             ScihistDigicoll::Env.lookup(:aws_region)
+      region:             ScihistDigicoll::Env.lookup(:aws_region),
+      http_read_timeout: 3.minutes.to_i # default may be 60 seconds?
     )
 
     attr_reader :question, :question_embedding, :access_limit
