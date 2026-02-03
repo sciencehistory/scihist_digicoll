@@ -16,38 +16,48 @@ FactoryBot.define do
 
       answer_json do
         {
-         "narrative" => "We do it green [^1]. And we do it blue [^2].",
-         "footnotes" =>  [
+         "introduction" => "Scientists in our collection like many colors",
+         "findings" =>  [
             {
-              "number" => 1,
-              "paragraph_start" => 10,
-              "paragraph_end" => 10,
-              "chunk_id" => "1",
-              "quote" => "We liked it green"
+
+              "answer" => "John Smith likes it green",
+              "citations" => [
+                {
+                  "oral_history_title" => "Oral history with John Smith",
+                  "paragraph_start" => 10,
+                  "paragraph_end" => 10,
+                  "chunk_id" => "1",
+                  "quote" => "We liked it green"
+                }
+              ]
             },
             {
-              "number" => 2,
-              "paragraph_start" => 12,
-              "paragraph_end" => 12,
-              "chunk_id" => "1",
-              "quote" => "We liked it blue"
+              "answer" => "Mary Jones prefers blue",
+              "citations" => [
+                {
+                  "oral_history_title" => "Oral history with Mary Jones",
+                  "paragraph_start" => 12,
+                  "paragraph_end" => 12,
+                  "chunk_id" => "1",
+                  "quote" => "We liked it blue"
+                }
+              ]
             }
          ],
          "answer_unavailable" => false,
-         "more_chunks" => true
         }
       end
 
       after(:build) do |conversation, evaluator|
-        if evaluator.chunks
+        if evaluator.chunks && conversation.answer_json["findings"]
           # fix footnotes to refer to actual chunk data
-          conversation.answer_json["footnotes"].each_with_index do |footnote, index|
+          conversation.answer_json["findings"].collect {|f| f["citations"]}.flatten.each_with_index do |citation, index|
             sample_chunk = evaluator.chunks[index % evaluator.chunks.length]
             sample_chunk_paragraph_num = (sample_chunk.start_paragraph_number..sample_chunk.end_paragraph_number).to_a.sample
 
-            footnote["chunk_id"] = sample_chunk.id
-            footnote["paragraph_start"] = sample_chunk_paragraph_num
-            footnote["paragraph_end"] = sample_chunk_paragraph_num
+            citation["chunk_id"] = sample_chunk.id
+            citation["paragraph_start"] = sample_chunk_paragraph_num
+            citation["paragraph_end"] = sample_chunk_paragraph_num
           end
 
           conversation.record_chunks_used(evaluator.chunks)

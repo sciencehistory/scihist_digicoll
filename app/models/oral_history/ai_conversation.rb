@@ -72,15 +72,6 @@ class OralHistory::AiConversation < ApplicationRecord
     self.answer_json&.dig("answer_unavailable") == true
   end
 
-  def answer_narrative
-    answer_json&.dig("narrative").presence
-  end
-
-  # Array of hashes, the format of the hash is still not formally specified, sorry
-  def answer_footnotes_json
-    answer_json["footnotes"]
-  end
-
   # records and saves
   def record_error_state(e)
     self.status = :error
