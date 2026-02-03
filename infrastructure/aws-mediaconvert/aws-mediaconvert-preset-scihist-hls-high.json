@@ -1,7 +1,7 @@
 {
   "Description": "1080h, 3000 kbps",
   "Category": "HLS",
-  "Name": "scihist-hls-high-with-normalization",
+  "Name": "scihist-hls-high",
   "Settings": {
     "VideoDescription": {
       "ScalingBehavior": "DEFAULT",

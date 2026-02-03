@@ -1,7 +1,7 @@
 {
   "Description": "240h, 500 kbps",
   "Category": "HLS",
-  "Name": "scihist-hls-extra-low-with-normalization",
+  "Name": "scihist-hls-extra-low",
   "Settings": {
     "VideoDescription": {
       "ScalingBehavior": "DEFAULT",

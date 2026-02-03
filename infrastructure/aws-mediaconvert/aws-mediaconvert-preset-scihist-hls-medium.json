@@ -1,7 +1,7 @@
 {
   "Description": "720h, 2500 kbps",
   "Category": "HLS",
-  "Name": "scihist-hls-medium-with-normalization",
+  "Name": "scihist-hls-medium",
   "Settings": {
     "VideoDescription": {
       "ScalingBehavior": "DEFAULT",
