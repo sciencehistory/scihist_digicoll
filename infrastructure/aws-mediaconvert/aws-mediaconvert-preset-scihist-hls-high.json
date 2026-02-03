@@ -1,7 +1,7 @@
 {
   "Description": "1080h, 3000 kbps",
   "Category": "HLS",
-  "Name": "scihist-hls-high",
+  "Name": "scihist-hls-high-with-normalization",
   "Settings": {
     "VideoDescription": {
       "ScalingBehavior": "DEFAULT",
@@ -49,6 +49,12 @@
       {
         "AudioTypeControl": "FOLLOW_INPUT",
         "AudioSourceName": "Audio Selector 1",
+        "AudioNormalizationSettings": {
+          "Algorithm": "ITU_BS_1770_4",
+          "AlgorithmControl": "CORRECT_AUDIO",
+          "LoudnessLogging": "DONT_LOG",
+          "PeakCalculation": "NONE"
+        },
         "CodecSettings": {
           "Codec": "AAC",
           "AacSettings": {
