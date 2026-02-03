@@ -76,7 +76,10 @@ module OralHistory
       response = AWS_BEDROCK_CLIENT.converse(
         model_id: MODEL_ID,
         system: [{ text: render_system_instructions }],
-        messages: [{ role: 'user', content: [{ text: render_user_prompt(chunks) }] }]
+        messages: [{ role: 'user', content: [{ text: render_user_prompt(chunks) }] }],
+        inference_config: {
+          temperature: 0.0
+        }
       )
 
       conversation_record&.add_timing("LLM response received")
