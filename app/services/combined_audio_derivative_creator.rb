@@ -39,7 +39,9 @@ class CombinedAudioDerivativeCreator
     end
     m4a_file = output_file('m4a')
     ffmpeg_args = args_for_ffmpeg(m4a_file.path)
-    cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
+
+    #cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
+    cmd.run(ffmpeg_args.join(' '))
     resp = Response.new
     resp.m4a_file    = m4a_file
     resp.fingerprint = fingerprint
@@ -116,7 +118,14 @@ class CombinedAudioDerivativeCreator
     #   concat -> Stream #0:0 (libmp3lame)
     #
     # v=0 means there is no video.
-    filtergraph = "concat=n=#{components.count}:v=0:a=1[a]"
+    #
+    # speechnorm,loudnorm : compress audio
+    # see https://www.reddit.com/r/ffmpeg/comments/15kiucp/ffmpeg_how_to_add_dialog_normalization_to_ac3_file/
+    # see https://ffmpeg.org/ffmpeg-all.html#speechnorm
+
+
+
+    filtergraph = "concat=n=#{components.count}:v=0:a=1, speechnorm, loudnorm[aout]"
 
     # Finally, some output options:
     # -map [a] : map just the audio to the output
@@ -127,22 +136,18 @@ class CombinedAudioDerivativeCreator
     #    see https://trac.ffmpeg.org/wiki/Encode/MP3
 
 
-     # -filter:a speechnorm,loudnorm : compress audio
-     # see https://www.reddit.com/r/ffmpeg/comments/15kiucp/ffmpeg_how_to_add_dialog_normalization_to_ac3_file/
-     # see https://ffmpeg.org/ffmpeg-all.html#speechnorm
 
-    output_options = ["-map", "[a]", "-ac", "1", "-b:a", "64k",  "-filter:a", "speechnorm,loudnorm"]
+    output_options = ["-map", "[aout]", "-ac", "1", "-b:a", "64k"]
 
     # -c:a aac: use the standard-issue AAC encoder for m4a:
     #    see https://trac.ffmpeg.org/wiki/Encode/AAC
     #    (This is currently always true.)
     output_options += ["-c:a", "aac"] if output_file_path.include?('m4a')
 
-    # Put it all together and return:
     ffmpeg_command +
       input_files +
       ['-filter_complex'] +
-      ["#{stream_list}#{filtergraph}"] +
+      ["\"#{stream_list}#{filtergraph}\""] +
       output_options +
       [output_file_path]
   end
