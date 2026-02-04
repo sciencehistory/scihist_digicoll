@@ -1,7 +1,24 @@
-USER QUESTION:
+## USER QUESTION
 <%= question %>
 
-RETRIEVED CONTEXT CHUNKS:
+
+## TASK
+
+- Answer using only information from the provided context chunks that addresses the question
+- Output a single valid JSON object with the specified format (no code fences, preambles, or external text)
+- For questions requiring synthesis across multiple interviews, cite all relevant sources
+- If you find contradictory information, note this and cite both sources
+- If retrieved chunks contain no directly relevant information, set "answer_unavailable": true.
+
+
+## RETRIEVAL SCOPE
+
+- We are supplying <%= chunks.count %> chunks, from <%= chunk_works_count %> of <%= oral_histories_searched_count %> total interviews searched.
+- These chunks were identified by a semantic similarity search as most related to the user question, and are not a comprehensive sample.
+- Other passages may exist with relevance to the question that are not included here.
+
+
+## RETRIEVED CONTEXT CHUNKS
 <% chunks.each do |chunk| -%>
 ------------------------------
 ORAL HISTORY TITLE: <%= chunk.oral_history_content.work.title %>
@@ -16,10 +33,3 @@ TEXT:
 <% end %>
 <%- end -%>
 ------------------------------
-
-TASK:
-
-- Provide the concise readable narrative **inside the JSON field "narrative" only**.
-- Answer using only information from the provided context chunks
-- For questions requiring synthesis across multiple interviews, organize your response clearly
-- If you find contradictory information, note this and cite both sources
