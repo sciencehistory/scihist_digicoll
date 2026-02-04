@@ -38,10 +38,7 @@ class CombinedAudioDerivativeCreator
       return Response.new(errors: audio_metadata_errors.join("; "))
     end
     m4a_file = output_file('m4a')
-    ffmpeg_args = args_for_ffmpeg(m4a_file.path)
-
-    #cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
-    cmd.run(ffmpeg_args.join(' '))
+    cmd.run(args_for_ffmpeg(m4a_file.path).join(' '), binmode: true, only_output_on_error: true)
     resp = Response.new
     resp.m4a_file    = m4a_file
     resp.fingerprint = fingerprint
