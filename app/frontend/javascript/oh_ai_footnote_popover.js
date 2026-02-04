@@ -19,7 +19,7 @@ domready(function() {
     const reference_quote  = footnoteEl.querySelector("[data-shi-slot=footnote-quote]");
 
     const popover = new Popover(element, {
-      content: reference_quote,
+      content: reference_quote.innerHTML,
       title: `${reference_title.innerText} ${reference_badges.innerHTML}`,
       html: true, // for badges in title
       trigger: "hover focus",

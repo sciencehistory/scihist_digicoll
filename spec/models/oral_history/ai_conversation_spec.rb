@@ -8,13 +8,38 @@ RSpec.describe OralHistory::AiConversation, type: :model do
     let(:question) { "How do we?" }
     let(:conversation) { OralHistory::AiConversation.build(question: question, session_id: session_id) }
 
-     let(:json_return) do
+    let(:json_return)  do
       {
-        "narrative" => "This is an answer",
-        "footnotes" => [],
-        "more_chunks_needed" => false,
-        "answer_unavailable" => false
-      }
+         "introduction" => "Scientists in our collection like many colors",
+         "findings" =>  [
+            {
+
+              "answer" => "John Smith likes it green",
+              "citations" => [
+                {
+                  "oral_history_title" => "Oral history with John Smith",
+                  "paragraph_start" => 10,
+                  "paragraph_end" => 10,
+                  "chunk_id" => "1",
+                  "quote" => "We liked it green"
+                }
+              ]
+            },
+            {
+              "answer" => "Mary Jones prefers blue",
+              "citations" => [
+                {
+                  "oral_history_title" => "Oral history with Mary Jones",
+                  "paragraph_start" => 12,
+                  "paragraph_end" => 12,
+                  "chunk_id" => "1",
+                  "quote" => "We liked it blue"
+                }
+              ]
+            }
+         ],
+         "answer_unavailable" => false,
+        }
     end
 
     # AWS sdk returns OpenStruct, we don't want to talk to it, so we mock it here, tests

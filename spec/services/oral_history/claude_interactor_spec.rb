@@ -69,17 +69,21 @@ describe OralHistory::ClaudeInteractor do
     let(:json_return) {
       # we're only passing it through, it doesn't matter
       {
-        "narrative" => "Some kind of answer [^1]",
-        "footnotes" => [
-          { "number" => 1,
-            "oral_history_title" => "Some title, 2001",
-            "chunk_id" => "123",
-            "paragraph_start" => 12,
-            "paragraph_end" => 15,
-            "quote" => "This is a quote"
+        "introduction" => "Some kind of answer",
+        "findings" => [
+          {
+            "answer" => "yup",
+            "citations" => [
+              {
+                "oral_history_title" => "Some title, 2001",
+                "chunk_id" => "123",
+                "paragraph_start" => 12,
+                "paragraph_end" => 15,
+                "quote" => "This is a quote"
+              }
+            ]
           }
         ],
-        "more_chunks_needed" => false,
         "answer_unavailable" => false
       }
     }

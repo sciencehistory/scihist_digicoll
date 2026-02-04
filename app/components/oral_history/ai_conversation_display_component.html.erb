@@ -1,49 +1,24 @@
+
+
 <div class="answer-narrative">
-  <%= answer_narrative %>
-</div>
+  <div class="answer-introduction">
+    <%= introduction %>
+  </div>
 
-<% if footnote_list.present? %>
-  <h3 class="fw-bold mt-5 mb-4">Interviews Referenced</h3>
+  <ul class="mt-4 ai-conversation-findings">
+    <% findings_hashes&.each do |hash| %>
 
-  <% footnote_list.each do |footnote_item_data| %>
-    <div id="<%= footnote_item_data.anchor %>" class="mb-3">
+      <li class="mb-3">
+        <%= hash["answer"] %>
 
-      <h4 class="fs-6 fw-semibold  mb-1 mt-4">
-        <%= link_to "##{footnote_item_data.ref_anchor}", class: "default-link-style" do %>
-          <span class="badge bg-primary rounded-pill"><%= footnote_item_data.number %></span>
+
+        <% hash["citations"].each do |citation_hash| %>
+          <div><%= render OralHistory::AiConversationCitationComponent.new(citation_hash["citation_item_model"]) %></div>
         <% end %>
-
-        <%= link_to(link_from_ai_conversation_footnote(footnote_item_data),
-                    target: "_blank",
-                    "data-shi-slot" => "footnote-title",
-                    class: "default-link-style text-decoration-underline") do  -%>
-          <%= footnote_item_data.short_citation_title -%> —
-          ¶<%= footnote_item_data.short_citation_paragraphs -%>
-          <%= footnote_item_data.nearest_timecode_formatted.present? ? " near <span>#{footnote_item_data.nearest_timecode_formatted}</span>".html_safe :  "" -%>
-        <%- end %>
-
-        <span data-shi-slot="footnote-badges">
-          <% if footnote_item_data.oral_history_content.has_ohms_transcript? %>
-            <span class="badge bg-info text-body border border-info-subtle ms-2">Synchronized Audio</span>
-          <% end %>
-
-          <% case footnote_item_data.oral_history_content.available_by_request_mode %>
-            <% when "off" %>
-              <span class="badge bg-success-subtle text-body border border-success-subtle ms-2">Immediate</span>
-            <% when "automatic" %>
-              <span class="badge bg-warning border border-warning-subtle text-body ms-2">Upon request</span>
-            <% when "manual_review" %>
-              <span class="badge bg-danger-subtle border border-danger-subtle text-body ms-2">With approval</span>
-          <% end %>
-        </span>
-      </h4>
-
-      <div data-shi-slot="footnote-quote">
-        “<%= footnote_item_data.quote %>”
-      </div>
-    </div>
-  <% end %>
-<% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>
 
 
 <% if can? :access_staff_functions %>

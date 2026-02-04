@@ -43,7 +43,7 @@
         <small class="text-muted">(<%= t(ai_conversation.search_params&.dig("access_limit").presence || "__none", scope: "oral_history.access_limit", default: "All") %>)</small>
       </td>
       <td class="w-50">
-        <%= truncate(ai_conversation.answer_narrative, length: 140, separator: /\b/).presence ||
+        <%= truncate(ai_conversation.answer_json&.dig("introduction") || ai_conversation.answer_json&.dig("narrative"), length: 140, separator: /\b/).presence ||
               ai_conversation.error_info&.slice("exception_class", "message").presence
         %>
       </td>
