@@ -1,6 +1,14 @@
 USER QUESTION:
 <%= question %>
 
+TASK:
+- Answer using only information from the provided context chunks that addresses the question
+- Output a single valid JSON object with the specified format (no code fences, preambles, or external text)
+- For questions requiring synthesis across multiple interviews, cite all relevant sources
+- If you find contradictory information, note this and cite both sources
+- If retrieved chunks contain no directly relevant information, set "answer_unavailable": true.
+
+
 RETRIEVED CONTEXT CHUNKS:
 <% chunks.each do |chunk| -%>
 ------------------------------
@@ -17,9 +25,3 @@ TEXT:
 <%- end -%>
 ------------------------------
 
-TASK:
-
-- Provide the concise readable narrative **inside the JSON field "narrative" only**.
-- Answer using only information from the provided context chunks
-- For questions requiring synthesis across multiple interviews, organize your response clearly
-- If you find contradictory information, note this and cite both sources
