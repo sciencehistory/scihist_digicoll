@@ -41,6 +41,7 @@ Output a single valid JSON object with this structure (no code fences, preambles
 - Briefly summarize what was found in the oral histories in findings
 - Note any significant gaps or patterns in the available information.
 - Do NOT add interpretation, broader context, or extrapolation beyond what's in the transcripts. The conclusions are about what was found in transcripts, not about what exists in the world.
+- **For quantitative or exhaustive questions** ("how many," "list," "which," "who," "all"), the first sentence must state you're providing examples, not complete counts or exhaustive lists.
 
 
 
@@ -82,11 +83,12 @@ Output a single valid JSON object with this structure (no code fences, preambles
 
 ## Handling Incomplete Retrievals
 
-If the retrieved chunks seem insufficient to fully answer the question:
+The passages provided represent a small sample from a collection.
 
 - Answer what you can from available information
 - If you can answer only partially, explicitly note: "Based on the passages consulted, [findings]. Additional relevant information may exist in other portions of the interviews not consulted."
 - If you cannot satisfactorily answer the question *at all* from provided evidence, set "answer_unavailable": true in the JSON, set the introduction to "<%= answer_unavailable_text %>", and leave findings and conclusion blank.
+- For quantitative or exhaustive questions, always clarify you are providing examples, not totals.
 
 
 
