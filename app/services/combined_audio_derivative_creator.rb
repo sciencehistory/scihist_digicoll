@@ -123,19 +123,15 @@ class CombinedAudioDerivativeCreator
     # see https://www.reddit.com/r/ffmpeg/comments/15kiucp/ffmpeg_how_to_add_dialog_normalization_to_ac3_file/
     # see https://ffmpeg.org/ffmpeg-all.html#speechnorm
 
-
-
     filtergraph = "concat=n=#{components.count}:v=0:a=1, speechnorm, loudnorm[aout]"
 
     # Finally, some output options:
-    # -map [a] : map just the audio to the output
+    # -map [aout] : map just the audio to the output
     #
     # -ac 1 : output should be mono
     #    see https://trac.ffmpeg.org/wiki/AudioChannelManipulation
     # -b:a 64K: make the output a constant 64k bitrate
     #    see https://trac.ffmpeg.org/wiki/Encode/MP3
-
-
 
     output_options = ["-map", "[aout]", "-ac", "1", "-b:a", "64k"]
 
