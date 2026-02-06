@@ -38,6 +38,11 @@ module OralHistory
       end
     end
 
+    # How many unique oral histories represented by the chunks involved
+    def oral_histories_searched_count
+      preserved_chunks_list.collect { |c| c.oral_history_content.id }.uniq.count
+    end
+
     # for admin display
     def estimated_cost_in_dollars
       @estimated_cost_in_dollars ||= begin
