@@ -28,7 +28,7 @@
         <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
           <div class="audio-controls-line">
             <%= render AudioPlayerComponent.new do %>
-                <source src="<%= combined_m4a_audio_url %>" type="audio/mp4">
+                <source src="https://d3dkjx001zrum8.cloudfront.net/combined_audio_derivatives/a9c632c2-07e5-46d4-b6d1-ecfd5bda092a/combined_acbd21f3c06707b7168659ec99ddc078.m4a" type="audio/mp4">
             <% end %>
 
             <% if has_ohms_index? || has_ohms_transcript? %>
