@@ -120,12 +120,10 @@ class CombinedAudioDerivativeCreator
     # see https://www.reddit.com/r/ffmpeg/comments/15kiucp/ffmpeg_how_to_add_dialog_normalization_to_ac3_file/
     # see https://ffmpeg.org/ffmpeg-all.html#speechnorm
 
-    # For podcast-like spoken word, a very standard target is:
-    #  Integrated loudness (I): −16 LUFS (stereo) or −19 LUFS (mono)
-    #  True peak (TP): −1.5 dBTP (conservative, avoids codec overs)
-    #  Loudness range (LRA): ~7 LU (keeps dynamics controlled for speech)
-
-
+    #  Target loudness
+    #  Integrated loudness (I):  −19 LUFS (mono)
+    #  True peak (TP):           −1.5 dBTP (conservative, avoids codec overs)
+    #  Loudness range (LRA):      ~7 LU (keeps dynamics controlled for speech)
     filtergraph = "concat=n=#{components.count}:v=0:a=1, speechnorm, loudnorm=I=-19:TP=-1.5:LRA=7:print_format=summary[aout]"
 
     # Finally, some output options:
