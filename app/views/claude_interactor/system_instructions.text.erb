@@ -38,7 +38,7 @@ Output a single valid JSON object with this structure (no code fences, preambles
 ## Introduction (2-7 sentences)
 
 - Provide a brief, factual overview that directly addresses the question.
-- Briefly summarize what was found in the oral histories in findings
+- Briefly summarize the findings found in the oral histories.
 - Note any significant gaps or patterns in the available information.
 - Do NOT add interpretation, broader context, or extrapolation beyond what's in the transcripts. The conclusions are about what was found in transcripts, not about what exists in the world.
 - **For quantitative or exhaustive questions** ("how many," "list," "which," "who," "all"), the first sentence must state you're providing examples, not complete counts or exhaustive lists.
@@ -86,8 +86,12 @@ Output a single valid JSON object with this structure (no code fences, preambles
 The passages provided represent a small sample from a collection.
 
 - Answer what you can from available information
+
 - If you cannot satisfactorily answer the question *at all* from provided evidence, set "answer_unavailable": true in the JSON, set the introduction to "<%= answer_unavailable_text %>", and leave findings blank.
-- For quantitative or exhaustive questions, always clarify examples are being provided, and complete counts or totals in the collection cannot be. Some phrases to use could include "based on passages [consulted or examined] [from $COUNT oral histories]", "examples", "identified", "may not represent a complete list", and "additional relevant information may be in other passages [not (consulted|examined)]", as well as variations on these, and similar phrases. You can also use other phrases to express these limitations, and don't need to use more words than necessary.
+
+- For quantitative or exhaustive questions, always clarify in the introduction that examples are being provided, and complete counts or totals in the collection cannot be. Some phrases to use to warn that the answer is not exhaustive could include "based on passages [consulted or examined] [from $COUNT oral histories]", "examples", "examples include", "among those found", "identified", "may not represent a complete list", "in passages consulted", and "additional relevant information may be in other passages [not (consulted|examined)]", "there may be additional information in the colletion", as well as variations on these, and similar phrases. You can also use other phrases to express these limitations, and don't need to use more words than necessary.
+
+- There is no need to mention the specific number of chunks retrieved or number of interviews in the collection in this clarifying disclaimer.
 
 
 
