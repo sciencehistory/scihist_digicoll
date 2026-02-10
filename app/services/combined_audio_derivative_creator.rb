@@ -38,8 +38,7 @@ class CombinedAudioDerivativeCreator
       return Response.new(errors: audio_metadata_errors.join("; "))
     end
     m4a_file = output_file('m4a')
-    ffmpeg_args = args_for_ffmpeg(m4a_file.path)
-    cmd.run(*ffmpeg_args, binmode: true, only_output_on_error: true)
+    cmd.run(args_for_ffmpeg(m4a_file.path).join(' '), binmode: true, only_output_on_error: true)
     resp = Response.new
     resp.m4a_file    = m4a_file
     resp.fingerprint = fingerprint
@@ -116,27 +115,36 @@ class CombinedAudioDerivativeCreator
     #   concat -> Stream #0:0 (libmp3lame)
     #
     # v=0 means there is no video.
-    filtergraph = "concat=n=#{components.count}:v=0:a=1[a]"
+    #
+    # speechnorm,loudnorm : compress audio
+    # see https://www.reddit.com/r/ffmpeg/comments/15kiucp/ffmpeg_how_to_add_dialog_normalization_to_ac3_file/
+    # see https://ffmpeg.org/ffmpeg-all.html#speechnorm
+
+    #  Target loudness
+    #  Integrated loudness (I):  −19 LUFS (mono)
+    #  True peak (TP):           −1.5 dBTP (conservative, avoids codec overs)
+    #  Loudness range (LRA):      ~7 LU (keeps dynamics controlled for speech)
+    filtergraph = "concat=n=#{components.count}:v=0:a=1, speechnorm, loudnorm=I=-19:TP=-1.5:LRA=7:print_format=summary[aout]"
 
     # Finally, some output options:
-    # -map [a] : map just the audio to the output
+    # -map [aout] : map just the audio to the output
     #
     # -ac 1 : output should be mono
     #    see https://trac.ffmpeg.org/wiki/AudioChannelManipulation
     # -b:a 64K: make the output a constant 64k bitrate
     #    see https://trac.ffmpeg.org/wiki/Encode/MP3
-    output_options = ["-map", "[a]", "-ac", "1", "-b:a", "64k"]
+
+    output_options = ["-map", "[aout]", "-ac", "1", "-b:a", "64k"]
 
     # -c:a aac: use the standard-issue AAC encoder for m4a:
     #    see https://trac.ffmpeg.org/wiki/Encode/AAC
     #    (This is currently always true.)
     output_options += ["-c:a", "aac"] if output_file_path.include?('m4a')
 
-    # Put it all together and return:
     ffmpeg_command +
       input_files +
       ['-filter_complex'] +
-      ["#{stream_list}#{filtergraph}"] +
+      ["\"#{stream_list}#{filtergraph}\""] +
       output_options +
       [output_file_path]
   end
