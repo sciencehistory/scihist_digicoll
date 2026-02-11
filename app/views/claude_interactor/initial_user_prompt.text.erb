@@ -1,7 +1,28 @@
-USER QUESTION:
+## USER QUESTION
 <%= question %>
 
-RETRIEVED CONTEXT CHUNKS:
+
+## TASK
+
+- Answer using only information from the provided context chunks that addresses the question
+- Output a single valid JSON object with the specified format (no code fences, preambles, or external text)
+- If retrieved chunks contain no directly relevant information, set "answer_unavailable": true.
+
+
+## RETRIEVAL SCOPE
+
+- We are supplying <%= chunks.count %> chunks, from <%= chunk_works_count %> of <%= oral_histories_searched_count %> total interviews searched.
+- These chunks were identified by a semantic similarity search as most related to the user question, and are not a comprehensive sample.
+- Other passages may exist with relevance to the question that are not included here.
+- Quantitative or exhaustive questions cannot be answered completely from this sample.  If the user asks for quantitative or exhaustive answers, or otherwise requests complete enumeration or quantification, provide clarification in the introduction with a disclaimer that only examples can be provided, not totals or complete lists from the full collection. Do use phrases like "Examples include," "Among those found," "In passages consulted", and similar phrases. Do not mention the specific number of chunks retrieved or number of interviews in the collection in this disclaimer.
+- Quantitative questions include those asking "how many", "what percentage", or asking for counts or calculations of counts.
+- Exhaustive questions include those by explicitly asking for "all", "every", "list"; or implicitly asking "who", "which".
+- Not considered exhaustive: Questions asking for explanation, description, or characterization (not enumeration or calculation); seeking themes or patterns or examples, not a complete list.
+- If a question is ambiguous as to whether it's meant to be exhaustive or not, assume it's meant to be exhaustive for purposes of establishing scope for disclaimers.
+
+
+
+## RETRIEVED CONTEXT CHUNKS
 <% chunks.each do |chunk| -%>
 ------------------------------
 ORAL HISTORY TITLE: <%= chunk.oral_history_content.work.title %>
@@ -16,10 +37,3 @@ TEXT:
 <% end %>
 <%- end -%>
 ------------------------------
-
-TASK:
-
-- Provide the concise readable narrative **inside the JSON field "narrative" only**.
-- Answer using only information from the provided context chunks
-- For questions requiring synthesis across multiple interviews, organize your response clearly
-- If you find contradictory information, note this and cite both sources
