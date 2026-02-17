@@ -20,8 +20,12 @@ namespace :scihist do
         next
       end
       video_assets.each do |v|
-        CreateHlsVideoJob.set(queue: queue).perform_later(v)
         jobs_enqueued = jobs_enqueued + 1
+        if ENV['ONLY_DO_THREE'] == 'true' && jobs_enqueued > 3
+          next 
+        end
+        CreateHlsVideoJob.set(queue: queue).perform_later(v)
+        progress_bar.log "Added #{v.title}"
       end
     end
     progress_bar.log "Added #{jobs_enqueued} assets into the queue to have their derivatives re-encoded."
