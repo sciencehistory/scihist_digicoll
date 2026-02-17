@@ -11,7 +11,7 @@ module OralHistory
     # claude sonnet 4.5
     MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
-    ANSWER_UNAVAILABLE_TEXT = "I am unable to answer this question with the methods and sources available."
+    ANSWER_UNAVAILABLE_TEXT = "This tool was unable to answer this question using the resources available."
 
     # should e threadsafe, and better to re-use for re-used connections maybe
     AWS_BEDROCK_CLIENT = Aws::BedrockRuntime::Client.new(
