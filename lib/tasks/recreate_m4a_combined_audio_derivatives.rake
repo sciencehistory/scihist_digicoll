@@ -44,7 +44,7 @@ namespace :scihist do
         next
       end
       progress_bar.log "INFO: Adding #{}{w.title} to queue!"
-      # CreateCombinedAudioDerivativesJob.set(queue: queue).perform_later(w)
+      CreateCombinedAudioDerivativesJob.set(queue: queue).perform_later(w)
     end
   end
 
