@@ -7,8 +7,14 @@ module OralHistory
     end
 
     def link_to_source
-      # this works for OHMS, will have to be changed/enhanced for others.
-      work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}")
+      # If OHMS, we link directly to work page with anchor to take to specific paragraph
+      if citation_item.work.oral_history_content.has_ohms_transcript?
+        work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}")
+      else
+        # otherwise, for now, to PDF -- will need to be logged in staff to see many of these,
+        # for now this demo is only for staff. May need to rethink if ever for other audience.
+        view_transcript_pdf_path(citation_item.work)
+      end
     end
 
   end
