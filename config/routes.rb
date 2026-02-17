@@ -216,8 +216,13 @@ Rails.application.routes.draw do
   # download_derivative_url(asset, "thumb_small")
   get "downloads/deriv/:asset_id/:derivative_key", to: "downloads#derivative", as: :download_derivative
 
+  # lets us look up PDF at point of following link, not in advance. Could be used
+  # for crawler links in future?
+  get "downloads/transcript_pdf/:work_id", to: "downloads#transcript_pdf", as: :view_transcript_pdf
+
   # Kind of a weird mismatch, HTML vtt transcript for crawlers
   get 'download/:asset_id/transcript_html' => "downloads#transcript_html", as: :asset_transcript
+
 
   # We redirect the old version of /downloads/:asset_id, before we changed to above
   # with status 301 Moved Permanently
