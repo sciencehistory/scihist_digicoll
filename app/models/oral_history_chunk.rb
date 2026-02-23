@@ -12,6 +12,9 @@ class OralHistoryChunk < ApplicationRecord
   # as an attribute helps us mock it in tests.
   attribute :neighbor_distance, :float
 
+  # paragraph numbers are 1-based
+  validates :start_paragraph_number, :end_paragraph_number, numericality: { greater_than: 0 }
+
   # Scope to fetch neighbors for embedding, to find relevant chunks to supply for RAG.
   #
   # Note: results will have a #neighbor_distance with the cosine distance, could
