@@ -30,14 +30,14 @@ module OralHistory
           raise_error("expected to have chunks, but does not")
         end
 
-        unless chunks.first.start_paragraph_number == 0
-          raise_error("first chunk #{chunks.first.id} should start at paragraph 0, but starts at p #{chunks.first.start_paragraph_number}")
+        unless chunks.first.start_paragraph_number == 1
+          raise_error("first chunk #{chunks.first.id} should start at paragraph 1, but starts at p #{chunks.first.start_paragraph_number}")
         end
 
         # Actually count paragraphs and make sure we have enough, a bit expensive
         num_paragraphs = OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content).num_paragraphs
-        unless chunks.last.end_paragraph_number == num_paragraphs - 1
-          raise_error("last chunk #{chunks.last.id} should end at paragraph #{num_paragraphs - 1}, but ends at p #{chunks.last.end_paragraph_number}")
+        unless chunks.last.end_paragraph_number == num_paragraphs
+          raise_error("last chunk #{chunks.last.id} should end at paragraph #{num_paragraphs}, but ends at p #{chunks.last.end_paragraph_number}")
         end
 
         validate_chunk_sequence
