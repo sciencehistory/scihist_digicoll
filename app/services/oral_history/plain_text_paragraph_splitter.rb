@@ -25,7 +25,7 @@ module OralHistory
     def split_paragraphs
       last_speaker_name = nil
       current_speaker_name = nil
-      paragraph_index = 0
+      paragraph_index = 1
 
       # some transcripts have paragraphs split only by 2 `\r` -- like 90s MacOS?  Not sure
       # where this comes from but okay. So two (or more) \r or two \n or two \r\n
