@@ -11,7 +11,7 @@ module OralHistory
     # claude sonnet 4.5
     MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
 
-    ANSWER_UNAVAILABLE_TEXT = "I am unable to answer this question with the methods and sources available."
+    ANSWER_UNAVAILABLE_TEXT = "This tool was unable to answer this question using the resources available."
 
     # should e threadsafe, and better to re-use for re-used connections maybe
     AWS_BEDROCK_CLIENT = Aws::BedrockRuntime::Client.new(
@@ -106,11 +106,16 @@ module OralHistory
     end
 
     def render_user_prompt(chunks)
+      category = access_limit || :all  # we use nil instead of :all, oops, translate.
+      oral_histories_searched_count = OralHistory::CategoryWithChunksCount.new(category: category).fetch_count
+
       # In Rails 8.1, could switch to .md.erb and :md format if we wanted. no real difference.
       ApplicationController.render( template: "claude_interactor/initial_user_prompt",
                                     locals: {
                                       question: question,
-                                      chunks: chunks
+                                      chunks: chunks,
+                                      chunk_works_count: chunks.collect { |c| c.oral_history_content_id }.uniq.count,
+                                      oral_histories_searched_count: oral_histories_searched_count
                                     },
                                     formats: [:text]
                                   )

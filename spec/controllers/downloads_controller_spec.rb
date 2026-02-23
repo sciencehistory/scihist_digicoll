@@ -209,6 +209,26 @@ describe DownloadsController do
     end
   end
 
+  describe "#transcript_pdf" do
+    let(:work) { create(:oral_history_work, :public_files) }
+    let(:pdf_asset) { work.members.find_by_role(:transcript) }
+
+    it "redirects to inline asset view of oral history PDF transcript" do
+      get :transcript_pdf, params: { work_id: work.friendlier_id }
+      expect(response).to redirect_to(download_path("pdf", pdf_asset, disposition: :inline))
+    end
+
+    describe "with no PDF attached" do
+      let(:work) { create(:oral_history_work) }
+
+      it "404s" do
+        expect {
+          get :transcript_pdf, params: { work_id: work.friendlier_id }
+        }.to raise_error(ActionController::RoutingError)
+      end
+    end
+  end
+
   describe "#transcript_html" do
     describe "no transcript" do
       let(:asset) { create(:asset_with_faked_file, published: true) }
@@ -247,6 +267,7 @@ describe DownloadsController do
         expect(page_text).to include(vtt_text)
       end
     end
+
 
     describe "corrected vtt" do
       render_views

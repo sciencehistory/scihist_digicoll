@@ -255,7 +255,7 @@ end
 
 # faraday is a transitive dependency, but we interact with it directly
 # to configure Blacklight, for automatic retry
- gem "faraday", "~> 2.0"
+ gem "faraday", "~> 2.14"
  gem "faraday-retry", "~> 2.0"
 
  gem "csv", "~> 3.3.0"

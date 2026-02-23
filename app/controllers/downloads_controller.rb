@@ -35,7 +35,7 @@ class DownloadsController < ApplicationController
   # Will be sent to S3 as expires_in, seconds, max 1 week.
   URL_EXPIRES_IN = 15.minutes.to_i # reduced to try to slow down bots. was 2.days.to_i
 
-  before_action :set_asset
+  before_action :set_asset, except: :transcript_pdf
   before_action :set_derivative, only: :derivative
 
   # protect originals only from bots with bot challenge redirect, no allowed pre-challenge
@@ -94,6 +94,23 @@ class DownloadsController < ApplicationController
       raise ActiveRecord::RecordNotFound.new("asset has no vtt available")
     end
   end
+
+  # For OH, we redirect to transcript PDF if present, looking up from work id
+  #
+  # a convenience so we can look this up at point of click, instead of in advance.
+  # No access control needed because we just redirect and the redirected target has access control.
+  def transcript_pdf
+    work = Work.find_by_friendlier_id(params[:work_id])
+    asset = work.members.find_by_role(:transcript)
+
+    unless asset
+      Rails.logger.warn("DownloadsController#transcript_pdf: Could not find PDF transcript for #{params[:work_id]}")
+      raise ActionController::RoutingError.new("No PDF transcript found")
+    end
+
+    redirect_to download_path("pdf", asset, disposition: :inline)
+  end
+
 
   private
 
