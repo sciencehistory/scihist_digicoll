@@ -59,7 +59,7 @@ module OralHistory
       chunks.each_cons(2) do |firstc, nextc|
         # Allow one paragraph of overlap!
         unless firstc.end_paragraph_number >= nextc.start_paragraph_number
-          raise_error("chunks not properly consecutive, missing content: #{friendlier_id}: chunk #{firstc.id} ends at p#{firstc.end_paragraph_number}, next chunk #{nextc.id} starts at p#{nextc.start_paragraph_number}")
+          raise_error("chunks not properly consecutive, missing content: chunk #{firstc.id} ends at p#{firstc.end_paragraph_number}, next chunk #{nextc.id} starts at p#{nextc.start_paragraph_number}")
         end
 
         unless firstc.start_paragraph_number <= firstc.end_paragraph_number
