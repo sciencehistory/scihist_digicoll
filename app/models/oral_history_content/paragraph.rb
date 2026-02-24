@@ -7,6 +7,12 @@ class OralHistoryContent
   #
   # Some may create sub-classes specific to their format, but this is a general API for chunkers.
   class Paragraph
+    # add multiline to the one from legacy ohms, cause we do have internal newlines sometimes now
+    HAS_SPEAKER_REGEX = Regexp.new(
+      OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE.source,
+      OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE.options | Regexp::MULTILINE
+    )
+
     attr_reader :transcript_id
 
     # @return [integer] 1-based index of paragraph in document
@@ -45,7 +51,7 @@ class OralHistoryContent
       # if text doesn't already start with speaker, and we HAVE a speaker to add,
       # AND the text doesn't start with "[" which is usually used for labels like [END OF TAPE],
       # then add a speaker.
-      if text !~ OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE &&
+      if text !~ HAS_SPEAKER_REGEX &&
             (speaker_name&.strip.presence || assumed_speaker_name&.strip.presence) && ! text.start_with?("[")
         "#{speaker_name&.strip.presence || assumed_speaker_name&.strip}: #{text}"
       else
