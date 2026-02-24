@@ -57,7 +57,7 @@ module OralHistory
         end
 
 
-        last_speaker_name = current_speaker_name
+        last_speaker_name = paragraph.speaker_name || paragraph.assumed_speaker_name
         paragraph_index +=1
 
         paragraph
