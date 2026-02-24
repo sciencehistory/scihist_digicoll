@@ -84,8 +84,8 @@ module OralHistory
       # non-greedy matcher, with lookahead
       plain_text.sub!(/\A.*?(?=#{OralHistoryContent::OhmsXml::LegacyTranscript::BARE_OHMS_SPEAKER_LABEL_RE.source})/m, '')
 
-      # Interview may contain one or more [END OF INTERVIEW], but  we'll use negative lookahead to skip anything
-      # after "last one, not another one after it"
+      # Interview may contain one or more [END OF INTERVIEW] or [END OF INTEVIEW N], but  we'll use
+      # negative lookahead to skip anything after "last one, not another one after it"
       if plain_text =~ /\[END OF INTERVIEW( \d+)?\]/
         plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
       elsif plain_text =~ /NOTES|INDEX/
