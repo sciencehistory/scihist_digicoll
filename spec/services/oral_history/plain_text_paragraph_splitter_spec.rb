@@ -40,17 +40,17 @@ describe OralHistory::PlainTextParagraphSplitter do
     it "splits into good-ish paragraphs" do
       # This is a mess, with paragraphs split on page breaks too, but this is what we get, good enough.
 
-      expect(paragraphs[1].speaker_name).to eq "WOOD"
-      expect(paragraphs[1].text).to match /\AWOOD: That was a pretty exciting time.*and a nice\Z/m
+      expect(paragraphs[0].speaker_name).to eq "WOOD"
+      expect(paragraphs[0].text).to match /\AWOOD: That was a pretty exciting time.*and a nice\Z/m
 
-      expect(paragraphs[2].assumed_speaker_name).to eq "WOOD"
-      expect(paragraphs[2].text).to match /guy\. I went down to see him and said.*end of my career\.\Z/m
+      expect(paragraphs[1].assumed_speaker_name).to eq "WOOD"
+      expect(paragraphs[1].text).to match /guy\. I went down to see him and said.*end of my career\.\Z/m
 
-      expect(paragraphs[3].speaker_name).to eq "BOHNING"
-      expect(paragraphs[3].text).to eq "BOHNING: That's all right. We can come back to that later."
+      expect(paragraphs[2].speaker_name).to eq "BOHNING"
+      expect(paragraphs[2].text).to eq "BOHNING: That's all right. We can come back to that later."
 
-      expect(paragraphs[4].speaker_name).to eq "WOOD"
-      expect(paragraphs[4].text).to eq "WOOD: In your letter you asked about early grade and high school education and teachers."
+      expect(paragraphs[3].speaker_name).to eq "WOOD"
+      expect(paragraphs[3].text).to eq "WOOD: In your letter you asked about early grade and high school education and teachers."
     end
   end
 end

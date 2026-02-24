@@ -79,6 +79,11 @@ module OralHistory
       # we sometimes have unicode BOM and nonsense in there
       plain_text.gsub!(/[\u200B\uFEFF]/, '')
 
+      # Sometimes there are abstracts and preface we don't want, trim everything before
+      # the first line that looks like a speaker attribution -- bold, but it seems right.
+      # non-greedy matcher, with lookahead
+      plain_text.sub!(/\A.*?(?=#{OralHistoryContent::OhmsXml::LegacyTranscript::BARE_OHMS_SPEAKER_LABEL_RE.source})/m, '')
+
       # Interview may contain one or more [END OF INTERVIEW], but  we'll use negative lookahead to skip anything
       # after "last one, not another one after it"
       if plain_text =~ /\[END OF INTERVIEW( \d+)?\]/
