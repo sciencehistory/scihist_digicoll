@@ -25,6 +25,9 @@ module OralHistory
             friendlier_id: friendlier_id
           )
         end
+      elsif !oral_history_content.work.published?
+        # don't bother validating it, may not be complete etc.
+        return true
       else
         unless chunks.present?
           raise_error("expected to have chunks, but does not")
