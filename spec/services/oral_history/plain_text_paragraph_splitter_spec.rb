@@ -33,4 +33,24 @@ describe OralHistory::PlainTextParagraphSplitter do
     # no blank ones
     expect(paragraphs).to all satisfy { |p| ! (p.text =~ /\A\s*\Z/) }
   end
+
+  describe "one with intro and single newline separators" do
+    let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/plain_text_transcript/wood_start.txt")}
+
+    it "splits into good-ish paragraphs" do
+      # This is a mess, with paragraphs split on page breaks too, but this is what we get, good enough.
+
+      expect(paragraphs[1].speaker_name).to eq "WOOD"
+      expect(paragraphs[1].text).to match /\AWOOD: That was a pretty exciting time.*and a nice\Z/m
+
+      expect(paragraphs[2].assumed_speaker_name).to eq "WOOD"
+      expect(paragraphs[2].text).to match /guy\. I went down to see him and said.*end of my career\.\Z/m
+
+      expect(paragraphs[3].speaker_name).to eq "BOHNING"
+      expect(paragraphs[3].text).to eq "BOHNING: That's all right. We can come back to that later."
+
+      expect(paragraphs[4].speaker_name).to eq "WOOD"
+      expect(paragraphs[4].text).to eq "WOOD: In your letter you asked about early grade and high school education and teachers."
+    end
+  end
 end

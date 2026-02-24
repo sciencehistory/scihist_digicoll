@@ -29,7 +29,14 @@ module OralHistory
 
       # some transcripts have paragraphs split only by 2 `\r` -- like 90s MacOS?  Not sure
       # where this comes from but okay. So two (or more) \r or two \n or two \r\n
-      trim_transcript(plain_text).split(/(?:(?:\r|\n|\r\n)\s*){2,}/).collect do |raw_paragraph|
+      #
+      # but then a few dozen transcripts also have only single newlines separating paragraphs, blah!
+      # So we also allow a single newline IF followed by (regex lookeahead, not included in match) what
+      # looks like a speaker label
+      #      #
+      speaker_start_of_line = /^[[:space:]]*[A-Z\-.\' ]+: / # adapted from OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
+
+      trim_transcript(plain_text).split(/(?:(?:\r|\n|\r\n)\s*){2,}|(?=#{speaker_start_of_line.source})/).collect do |raw_paragraph|
         raw_paragraph.strip!
 
         # There is some metadata that comes not only at beginning but sometimes in the middle
@@ -38,8 +45,8 @@ module OralHistory
 
         current_speaker_name = nil
         # While this is not an OHMS transcript, the regex extracted from OHMS works well
-        if raw_paragraph =~ OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
-          current_speaker_name = $1.chomp(":")
+        if raw_paragraph =~ /^[[:space:]]*([A-Z\-.\' ]+): /
+          current_speaker_name = $1
         end
 
         paragraph = OralHistoryContent::Paragraph.new(speaker_name: current_speaker_name,
@@ -72,13 +79,13 @@ module OralHistory
       # we sometimes have unicode BOM and nonsense in there
       plain_text.gsub!(/[\u200B\uFEFF]/, '')
 
-      # Interview often  strip the LAST one in the transcript and anythi8ng after it
-      # , we'll use negative lookahead to be "last one, not another one after it"
+      # Interview may contain one or more [END OF INTERVIEW], but  we'll use negative lookahead to skip anything
+      # after "last one, not another one after it"
       if plain_text =~ /\[END OF INTERVIEW( \d+)?\]/
         plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
       elsif plain_text =~ /NOTES|INDEX/
-        # But sometimes they don't, but still have a NOTES and/OR INDEX? On a line by itself,
-        # eliminate with everything afterwords.
+        # But sometimes they don't have an [END OF INTERVIEW], but still have a NOTES and/OR INDEX?
+        # On a line by itself, eliminate with everything afterwords.
         plain_text.gsub!(/^NOTES|INDEX$.*/m, '')
       end
 
