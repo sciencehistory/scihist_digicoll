@@ -9,6 +9,8 @@ module OralHistory
   # while we figure out how we want to do better citing/linking.
   #
   class PlainTextParagraphSplitter
+    TIMECODE_REGEX = /\[(\d\d:\d\d:\d\d)\]/ # note capture group
+
     attr_reader :plain_text
 
     def initialize(plain_text:)
@@ -26,6 +28,7 @@ module OralHistory
       last_speaker_name = nil
       current_speaker_name = nil
       paragraph_index = 1
+      previous_timestamp = nil
 
       # some transcripts have paragraphs split only by 2 `\r` -- like 90s MacOS?  Not sure
       # where this comes from but okay. So two (or more) \r or two \n or two \r\n
@@ -43,15 +46,30 @@ module OralHistory
         # after new tape/interview session. We don't want it.
         next if looks_like_metadata_line?(raw_paragraph)
 
+        # Sometimes we have timecodes at beginning of lines/paragraphs.
+        # If the whole paragraph is a timecode, then record it and move on
+        if raw_paragraph =~ /\A#{TIMECODE_REGEX.source}\Z/
+          previous_timestamp = OhmsHelper.parse_ohms_timestamp($1)
+          next
+        end
+
         current_speaker_name = nil
         # While this is not an OHMS transcript, the regex extracted from OHMS works well
         if raw_paragraph =~ /^[[:space:]]*([A-Z\-.\' ]+): /
           current_speaker_name = $1
         end
 
+        # if it starts with a timecode, remove it from text, and record
+        if raw_paragraph =~ /\A#{TIMECODE_REGEX.source}/
+          previous_timestamp = OhmsHelper.parse_ohms_timestamp($1)
+          raw_paragraph.sub!(/\A#{TIMECODE_REGEX.source}/, '')
+        end
+
         paragraph = OralHistoryContent::Paragraph.new(speaker_name: current_speaker_name,
                                                       paragraph_index: paragraph_index,
-                                                      text: raw_paragraph)
+                                                      text: raw_paragraph.strip,
+                                                      previous_timestamp: previous_timestamp
+                                                      )
         if paragraph.speaker_name.blank?
           paragraph.assumed_speaker_name = last_speaker_name
         end

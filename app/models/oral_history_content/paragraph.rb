@@ -35,10 +35,11 @@ class OralHistoryContent
     # OHMS transcript sub-classes get these from OHMS transcript model classes
     attr_accessor :speaker_name, :text
 
-    def initialize(text:, paragraph_index:, speaker_name:)
+    def initialize(text:, paragraph_index:, speaker_name:, previous_timestamp:nil)
       @text = text
       @paragraph_index = paragraph_index
       @speaker_name = speaker_name
+      @previous_timestamp = previous_timestamp
     end
 
     def word_count

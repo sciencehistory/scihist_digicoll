@@ -13,6 +13,17 @@ module OhmsHelper
     "#{'%02d' % hours}:#{'%02d' % minutes}:#{'%02d' % seconds}"
   end
 
+  # in is "hh:mm:ss", out is seconds integer
+  def parse_ohms_timestamp(timestamp_str)
+    unless timestamp_str =~ /\A(\d\d):(\d\d):(\d\d)\Z/
+      raise ArgumentError.new("timestamp str must match \d\d:\d\d:\d\d,not #{timestamp_str}")
+    end
+
+    hours, minutes, seconds = $1.to_i, $2.to_i, $3.to_i
+
+    return (hours * 60 * 60) + (minutes * 60) + seconds
+  end
+
   # make methods availble as static/module methods too
   extend self
 end
