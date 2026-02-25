@@ -39,7 +39,7 @@ module OralHistory
       #
       speaker_start_of_line = /^[[:space:]]*(?!INTERVIEWER|INTEFVIEWEE|DATE|LOCATION)[A-Z\-.\' ]+: / # adapted from OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
 
-      trim_transcript(plain_text).split(/(?:(?:\r|\n|\r\n)\s*){2,}|(?=#{speaker_start_of_line.source})/).collect do |raw_paragraph|
+      trim_transcript(plain_text).split(/(?:(?:\n|\r\n)\s*){2,}|(?=#{speaker_start_of_line.source})/).collect do |raw_paragraph|
         raw_paragraph.strip!
 
         # There is some metadata that comes not only at beginning but sometimes in the middle
