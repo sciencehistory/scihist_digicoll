@@ -88,6 +88,9 @@ module OralHistory
       # negative lookahead to skip anything after "last one, not another one after it"
       if plain_text =~ /\[END OF INTERVIEW( \d+)?\]/
         plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
+      elsif plain_text =~ /\[END OF TAPE, SIDE \d+\]/
+        # at least one does not have END OF INTERVIEW, but does have end of tape, trim after LAST one
+        plain_text.sub!(/\[END OF TAPE, SIDE \d+\](?!.*\[END OF TAPE, SIDE \d+\]).*/m, '')
       elsif plain_text =~ /NOTES|INDEX/
         # But sometimes they don't have an [END OF INTERVIEW], but still have a NOTES and/OR INDEX?
         # On a line by itself, eliminate with everything afterwords.
