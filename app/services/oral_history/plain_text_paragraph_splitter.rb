@@ -84,10 +84,10 @@ module OralHistory
 
     def looks_like_metadata_line?(str)
       # if it's one line, with one of our known metadata labels, colon, some info
-      str =~ /\A\s*(INTERVIEWEE|INTERVIEWER|DATE|LOCATION):.+$/ ||
+      !!(str =~ /\A\s*(INTERVIEWEES?|INTERVIEWERS?|DATE|LOCATION):.+\Z/m ||
         # Also for now just avoid the [END OF ...] markers.
         str =~ /\A\[END OF INTERVIEW.*\]\s*$/ ||
-        str =~ /\A\[END OF TAPE.*\]\s*$/
+        str =~ /\A\[END OF TAPE.*\]\s*$/)
     end
 
     # Trim END after last [END OF INTERVEW] marker -- get rid of footnote and index.

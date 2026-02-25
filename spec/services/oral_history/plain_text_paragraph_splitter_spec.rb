@@ -60,6 +60,7 @@ describe OralHistory::PlainTextParagraphSplitter do
     it "extracts and assigns timecodes" do
       expect(paragraphs[0].speaker_name).to eq "SCHNEIDER"
       expect(paragraphs[0].text).to start_with "SCHNEIDER:  Okay. So today is Monday, December 11, 2023."
+      expect(paragraphs[0].previous_timestamp).to eq 5
 
       expect(paragraphs[1].speaker_name).to eq "ISAACS"
       expect(paragraphs[1].text).to start_with "ISAACS:  Sure. So yeah, I was born and raised"
