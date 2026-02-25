@@ -12,6 +12,7 @@ describe OralHistory::PlainTextParagraphSplitter do
     # skips prefatory metadata
     expect(paragraphs.first.speaker_name).to eq "SCHLESINGER"
     expect(paragraphs.first.text).to start_with "SCHLESINGER:  Let’s not start at the beginning but"
+    expect(paragraphs.first.included_timestamps).to eq nil
 
     # gets the assumed speaker
     expect(paragraphs[5].speaker_name).to eq nil
@@ -42,6 +43,7 @@ describe OralHistory::PlainTextParagraphSplitter do
 
       expect(paragraphs[0].speaker_name).to eq "WOOD"
       expect(paragraphs[0].text).to match /\AWOOD: That was a pretty exciting time.*and a nice\Z/m
+      expect(paragraphs[0].included_timestamps).to eq nil
 
       expect(paragraphs[1].assumed_speaker_name).to eq "WOOD"
       expect(paragraphs[1].text).to match /guy\. I went down to see him and said.*end of my career\.\Z/m

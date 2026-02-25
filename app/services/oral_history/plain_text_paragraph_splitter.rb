@@ -68,7 +68,7 @@ module OralHistory
         paragraph = OralHistoryContent::Paragraph.new(speaker_name: current_speaker_name,
                                                       paragraph_index: paragraph_index,
                                                       text: raw_paragraph.strip,
-                                                      included_timestamps: [previous_timestamp]
+                                                      included_timestamps: ([previous_timestamp].compact if previous_timestamp)
                                                       )
         if paragraph.speaker_name.blank?
           paragraph.assumed_speaker_name = last_speaker_name
