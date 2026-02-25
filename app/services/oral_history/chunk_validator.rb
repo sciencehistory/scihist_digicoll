@@ -18,6 +18,7 @@ module OralHistory
       @friendlier_id = oral_history_content.work.friendlier_id
     end
 
+    # Returns true, or raises a OralHistory::ChunkValidator::Error
     def validate!
       if embargoed?
         if chunks.present?
@@ -45,6 +46,8 @@ module OralHistory
 
         validate_chunk_sequence
       end
+
+      return true
     end
 
     # Have to check for presence of unpublished transcript , bad data model, see
