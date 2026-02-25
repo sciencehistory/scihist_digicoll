@@ -8,8 +8,8 @@ module OralHistory
   # Does not do a continuous conversation, user gets one isolated question. Returns
   # answer as JSON.
   class ClaudeInteractor
-    # claude sonnet 4.5
-    MODEL_ID = "global.anthropic.claude-sonnet-4-5-20250929-v1:0"
+    # claude sonnet 4.6
+    MODEL_ID = "global.anthropic.claude-sonnet-4-6"
 
     ANSWER_UNAVAILABLE_TEXT = "This tool was unable to answer this question using the resources available."
 
