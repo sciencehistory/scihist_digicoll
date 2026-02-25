@@ -35,9 +35,9 @@ module OralHistory
       #
       # but then a few dozen transcripts also have only single newlines separating paragraphs, blah!
       # So we also allow a single newline IF followed by (regex lookeahead, not included in match) what
-      # looks like a speaker label
-      #      #
-      speaker_start_of_line = /^[[:space:]]*[A-Z\-.\' ]+: / # adapted from OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
+      # looks like a speaker label. (which can NOT be INTERVIEWER etc, negative lookahead)
+      #
+      speaker_start_of_line = /^[[:space:]]*(?!INTERVIEWER|INTEFVIEWEE|DATE|LOCATION)[A-Z\-.\' ]+: / # adapted from OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
 
       trim_transcript(plain_text).split(/(?:(?:\r|\n|\r\n)\s*){2,}|(?=#{speaker_start_of_line.source})/).collect do |raw_paragraph|
         raw_paragraph.strip!
