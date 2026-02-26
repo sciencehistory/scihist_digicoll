@@ -23,7 +23,14 @@ namespace :scihist do
       error_display = "Oral Histor Chunks: #{errors.count} errors out of #{total} Oral Histories.\n\n"
       error_display += errors.collect { |e| "#{e.message}\n   #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories\n"}.join("\n")
 
-      puts error_display
+      # log
+      Rails.logger.info("scihist:validate_oral_history_chunks: Errors found\n\n#{error_display}")
+
+      # and notify error handling services (HoneyBadger) and/or print to console
+
+
+
+      #puts error_display
     else
       Rails.logger.info("scihist:validate_oral_history_chunks: All validated")
     end
