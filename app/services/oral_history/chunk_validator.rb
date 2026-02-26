@@ -14,7 +14,7 @@ module OralHistory
     #   with strict_loading enabled, to avoid n+1, if you are doing many of these!
     def initialize(oral_history_content)
       @oral_history_content = oral_history_content
-      @chunks = oral_history_content.oral_history_chunks.sort_by(&:start_paragraph_number)
+      @chunks = oral_history_content.oral_history_chunks
       @friendlier_id = oral_history_content.work.friendlier_id
     end
 
@@ -22,7 +22,7 @@ module OralHistory
     def validate!
       if embargoed?
         if chunks.present?
-          raise_error("Embargoed OH has #{chunks.count} chunks, should have none")
+          raise_error("Embargoed OH has #{chunks.length} chunks, should have none")
         end
       elsif !oral_history_content.work.published?
         # don't bother validating it, may not be complete etc.
@@ -52,8 +52,8 @@ module OralHistory
     # https://github.com/sciencehistory/scihist_digicoll/issues/3253
     def embargoed?
       unless defined?(@embargoed)
-        oral_history_content.available_by_request_off? &&
-          transcript = oral_history_content.work.members.find {|a| a.role == "transcript"} &&
+        @embargoed = oral_history_content.available_by_request_off? &&
+          (transcript = oral_history_content.work.members.find {|a| a.role == "transcript"}) &&
           (transcript.nil? || !transcript.published?)
       end
       @embargoed
