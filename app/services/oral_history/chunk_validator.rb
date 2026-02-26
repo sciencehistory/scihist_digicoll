@@ -81,7 +81,7 @@ module OralHistory
     private
 
     def raise_error(msg)
-      raise Error.new("#{friendlier_id}: #{msg}", friendlier_id: friendlier_id)
+      raise Error.new(msg, friendlier_id: friendlier_id)
     end
 
   end

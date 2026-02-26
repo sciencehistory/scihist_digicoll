@@ -2,7 +2,7 @@ namespace :scihist do
   task :validate_oral_history_chunks => [:environment] do
 
     total = OralHistoryContent.count
-    progress_bar = ProgressBar.create(total: total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+    progress_bar = ProgressBar.create(total: total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT, output: nil)
 
     errors = []
 
@@ -21,14 +21,23 @@ namespace :scihist do
 
     if errors.present?
       error_display = "Oral Histor Chunks: #{errors.count} errors out of #{total} Oral Histories.\n\n"
-      error_display += errors.collect { |e| "#{e.message}\n   #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories\n"}.join("\n")
+      error_display += errors.collect { |e| "#{e.friendlier_id}: #{e.message}\n   #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories\n"}.join("\n")
 
-      # log
+      # log, which when running on heroku will also show up in console
       Rails.logger.info("scihist:validate_oral_history_chunks: Errors found\n\n#{error_display}")
 
       # and notify error handling services (HoneyBadger) and/or print to console
+      # group by id in hash, and extract messages
+      grouped_errors = errors.group_by(&:friendlier_id).collect do |id, exceptions|
+        [id, exceptions.collect { |e| "#{e.message} ; #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories}"}]
+      end.to_h
 
-
+      Rails.error.report(
+        OralHistory::ChunkValidator::Error.new("scihist:validate_oral_history_chunks errors found"),
+        context: {
+          "validate_oral_history_chunks": grouped_errors
+        }
+      )
 
       #puts error_display
     else
