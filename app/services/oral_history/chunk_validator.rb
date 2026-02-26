@@ -1,6 +1,6 @@
 module OralHistory
   class ChunkValidator
-    class Error < StandardError
+    class Failure < StandardError
       attr_accessor :friendlier_id
       def initialize(msg, friendlier_id:nil)
         @friendlier_id = friendlier_id
@@ -18,13 +18,11 @@ module OralHistory
       @friendlier_id = oral_history_content.work.friendlier_id
     end
 
-    # Returns true, or raises a OralHistory::ChunkValidator::Error
+    # Returns true, or raises a OralHistory::ChunkValidator::Failure
     def validate!
       if embargoed?
         if chunks.present?
-          raise Error.new("Embargoed OH has #{chunks.count} chunks, should have none",
-            friendlier_id: friendlier_id
-          )
+          raise_error("Embargoed OH has #{chunks.count} chunks, should have none")
         end
       elsif !oral_history_content.work.published?
         # don't bother validating it, may not be complete etc.
@@ -81,7 +79,7 @@ module OralHistory
     private
 
     def raise_error(msg)
-      raise Error.new(msg, friendlier_id: friendlier_id)
+      raise Failure.new(msg, friendlier_id: friendlier_id)
     end
 
   end

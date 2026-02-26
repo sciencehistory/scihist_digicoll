@@ -26,7 +26,7 @@ namespace :scihist do
     OralHistoryContent.includes(:oral_history_chunks, work: :members).strict_loading.find_each(batch_size: 10) do |oral_history_content|
       begin
         OralHistory::ChunkValidator.new(oral_history_content).validate!
-      rescue OralHistory::ChunkValidator::Error => e
+      rescue OralHistory::ChunkValidator::Failure => e
         errors << e
       ensure
         progress_bar&.increment
@@ -48,7 +48,7 @@ namespace :scihist do
         end.to_h
 
         Rails.error.report(
-          OralHistory::ChunkValidator::Error.new("scihist:validate_oral_history_chunks errors found"),
+          OralHistory::ChunkValidator::Failure.new("scihist:validate_oral_history_chunks errors found"),
           context: {
             "validate_oral_history_chunks": grouped_errors
           }
