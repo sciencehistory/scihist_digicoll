@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe OralHistory::PlainTextParagraphSplitter do
-  let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/ohms_xml/baltimore_plain_text_transcript_sample.txt")}
+  let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/plain_text_transcript/baltimore_sample.txt")}
 
   let(:splitter) { described_class.new(plain_text: raw_transcript_text)}
   let(:paragraphs) { splitter.paragraphs }
