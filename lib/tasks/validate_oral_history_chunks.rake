@@ -1,8 +1,22 @@
 namespace :scihist do
+  desc """
+    Validate all OralHistoryChunk for some basic formal consistency.
+
+    Will normally print out report to console, but if you set env BG_MODE=true
+    then it will instead log and report to error reporting service.
+
+    bundle exec rake scihist:validate_oral_history_chunks
+    BG_MODE=true bundle exec rake scihist:validate_oral_history_chunks
+  """
+
   task :validate_oral_history_chunks => [:environment] do
+    bg_mode = ENV['BG_MODE'] == "true"
+
 
     total = OralHistoryContent.count
-    progress_bar = ProgressBar.create(total: total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT, output: nil)
+    unless bg_mode
+      progress_bar = ProgressBar.create(total: total, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
+    end
 
     errors = []
 
@@ -15,7 +29,7 @@ namespace :scihist do
       rescue OralHistory::ChunkValidator::Error => e
         errors << e
       ensure
-        progress_bar.increment
+        progress_bar&.increment
       end
     end
 
@@ -23,25 +37,31 @@ namespace :scihist do
       error_display = "Oral Histor Chunks: #{errors.count} errors out of #{total} Oral Histories.\n\n"
       error_display += errors.collect { |e| "#{e.friendlier_id}: #{e.message}\n   #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories\n"}.join("\n")
 
-      # log, which when running on heroku will also show up in console
-      Rails.logger.info("scihist:validate_oral_history_chunks: Errors found\n\n#{error_display}")
+      if bg_mode
+        # log, which when running on heroku will also show up in console
+        Rails.logger.info("scihist:validate_oral_history_chunks: Errors found\n\n#{error_display}")
 
-      # and notify error handling services (HoneyBadger) and/or print to console
-      # group by id in hash, and extract messages
-      grouped_errors = errors.group_by(&:friendlier_id).collect do |id, exceptions|
-        [id, exceptions.collect { |e| "#{e.message} ; #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories}"}]
-      end.to_h
+        # and notify error handling services (HoneyBadger) and/or print to console
+        # group by id in hash, and extract messages
+        grouped_errors = errors.group_by(&:friendlier_id).collect do |id, exceptions|
+          [id, exceptions.collect { |e| "#{e.message} ; #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories}"}]
+        end.to_h
 
-      Rails.error.report(
-        OralHistory::ChunkValidator::Error.new("scihist:validate_oral_history_chunks errors found"),
-        context: {
-          "validate_oral_history_chunks": grouped_errors
-        }
-      )
-
-      #puts error_display
+        Rails.error.report(
+          OralHistory::ChunkValidator::Error.new("scihist:validate_oral_history_chunks errors found"),
+          context: {
+            "validate_oral_history_chunks": grouped_errors
+          }
+        )
+      else
+        $stderr.puts error_display
+      end
     else
-      Rails.logger.info("scihist:validate_oral_history_chunks: All validated")
+      if bg_mode
+        Rails.logger.info("scihist:validate_oral_history_chunks: All validated")
+      else
+        $stderr.puts "scihist:validate_oral_history_chunks: All validated"
+      end
     end
   end
 end
