@@ -223,7 +223,7 @@ module OralHistory
           {
             "included" => paragraph.included_timestamps,
             "previous" => paragraph.previous_timestamp
-          }
+          }.compact
         ]
       end.to_h
 
