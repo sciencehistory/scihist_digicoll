@@ -8,6 +8,9 @@ namespace :scihist do
 
     By default will do it lazily only for those which have no chunks, but
     `OVERWRITE_CHUNKS=true` to delete and re-create any existing chunks.
+
+    `USE_DUMMY_EMBEDDING=true` for a test run where you want to create chunk records
+    (usually in staging) without actually getting an embedding vector from remote API.
   """
   task :create_oral_history_chunks => [:environment] do
     scope = OralHistoryContent.includes(:work => :members).joins(:work).where(work: { published: true})
@@ -23,6 +26,7 @@ namespace :scihist do
       progress_bar.increment
 
       overwrite_chunks = ENV['OVERWRITE_CHUNKS'] == "true"
+      use_dummy_embedding = ENV['USE_DUMMY_EMBEDDING'] == "true"
 
       # Make sure we skip truly embargoed/non-public stuff, which is
       # currently a bit tricky in the metadata.
@@ -43,7 +47,7 @@ namespace :scihist do
       enqueued_count += 1
 
       # enqueue to special_jobs so we can control concurrency to avoid rate limit
-      OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oh_content, delete_existing: overwrite_chunks)
+      OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oh_content, delete_existing: overwrite_chunks, use_dummy_embedding: use_dummy_embedding)
     end
 
     puts "skipped #{skipped_count} and enqueued #{enqueued_count} of #{total_count}"
