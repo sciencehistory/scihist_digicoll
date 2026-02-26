@@ -44,7 +44,7 @@ namespace :scihist do
         # and notify error handling services (HoneyBadger) and/or print to console
         # group by id in hash, and extract messages
         grouped_errors = errors.group_by(&:friendlier_id).collect do |id, exceptions|
-          [id, exceptions.collect { |e| "#{e.message} ; #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories}"}]
+          [id, exceptions.collect { |e| "#{e.message} ; #{ScihistDigicoll::Env.lookup(:app_url_base)}/admin/works/#{e.friendlier_id}#tab=nav-oral-histories"}]
         end.to_h
 
         Rails.error.report(
