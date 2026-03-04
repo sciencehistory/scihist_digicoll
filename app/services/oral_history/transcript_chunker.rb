@@ -65,6 +65,9 @@ module OralHistory
       @allow_embedding_wait_seconds = allow_embedding_wait_seconds
     end
 
+    def num_paragraphs
+      paragraphs.count
+    end
 
 
     def create_db_records(use_dummy_embedding: false)
