@@ -1,7 +1,7 @@
 # Some explanation at https://sciencehistory.atlassian.net/wiki/spaces/HDC/pages/2645098498/Cloudflare+Turnstile+bot+detection
 BotChallengePage.configure do |config|
   # How long a challenge pass is good for
-  config.session_passed_good_for = 24.hours
+  config.session_passed_good_for = 72.hours
 
   config.enabled                 = ScihistDigicoll::Env.lookup(:cf_turnstile_enabled)
   config.cf_turnstile_sitekey    = ScihistDigicoll::Env.lookup(:cf_turnstile_sitekey)
