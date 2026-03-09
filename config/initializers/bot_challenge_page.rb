@@ -26,4 +26,13 @@ BotChallengePage.configure do |config|
     # But log it in our local DB instead, where we have no quota.
     BotChallengedRequest.save_from_request!(request)
   }
+
+  config.after_session_passed = ->(bot_detect_class) {
+    # used as signal for our logging configuration so we can include this
+    # as a token in our request log line
+    request.env["bot_detect.after_session_passed"] = true
+
+    # But log it in our local DB instead, where we have no quota.
+    BotChallengedRequest.save_from_request!(request)
+  }
 end

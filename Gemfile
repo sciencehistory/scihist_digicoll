@@ -271,6 +271,6 @@ gem "barnes"
 gem 'equivalent-xml'
 
 # temporary new bot challenge page
-gem "bot_challenge_page", ">= 0.10.0", "< 2"
+gem "bot_challenge_page", ">= 1.1.0", "< 2"
 
 gem "ruby-openai", "~> 8.0"
