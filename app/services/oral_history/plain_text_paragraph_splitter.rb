@@ -9,6 +9,8 @@ module OralHistory
   # while we figure out how we want to do better citing/linking.
   #
   class PlainTextParagraphSplitter
+    TIMECODE_REGEX = /\[(\d\d:\d\d:\d\d)\]/ # note capture group
+
     attr_reader :plain_text
 
     def initialize(plain_text:)
@@ -26,31 +28,55 @@ module OralHistory
       last_speaker_name = nil
       current_speaker_name = nil
       paragraph_index = 1
+      previous_timestamp = nil
 
       # some transcripts have paragraphs split only by 2 `\r` -- like 90s MacOS?  Not sure
       # where this comes from but okay. So two (or more) \r or two \n or two \r\n
-      trim_transcript(plain_text).split(/(?:(?:\r|\n|\r\n)\s*){2,}/).collect do |raw_paragraph|
+      #
+      # but then a few dozen transcripts also have only single newlines separating paragraphs, blah!
+      # So we also allow a single newline IF followed by (regex lookeahead, not included in match) what
+      # looks like a speaker label. (which can NOT be INTERVIEWER etc, negative lookahead)
+      #
+      speaker_start_of_line = /^[[:space:]]*(?!INTERVIEWER|INTEFVIEWEE|DATE|LOCATION)[A-Z\-.\' ]+: / # adapted from OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
+
+      trim_transcript(plain_text).split(/(?:\r\n\s*){2,}|(?:\r\s*){2,}|(?:\n\s*){2,}|(?=#{speaker_start_of_line.source})/).collect do |raw_paragraph|
         raw_paragraph.strip!
 
         # There is some metadata that comes not only at beginning but sometimes in the middle
         # after new tape/interview session. We don't want it.
         next if looks_like_metadata_line?(raw_paragraph)
 
-        current_speaker_name = nil
-        # While this is not an OHMS transcript, the regex extracted from OHMS works well
-        if raw_paragraph =~ OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE
-          current_speaker_name = $1.chomp(":")
+        # Sometimes we have timecodes at beginning of lines/paragraphs.
+        # If the whole paragraph is a timecode, then record it and move on
+        if raw_paragraph =~ /\A#{TIMECODE_REGEX.source}\Z/
+          previous_timestamp = OhmsHelper.parse_ohms_timestamp($1)
+          next
         end
 
-        paragraph = OralHistoryContent::Paragraph.new(speaker_name: current_speaker_name,
-                                                      paragraph_index: paragraph_index,
-                                                      text: raw_paragraph)
+        current_speaker_name = nil
+        # While this is not an OHMS transcript, the regex extracted from OHMS works well
+        if raw_paragraph =~ /^[[:space:]]*([A-Z\-.\' ]+): /
+          current_speaker_name = $1
+        end
+
+        # if it starts with a timecode, remove it from text, and record
+        if raw_paragraph =~ /\A#{TIMECODE_REGEX.source}/
+          previous_timestamp = OhmsHelper.parse_ohms_timestamp($1)
+          raw_paragraph.sub!(/\A#{TIMECODE_REGEX.source}/, '')
+        end
+
+        paragraph = OralHistoryContent::Paragraph.new(
+          speaker_name: current_speaker_name,
+          paragraph_index: paragraph_index,
+          text: raw_paragraph.strip,
+          included_timestamps: ([previous_timestamp].compact if previous_timestamp)
+        )
+
         if paragraph.speaker_name.blank?
           paragraph.assumed_speaker_name = last_speaker_name
         end
 
-
-        last_speaker_name = current_speaker_name
+        last_speaker_name = paragraph.speaker_name || paragraph.assumed_speaker_name
         paragraph_index +=1
 
         paragraph
@@ -59,10 +85,10 @@ module OralHistory
 
     def looks_like_metadata_line?(str)
       # if it's one line, with one of our known metadata labels, colon, some info
-      str =~ /\A\s*(INTERVIEWEE|INTERVIEWER|DATE|LOCATION):.+$/ ||
+      !!(str =~ /\A\s*(INTERVIEWEES?|INTERVIEWERS?|DATE|LOCATION):.+\Z/m ||
         # Also for now just avoid the [END OF ...] markers.
         str =~ /\A\[END OF INTERVIEW.*\]\s*$/ ||
-        str =~ /\A\[END OF TAPE.*\]\s*$/
+        str =~ /\A\[END OF TAPE.*\]\s*$/)
     end
 
     # Trim END after last [END OF INTERVEW] marker -- get rid of footnote and index.
@@ -72,13 +98,21 @@ module OralHistory
       # we sometimes have unicode BOM and nonsense in there
       plain_text.gsub!(/[\u200B\uFEFF]/, '')
 
-      # Interview often  strip the LAST one in the transcript and anythi8ng after it
-      # , we'll use negative lookahead to be "last one, not another one after it"
+      # Sometimes there are abstracts and preface we don't want, trim everything before
+      # the first line that looks like a speaker attribution -- bold, but it seems right.
+      # non-greedy matcher, with lookahead
+      plain_text.sub!(/\A.*?(?=#{OralHistoryContent::OhmsXml::LegacyTranscript::BARE_OHMS_SPEAKER_LABEL_RE.source})/m, '')
+
+      # Interview may contain one or more [END OF INTERVIEW] or [END OF INTEVIEW N], but  we'll use
+      # negative lookahead to skip anything after "last one, not another one after it"
       if plain_text =~ /\[END OF INTERVIEW( \d+)?\]/
         plain_text.gsub!(/\[END OF INTERVIEW( \d+)?\](?!.*\[END OF INTERVIEW).*/m, '')
+      elsif plain_text =~ /\[END OF TAPE, SIDE \d+\]/
+        # at least one does not have END OF INTERVIEW, but does have end of tape, trim after LAST one
+        plain_text.sub!(/\[END OF TAPE, SIDE \d+\](?!.*\[END OF TAPE, SIDE \d+\]).*/m, '')
       elsif plain_text =~ /NOTES|INDEX/
-        # But sometimes they don't, but still have a NOTES and/OR INDEX? On a line by itself,
-        # eliminate with everything afterwords.
+        # But sometimes they don't have an [END OF INTERVIEW], but still have a NOTES and/OR INDEX?
+        # On a line by itself, eliminate with everything afterwords.
         plain_text.gsub!(/^NOTES|INDEX$.*/m, '')
       end
 
