@@ -67,11 +67,15 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     end
     context "SSO succeeds, but no account by that name in our DB" do
       let(:incoming_email) { 'some_other_user@sciencehistory.org' }
-      it "can't log in" do
+      it "creates local user" do
         get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response).to have_http_status(200)
-        expect(response.body).to match /Digital Collections administrator/
+        expect(response.body).to match /Signed in successfully/
+
+        new_user = User.find_by_email(incoming_email)
+        expect(new_user).to be_present
+        expect(new_user.basic_internal_user?).to be true
       end
     end
     context "locked out user" do

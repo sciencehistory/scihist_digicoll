@@ -22,13 +22,8 @@ class AuthController < Devise::OmniauthCallbacksController
       raise TypeError.new("Could not find auth email from: #{debug_info}")
     end
 
-    @user = User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first
-
-    unless @user&.persisted?
-      flash[:alert] = "You can't currently log in to the Digital Collections. Please contact a Digital Collections administrator."
-      redirect_back(fallback_location: root_path)
-      return
-    end
+    # Find case-insensitive, or create a new one.
+    @user = User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first || User.create!(email: email)
 
     if @user.locked_out?
       flash[:alert] = "Sorry, this user is not allowed to log in."
