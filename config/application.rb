@@ -79,7 +79,8 @@ module ScihistDigicoll
         # wasn't sure if we should use request.remote_ip or request.ip, the
         # difference is not clear, or what it seems, in docs or online info
         ip: controller.request.ip,
-        bot_chlng: controller.request.env["bot_detect.blocked_for_challenge"]
+        bot_chlng: controller.request.env["bot_detect.blocked_for_challenge"],
+        bot_passed: (1 if controller.request.env["bot_detect.after_session_passed"]) # was let through bot challenge with a good session pass
       }.compact
     end
 

@@ -4,16 +4,17 @@
 #
 # Refuses to run if there are already chunks, cause that would create a real mess!
 class OhTranscriptChunkerJob < ApplicationJob
-  def perform(oral_history_content, delete_existing: false)
+  def perform(oral_history_content, delete_existing: false, use_dummy_embedding: false)
     if oral_history_content.oral_history_chunks.exists?
       if delete_existing
         oral_history_content.oral_history_chunks.delete_all
+        oral_history_content.oral_history_chunks.reset # make sure we don't have cached old association
       else
         raise RuntimeError.new("Can't create chunks when chunks already exist! It would create a mess. Or use delete_existing:true to auto-delete. For OralHistoryContent #{oral_history_content.id}")
       end
     end
 
-    OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records
+    OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records(use_dummy_embedding: use_dummy_embedding)
   end
 
 end

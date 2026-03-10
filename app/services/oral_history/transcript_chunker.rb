@@ -65,6 +65,9 @@ module OralHistory
       @allow_embedding_wait_seconds = allow_embedding_wait_seconds
     end
 
+    def num_paragraphs
+      paragraphs.count
+    end
 
 
     def create_db_records(use_dummy_embedding: false)
@@ -193,6 +196,10 @@ module OralHistory
       end
       chunks << current_chunk # last one
 
+      # sometimes for weird/malformed transcripts with very long paragraphs, we wind up
+      # with some empty chunks, remove them.
+      chunks.delete_if { |arr| arr.empty? }
+
       chunks
     end
 
@@ -219,7 +226,7 @@ module OralHistory
           {
             "included" => paragraph.included_timestamps,
             "previous" => paragraph.previous_timestamp
-          }
+          }.compact
         ]
       end.to_h
 

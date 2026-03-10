@@ -143,7 +143,7 @@ describe OralHistory::TranscriptChunker do
   end
 
   describe "searchable_transcript_source plain text" do
-    let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/ohms_xml/baltimore_plain_text_transcript_sample.txt")}
+    let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/plain_text_transcript/baltimore_sample.txt")}
 
     let(:work) {
         build(:oral_history_work,
@@ -185,5 +185,26 @@ describe OralHistory::TranscriptChunker do
         end
       end
     end
+
+    describe "#create_db_records" do
+      let(:splitter) { OralHistory::PlainTextParagraphSplitter.new(plain_text: raw_transcript_text)}
+
+      describe "with mocked OpenAI embeddings" do
+        before do
+          allow(OralHistoryChunk).to receive(:get_openai_embeddings) { |*args| [OralHistoryChunk::FAKE_EMBEDDING] * args.count }
+        end
+
+        it "saves multiple records" do
+          chunker.create_db_records
+
+          chunks =  oral_history_content.reload.oral_history_chunks
+
+          expect(chunks).to be_present
+          expect(chunks.first.start_paragraph_number).to eq 1
+          expect(chunks.last.end_paragraph_number).to eq splitter.paragraphs.count
+        end
+      end
+    end
+
   end
 end
