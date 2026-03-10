@@ -21,9 +21,7 @@ namespace :scihist do
 
 
     Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each(batch_size: 10) do |w|
-      progress_bar.log("START #{w.title}")
       progress_bar.increment
-
       cutoff_date = Time.now() - 10.day
 
       has_recent_combined_audio = (
@@ -32,7 +30,7 @@ namespace :scihist do
       )
 
       if has_recent_combined_audio
-          progress_bar.log("SKIP #{w.title}. Already has recent combined audio.")
+        progress_bar.log("SKIP #{w.title}. Already has recent combined audio.")
         next
       end
 
@@ -45,10 +43,11 @@ namespace :scihist do
         next
       end
 
-     if ENV['ONLY_DO_THREE'] == 'true' && jobs_enqueued > 3
-       next
-     end
-      progress_bar.log "Adding #{w.title} to queue. Current derivative was from #{w.oral_history_content.combined_audio_derivatives_job_status_changed_at}"
+      if ENV['ONLY_DO_THREE'] == 'true' && jobs_enqueued >= 3
+        progress_bar.log("SKIP #{w.title}. We already enqueued three.")
+        next
+      end
+      progress_bar.log "ADD #{w.title} to queue. Current derivative was from #{w.oral_history_content.combined_audio_derivatives_job_status_changed_at}"
       CreateCombinedAudioDerivativesJob.set(queue: queue).perform_later(w)
       jobs_enqueued = jobs_enqueued + 1
 
