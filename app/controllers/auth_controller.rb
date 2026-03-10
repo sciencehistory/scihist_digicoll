@@ -15,6 +15,8 @@ class AuthController < Devise::OmniauthCallbacksController
     # emails, but have usernames listed of similar format, that we will use (although
     # can't actually send email to them, warning! Our internal model could use a refactor!)
     email = request.env['omniauth.auth']&.dig('info', 'email') || request.env['omniauth.auth']&.dig("extra", "raw_info", "preferred_username")
+    # usually "lastname, firstname", but this is the only one we're guaranteed-ish to get.
+    remote_name = request.env['omniauth.auth']&.dig('info', 'name')
 
     if email.nil?
       debug_info = request.env['omniauth.auth']&.to_h&.slice("provider", "uid")
@@ -23,7 +25,9 @@ class AuthController < Devise::OmniauthCallbacksController
     end
 
     # Find case-insensitive, or create a new one.
-    @user = User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first || User.create!(email: email)
+    @user =
+      User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first ||
+      User.create!(email: email, name: remote_name)
 
     if @user.locked_out?
       flash[:alert] = "Sorry, this user is not allowed to log in."
