@@ -16,7 +16,11 @@ class AuthController < Devise::OmniauthCallbacksController
     # can't actually send email to them, warning! Our internal model could use a refactor!)
     email = request.env['omniauth.auth']&.dig('info', 'email') || request.env['omniauth.auth']&.dig("extra", "raw_info", "preferred_username")
     # usually "lastname, firstname", but this is the only one we're guaranteed-ish to get.
-    remote_name = request.env['omniauth.auth']&.dig('info', 'name')
+    remote_name = if request.env['omniauth.auth']&.dig('info', 'first_name')
+      "#{request.env['omniauth.auth']&.dig('info', 'first_name')} #{request.env['omniauth.auth']&.dig('info', 'last_name')}"
+    else
+      request.env['omniauth.auth']&.dig('info', 'name')
+    end
 
     if email.nil?
       debug_info = request.env['omniauth.auth']&.to_h&.slice("provider", "uid")
