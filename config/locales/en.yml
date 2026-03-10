@@ -97,6 +97,14 @@ en:
       immediate_only: "Only fully public"
       immediate_or_automatic: "Fully public or with automatically approved request"
 
+  user:
+    user_type:
+      hint:
+        admin: Can do everything including create users and delete.
+        editor:  Dashboard and edit access, cannot edit users or delete repository items.
+        staff_viewer: Dashboard access and non-published items, but cannot edit repository records.
+        basic_internal: Automatic for any user with @sciencehistory.org login (including guests), gets a few internal-only features, cannot access dashboard.
+
 
 
 
