@@ -8,7 +8,7 @@ namespace :scihist do
     bundle exec rake scihist:create_m4a_combined_audio_derivatives
   """
 
-  task :create_m4a_combined_audio_derivatives => :environment do
+  task :recreate_m4a_combined_audio_derivatives => :environment do
 
     progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
