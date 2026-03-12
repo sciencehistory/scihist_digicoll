@@ -205,6 +205,21 @@
       }
     }
 
+    .homepage-ai-link {
+      background-color: $shi-maroon;
+      color: $shi-yellow;
+
+      a {
+        color: white;
+        text-decoration: underline;
+      }
+
+      padding: 1rem;
+
+      font-size: 1.25rem;
+      text-align: center;
+    }
+
     .featured-topics {
         background-color: $shi-dark-gray;
 
