@@ -32,6 +32,12 @@ class AccessPolicy
       can :create, OralHistory::AiConversation
     end
 
+    role :basic_internal, proc { |user| has_basic_internal_permissions?(user) } do
+      # right now we let them read all conversations, we aren't yet restricting to only see own
+      can :read, OralHistory::AiConversation
+      can :create, OralHistory::AiConversation
+    end
+
     role :public do
       can :read, Kithe::Model do |mod, user|
         # mod could be any of Kithe::Model, Collection, Work, Asset,
@@ -55,16 +61,22 @@ class AccessPolicy
 
   private
 
+  # They are all hieararchical, admin has ALL permissions, editor has all but admin, etc.
+
   def has_admin_permissions?(user)
     user&.admin_user?
   end
 
   def has_editor_permissions?(user)
-    user&.admin_user? || user&.editor_user?
+    user&.editor_user? || has_admin_permissions?(user)
   end
 
   def has_staff_viewer_permissions?(user)
-    user&.admin_user? || user&.editor_user? || user&.staff_viewer_user?
+    user&.admin_user? || has_editor_permissions?(user)
   end
 
+  # Anyone with a @sciencehistory.org login!
+  def has_basic_internal_permissions?(user)
+    user&.basic_internal_user? || has_staff_viewer_permissions?(user)
+  end
 end
