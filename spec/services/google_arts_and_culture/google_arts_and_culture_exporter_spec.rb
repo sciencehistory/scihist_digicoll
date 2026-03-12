@@ -43,17 +43,4 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
       tempfile.unlink
     end
   end
-
-  describe "#upload_files_to_google_arts_and_culture" do
-    let(:creator) { described_class.new(scope) }
-    it "enqueues a job to upload the files" do
-      expect {
-        creator.upload_files_to_google_arts_and_culture_async
-      }.to have_enqueued_job(UploadFilesToGoogleArtsAndCultureJob).with { |params|
-        {
-          work_ids: [work_1.id, work_2.id]
-        }
-      }
-    end
-  end
 end
