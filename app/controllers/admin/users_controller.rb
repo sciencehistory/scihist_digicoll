@@ -15,7 +15,7 @@ class Admin::UsersController < AdminController
     elsif @user_types_map.values.include? @filter
       @users = User.where(locked_out: false, user_type: @user_types_map.key(@filter)).order(:email)
     else
-      @users = User.where(locked_out: false).order(:email)
+      @users = User.where.not(locked_out: true).order(:email)
     end
   end
 

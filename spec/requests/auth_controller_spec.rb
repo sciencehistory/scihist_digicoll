@@ -13,6 +13,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
 
     # An authenticated email. This email address belongs to a person who has gotten authenticated.
     let(:incoming_email) { 'the_user@sciencehistory.org' }
+    let(:incoming_name) { "Smith, John" }
 
     before do
       allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
@@ -30,7 +31,7 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
         :provider => 'entra_id',
         :uid => '12345',
         :email => incoming_email,
-        :info => OmniAuth::AuthHash::InfoHash.new({ email: incoming_email })
+        :info => OmniAuth::AuthHash::InfoHash.new({ email: incoming_email, name: incoming_name })
       })
     end
     after do
@@ -67,11 +68,16 @@ RSpec.describe AuthController, type: :request, queue_adapter: :test do
     end
     context "SSO succeeds, but no account by that name in our DB" do
       let(:incoming_email) { 'some_other_user@sciencehistory.org' }
-      it "can't log in" do
+      it "creates local user" do
         get user_entra_id_omniauth_callback_path
         follow_redirect!
         expect(response).to have_http_status(200)
-        expect(response.body).to match /Digital Collections administrator/
+        expect(response.body).to match /Signed in successfully/
+
+        new_user = User.find_by_email(incoming_email)
+        expect(new_user).to be_present
+        expect(new_user.name).to eq incoming_name
+        expect(new_user.basic_internal_user?).to be true
       end
     end
     context "locked out user" do
