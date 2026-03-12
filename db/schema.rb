@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_21_211717) do
+ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -332,8 +332,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_21_211717) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "name"
-    t.boolean "locked_out"
-    t.string "user_type", default: "editor"
+    t.boolean "locked_out", default: false
+    t.string "user_type", default: "basic_internal"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

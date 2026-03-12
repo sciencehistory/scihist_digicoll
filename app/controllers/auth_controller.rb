@@ -15,6 +15,12 @@ class AuthController < Devise::OmniauthCallbacksController
     # emails, but have usernames listed of similar format, that we will use (although
     # can't actually send email to them, warning! Our internal model could use a refactor!)
     email = request.env['omniauth.auth']&.dig('info', 'email') || request.env['omniauth.auth']&.dig("extra", "raw_info", "preferred_username")
+    # usually "lastname, firstname", but this is the only one we're guaranteed-ish to get.
+    remote_name = if request.env['omniauth.auth']&.dig('info', 'first_name')
+      "#{request.env['omniauth.auth']&.dig('info', 'first_name')} #{request.env['omniauth.auth']&.dig('info', 'last_name')}"
+    else
+      request.env['omniauth.auth']&.dig('info', 'name')
+    end
 
     if email.nil?
       debug_info = request.env['omniauth.auth']&.to_h&.slice("provider", "uid")
@@ -22,13 +28,10 @@ class AuthController < Devise::OmniauthCallbacksController
       raise TypeError.new("Could not find auth email from: #{debug_info}")
     end
 
-    @user = User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first
-
-    unless @user&.persisted?
-      flash[:alert] = "You can't currently log in to the Digital Collections. Please contact a Digital Collections administrator."
-      redirect_back(fallback_location: root_path)
-      return
-    end
+    # Find case-insensitive, or create a new one.
+    @user =
+      User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first ||
+      User.create!(email: email, name: remote_name)
 
     if @user.locked_out?
       flash[:alert] = "Sorry, this user is not allowed to log in."

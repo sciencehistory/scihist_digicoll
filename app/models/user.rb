@@ -21,19 +21,10 @@ class User < ApplicationRecord
   has_many :works_in_cart, through: :cart_items, source: :work
 
   # This will correspond to a "role" in the AccessPolicy class.
-  USER_TYPES = %w{admin editor staff_viewer}.freeze
-  enum :user_type, USER_TYPES.collect {|v| [v, v]}.to_h
-  validates :user_type, presence: true
+  # basic_internal is anyone with a @sciencehistory.org login, others are elevated permissions
+  USER_TYPES = %w{admin editor staff_viewer basic_internal}.freeze
+  enum :user_type, USER_TYPES.collect {|v| [v, v]}.to_h, suffix: "user", validate: true
 
-  def admin_user?
-    user_type == "admin"
-  end
-  def editor_user?
-    user_type == "editor"
-  end
-  def staff_viewer_user?
-    user_type == "staff_viewer"
-  end
 
   # Only used by devise validatable, we want to allow user accounts
   # to be saved with nil password, means they won't be able to log in
