@@ -5,11 +5,11 @@ class AccessPolicy
   include AccessGranted::Policy
   # :publish and :admin are only defined in our code.
   # as is :access_staff_viewer_functions.
-  # 
+  #
   # The :admin, :editor and :staff_viewer roles are cumulative:
   # e.g. if the :staff_viewer role can do something, so can :editor and :admin.
   #
-  # If you edit this file, please also update 
+  # If you edit this file, please also update
   # spec/policies/access_policy_spec.rb
   def configure
     role :admin, proc { |user| has_admin_permissions?(user) } do
@@ -27,6 +27,12 @@ class AccessPolicy
         comment.user_id == user.id
       end
       can :access_staff_functions
+    end
+
+    role :basic_internal, proc { |user| has_basic_internal_permissions?(user) } do
+      # right now we let them read all conversations, we aren't yet restricting to only see own
+      can :read, OralHistory::AiConversation
+      can :create, OralHistory::AiConversation
     end
 
     role :public do
@@ -52,16 +58,23 @@ class AccessPolicy
 
   private
 
+  # They are all hieararchical, admin has ALL permissions, editor has all but admin, etc.
+
   def has_admin_permissions?(user)
     user&.admin_user?
   end
-  
+
   def has_editor_permissions?(user)
-    user&.admin_user? || user&.editor_user?
+    user&.editor_user? || has_admin_permissions?(user)
   end
-  
+
   def has_staff_viewer_permissions?(user)
-    user&.admin_user? || user&.editor_user? || user&.staff_viewer_user?
+    user&.staff_viewer_user? || has_editor_permissions?(user)
+  end
+
+  # Anyone with a @sciencehistory.org login!
+  def has_basic_internal_permissions?(user)
+    user&.basic_internal_user? || has_staff_viewer_permissions?(user)
   end
 
 end
