@@ -10,7 +10,7 @@ namespace :scihist do
 
   task :recreate_m4a_combined_audio_derivatives => :environment do
 
-    progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
+    progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
     # Add these jobs to the special_jobs queue
     # where they can be picked up (only) by special_worker dynos
