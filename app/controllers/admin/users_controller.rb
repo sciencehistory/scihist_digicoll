@@ -10,13 +10,20 @@ class Admin::UsersController < AdminController
   def index
     @user_types_map = User.user_types.map{|k, v| [k, v.humanize.pluralize]}.to_h
     @filter = params[:filter] || 'Current'
-    if @filter == 'All'
-      @users = User.order(:email)
-    elsif @user_types_map.values.include? @filter
-      @users = User.where(locked_out: false, user_type: @user_types_map.key(@filter)).order(:email)
-    else
-      @users = User.where.not(locked_out: true).order(:email)
+
+    scope = User
+
+    if params[:q]
+      scope = scope.where("name ILIKE :q OR email ILIKE :q", q: "%#{params[:q]}%")
     end
+
+    if @user_types_map.values.include? @filter
+      scope = scope.where(locked_out: false, user_type: @user_types_map.key(@filter))
+    elsif @filter == 'Current'
+      scope = scope.where.not(locked_out: true)
+    end
+
+    @users = scope.order(:email)
   end
 
   # GET /users/new
