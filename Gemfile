@@ -190,7 +190,7 @@ gem "docx", "< 1.0"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'pry-byebug', platforms: [:mri, :windows]
   gem 'solr_wrapper', "~> 4.0"
   # gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 end
