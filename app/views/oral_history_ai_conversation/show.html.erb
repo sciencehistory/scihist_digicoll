@@ -35,7 +35,7 @@
   <% if @conversation.request_sent_at %>
     <div class="d-flex justify-content-end mb-3">
       <span class="ai-conversation-date fw-semibold" data-iso8601="<%= @conversation.request_sent_at&.iso8601 %>">
-          Prepared <%= l(@conversation.request_sent_at.to_date, format: :long) %>
+          Prepared <%= l(@conversation.request_sent_at.to_date || @conversation.created_at.to_date, format: :long) %>
       </span>
     </div>
   <% end %>
@@ -45,7 +45,7 @@
       <% if @chunks_used = @conversation.chunks_used.present? && @conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count %>
         <li class="chunk-works-count text-muted">Answer will use passages from <%= @chunks_used %> oral history transcripts identified as most useful to the topic.</li>
       <% else %>
-        <li class="chunk-works-count-progress text-muted fw-bold">
+        <li class="chunk-works-count-progress text-muted">
           Identifying passages useful to the topic…
         </li>
       <% end %>
