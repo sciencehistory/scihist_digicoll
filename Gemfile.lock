@@ -886,7 +886,6 @@ DEPENDENCIES
   capybara (>= 2.15)
   capybara-screenshot
   citeproc-ruby (~> 2.0)
-  connection_pool (~> 2.4)
   content_disposition (~> 1.0)
   csv (~> 3.3.0)
   database_cleaner (~> 2.0)
@@ -932,7 +931,7 @@ DEPENDENCIES
   qa (~> 5.2, >= 5.14.0)
   rack (>= 3.0)
   rack-attack (~> 6.6)
-  rails (~> 8.1.0)
+  rails (~> 8.1.2)
   rails-controller-testing
   reline (>= 0.2.1)
   resque (~> 3.0)
