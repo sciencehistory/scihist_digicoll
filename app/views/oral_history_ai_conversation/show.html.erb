@@ -41,7 +41,7 @@
   <% end %>
 
   <% if @chunks_used = @conversation.chunks_used.present? && @conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count %>
-    <ul class="chunk-works-count">
+    <ul class="ai-icon-bullet chunk-works-count">
       <li>Using passages from <%= @chunks_used %> oral history transcripts identified as most useful to the topic.</li>
     </ul>
   <% end %>
