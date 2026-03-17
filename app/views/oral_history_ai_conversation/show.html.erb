@@ -41,30 +41,31 @@
 
   <ul class="ai-icon-bullet">
     <% if @chunks_used = @conversation.chunks_used.present? && @conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count %>
-      <li class="ai-checkmark text-muted">Answer will use passages from <%= @chunks_used %> oral history transcripts identified as most useful to the topic.</li>
+      <li class="ai-icon-bullet-checkmark text-muted">Answer will use passages from <%= @chunks_used %> oral history transcripts identified as most useful to the topic.</li>
+
+      <% if !@conversation.complete? %>
+        <li class="ai-icon-bullet-spinner text-muted">Working…</li>
+      <% end %>
     <% else %>
-      <li class="ai-circle-progress text-muted">
+      <li class="ai-icon-bullet-spinner text-muted">
         Identifying passages useful to the topic…
       </li>
     <% end %>
   </ul>
 
 
-  <% if !@conversation.complete? %>
-    <div class="d-flex align-items-center text-muted">
-      <i class="fa fa-circle-o-notch fa-spin me-2" aria-hidden="true"></i>
-      Working…
-    </div>
-  <% elsif @conversation.status_error? %>
-    <div class="alert alert-danger">
-      Sorry, an error happened!  Error object <%= @conversation.external_id %>.
-    </div>
-  <% else %>
-    <%# some legacy display for old formats %>
-    <% if @conversation.answer_json.has_key?("narrative") && @conversation.answer_json.has_key?("footnotes") %>
-      <%= render OralHistory::AiConversationDisplayJan2026.new(@conversation)%>
+  <% if @conversation.complete? %>
+    <% if  @conversation.status_error? %>
+      <div class="alert alert-danger">
+        Sorry, an error happened!  Error object <%= @conversation.external_id %>.
+      </div>
     <% else %>
-      <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
+      <%# some legacy display for old formats %>
+      <% if @conversation.answer_json.has_key?("narrative") && @conversation.answer_json.has_key?("footnotes") %>
+        <%= render OralHistory::AiConversationDisplayJan2026.new(@conversation)%>
+      <% else %>
+        <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
+      <% end %>
     <% end %>
   <% end %>
 
