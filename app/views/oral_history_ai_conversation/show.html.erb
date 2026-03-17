@@ -41,15 +41,15 @@
   <% end %>
 
 
-    <ul class="ai-icon-bullet">
-      <% if @chunks_used = @conversation.chunks_used.present? && @conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count %>
-        <li class="chunk-works-count text-muted">Answer will use passages from <%= @chunks_used %> oral history transcripts identified as most useful to the topic.</li>
-      <% else %>
-        <li class="chunk-works-count-progress text-muted">
-          Identifying passages useful to the topic…
-        </li>
-      <% end %>
-    </ul>
+  <ul class="ai-icon-bullet">
+    <% if @chunks_used = @conversation.chunks_used.present? && @conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count %>
+      <li class="chunk-works-count text-muted">Answer will use passages from <%= @chunks_used %> oral history transcripts identified as most useful to the topic.</li>
+    <% else %>
+      <li class="chunk-works-count-progress text-muted">
+        Identifying passages useful to the topic…
+      </li>
+    <% end %>
+  </ul>
 
 
   <% if !@conversation.complete? %>
