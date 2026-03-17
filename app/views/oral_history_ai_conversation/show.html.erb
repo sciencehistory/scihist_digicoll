@@ -34,7 +34,7 @@
 
 
   <div class="d-flex justify-content-end mb-3">
-    <span class="ai-conversation-date fw-semibold text-muted" data-iso8601="<%= @conversation.request_sent_at&.iso8601 %>">
+    <span class="ai-conversation-date text-muted" data-iso8601="<%= @conversation.request_sent_at&.iso8601 %>">
         Prepared <%= l(@conversation.request_sent_at&.to_date || @conversation.created_at.to_date, format: :long) %>
     </span>
   </div>
