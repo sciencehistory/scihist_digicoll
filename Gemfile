@@ -85,7 +85,7 @@ gem 'puma', '>= 7.0.0.pre1', '< 8'
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
 # https://github.com/nevans/resque-pool/issues/170
-gem "resque", "~> 2.0"
+gem "resque", "~> 3.0"
 gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
 
@@ -190,7 +190,7 @@ gem "docx", "< 1.0"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'pry-byebug', platforms: [:mri, :windows]
   gem 'solr_wrapper', "~> 4.0"
   # gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 end

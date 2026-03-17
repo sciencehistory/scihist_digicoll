@@ -32,12 +32,12 @@ class CitationDisplay
   # reuse this style cause it's expensive to load. It appears to be concurrency-safe.
   def self.csl_chicago_style
     # See vendor/citation-style-language/README.md
-    @csl_chicago_style ||= ::CSL::Style.load("vendor/citation-style-language/styles/chicago-notes-bibliography-16th-edition.csl")
+    @csl_chicago_style ||= ::CSL::Style.load("./vendor/citation-style-language/styles/chicago-notes-bibliography-16th-edition.csl")
   end
 
   # cache, as we are for csl_chicago_style above.
   def self.csl_en_us_locale
     # See vendor/citation-style-language/README.md
-    @csl_en_us_locale ||= ::CSL::Locale.load("vendor/citation-style-language/locales/locales-en-US.xml")
+    @csl_en_us_locale ||= ::CSL::Locale.load("./vendor/citation-style-language/locales/locales-en-US.xml")
   end
 end
