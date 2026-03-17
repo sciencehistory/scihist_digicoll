@@ -135,7 +135,7 @@ gem 'faster_s3_url', "~> 1.1" # for generating s3 urls faster!
 gem "kaminari", "~> 1.2"
 gem 'bootstrap4-kaminari-views'
 
-gem 'devise', "~> 4.5" # user accounts and login
+gem 'devise', "~> 5.0" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 gem 'omniauth-entra-id'
 gem 'omniauth-rails_csrf_protection'
