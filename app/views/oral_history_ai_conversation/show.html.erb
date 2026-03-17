@@ -32,14 +32,12 @@
     </span>
   </div>
 
-  <% if @conversation.request_sent_at %>
-    <div class="d-flex justify-content-end mb-3">
-      <span class="ai-conversation-date fw-semibold" data-iso8601="<%= @conversation.request_sent_at&.iso8601 %>">
-          Prepared <%= l(@conversation.request_sent_at.to_date || @conversation.created_at.to_date, format: :long) %>
-      </span>
-    </div>
-  <% end %>
 
+  <div class="d-flex justify-content-end mb-3">
+    <span class="ai-conversation-date fw-semibold" data-iso8601="<%= @conversation.request_sent_at&.iso8601 %>">
+        Prepared <%= l(@conversation.request_sent_at&.to_date || @conversation.created_at.to_date, format: :long) %>
+    </span>
+  </div>
 
   <ul class="ai-icon-bullet">
     <% if @chunks_used = @conversation.chunks_used.present? && @conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count %>
