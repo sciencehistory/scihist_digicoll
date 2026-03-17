@@ -14,6 +14,10 @@ gem 'lockbox'
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '~> 8.0.0'
 
+# Need to pin connection_pool only UNTIL we update to Rails 8.1.2
+# https://claude.ai/share/bfb7fbc5-cf8b-4548-b7d7-2b82273a0a0e
+gem "connection_pool", "~> 2.4"
+
 # note we use vite-ruby for css and JS, but propshaft delivers some static images and
 # other static assets, as well as produced files from vite.
 gem "propshaft", "~> 1.3"
