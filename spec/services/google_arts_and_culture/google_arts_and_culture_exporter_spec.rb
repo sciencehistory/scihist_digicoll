@@ -48,10 +48,10 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
     let(:creator) { described_class.new(scope) }
     it "returns a hash of filenames and downloadable file objects" do
       file_hash = creator.file_hash
-      expect(file_hash.keys).to contain_exactly [
+      expect(file_hash.keys).to contain_exactly(
         "#{DownloadFilenameHelper.filename_base_from_parent(work_1.members.first)}.jpg",
         "#{DownloadFilenameHelper.filename_base_from_parent(work_2.members.first)}.jpg"
-      ]
+      )
       expect(file_hash.values.all? {|f| f.is_a? AssetUploader::UploadedFile}).to be true
 
     end
