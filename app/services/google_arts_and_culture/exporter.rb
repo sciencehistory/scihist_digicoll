@@ -1,7 +1,5 @@
 require 'open-uri'
 require 'zip'
-require "google/cloud/storage"
-require "googleauth"
 
 module GoogleArtsAndCulture
   class Exporter
@@ -15,14 +13,6 @@ module GoogleArtsAndCulture
       else
         columns.select { |c| all_attributes.keys.include? c }
       end
-    end
-
-    def upload_files_to_google_arts_and_culture
-      UploadFilesToGoogleArtsAndCultureJob.new.perform(work_ids: @scope.pluck(:id))
-    end
-
-    def upload_files_to_google_arts_and_culture_async
-      UploadFilesToGoogleArtsAndCultureJob.perform_later(work_ids: @scope.pluck(:id))
     end
 
     # Does not close the tempfile.
@@ -44,6 +34,18 @@ module GoogleArtsAndCulture
         data
       end
     end
+
+
+    # Returns a hash of filenames and downloadable files:
+    # file_hash.each { |filename, downloadable_file| [...] }
+    def file_hash
+      result = {}
+      @scope.each do |work|
+        result.merge!(WorkSerializer.file_hash(work)) if work.work?
+      end
+      result
+    end
+
 
     def title_row
       # if a given attribute stretches over several columns, label the columns correctly (creator#0, creator#1, creator#2, etc.)

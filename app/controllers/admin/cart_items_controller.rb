@@ -1,7 +1,7 @@
 class Admin::CartItemsController < AdminController
   before_action :authenticate_user! # need to be logged in
   require 'csv'
-
+  require 'zip'
 
   # GET /admin/cart_items
   # GET /admin/cart_items.json
@@ -105,12 +105,34 @@ class Admin::CartItemsController < AdminController
 
 
   def google_arts_and_culture_export
-    begin
-      serializer = GoogleArtsAndCulture::Exporter.new(current_user.works_in_cart)
-      output_csv_file = serializer.metadata_csv_tempfile
-      send_file output_csv_file.path, filename: "google-arts-and-culture-export-#{Date.today.to_s}.csv"
-    ensure
-      output_csv_file.close
+    files_to_close = []
+    tmp_zipfile = Tempfile.new(["files", ".zip"]).tap { |t| t.binmode }
+
+    exporter = GoogleArtsAndCulture::Exporter.new(current_user.works_in_cart)
+
+    Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
+
+      # Metadata
+      metadata_csv_tempfile = exporter.metadata_csv_tempfile
+      entry = ::Zip::Entry.new(zipfile.name, 'metadata.csv', compression_method: ::Zip::Entry::STORED)
+      zipfile.add(entry, metadata_csv_tempfile)
+      files_to_close << metadata_csv_tempfile
+
+      # Files
+      exporter.file_hash.each do |file_name, uploaded_file_obj|
+        downloaded_file = uploaded_file_obj.download
+        entry = ::Zip::Entry.new(zipfile.name, file_name, compression_method: ::Zip::Entry::STORED)
+        zipfile.add(entry, downloaded_file)
+        files_to_close << downloaded_file
+      end
+    end
+
+    send_file tmp_zipfile.path, filename: "google-arts-and-culture-export-#{Date.today.to_s}.zip"
+
+  ensure
+    (files_to_close || []).compact.each do |f|
+      f.close
+      f.unlink
     end
   end
 end
