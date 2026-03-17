@@ -36,7 +36,8 @@ module GoogleArtsAndCulture
     end
 
 
-    # Returns a list of filenames and downloadable files.
+    # Returns a hash of filenames and downloadable files:
+    # file_hash.each { |filename, downloadable_file| [...] }
     def file_hash
       result = {}
       @scope.each do |work|
