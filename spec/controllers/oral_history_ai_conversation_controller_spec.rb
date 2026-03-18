@@ -44,7 +44,7 @@ describe OralHistoryAiConversationController, :logged_in_user, type: :controller
         get :show, params: { id: conversation.external_id }
 
         expect(response).to have_http_status(:success)
-        expect(response.body).to include "Searching..."
+        expect(response.body).to include "Identifying"
         # cheesy way to do it for now
         expect(response.body).to include '<meta http-equiv="refresh"'
       end
