@@ -20,14 +20,22 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
     )
   end
 
-  let(:scope) { Work.where(id: [work_1.id, work_2.id]) }
+  let!(:work_3) do
+    create(
+      :private_work,
+      members: [
+        create(:asset_with_faked_file, faked_content_type: "image/tiff")
+      ]
+    )
+  end
+
+
+  let(:scope) { Work.where(id: [work_1.id, work_2.id, work_3.id]) }
 
   describe "#initialize" do
     it "stores scope and optional callback" do
-      callback = ->(*) {}
-      creator  = described_class.new(scope, callback: callback)
-      expect(creator.scope).to eq(scope)
-      expect(creator.callback).to eq(callback)
+      creator  = described_class.new(scope)
+      expect(creator.original_scope).to eq(scope)
     end
   end
 
@@ -46,7 +54,7 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
 
   describe "#metadata_csv_tempfile" do
     let(:creator) { described_class.new(scope) }
-    it "returns a hash of filenames and downloadable file objects" do
+    it "returns a hash of filenames and downloadable file objects; does not include unpublished works" do
       file_hash = creator.file_hash
       expect(file_hash.keys).to contain_exactly(
         "#{DownloadFilenameHelper.filename_base_from_parent(work_1.members.first)}.jpg",
