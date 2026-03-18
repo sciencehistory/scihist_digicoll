@@ -41,7 +41,7 @@ module GoogleArtsAndCulture
     def file_hash
       result = {}
       @scope.each do |work|
-        result.merge!(WorkSerializer.file_hash(work)) if work.work?
+        result.merge!(WorkSerializer.file_hash(work))
       end
       result
     end
