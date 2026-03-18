@@ -3,11 +3,11 @@ require 'zip'
 
 module GoogleArtsAndCulture
   class Exporter
-    attr_reader :scope, :callback
+    attr_reader :original_scope, :scope
 
-    def initialize(scope, callback: nil, columns: nil)
-      @scope = scope
-      @callback = callback
+    def initialize(scope, columns: nil)
+      @original_scope = scope
+      @scope = scope.where(published: true, type: "Work")
       @attribute_keys = if columns.nil?
         all_attributes.keys
       else
