@@ -13,7 +13,7 @@ namespace :scihist do
     task :update => :environment do
       ScihistDigicoll::Util.find_each(ActiveEncodeStatus.running) do |job_status|
         # We intentionally do these serially to avoid MediaConvert rate limits
-        active_encode_status.refresh_from_aws
+        job_status.refresh_from_aws
       end
 
       # And delete any old ones that are not running, use delete_all, one
