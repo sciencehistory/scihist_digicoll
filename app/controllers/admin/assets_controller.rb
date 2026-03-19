@@ -238,9 +238,9 @@ class Admin::AssetsController < AdminController
   def refresh_active_encode_status
     status = ActiveEncodeStatus.find(params[:active_encode_status_id])
 
-    RefreshActiveEncodeStatusJob.perform_later(status)
+    status&.refresh_from_aws
 
-    redirect_to admin_asset_url(status.asset), notice: "Started refresh for ActiveEncode job #{status.active_encode_id}"
+    redirect_to admin_asset_url(status.asset), notice: "Started refresh for ActiveEncode job #{status&.active_encode_id}"
   end
 
   # PATCH/PUT /admin/asset_files/ab2323ac/submit_hocr_and_textonly_pdf
