@@ -113,8 +113,8 @@ describe OralHistory::ClaudeInteractor do
 
           interaction.get_response(conversation_record: ai_conversation)
 
-          # Doesn't save it
-          expect(ai_conversation).not_to be_persisted
+          # Does save it now, to have chunks and timing saved for early showing
+          expect(ai_conversation).to be_persisted
 
           expect(ai_conversation.request_sent_at).to be_present
 

@@ -72,6 +72,10 @@ module OralHistory
 
       conversation_record&.record_chunks_used(chunks)
       conversation_record&.request_sent_at = Time.current
+      # do a save so we can display intermediate chunk info
+      conversation_record&.save!
+
+      conversation_record&.add_timing("record saved with chunks")
 
       # more params are available, both general bedrock and specific to model
       response = AWS_BEDROCK_CLIENT.converse(

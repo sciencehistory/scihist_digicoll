@@ -1,10 +1,12 @@
-// use the fontawesome 4 fa-file-text icon as bullet image
-ul.ai-conversation-findings {
+// Icon bullets on li from fontawesome 4 icon in svg -- needs additional class with
+// li::before and a `mask-image` with svg data url.
+ul.ai-icon-bullet {
   list-style: none;
   padding-left: 0;
   li {
     position: relative;
-    padding-left: 1.3em;
+    padding-left: 1.5em;
+    margin-bottom: 1rem;
     &::before {
       content: "";
       position: absolute;
@@ -13,12 +15,39 @@ ul.ai-conversation-findings {
       width: 1.1em;
       height: 1.1em;
       background-color: $shi-gray-4;
-      mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='currentColor' d='M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.3 0-24-10.7-24-24zM64 72c0-4.4 3.6-8 8-8h96c4.4 0 8 3.6 8 8v16c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8V72zm256 368c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zM384 121.9V128H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z'/%3E%3C/svg%3E");
       mask-size: contain;
       mask-repeat: no-repeat;
+
+      /* Allow rotation, make sure it's around center */
+      transform-origin: center;
     }
   }
 }
+
+// use the fontawesome 4 fa-file-text icon as bullet image
+ul.ai-conversation-findings {
+  li::before {
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='currentColor' d='M224 136V0H24C10.7 0 0 10.7 0 24v464c0 13.3 10.7 24 24 24h336c13.3 0 24-10.7 24-24V160H248c-13.3 0-24-10.7-24-24zM64 72c0-4.4 3.6-8 8-8h96c4.4 0 8 3.6 8 8v16c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8V72zm256 368c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zm0-64c0 4.4-3.6 8-8 8H72c-4.4 0-8-3.6-8-8v-16c0-4.4 3.6-8 8-8h240c4.4 0 8 3.6 8 8v16zM384 121.9V128H256V0h6.1c6.4 0 12.5 2.5 17 7l97.9 98c4.5 4.5 7 10.6 7 16.9z'/%3E%3C/svg%3E");
+  }
+}
+
+@keyframes shi-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+li.ai-icon-bullet-spinner::before {
+  // font-awesome4 fa-circle-o-notch
+  mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path d='M222.7 32.1c5 16.9-4.6 34.8-21.5 39.8C121.8 95.6 64 169.1 64 256c0 106 86 192 192 192s192-86 192-192c0-86.9-57.8-160.4-137.1-184.1c-16.9-5-26.6-22.9-21.5-39.8s22.9-26.6 39.8-21.5C434.9 42.1 512 140 512 256c0 141.4-114.6 256-256 256S0 397.4 0 256C0 140 77.1 42.1 182.9 10.6c16.9-5 34.8 4.6 39.8 21.5z'/></svg>");
+  animation: shi-spin 2s linear infinite;
+  background-color: $shi-red !important;
+}
+
+li.ai-icon-bullet-checkmark::before {
+  // fontawesome 4 fa-check-circle
+  mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%20fill%3D%22currentColor%22%3E%3Cpath%20d%3D%22M256%208C119%208%208%20119%208%20256s111%20248%20248%20248%20248-111%20248-248S393%208%20256%208zm-28.7%20344L120%20244.7l39.6-39.6%2067.7%2067.7L352.4%20143.7l39.6%2039.6L227.3%20352z%22/%3E%3C/svg%3E");
+}
+
 
 
 // LEGACY for AiConversationDisplayJan2026, can delete when that is gone
