@@ -72,11 +72,6 @@ gem "aws-sdk-s3", "~> 1.208"
 gem "aws-sdk-cloudfront", "~> 1.91"
 gem 'aws-sdk-bedrockruntime', '~> 1.66'
 
-gem "google-cloud-storage", "~> 1.57.1"
-gem "google-api-client", "~> 0.7.1"
-gem "googleauth", "~> 1.15.0"
-
-
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
