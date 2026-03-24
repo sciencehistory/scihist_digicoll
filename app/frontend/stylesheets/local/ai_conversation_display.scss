@@ -24,6 +24,11 @@
   }
 }
 
+details.ai-conversation-help {
+  background-color: $shi-gray-1;
+  padding: 0.5rem;
+}
+
 // Icon bullets on li from fontawesome 4 icon in svg -- needs additional class with
 // li::before and a `mask-image` with svg data url.
 ul.ai-icon-bullet {
