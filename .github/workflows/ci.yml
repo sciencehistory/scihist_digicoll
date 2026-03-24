@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-        - uses: actions/checkout@v3
+        - uses: actions/checkout@v6
 
         - name: Set up Ruby
           uses: ruby/setup-ruby@v1
@@ -38,7 +38,7 @@ jobs:
             # have a checked in Gemfile.lock
 
         - name: Set up Python
-          uses: actions/setup-python@v4
+          uses: actions/setup-python@v6
           with:
             python-version: "3.11"
             cache: 'pip'
@@ -64,7 +64,7 @@ jobs:
         # us being throttled by apache foundation servers unhappy that solr_wrapper
         # is downloading solr over and over again.
         - name: Cache solr install
-          uses: actions/cache@v3
+          uses: actions/cache@v5
           with:
             # these paths specified in .solr_wrapper.yml:
             path: |
@@ -82,7 +82,7 @@ jobs:
             bundle exec rspec
 
         - name: Archive capybara failure screenshots
-          uses: actions/upload-artifact@v4
+          uses: actions/upload-artifact@v6
           if: failure()
           with:
             name: screenshots
