@@ -90,4 +90,5 @@ import "../javascript/lazy_member_images.js"
 import "../javascript/transcript_toggle.js"
 import "../javascript/admin/extent_converter.js"
 import "../javascript/oh_ai_footnote_popover.js"
-import "../javascript/ai_citation_quote_show.js"
+import "../javascript/ai_conversation.js"
+

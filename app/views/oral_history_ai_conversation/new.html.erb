@@ -26,7 +26,7 @@
 
   <%= simple_form_for :"", url: oral_history_ai_conversation_index_path, method: :post do |f| %>
 
-    <%= f.text_area :q, class: "form-control text mb-3", required: true, rows: 3 %>
+    <%= f.text_area :q, class: "form-control text mb-3", data: { ai_conversation_q: true }, required: true, rows: 3 %>
 
     <div class="d-flex justify-content-end">
       <%= f.button :submit, "Ask", class: "btn btn-brand-main" %>
