@@ -1,9 +1,33 @@
 
+<div class="ai-conversation-banner">
+
+  <div class="text-wrapper">
+    <h1 class="brand-alt-h1">
+      Bot-Assisted Oral History Search
+    </h1>
+  </div>
+</div>
+
 <div class="text-page">
-  <h2>Use this software-powered research tool to <span class="emphasis-color">ask about</span> the contents of our <span class="emphasis-color">Oral History</span> collections</h2>
+  <p class="fs-4 mt-3">
+    Find themes or topics discussed in our Oral History collections using this AI-powered software tool to identify passages from transcripts.
+  </p>
+
+
+  <p>Just ask for what you are interested in finding, such as…</p>
+
+  <ul class="text-muted">
+    <li>List interviewees who… ?</li>
+    <li>I'm looking for experiencies about…</li>
+    <li>Which interviewees… ?</li>
+    <li>Is there any discussion of… ?</li>
+    <li>Can you tell me about…</li>
+  </ul>
 
   <%= simple_form_for :"", url: oral_history_ai_conversation_index_path, method: :post do |f| %>
-    <%= f.input :q, as: :text, label: "Question", hint: "\"List interviewees who…?\"; \"I'm looking for experiencies about…\"; \"Which scientists were…?\"", input_html: { rows: 3 } %>
+
+    <%= f.text_area :q, class: "form-control text mb-3", required: true, rows: 3 %>
+
     <div class="d-flex justify-content-end">
       <%= f.button :submit, "Ask", class: "btn btn-brand-main" %>
     </div>
