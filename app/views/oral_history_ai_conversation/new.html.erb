@@ -14,15 +14,21 @@
   </p>
 
 
-  <p>Just ask for what you are interested in finding, such as…</p>
+<details class="mb-3">
+  <summary class="text-link">Example prompts</summary>
 
-  <ul class="text-muted">
-    <li>List interviewees who… ?</li>
+  <ul class="text-muted mb-1 mt-1">
+    <li>List interviewees who…</li>
     <li>I'm looking for experiencies about…</li>
-    <li>Which interviewees… ?</li>
-    <li>Is there any discussion of… ?</li>
+    <li>Which interviewees…</li>
+    <li>Is there any discussion of…</li>
     <li>Can you tell me about…</li>
   </ul>
+
+  <span class="text-muted ms-3">Or just describe what you're interested in finding in your own words.</span>
+</details>
+
+
 
   <%= simple_form_for :"", url: oral_history_ai_conversation_index_path, method: :post do |f| %>
 
