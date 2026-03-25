@@ -13,17 +13,21 @@
   </p>
 
   <details class="mb-3 ai-conversation-help">
-    <summary class="text-link">Example prompts</summary>
+    <summary class="text-link">Tips for using this tool</summary>
 
-    <ul class="mb-1 mt-1">
-      <li>List interviewees who…</li>
-      <li>I'm looking for experiencies about…</li>
-      <li>Which interviewees…</li>
-      <li>Is there any discussion of…</li>
-      <li>Can you tell me about…</li>
-    </ul>
+    <div class="p-3">
+      <p>Enter a research question about what is in our oral histories, and this tool will use AI technologies to try to answer based only on information it finds in the interview transcripts.</p>
 
-    <span class="ms-3">Or just describe what you're interested in finding in your own words.</span>
+      <ul class="mb-2">
+        <li>List interviewees who…</li>
+        <li>I'm looking for experiencies about…</li>
+        <li>Which interviewees…</li>
+        <li>Is there any discussion of…</li>
+        <li>Can you tell me about…</li>
+      </ul>
+
+      Or just describe in your own words what you're interested in finding.
+    </div>
   </details>
 
   <%= simple_form_for :"", url: oral_history_ai_conversation_index_path, method: :post do |f| %>
