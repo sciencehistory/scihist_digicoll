@@ -1,6 +1,6 @@
 
 
-<div class="answer-narrative">
+<div class="answer-narrative mb-5">
   <div class="answer-introduction">
     <%= introduction %>
   </div>
@@ -20,26 +20,9 @@
   </ul>
 </div>
 
-
-<details class="mt-5 mb-3 ai-conversation-help">
-  <summary class="text-link">Some technical details about how this tool works</summary>
-
-  <div class="p-3">
-    <%= render "oral_history_ai_conversation/technical_details" %>
- </div>
-</details>
-
-<div class="alert alert-danger">
-  <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
-  This is currently a <b>beta test</b> under active research & development, available only to internal Science History Institute users and invited guests.
-</div>
-
-
-
 <% if can? :access_staff_functions %>
-  <hr class="mt-4 mb-4">
-  <details>
-    <summary class="fw-bold fs-3">Admin Debug Info</summary>
+  <details class="ai-conversation-help">
+    <summary class="text-link">Admin Debug Info</summary>
 
     <dl class="mt-2">
       <dt>estimated cost</dt>

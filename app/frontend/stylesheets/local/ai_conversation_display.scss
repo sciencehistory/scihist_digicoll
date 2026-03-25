@@ -36,6 +36,7 @@
 }
 
 details.ai-conversation-help {
+  @extend .mb-3;
   background-color: $shi-gray-1;
   border: 1px solid $accordion-border-color;
   // Looks more balanced to have a bit less on top instead of being actually equal
