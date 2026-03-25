@@ -4,7 +4,7 @@ domready(function() {
   // enter in question textarea submits
 
   const textarea = document.querySelector('*[data-ai-conversation-q]');
-  textarea.addEventListener('keydown', (e) => {
+  textarea?.addEventListener('keydown', (e) => {
     // Check if Enter was pressed without Shift (Shift+Enter usually creates a new line)
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault(); // Prevents adding a new line
