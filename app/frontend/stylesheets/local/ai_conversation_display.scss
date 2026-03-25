@@ -26,7 +26,8 @@
 
 details.ai-conversation-help {
   background-color: $shi-gray-1;
-  padding: 0.5rem;
+  // Looks more balanced to have a bit less on top instead of being actually equal
+  padding: 0.25rem 0.75rem 0.5rem 0.75rem;
 }
 
 // Icon bullets on li from fontawesome 4 icon in svg -- needs additional class with
