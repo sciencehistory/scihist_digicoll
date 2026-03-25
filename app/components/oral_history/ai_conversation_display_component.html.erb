@@ -21,6 +21,21 @@
 </div>
 
 
+<details class="mt-5 mb-3 ai-conversation-help">
+  <summary class="text-link">Some technical details about how this tool works</summary>
+
+  <div class="p-3">
+    <%= render "technical_details" %>
+ </div>
+</details>
+
+<div class="alert alert-danger">
+  <i class="fa fa-exclamation-triangle" aria-hidden="true"></i>
+  This is currently a <b>beta</b> under active research & development, available only to internal Science History Institute users.
+</div>
+
+
+
 <% if can? :access_staff_functions %>
   <hr class="mt-4 mb-4">
   <details>

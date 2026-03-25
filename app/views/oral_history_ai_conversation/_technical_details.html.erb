@@ -1,0 +1,24 @@
+<p>This tool is powered by
+    <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank">Large Language Model (LLM)</a> technology, also known as "AI".
+  The current implementation is a fairly straightforward
+  <a href="https://en.wikipedia.org/wiki/Retrieval-augmented_generation" target="_blank">Retrieval-augmented generation (RAG)</a>
+  implmentation, which means it first uses LLM "embedding" technology to identify passages relevant to the prompt,
+and then uses an LLM model to filter, summarize, and describe the retrieved passages.</p>
+
+  <p>For our embedding model, we currently use the <code><b><%= OralHistoryChunk::HUMAN_READABLE_EMBEDDING_MODEL_NAME %></b></code> model.
+  For the final LLM output phase, we currently use the <code><b><%= OralHistory::ClaudeInteractor::HUMAN_READABLE_MODEL_NAME %></b></code> model.
+  </p>
+
+  <p>
+    All of our software source code is available with an open source license, as part of the
+    <a href="https://github.com/sciencehistory/scihist_digicoll" target="_blank">Science History Institute Digital Collections repository</a>.
+    You may be particularly interested in our
+    <a href="https://github.com/sciencehistory/scihist_digicoll/blob/master/app/views/claude_interactor/system_instructions.text.erb" target="_blank">System Prompt</a>,
+    and our engineered
+   <a href="https://github.com/sciencehistory/scihist_digicoll/blob/master/app/views/claude_interactor/initial_user_prompt.text.erb" target="_blank">initial user prompt</a>.
+ </p>
+
+ <p>Some of the goals guiding the ongoing experimental development of this tool are…</p>
+
+ <p>If you have any questions or concerns, please contact us at <a href="mailto:<%= ScihistDigicoll::Env.lookup!(:admin_email) %>"><%= ScihistDigicoll::Env.lookup!(:admin_email) %></a>.
+ </p>
