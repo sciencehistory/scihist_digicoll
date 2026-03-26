@@ -1,4 +1,5 @@
 <%= content_tag("div",
+                      :"aria-live" => "polite",
                       data: {
                         ai_conversation_frame: true,
                         refresh_url: refresh_oral_history_ai_conversation_path(ai_conversation.external_id),
