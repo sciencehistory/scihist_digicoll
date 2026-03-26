@@ -34,8 +34,7 @@ domready(function() {
     if (conversationFrame) {
       const refreshUrl = conversationFrame.dataset.refreshUrl;
       const complete = (conversationFrame.dataset.complete === "true");
-      const oldLastModifiedHeader = conversationFrame.dataset.lastModified;
-      const oldLastModifiedDate = oldLastModifiedHeader && new Date(oldLastModifiedHeader);
+      const oldEtag = conversationFrame.dataset.etag;
       let delay = conversationFrame.dataset.pollMs;
       delay = (delay && Number(delay));
 
@@ -54,9 +53,8 @@ domready(function() {
             throw new Error(`HTTP error: ${refreshUrl}: ${response.status}`);
           }
 
-          const newLastModifiedValue = response.headers.get('Last-Modified');
-          const newLastModifiedDate = newLastModifiedValue && new Date(newLastModifiedValue);
-          const changed = newLastModifiedDate.getTime() != oldLastModifiedDate.getTime();
+          const newEtag = response.headers.get('ETag');
+          const changed = newEtag != oldEtag;
 
           console.log(`data-ai-conversation-frame received, change? ${changed}`)
 

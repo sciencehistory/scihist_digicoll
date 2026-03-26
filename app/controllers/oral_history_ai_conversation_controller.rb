@@ -38,7 +38,8 @@ class OralHistoryAiConversationController < ApplicationController
     conversation = OralHistory::AiConversation.find_by_external_id(params.require(:id))
 
     # only generate if there's been a change, and set last-modified header
-    if stale?(last_modified: conversation.updated_at.utc)
+    # We do manual etag so we can include same value in initial response too for comparison.
+    if stale?(etag: conversation.cache_key_with_version)
       render OralHistory::AiConversationDisplayComponent.new(conversation), layout: false
     end
   end

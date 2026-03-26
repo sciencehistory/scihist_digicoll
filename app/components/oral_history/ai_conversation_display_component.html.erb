@@ -3,7 +3,7 @@
                       data: {
                         ai_conversation_frame: true,
                         refresh_url: refresh_oral_history_ai_conversation_path(ai_conversation.external_id),
-                        last_modified: ai_conversation.updated_at.utc.iso8601,
+                        etag: ai_conversation.cache_key_with_version,
                         complete: ai_conversation.complete?,
                         poll_ms: (3000 unless ai_conversation.complete?)
                       }) do %>
