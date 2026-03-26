@@ -38,6 +38,23 @@ module OralHistory
       end
     end
 
+    def has_error?
+      ai_conversation.status_error?
+    end
+
+    def answer_available?
+      ai_conversation.complete?
+    end
+
+    # Can be nil if we haven't fetched chunks yet
+    def chunks_used_transcript_count
+      unless defined?(@chunks_used_transcript_count)
+        @chunks_used_transcript_count = ai_conversation.chunks_used.present? && ai_conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count
+      end
+
+      @chunks_used_transcript_count
+    end
+
     # for admin display
     def estimated_cost_in_dollars
       @estimated_cost_in_dollars ||= begin
