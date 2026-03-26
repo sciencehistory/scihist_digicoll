@@ -74,7 +74,7 @@
       </dd>
     </dl>
 
-    <h3>Chunks (passages) retrieved</h3>
+    <h3 class="h5">Chunks (passages) retrieved</h3>
     <% preserved_chunks_list.each_with_index do |chunk, index| %>
         <details class="mt-2">
           <summary><%= index + 1 %> (<%= chunk.id %>) <%= chunk.oral_history_content&.work&.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= "%.3f" % chunk.neighbor_distance if chunk.neighbor_distance.present?  %></summary>
