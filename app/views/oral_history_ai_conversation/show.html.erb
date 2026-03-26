@@ -38,44 +38,22 @@
     </span>
   </div>
 
-
   <div class="d-flex justify-content-end mb-3">
     <span class="ai-conversation-date text-muted" data-iso8601="<%= @conversation.request_sent_at&.iso8601 %>">
         Prepared <%= l(@conversation.request_sent_at&.to_date || @conversation.created_at.to_date, format: :long) %>
     </span>
   </div>
 
-  <ul class="ai-icon-bullet">
-    <% if @chunks_used = @conversation.chunks_used.present? && @conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count %>
-      <li class="ai-icon-bullet-checkmark text-muted">As a first step, passages from <%= pluralize(@chunks_used, "oral history transcript") %> were identified as most likely to be useful to the topic. The response will only draw from those passages.</li>
-
-      <% if !@conversation.complete? %>
-        <li class="ai-icon-bullet-spinner text-muted">Working…</li>
-      <% end %>
-    <% else %>
-      <li class="ai-icon-bullet-spinner text-muted">
-        Identifying passages useful to the topic…
-      </li>
-    <% end %>
-  </ul>
-
-
-  <% if @conversation.complete? %>
-    <% if  @conversation.status_error? %>
-      <div class="alert alert-danger">
-        Sorry, an error happened!  Error object <%= @conversation.external_id %>.
-      </div>
-    <% else %>
-      <%# some legacy display for old formats %>
-      <% if @conversation.answer_json.has_key?("narrative") && @conversation.answer_json.has_key?("footnotes") %>
-        <%= render OralHistory::AiConversationDisplayJan2026.new(@conversation)%>
-      <% else %>
-        <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
-      <% end %>
-    <% end %>
+  <%# legacy display for old formats, only on complete, can't be JS updated %>
+  <% if @conversation.complete? &&
+        @conversation.answer_json.has_key?("narrative") &&
+        @conversation.answer_json.has_key?("footnotes") %>
+      <%= render OralHistory::AiConversationDisplayJan2026.new(@conversation)%>
+  <% else %>
+      <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
   <% end %>
 
-  <details class="ai-conversation-help">
+  <details class="ai-conversation-help mt-5">
     <summary class="text-link">Some technical details about how this tool works</summary>
 
     <div class="p-3">
