@@ -3,7 +3,8 @@
                       data: {
                         ai_conversation_frame: true,
                         refresh_url: refresh_oral_history_ai_conversation_path(ai_conversation.external_id),
-                        etag: ai_conversation.cache_key_with_version,
+                        # must match what rails sends in headers so we can compare.
+                        etag: ActiveSupport::Digest.hexdigest(ai_conversation.cache_key_with_version),
                         complete: ai_conversation.complete?,
                         poll_ms: js_update_poll_ms
                       }) do %>
