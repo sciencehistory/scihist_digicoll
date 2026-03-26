@@ -2,7 +2,7 @@
                       data: {
                         ai_conversation_frame: true,
                         refresh_url: refresh_oral_history_ai_conversation_path(ai_conversation.external_id),
-                        last_updated: ai_conversation.updated_at.iso8601,
+                        last_modified: ai_conversation.updated_at.utc.iso8601,
                         complete: ai_conversation.complete?,
                         poll_ms: (3000 unless ai_conversation.complete?)
                       }) do %>

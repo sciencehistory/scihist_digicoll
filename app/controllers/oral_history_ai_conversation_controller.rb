@@ -37,6 +37,9 @@ class OralHistoryAiConversationController < ApplicationController
   def refresh
     conversation = OralHistory::AiConversation.find_by_external_id(params.require(:id))
 
-    render OralHistory::AiConversationDisplayComponent.new(conversation), layout: false
+    # only generate if there's been a change, and set last-modified header
+    if stale?(last_modified: conversation.updated_at.utc)
+      render OralHistory::AiConversationDisplayComponent.new(conversation), layout: false
+    end
   end
 end
