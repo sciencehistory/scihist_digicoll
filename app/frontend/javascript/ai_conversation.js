@@ -48,16 +48,17 @@ domready(function() {
 
           const response = await fetch(refreshUrl);
           const body = await response.text();
+
+          if (!response.ok) {
+            displayError("Sorry, response cannot be displayed due to a software error.")
+            throw new Error(`HTTP error: ${refreshUrl}: ${response.status}`);
+          }
+
           const newLastModifiedValue = response.headers.get('Last-Modified');
           const newLastModifiedDate = newLastModifiedValue && new Date(newLastModifiedValue);
-
           const changed = newLastModifiedDate.getTime() != oldLastModifiedDate.getTime();
 
           console.log(`data-ai-conversation-frame received, change? ${changed}`)
-
-          if (!response.ok) {
-            throw new Error(`HTTP error: ${refreshUrl}: ${response.status}: ${body}`);
-          }
 
           // if last modified hasn't changed, no need to update dom.
           if (changed) {
@@ -70,6 +71,12 @@ domready(function() {
       }
     }
   }
+  function displayError(htmlContents) {
+    const conversationFrame = document.querySelector('*[data-ai-conversation-frame]');
+
+    conversationFrame.innerHTML = `<div class="alert alert-danger">${htmlContents}</div>`;
+  }
+
   scheduleConversationFrameFetch();
 
 
