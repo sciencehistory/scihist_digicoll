@@ -99,7 +99,11 @@ Rails.application.routes.draw do
 
   scope :oral_histories do
     # /oral_histories/ask
-    resources :oral_history_ai_conversation, only: [:show, :create, :new], path: :ask
+    resources :oral_history_ai_conversation, only: [:show, :create, :new], path: :ask do
+      member do
+        get 'refresh'
+      end
+    end
   end
 
   # public-facing routes

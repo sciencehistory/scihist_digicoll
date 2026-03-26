@@ -23,5 +23,47 @@ domready(function() {
       container.querySelector("[data-scihist-citation-quote-full=true]").style.display = "";
     }
   });
+
+  // Pretty cheesy homegrown way to update teh section of AI answer that needs to be
+  // updated as AI answer progresses. We should probably replace with turbo-stream
+  // and push and true incremental updates at some point -- how soon depends on how
+  // soon we need better features like incremental updates.
+  function scheduleConversationFrameFetch() {
+    const conversationFrame = document.querySelector('*[data-ai-conversation-frame]');
+
+    if (conversationFrame) {
+      const refreshUrl = conversationFrame.dataset.refreshUrl;
+      const complete = (conversationFrame.dataset.complete === "true");
+      let delay = conversationFrame.dataset.pollMs;
+      delay = (delay && Number(delay));
+
+
+      //console.log(`found data-ai-conversation-frame, with poll at ${delay}`)
+
+      if (! complete) {
+        setTimeout(async function() {
+          console.log("data-ai-conversation-frame polling")
+
+          const response = await fetch(refreshUrl);
+          const body = await response.text();
+
+          //console.log("data-ai-conversation-frame received")
+
+          if (!response.ok) {
+            throw new Error(`HTTP error: ${refreshUrl}: ${response.status}: ${body}`);
+          }
+
+          conversationFrame.outerHTML = body;
+
+          // And do it again if not yet complete, waiting to poll again
+          scheduleConversationFrameFetch();
+        }, delay);
+      }
+    }
+  }
+  scheduleConversationFrameFetch();
+
+
+
 });
 

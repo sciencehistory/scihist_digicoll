@@ -31,4 +31,12 @@ class OralHistoryAiConversationController < ApplicationController
   def show
     @conversation = OralHistory::AiConversation.find_by_external_id(params.require(:id))
   end
+
+  # hacky way to deliver partial HTML for our thing that should prob be
+  # repalced by turbo-streams at some point
+  def refresh
+    conversation = OralHistory::AiConversation.find_by_external_id(params.require(:id))
+
+    render OralHistory::AiConversationDisplayComponent.new(conversation), layout: false
+  end
 end
