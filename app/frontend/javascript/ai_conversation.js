@@ -53,9 +53,12 @@ domready(function() {
             throw new Error(`HTTP error: ${refreshUrl}: ${response.status}`);
           }
 
-          const newEtag = response.headers.get('ETag');
-          const changed = newEtag != oldEtag;
+          const newEtagHeader = response.headers.get('ETag');
+          // need to parse actual value out
+          const etagMatch = newEtagHeader.match(/^(W\/)?"(.+)"$/);
+          const newEtag = etagMatch && etagMatch[2]
 
+          const changed = newEtag != oldEtag;
           console.log(`data-ai-conversation-frame received, change? ${changed}`)
 
           // if last modified hasn't changed, no need to update dom.
