@@ -46,6 +46,17 @@ module OralHistory
       ai_conversation.complete?
     end
 
+    def js_update_poll_ms
+      return nil if ai_conversation.complete? || has_error?
+
+      if ai_conversation.chunks_used.present?
+        4000
+      else
+        # it changes quicker to chunks avail, so poll quicker
+        1600
+      end
+    end
+
     # Can be nil if we haven't fetched chunks yet
     def chunks_used_transcript_count
       unless defined?(@chunks_used_transcript_count)
