@@ -1,10 +1,3 @@
-<%# hacky and also not accessible way to reload every 3 seconds until we are done, temporary %>
-<% unless @conversation.complete? %>
-  <%= content_for(:head) do %>
-    <meta http-equiv="refresh" content="4">
-  <% end %>
-<% end %>
-
 <div class="ai-conversation-banner">
   <div class="banner-wrapper">
     <h1 class="brand-alt-h1">
@@ -50,7 +43,7 @@
         @conversation.answer_json.has_key?("footnotes") %>
       <%= render OralHistory::AiConversationDisplayJan2026.new(@conversation)%>
   <% else %>
-      <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
+    <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
   <% end %>
 
   <details class="ai-conversation-help mt-5">

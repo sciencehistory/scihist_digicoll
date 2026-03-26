@@ -1,93 +1,100 @@
-<ul class="ai-icon-bullet">
-  <% if chunks_used_transcript_count.present? %>
-    <li class="ai-icon-bullet-checkmark text-muted">As a first step, passages from
-      <%= pluralize(chunks_used_transcript_count, "oral history transcript") %> were identified as most
-      likely to be useful to the topic. The response will only draw from those passages.
-    </li>
+<%= content_tag("div",
+                      data: {
+                        ai_conversation_frame: true,
+                        refresh_url: refresh_oral_history_ai_conversation_path(ai_conversation.external_id),
+                        last_updated: ai_conversation.updated_at.iso8601,
+                        complete: ai_conversation.complete?,
+                        poll_ms: (3000 unless ai_conversation.complete?)
+                      }) do %>
 
-    <% if !ai_conversation.complete? %>
-      <li class="ai-icon-bullet-spinner text-muted">Working…</li>
+  <ul class="ai-icon-bullet">
+    <% if chunks_used_transcript_count.present? %>
+      <li class="ai-icon-bullet-checkmark text-muted">As a first step, passages from
+        <%= pluralize(chunks_used_transcript_count, "oral history transcript") %> were identified as most
+        likely to be useful to the topic. The response will only draw from those passages.
+      </li>
+
+      <% if !ai_conversation.complete? %>
+        <li class="ai-icon-bullet-spinner text-muted">Working…</li>
+      <% end %>
+
+    <% else %>
+      <li class="ai-icon-bullet-spinner text-muted">
+        Identifying passages useful to the topic…
+      </li>
     <% end %>
-
-  <% else %>
-    <li class="ai-icon-bullet-spinner text-muted">
-      Identifying passages useful to the topic…
-    </li>
-  <% end %>
-</ul>
+  </ul>
 
 
-<% if answer_available? %>
-  <div class="answer-narrative mb-5">
-    <div class="answer-introduction">
-      <%= introduction %>
+  <% if answer_available? %>
+    <div class="answer-narrative mb-5">
+      <div class="answer-introduction">
+        <%= introduction %>
+      </div>
+
+      <ul class="mt-4 ai-icon-bullet ai-conversation-findings">
+        <% findings_hashes&.each do |hash| %>
+
+          <li class="mb-3">
+            <%= hash["answer"] %>
+
+
+            <% hash["citations"].each do |citation_hash| %>
+              <div><%= render OralHistory::AiConversationCitationComponent.new(citation_hash["citation_item_model"]) %></div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
     </div>
+  <% end %>
 
-    <ul class="mt-4 ai-icon-bullet ai-conversation-findings">
-      <% findings_hashes&.each do |hash| %>
+  <% if has_error? %>
+    <div class="alert alert-danger">
+      Sorry, an error happened!  Error object <%= aai_conversation.external_id %>.
+    </div>
+  <% end %>
 
-        <li class="mb-3">
-          <%= hash["answer"] %>
+  <% if answer_available? && can?(:access_staff_functions) %>
+    <details class="ai-conversation-help admin-debug-info mt-5">
+      <summary class="text-link">Admin Debug Info</summary>
 
-
-          <% hash["citations"].each do |citation_hash| %>
-            <div><%= render OralHistory::AiConversationCitationComponent.new(citation_hash["citation_item_model"]) %></div>
+      <dl class="mt-2">
+        <dt>estimated cost</dt>
+        <dd>
+          <% if estimated_cost_in_dollars.present? %>
+            $<%= ("%0.4f" % estimated_cost_in_dollars) %>
+          <% else %>
+            unavailable
           <% end %>
-        </li>
-      <% end %>
-    </ul>
-  </div>
-<% end %>
+        </dd>
 
-<% if has_error? %>
-  <div class="alert alert-danger">
-    Sorry, an error happened!  Error object <%= aai_conversation.external_id %>.
-  </div>
-<% end %>
-
-<% if answer_available? && can?(:access_staff_functions) %>
-  <details class="ai-conversation-help admin-debug-info mt-5">
-    <summary class="text-link">Admin Debug Info</summary>
-
-    <dl class="mt-2">
-      <dt>estimated cost</dt>
-      <dd>
-        <% if estimated_cost_in_dollars.present? %>
-          $<%= ("%0.4f" % estimated_cost_in_dollars) %>
-        <% else %>
-          unavailable
+        <% debug_output_items.each_pair do |key, value| %>
+          <dt><%= key %></dt>
+          <dd><%= value %></dd>
         <% end %>
-      </dd>
 
-      <% debug_output_items.each_pair do |key, value| %>
-        <dt><%= key %></dt>
-        <dd><%= value %></dd>
+        <dt>Timing</dt>
+        <dd>
+          <ul>
+          <% calculated_timings.each do |label, seconds| %>
+            <li><%= label %> @ <%= "%.2f" % seconds %> s</li>
+          <% end %>
+          </ul>
+        </dd>
+      </dl>
+
+      <h3 class="h5">Chunks (passages) retrieved</h3>
+      <% preserved_chunks_list.each_with_index do |chunk, index| %>
+          <details class="mt-2">
+            <summary><%= index + 1 %> (<%= chunk.id %>) <%= chunk.oral_history_content&.work&.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= "%.3f" % chunk.neighbor_distance if chunk.neighbor_distance.present?  %></summary>
+
+              <div class="ms-5 mt-2">
+                <%= simple_format chunk.text %>
+                <hr>
+              </div>
+          </details>
       <% end %>
+    </details>
+  <% end %>
 
-      <dt>Timing</dt>
-      <dd>
-        <ul>
-        <% calculated_timings.each do |label, seconds| %>
-          <li><%= label %> @ <%= "%.2f" % seconds %> s</li>
-        <% end %>
-        </ul>
-      </dd>
-    </dl>
-
-    <h3 class="h5">Chunks (passages) retrieved</h3>
-    <% preserved_chunks_list.each_with_index do |chunk, index| %>
-        <details class="mt-2">
-          <summary><%= index + 1 %> (<%= chunk.id %>) <%= chunk.oral_history_content&.work&.title %>: paragraphs <%= chunk.start_paragraph_number %> - <%= chunk.end_paragraph_number %>, cosine_distance: <%= "%.3f" % chunk.neighbor_distance if chunk.neighbor_distance.present?  %></summary>
-
-            <div class="ms-5 mt-2">
-              <%= simple_format chunk.text %>
-              <hr>
-            </div>
-        </details>
-    <% end %>
-  </details>
 <% end %>
-
-
-
-
