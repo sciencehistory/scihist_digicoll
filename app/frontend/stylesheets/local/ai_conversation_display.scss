@@ -10,16 +10,21 @@
   display: flex;
   justify-content: center;
 
-  .text-wrapper {
+  .banner-wrapper {
+    margin: 0 1rem;
     width: $max-readable-width;
     display: flex;
 
     h1 {
       color: white;
       background-color: rgba(0,0,0,0.6);
-      margin: 0.25em -0.5em 0.75em -0.5em;
       padding: 0.25em 0.5em;
       max-width: 100%;
+
+      margin-top: 0.25rem;
+      margin-bottom: 0.75rem;
+      margin-left: -0.5em;
+      margin-right: -0.5em;
     }
   }
 }
