@@ -25,6 +25,12 @@
       margin-bottom: 0.75rem;
       margin-left: -0.5em;
       margin-right: -0.5em;
+
+      // feather edges of semi-transparent dark bg
+      mask-image: linear-gradient(to right, transparent, black 0.25em, black calc(100% - 0.25em), transparent),
+        linear-gradient(to bottom, transparent, black 0.25em, black calc(100% - 0.25em), transparent);
+      mask-composite: intersect;
+      border-radius: 0.25em;
     }
   }
 }
