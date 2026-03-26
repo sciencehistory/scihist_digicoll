@@ -34,6 +34,8 @@ domready(function() {
     if (conversationFrame) {
       const refreshUrl = conversationFrame.dataset.refreshUrl;
       const complete = (conversationFrame.dataset.complete === "true");
+      const oldLastModifiedHeader = conversationFrame.dataset.lastModified;
+      const oldLastModifiedDate = oldLastModifiedHeader && new Date(oldLastModifiedHeader);
       let delay = conversationFrame.dataset.pollMs;
       delay = (delay && Number(delay));
 
@@ -46,14 +48,21 @@ domready(function() {
 
           const response = await fetch(refreshUrl);
           const body = await response.text();
+          const newLastModifiedValue = response.headers.get('Last-Modified');
+          const newLastModifiedDate = newLastModifiedValue && new Date(newLastModifiedValue);
 
-          //console.log("data-ai-conversation-frame received")
+          const changed = newLastModifiedDate.getTime() != oldLastModifiedDate.getTime();
+
+          console.log(`data-ai-conversation-frame received, change? ${changed}`)
 
           if (!response.ok) {
             throw new Error(`HTTP error: ${refreshUrl}: ${response.status}: ${body}`);
           }
 
-          conversationFrame.outerHTML = body;
+          // if last modified hasn't changed, no need to update dom.
+          if (changed) {
+            conversationFrame.outerHTML = body;
+          }
 
           // And do it again if not yet complete, waiting to poll again
           scheduleConversationFrameFetch();
