@@ -374,3 +374,8 @@ hr.brand {
 .badge.bg-secondary-subtle {
   color: $body-color;
 }
+
+// default danger text color is too low contrast
+.alert-danger {
+  color: $body-color !important;
+}

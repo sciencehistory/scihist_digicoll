@@ -8,6 +8,9 @@ module OralHistory
   # Does not do a continuous conversation, user gets one isolated question. Returns
   # answer as JSON.
   class ClaudeInteractor
+    # used in docs, keep up to date
+    HUMAN_READABLE_MODEL_NAME = "Anthropic Claude Sonnet 4.6"
+
     # claude sonnet 4.6
     MODEL_ID = "global.anthropic.claude-sonnet-4-6"
 

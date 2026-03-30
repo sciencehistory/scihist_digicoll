@@ -1,5 +1,8 @@
 # Chunks of text for LLM RAG research
 class OralHistoryChunk < ApplicationRecord
+  # used in docs, keep it up to date!
+  HUMAN_READABLE_EMBEDDING_MODEL_NAME = "OpenAI text-embedding-3-large"
+
   # Filter embedding from logs just cause it's so darn long!
   self.filter_attributes += [:embedding]
 

@@ -1,3 +1,47 @@
+.ai-conversation-banner {
+  margin-left: calc(50% - 50dvw);
+  width: 100dvw;
+
+  background-image: url("@/images/oral_history_wide_banner.jpg");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+
+  .banner-wrapper {
+    margin: 0 1rem;
+    width: $max-readable-width;
+    display: flex;
+
+    h1 {
+      color: white;
+      background-color: rgba(0,0,0,0.6);
+      padding: 0.25em 0.5em;
+      max-width: 100%;
+
+      margin-top: 0.25rem;
+      margin-bottom: 0.75rem;
+      margin-left: -0.5em;
+      margin-right: -0.5em;
+
+      // feather edges of semi-transparent dark bg
+      mask-image: linear-gradient(to right, transparent, black 0.25em, black calc(100% - 0.25em), transparent),
+        linear-gradient(to bottom, transparent, black 0.25em, black calc(100% - 0.25em), transparent);
+      mask-composite: intersect;
+      border-radius: 0.25em;
+    }
+  }
+}
+
+details.ai-conversation-help {
+  background-color: $shi-gray-1;
+  border: 1px solid $accordion-border-color;
+  // Looks more balanced to have a bit less on top instead of being actually equal
+  padding: 0.25rem 0.75rem 0.5rem 0.75rem;
+}
+
 // Icon bullets on li from fontawesome 4 icon in svg -- needs additional class with
 // li::before and a `mask-image` with svg data url.
 ul.ai-icon-bullet {
