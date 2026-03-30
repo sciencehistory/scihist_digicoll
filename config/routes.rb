@@ -85,6 +85,8 @@ Rails.application.routes.draw do
     get "works/:id/:derivative_type", to: "on_demand_derivatives#on_demand_status", as: :on_demand_derivative_status
   end
 
+  get "google_arts_and_culture_download_status/:id", to: "google_arts_and_culture#download_status", as: :google_arts_and_culture_download_status
+
   # By-request oral history stuff
   get "works/:work_friendlier_id/request_oral_history", to: "oral_history_requests#new", as: 'oral_history_request_form'
   post "request_oral_history", to: "oral_history_requests#create", as: 'request_oral_history'

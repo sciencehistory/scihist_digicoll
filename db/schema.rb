@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_24_170634) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -18,6 +18,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "available_by_request_mode_type", ["off", "automatic", "manual_review"]
+
 
   create_function :kithe_models_friendlier_id_gen, sql_definition: <<-'SQL'
       CREATE OR REPLACE FUNCTION public.kithe_models_friendlier_id_gen(min_value bigint, max_value bigint)
@@ -59,15 +60,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
         END;
         $function$
   SQL
-
   create_table "active_encode_statuses", force: :cascade do |t|
     t.string "active_encode_id"
     t.uuid "asset_id"
-    t.string "state"
-    t.text "encode_error"
-    t.integer "percent_complete"
-    t.string "hls_master_playlist_s3_url"
     t.datetime "created_at", null: false
+    t.text "encode_error"
+    t.string "hls_master_playlist_s3_url"
+    t.integer "percent_complete"
+    t.string "state"
     t.datetime "updated_at", null: false
     t.index ["active_encode_id"], name: "index_active_encode_statuses_on_active_encode_id"
     t.index ["asset_id"], name: "index_active_encode_statuses_on_asset_id"
@@ -75,63 +75,63 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
   end
 
   create_table "asset_derivative_storage_type_reports", force: :cascade do |t|
-    t.jsonb "data_for_report", default: {}
     t.datetime "created_at", null: false
+    t.jsonb "data_for_report", default: {}
     t.datetime "updated_at", null: false
   end
 
   create_table "bot_challenged_requests", force: :cascade do |t|
+    t.string "client_ip"
+    t.datetime "created_at", null: false
+    t.jsonb "headers"
+    t.string "normalized_user_agent"
     t.string "path"
     t.string "request_id"
-    t.string "client_ip"
     t.string "user_agent"
-    t.string "normalized_user_agent"
-    t.jsonb "headers"
-    t.datetime "created_at", null: false
     t.index ["client_ip"], name: "index_bot_challenged_requests_on_client_ip"
     t.index ["request_id"], name: "index_bot_challenged_requests_on_request_id"
   end
 
   create_table "cart_items", force: :cascade do |t|
-    t.bigint "user_id"
-    t.uuid "work_id"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.bigint "user_id"
+    t.uuid "work_id"
     t.index ["user_id", "work_id"], name: "index_cart_items_on_user_id_and_work_id", unique: true
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end
 
   create_table "digitization_queue_items", force: :cascade do |t|
-    t.string "title"
-    t.string "collecting_area"
-    t.string "bib_number"
-    t.string "location"
     t.string "accession_number"
-    t.string "museum_object_id"
-    t.string "box"
-    t.string "folder"
-    t.string "dimensions"
-    t.text "scope"
     t.text "additional_notes"
+    t.string "bib_number"
+    t.string "box"
+    t.string "collecting_area"
     t.string "copyright_status"
-    t.string "status", default: "awaiting_digitization"
-    t.datetime "status_changed_at", precision: nil
     t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
     t.date "deadline"
+    t.string "dimensions"
+    t.string "folder"
     t.boolean "is_digital_collections"
     t.boolean "is_rights_and_reproduction"
+    t.string "location"
+    t.string "museum_object_id"
+    t.text "scope"
+    t.string "status", default: "awaiting_digitization"
+    t.datetime "status_changed_at", precision: nil
+    t.string "title"
+    t.datetime "updated_at", precision: nil, null: false
   end
 
   create_table "fixity_checks", force: :cascade do |t|
-    t.uuid "asset_id", null: false
-    t.boolean "passed", null: false
-    t.string "expected_result", null: false
     t.string "actual_result", null: false
+    t.uuid "asset_id", null: false
     t.string "checked_uri", null: false
-    t.string "hash_function", default: "SHA-512", null: false
     t.datetime "created_at", precision: nil, null: false
+    t.string "expected_result", null: false
+    t.string "hash_function", default: "SHA-512", null: false
+    t.boolean "passed", null: false
     t.datetime "updated_at", precision: nil, null: false
     t.index ["asset_id", "checked_uri"], name: "by_asset_and_checked_uri"
     t.index ["asset_id"], name: "index_fixity_checks_on_asset_id"
@@ -139,35 +139,47 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
   end
 
   create_table "fixity_reports", force: :cascade do |t|
-    t.jsonb "data_for_report", default: {}
     t.datetime "created_at", null: false
+    t.jsonb "data_for_report", default: {}
     t.datetime "updated_at", null: false
   end
 
-  create_table "interviewee_biographies", force: :cascade do |t|
-    t.string "name", null: false
-    t.jsonb "json_attributes"
+  create_table "google_arts_and_culture_downloads", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.text "error_info"
+    t.jsonb "file_data"
+    t.integer "progress"
+    t.integer "progress_total"
+    t.string "status", default: "in_progress", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_google_arts_and_culture_downloads_on_user_id"
+  end
+
+  create_table "interviewee_biographies", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.jsonb "json_attributes"
+    t.string "name", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "interviewee_biographies_oral_history_content", id: false, force: :cascade do |t|
-    t.bigint "oral_history_content_id", null: false
     t.bigint "interviewee_biography_id", null: false
+    t.bigint "oral_history_content_id", null: false
     t.index ["interviewee_biography_id"], name: "index_interviewee_biographies_oral_history_content_bio"
     t.index ["oral_history_content_id"], name: "index_interviewee_biographies_oral_history_content_oh"
   end
 
   create_table "interviewer_profiles", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.string "name"
     t.text "profile"
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
   create_table "interviewer_profiles_oral_history_content", id: false, force: :cascade do |t|
-    t.bigint "oral_history_content_id", null: false
     t.bigint "interviewer_profile_id", null: false
+    t.bigint "oral_history_content_id", null: false
   end
 
   create_table "kithe_model_contains", id: false, force: :cascade do |t|
@@ -178,23 +190,23 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
   end
 
   create_table "kithe_models", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
+    t.jsonb "derived_metadata_jsonb"
+    t.bigint "digitization_queue_item_id"
+    t.jsonb "file_data"
+    t.string "friendlier_id", default: -> { "kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint)" }, null: false
+    t.jsonb "json_attributes"
+    t.integer "kithe_model_type", null: false
+    t.uuid "leaf_representative_id"
+    t.uuid "parent_id"
+    t.integer "position"
+    t.boolean "published", default: false, null: false
+    t.datetime "published_at", precision: nil
+    t.uuid "representative_id"
+    t.string "role"
     t.string "title", null: false
     t.string "type", null: false
-    t.integer "position"
-    t.jsonb "json_attributes"
-    t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.uuid "parent_id"
-    t.string "friendlier_id", default: -> { "kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint)" }, null: false
-    t.jsonb "file_data"
-    t.uuid "representative_id"
-    t.uuid "leaf_representative_id"
-    t.bigint "digitization_queue_item_id"
-    t.boolean "published", default: false, null: false
-    t.integer "kithe_model_type", null: false
-    t.string "role"
-    t.datetime "published_at", precision: nil
-    t.jsonb "derived_metadata_jsonb"
     t.index ["file_data"], name: "index_kithe_models_on_file_data", using: :gin
     t.index ["friendlier_id"], name: "index_kithe_models_on_friendlier_id", unique: true
     t.index ["leaf_representative_id"], name: "index_kithe_models_on_leaf_representative_id"
@@ -203,142 +215,144 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
   end
 
   create_table "on_demand_derivatives", force: :cascade do |t|
-    t.uuid "work_id", null: false
+    t.datetime "created_at", precision: nil, null: false
     t.string "deriv_type", null: false
-    t.string "status", default: "in_progress", null: false
-    t.string "inputs_checksum", null: false
     t.text "error_info"
+    t.string "inputs_checksum", null: false
     t.integer "progress"
     t.integer "progress_total"
-    t.datetime "created_at", precision: nil, null: false
+    t.string "status", default: "in_progress", null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.uuid "work_id", null: false
     t.index ["work_id", "deriv_type"], name: "index_on_demand_derivatives_on_work_id_and_deriv_type", unique: true
     t.index ["work_id"], name: "index_on_demand_derivatives_on_work_id"
   end
 
   create_table "oral_history_access_requests", force: :cascade do |t|
-    t.uuid "work_id", null: false
-    t.text "patron_name_ciphertext"
-    t.text "patron_institution_ciphertext"
-    t.text "intended_use_ciphertext"
     t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "delivery_status", default: "pending"
-    t.bigint "oral_history_requester_email_id", null: false
     t.datetime "delivery_status_changed_at"
+    t.text "intended_use_ciphertext"
     t.text "notes_from_staff"
+    t.bigint "oral_history_requester_email_id", null: false
+    t.text "patron_institution_ciphertext"
+    t.text "patron_name_ciphertext"
+    t.datetime "updated_at", null: false
+    t.uuid "work_id", null: false
     t.index ["oral_history_requester_email_id"], name: "idx_on_oral_history_requester_email_id_ff2cc727ac"
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
   end
 
   create_table "oral_history_ai_conversations", force: :cascade do |t|
-    t.string "status", default: "queued", null: false
+    t.jsonb "answer_json"
+    t.jsonb "chunks_used", default: {}
+    t.datetime "created_at", null: false
+    t.jsonb "error_info"
     t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
-    t.string "session_id"
+    t.string "project_source_version"
     t.string "question", null: false
     t.vector "question_embedding", limit: 3072
-    t.jsonb "response_metadata", default: {}
-    t.jsonb "chunks_used", default: {}
-    t.jsonb "error_info"
-    t.jsonb "answer_json"
     t.datetime "request_sent_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "project_source_version"
+    t.jsonb "response_metadata", default: {}
     t.jsonb "search_params"
+    t.string "session_id"
+    t.string "status", default: "queued", null: false
     t.jsonb "timings", default: []
+    t.datetime "updated_at", null: false
   end
 
   create_table "oral_history_chunks", force: :cascade do |t|
-    t.halfvec "embedding", limit: 3072, null: false
-    t.bigint "oral_history_content_id", null: false
-    t.integer "start_paragraph_number", null: false
-    t.integer "end_paragraph_number", null: false
-    t.text "text", null: false
-    t.string "speakers", default: [], array: true
-    t.jsonb "other_metadata", default: {}
     t.datetime "created_at", null: false
+    t.halfvec "embedding", limit: 3072, null: false
+    t.integer "end_paragraph_number", null: false
+    t.bigint "oral_history_content_id", null: false
+    t.jsonb "other_metadata", default: {}
+    t.string "speakers", default: [], array: true
+    t.integer "start_paragraph_number", null: false
+    t.text "text", null: false
     t.datetime "updated_at", null: false
+    t.index ["embedding"], name: "idx_on_embedding_halfvec_3072_halfvec_cosine_ops_4742ee9fb6", opclass: :halfvec_cosine_ops, using: :hnsw
     t.index ["embedding"], name: "index_oral_history_chunks_on_embedding", opclass: :halfvec_cosine_ops, using: :hnsw
     t.index ["oral_history_content_id"], name: "index_oral_history_chunks_on_oral_history_content_id"
   end
 
   create_table "oral_history_content", force: :cascade do |t|
-    t.uuid "work_id", null: false
-    t.string "combined_audio_fingerprint"
+    t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
     t.jsonb "combined_audio_component_metadata"
-    t.text "ohms_xml_text"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
     t.string "combined_audio_derivatives_job_status"
     t.datetime "combined_audio_derivatives_job_status_changed_at", precision: nil
-    t.text "searchable_transcript_source"
-    t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
-    t.jsonb "json_attributes", default: {}
+    t.string "combined_audio_fingerprint"
     t.jsonb "combined_audio_m4a_data"
+    t.datetime "created_at", precision: nil, null: false
     t.jsonb "input_docx_transcript_data"
+    t.jsonb "json_attributes", default: {}
+    t.text "ohms_xml_text"
     t.jsonb "output_sequenced_docx_transcript_data"
+    t.text "searchable_transcript_source"
+    t.datetime "updated_at", precision: nil, null: false
+    t.uuid "work_id", null: false
     t.index ["work_id"], name: "index_oral_history_content_on_work_id", unique: true
   end
 
   create_table "oral_history_requester_emails", force: :cascade do |t|
-    t.string "email", null: false
     t.datetime "created_at", null: false
+    t.string "email", null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_oral_history_requester_emails_on_email", unique: true
   end
 
   create_table "orphan_reports", force: :cascade do |t|
-    t.jsonb "data_for_report", default: {}
     t.datetime "created_at", null: false
+    t.jsonb "data_for_report", default: {}
     t.datetime "updated_at", null: false
   end
 
   create_table "queue_item_comments", force: :cascade do |t|
-    t.bigint "digitization_queue_item_id", null: false
-    t.bigint "user_id"
-    t.text "text"
-    t.boolean "system_action"
     t.datetime "created_at", precision: nil, null: false
+    t.bigint "digitization_queue_item_id", null: false
+    t.boolean "system_action"
+    t.text "text"
     t.datetime "updated_at", precision: nil, null: false
+    t.bigint "user_id"
     t.index ["digitization_queue_item_id"], name: "index_queue_item_comments_on_digitization_queue_item_id"
     t.index ["user_id"], name: "index_queue_item_comments_on_user_id"
   end
 
   create_table "scheduled_ingest_bucket_deletions", force: :cascade do |t|
-    t.string "path"
-    t.datetime "delete_after", precision: nil
     t.uuid "asset_id"
     t.datetime "created_at", null: false
+    t.datetime "delete_after", precision: nil
+    t.string "path"
     t.datetime "updated_at", null: false
     t.index ["asset_id"], name: "index_scheduled_ingest_bucket_deletions_on_asset_id"
   end
 
   create_table "searches", id: :serial, force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
     t.binary "query_params"
+    t.datetime "updated_at", precision: nil, null: false
     t.integer "user_id"
     t.string "user_type"
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
     t.index ["user_id"], name: "index_searches_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
+    t.datetime "created_at", precision: nil, null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
-    t.string "reset_password_token"
-    t.datetime "reset_password_sent_at", precision: nil
-    t.datetime "remember_created_at", precision: nil
-    t.datetime "created_at", precision: nil, null: false
-    t.datetime "updated_at", precision: nil, null: false
-    t.string "name"
     t.boolean "locked_out", default: false
+    t.string "name"
+    t.datetime "remember_created_at", precision: nil
+    t.datetime "reset_password_sent_at", precision: nil
+    t.string "reset_password_token"
+    t.datetime "updated_at", precision: nil, null: false
     t.string "user_type", default: "basic_internal"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "fixity_checks", "kithe_models", column: "asset_id"
+  add_foreign_key "google_arts_and_culture_downloads", "users"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "containee_id"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "container_id"
   add_foreign_key "kithe_models", "digitization_queue_items"
