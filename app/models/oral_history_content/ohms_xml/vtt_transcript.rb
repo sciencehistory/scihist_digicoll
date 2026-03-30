@@ -53,7 +53,7 @@ class OralHistoryContent
       end
 
       def cues
-        @cues ||= parsed_webvtt.cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
+        @cues ||= parsed_webvtt.cues.collect.with_index { |webvtt_cue, index| Cue.new(webvtt_cue, cue_index: index + 1) }
       end
 
       # delivers extracted and indexed footnotes from OHMS WebVTT
@@ -87,9 +87,9 @@ class OralHistoryContent
       def transcript_text
         @transcript_text ||= cues.collect { |c| c.paragraphs }.flatten.collect do |p|
           if p.speaker_name
-            "#{strip_tags p.speaker_name}: #{strip_tags p.raw_html}"
+            "#{strip_tags p.speaker_name}: #{strip_tags p.scrubbed_ohms_vtt_html}"
           else
-            strip_tags p.raw_html
+            strip_tags p.scrubbed_ohms_vtt_html
           end
         end.join("\n\n")
       end
@@ -113,8 +113,12 @@ class OralHistoryContent
       class Cue
         delegate :identifier, :start, :end, :settings, :text, to: :@webvtt_cue
 
-        def initialize(webvtt_cue)
+        # 1-based index of cues
+        attr_reader :cue_index
+
+        def initialize(webvtt_cue, cue_index:)
           @webvtt_cue = webvtt_cue
+          @cue_index = cue_index
         end
 
         def start_sec_f
@@ -148,20 +152,17 @@ class OralHistoryContent
               # Split paragraphs on two more consecutive <br>
               voice_span.split(/\R|(?:\<br\>){2,}/).collect do |paragraph_text|
                 paragraph_text.gsub!("</v>", "") # remove stray ending tags
-                Paragraph.new(speaker_name: speaker_name, raw_html: paragraph_text)
+
+                # we'll just use cue_index as paragraph index, a cue should be only one paragraph in OHMS
+                OralHistoryContent::Paragraph.new(
+                  speaker_name: speaker_name,
+                  ohms_vtt_html: paragraph_text,
+                  included_timestamps: [start_sec_f],
+                  paragraph_index: cue_index
+                )
               end
             end.flatten
           end
-        end
-      end
-
-      class Paragraph
-        # named raw_html to make sure we don't forget to scrub!
-        attr_reader :speaker_name, :raw_html
-
-        def initialize(speaker_name:, raw_html:)
-          @raw_html = raw_html.strip
-          @speaker_name = speaker_name
         end
       end
     end
