@@ -79,6 +79,8 @@ module OralHistory
     end
 
     def debug_output_items
+      return {} unless ai_conversation.answer_json
+
       ai_conversation.answer_json.except("introduction", "findings", "conclusion").merge(ai_conversation.response_metadata).merge(
         # sometimes it gives us a narrative about why the answer was unavailable, that we aren't showing to user,
         # so merge that in too
