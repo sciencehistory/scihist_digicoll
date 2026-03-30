@@ -38,6 +38,34 @@ module OralHistory
       end
     end
 
+    def has_error?
+      ai_conversation.status_error?
+    end
+
+    def answer_available?
+      ai_conversation.complete?
+    end
+
+    def js_update_poll_ms
+      return nil if ai_conversation.complete? || has_error?
+
+      if ai_conversation.chunks_used.present?
+        4000
+      else
+        # it changes quicker to chunks avail, so poll quicker
+        1600
+      end
+    end
+
+    # Can be nil if we haven't fetched chunks yet
+    def chunks_used_transcript_count
+      unless defined?(@chunks_used_transcript_count)
+        @chunks_used_transcript_count = ai_conversation.chunks_used.present? && ai_conversation.chunks_used.collect { |hash| hash["oral_history_content_id"] }.uniq.count
+      end
+
+      @chunks_used_transcript_count
+    end
+
     # for admin display
     def estimated_cost_in_dollars
       @estimated_cost_in_dollars ||= begin
@@ -51,6 +79,8 @@ module OralHistory
     end
 
     def debug_output_items
+      return {} unless ai_conversation.answer_json
+
       ai_conversation.answer_json.except("introduction", "findings", "conclusion").merge(ai_conversation.response_metadata).merge(
         # sometimes it gives us a narrative about why the answer was unavailable, that we aren't showing to user,
         # so merge that in too

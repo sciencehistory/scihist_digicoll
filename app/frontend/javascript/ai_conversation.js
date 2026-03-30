@@ -23,5 +23,64 @@ domready(function() {
       container.querySelector("[data-scihist-citation-quote-full=true]").style.display = "";
     }
   });
+
+  // Pretty cheesy homegrown way to update teh section of AI answer that needs to be
+  // updated as AI answer progresses. We should probably replace with turbo-stream
+  // and push and true incremental updates at some point -- how soon depends on how
+  // soon we need better features like incremental updates.
+  function scheduleConversationFrameFetch() {
+    const conversationFrame = document.querySelector('*[data-ai-conversation-frame]');
+
+    if (conversationFrame) {
+      const refreshUrl = conversationFrame.dataset.refreshUrl;
+      const complete = (conversationFrame.dataset.complete === "true");
+      const oldEtag = conversationFrame.dataset.etag;
+      let delay = conversationFrame.dataset.pollMs;
+      delay = (delay && Number(delay));
+
+
+      //console.log(`found data-ai-conversation-frame, with poll at ${delay}`)
+
+      if (! complete) {
+        setTimeout(async function() {
+          console.log("data-ai-conversation-frame polling")
+
+          const response = await fetch(refreshUrl);
+          const body = await response.text();
+
+          if (!response.ok) {
+            displayError("Sorry, response cannot be displayed due to a software error.")
+            throw new Error(`HTTP error: ${refreshUrl}: ${response.status}`);
+          }
+
+          const newEtagHeader = response.headers.get('ETag');
+          // need to parse actual value out
+          const etagMatch = newEtagHeader.match(/^(W\/)?"(.+)"$/);
+          const newEtag = etagMatch && etagMatch[2]
+
+          const changed = newEtag != oldEtag;
+          console.log(`data-ai-conversation-frame received, change? ${changed}`)
+
+          // if last modified hasn't changed, no need to update dom.
+          if (changed) {
+            conversationFrame.outerHTML = body;
+          }
+
+          // And do it again if not yet complete, waiting to poll again
+          scheduleConversationFrameFetch();
+        }, delay);
+      }
+    }
+  }
+  function displayError(htmlContents) {
+    const conversationFrame = document.querySelector('*[data-ai-conversation-frame]');
+
+    conversationFrame.innerHTML = `<div class="alert alert-danger">${htmlContents}</div>`;
+  }
+
+  scheduleConversationFrameFetch();
+
+
+
 });
 
