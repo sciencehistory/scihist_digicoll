@@ -85,6 +85,68 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(text).to include "Why did the chicken cross the road"
   end
 
+  describe "unsafe html in transcript" do
+    let(:sample_webvtt) do
+      # Example includes what OHMS might, but also some extra stuff in WebVTT
+      # standard (but not necessarily everything!), to be a bit forward looking.
+      <<~EOS
+        WEBVTT
+
+        NOTE
+        TRANSCRIPTION BEGIN
+
+        00:00:00.000 --> 00:00:02.000
+        <v.first.loud Esme Johnson>It’s a <i>blue</i> <script>apple</script> tree!
+
+        00:00:02.400 --> 00:00:04.000
+        <v Mary>This content has some <b>bold</b> and <i>italics</i>
+
+        00:00:04.400 --> 00:00:06.000
+        <v Esme>Hee!</v> <i weird="no">laughter</i>
+
+        NOTE
+        TRANSCRIPTION END
+
+      EOS
+    end
+
+    it "scrubs output" do
+      paragraphs = vtt_transcript.cues.collect(&:paragraphs).flatten
+
+      expect(paragraphs.collect(&:scrubbed_ohms_vtt_html)).to eq([
+        "It’s a <i>blue</i> apple tree!", # remove script tags
+        "This content has some <b>bold</b> and <i>italics</i>", # keep bold and italic
+        "Hee!",
+        "<i>laughter</i>" # removes attribute
+      ])
+    end
+  end
+
+  describe "with OHMS vtt footnote references" do
+    let(:sample_webvtt) do
+      # Example includes what OHMS might, but also some extra stuff in WebVTT
+      # standard (but not necessarily everything!), to be a bit forward looking.
+      <<~EOS
+        WEBVTT
+
+        NOTE
+        TRANSCRIPTION BEGIN
+
+        00:00:00.000 --> 00:00:02.000
+        <v.first.loud Esme Johnson>We have a <c.1>footnote <b>reference</b> text</c>
+
+        NOTE
+        TRANSCRIPTION END
+      EOS
+    end
+
+    it "replaces with XML-legal tag variation" do
+      expect(vtt_transcript.cues.first.paragraphs.first.scrubbed_ohms_vtt_html).to eq(
+        %q{We have a <c cref="1">footnote <b>reference</b> text</c>}
+      )
+    end
+  end
+
   describe "minute-second timecodes" do
     let(:sample_webvtt) do
       # mm:ss.fff timestamps without hh
