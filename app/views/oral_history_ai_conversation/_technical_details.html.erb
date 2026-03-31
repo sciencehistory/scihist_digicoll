@@ -1,0 +1,23 @@
+<p>This tool is powered by
+    <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank">Large Language Model (LLM)</a> technology, also known as "AI".
+  The current implementation is a basic
+  <a href="https://en.wikipedia.org/wiki/Retrieval-augmented_generation" target="_blank">Retrieval-augmented generation (RAG)</a>
+  implementation.</p>
+
+  <p>An initial retrieval phase uses a semantic vector search using an <a href="https://www.cloudflare.com/learning/ai/what-are-embeddings/" target="_blank">embedding</a> model to identify around a dozen passages from our oral history transcripts that are likely to be of use to address the question. We currently use the <code><b><%= OralHistoryChunk::HUMAN_READABLE_EMBEDDING_MODEL_NAME %></b></code> embedding model.</p>
+
+  <p>The generation phase then uses an LLM to filter, describe, and summarize the retrieved passages. We currently use the <code><b><%= OralHistory::ClaudeInteractor::HUMAN_READABLE_MODEL_NAME %></b></code> model for this.</p>
+
+  <p>
+    All of our software source code is available with an open source license, as part of the
+    <a href="https://github.com/sciencehistory/scihist_digicoll" target="_blank">Science History Institute Digital Collections repository</a>.
+    Notable files include our
+    <a href="https://github.com/sciencehistory/scihist_digicoll/blob/master/app/views/claude_interactor/system_instructions.text.erb" target="_blank">system prompt</a>,
+    and our
+   <a href="https://github.com/sciencehistory/scihist_digicoll/blob/master/app/views/claude_interactor/initial_user_prompt.text.erb" target="_blank">engineered user prompt</a>.
+ </p>
+
+ <p>Some of the goals guiding the ongoing experimental development of this tool are…</p>
+
+ <p>If you have any questions or concerns, please contact us at <a href="mailto:<%= ScihistDigicoll::Env.lookup!(:admin_email) %>"><%= ScihistDigicoll::Env.lookup!(:admin_email) %></a>.
+ </p>

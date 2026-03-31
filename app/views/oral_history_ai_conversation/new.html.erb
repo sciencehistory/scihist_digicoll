@@ -1,14 +1,42 @@
+<div class="ai-conversation-banner">
+  <div class="banner-wrapper">
+    <h1 class="brand-alt-h1">
+      Bot-Assisted Oral History Search
+    </h1>
+  </div>
+</div>
 
 <div class="text-page">
-  <h2>Use this software-powered research tool to <span class="emphasis-color">ask about</span> the contents of our <span class="emphasis-color">Oral History</span> collections</h2>
+  <p class="fs-4 mt-3">
+    Find themes or topics discussed in our
+    <%= link_to "oral history collection", oral_histories_collection_path %> using this AI-powered software tool to identify passages from transcripts.
+  </p>
+
+  <details class="mb-3 ai-conversation-help">
+    <summary class="text-link">Tips for using this tool</summary>
+
+    <div class="p-3">
+      <p>Enter a research question about what is in our oral histories, and this tool will use AI technologies to try to answer, based only on information it finds in the interview transcripts.</p>
+
+      <ul class="mb-2">
+        <li>List interviewees who…</li>
+        <li>I'm looking for experiencies about…</li>
+        <li>Which interviewees…</li>
+        <li>Is there any discussion of…</li>
+        <li>Can you tell me about…</li>
+      </ul>
+
+      Or, just describe in your own words what you're looking for.
+    </div>
+  </details>
 
   <%= simple_form_for :"", url: oral_history_ai_conversation_index_path, method: :post do |f| %>
-    <%= f.input :q, as: :text, label: "Question", hint: "\"List interviewees who…?\"; \"I'm looking for experiencies about…\"; \"Which scientists were…?\"", input_html: { rows: 3 } %>
+
+    <%= f.text_area :q, class: "form-control text mb-3", data: { ai_conversation_q: true }, required: true, rows: 3 %>
+
     <div class="d-flex justify-content-end">
       <%= f.button :submit, "Ask", class: "btn btn-brand-main" %>
     </div>
-
-
 
     <div>
       <%= f.input :access_limit, as: :radio_buttons, required: false,
@@ -25,4 +53,18 @@
     </div>
 
   <% end %>
+
+  <details class="mb-3 ai-conversation-help">
+    <summary class="text-link">Some technical details about how this tool works</summary>
+
+    <div class="p-3">
+      <%= render "technical_details" %>
+   </div>
+  </details>
+
+  <div class="alert alert-warning">
+    <i class="fa fa-flag me-2" aria-hidden="true"></i>
+    This is currently a <b>beta test</b> under active research & development, available only to internal Science History Institute users and invited guests.
+  </div>
+
 </div>

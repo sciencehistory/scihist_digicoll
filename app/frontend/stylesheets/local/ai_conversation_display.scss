@@ -1,3 +1,48 @@
+.ai-conversation-banner {
+  margin-left: calc(50% - 50dvw);
+  width: 100dvw;
+
+  background-image: url("@/images/oral_history_wide_banner.jpg");
+  background-size: cover;
+  background-position: bottom;
+  background-repeat: no-repeat;
+
+  display: flex;
+  justify-content: center;
+
+  .banner-wrapper {
+    margin: 0 1rem;
+    width: $max-readable-width;
+    display: flex;
+
+    h1 {
+      color: white;
+      background-color: rgba(0,0,0,0.6);
+      padding: 0.25em 0.5em;
+      max-width: 100%;
+
+      margin-top: 0.25rem;
+      margin-bottom: 0.75rem;
+      margin-left: -0.5em;
+      margin-right: -0.5em;
+
+      // feather edges of semi-transparent dark bg
+      mask-image: linear-gradient(to right, transparent, black 0.25em, black calc(100% - 0.25em), transparent),
+        linear-gradient(to bottom, transparent, black 0.25em, black calc(100% - 0.25em), transparent);
+      mask-composite: intersect;
+      border-radius: 0.25em;
+    }
+  }
+}
+
+details.ai-conversation-help {
+  @extend .mb-3;
+  background-color: $shi-gray-1;
+  border: 1px solid $accordion-border-color;
+  // Looks more balanced to have a bit less on top instead of being actually equal
+  padding: 0.25rem 0.75rem 0.5rem 0.75rem;
+}
+
 // Icon bullets on li from fontawesome 4 icon in svg -- needs additional class with
 // li::before and a `mask-image` with svg data url.
 ul.ai-icon-bullet {
@@ -46,6 +91,11 @@ li.ai-icon-bullet-spinner::before {
 li.ai-icon-bullet-checkmark::before {
   // fontawesome 4 fa-check-circle
   mask-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http://www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%20fill%3D%22currentColor%22%3E%3Cpath%20d%3D%22M256%208C119%208%208%20119%208%20256s111%20248%20248%20248%20248-111%20248-248S393%208%20256%208zm-28.7%20344L120%20244.7l39.6-39.6%2067.7%2067.7L352.4%20143.7l39.6%2039.6L227.3%20352z%22/%3E%3C/svg%3E");
+}
+
+details.admin-debug-info {
+  // terrible hack to get admin debug info back with footer, sorry.
+  margin-bottom: (-1 * map-get($spacers, 5) + $paragraph-spacer) !important;
 }
 
 

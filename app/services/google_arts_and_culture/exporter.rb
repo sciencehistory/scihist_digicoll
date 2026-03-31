@@ -13,6 +13,29 @@ module GoogleArtsAndCulture
       else
         columns.select { |c| all_attributes.keys.include? c }
       end
+
+
+      @verbose_mode = true
+      if @verbose_mode
+        Rails.logger.info <<-MESSAGE
+        Starting a Google Arts and Culture export.
+        Class name:
+        #{self.class.name}
+
+        Works we are exporting:
+        #{@scope.pluck('friendlier_id').inspect}
+
+        Metadata we are exporting:
+        #{@attribute_keys.inspect}
+
+        Array attributes:
+        #{array_attributes.inspect}
+
+        Count for each array attribute:
+        #{column_counts.inspect}
+MESSAGE
+      end
+
     end
 
     # Does not close the tempfile.
