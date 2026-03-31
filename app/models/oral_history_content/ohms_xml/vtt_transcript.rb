@@ -20,8 +20,6 @@ class OralHistoryContent
     #
     # See an example mock OHMS XML with WebVTT at ./spec/test_support/ohms_xml/small-sample-vtt-ohms.xml
     class VttTranscript
-      FullSanitizer = Rails::HTML5::FullSanitizer.new
-
       attr_reader :raw_webvtt_text, :parsed_webvtt
 
       # @param raw_webvtt_text [String] WebVTT text as included in an OHMS xml export
@@ -93,19 +91,9 @@ class OralHistoryContent
 
       # eg for indexing, actual human-readable indexable plain text after parsed and extracted webVTT
       def transcript_text
-        @transcript_text ||= cues.collect { |c| c.paragraphs }.flatten.collect do |p|
-          if p.speaker_name
-            "#{strip_tags p.speaker_name}: #{strip_tags p.scrubbed_ohms_vtt_html}"
-          else
-            strip_tags p.scrubbed_ohms_vtt_html
-          end
-        end.join("\n\n")
-      end
-
-      def strip_tags(s)
-        # for some reason sometimes br's in input, which can end up eating up whitespace
-        # and jamming two words together on strip, so we replace first
-        FullSanitizer.sanitize( s.gsub("<br>", "\n") )
+        @transcript_text ||= cues.collect(&:paragraphs).flatten.
+                               collect(&:text_with_forced_speaker_label).
+                               join("\n\n")
       end
 
       # our cue wraps webvtt cue with further parsed escaped content

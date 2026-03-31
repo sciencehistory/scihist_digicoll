@@ -21,6 +21,8 @@ class OralHistoryContent
       scrubber.attributes = ['cref'] # for our weird custom c tag
     end
 
+    FullSanitizer = Rails::HTML5::FullSanitizer.new
+
     attr_reader :transcript_id
 
     # @return [integer] 1-based index of paragraph in document
@@ -59,6 +61,10 @@ class OralHistoryContent
 
       @scrubbed_ohms_vtt_html = scrub_vtt_html(ohms_vtt_html).strip if ohms_vtt_html
       @text = text
+      if (scrubbed_ohms_vtt_html && ! text)
+        # make text by removing tags from scrub please
+        @text = strip_tags(scrubbed_ohms_vtt_html)
+      end
 
       @paragraph_index = paragraph_index
       @speaker_name = speaker_name
@@ -92,5 +98,13 @@ class OralHistoryContent
               scrub!(TextScrubber).
               to_s
     end
+
+    def strip_tags(s)
+      # for some reason sometimes br's in input, which can end up eating up whitespace
+      # and jamming two words together on strip, so we replace first
+      FullSanitizer.sanitize( s.gsub("<br>", "\n") )
+    end
+
+
   end
 end
