@@ -2,13 +2,22 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
 
   def perform(user: user, start_date: nil, end_date: nil)
     begin
-      logger.info("#{self.class}: Starting download for #{work.title}.")
+      logger.info("#{self.class}: Preparing download for #{user.name}.")
 
-      #Unless dates are provided (no, you can't pass in a scope) we just use all works in the user's cart
+      # No, you can't pass in a scope.
+      # Unless dates are provided we just use all eligible works in the user's cart.
+
       scope = user.works_in_cart
+      exporter = GoogleArtsAndCulture::Exporter.new(scope)
+
+      work_count = exporter.scope.count
+      raise StandardError, "No works in scope." unless work_count > 0
       files_to_close = []
       tmp_zipfile = Tempfile.new(["files", ".zip"]).tap { |t| t.binmode }
-      exporter = GoogleArtsAndCulture::Exporter.new(scope)
+      download = user.google_arts_and_culture_downloads.create!
+      download.update!({progress_total: work_count})
+      works_added = 0
+
       Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
 
         metadata_csv_tempfile = exporter.metadata_csv_tempfile
@@ -16,18 +25,25 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
         zipfile.add(entry, metadata_csv_tempfile)
         files_to_close << metadata_csv_tempfile
 
+
+        download.update!({progress: 0})
+
         exporter.file_hash.each do |file_name, uploaded_file_obj|
+
           downloaded_file = uploaded_file_obj.download
           entry = ::Zip::Entry.new(zipfile.name, file_name, compression_method: ::Zip::Entry::STORED)
           zipfile.add(entry, downloaded_file)
           files_to_close << downloaded_file
+
+          works_added = works_added + 1
+          download.update!({progress: works_added})
           # TODO: update the download object with number of items added
         end
       end
-      tmp_zipfile.close
-      download = user.google_arts_and_culture_downloads.create!
+
       download.put_file(tmp_zipfile)
       download.status = "success"
+      download.save!
     rescue StandardError => e
       download.status = "error"
       download.error_info = e.message

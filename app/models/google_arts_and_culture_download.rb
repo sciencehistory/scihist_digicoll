@@ -11,47 +11,13 @@
 # objects directly, without using Shrine Attachment code.
 class GoogleArtsAndCultureDownload < ApplicationRecord
 
-
   SHRINE_STORAGE_KEY = :google_arts_and_culture_storage
 
+  attr_reader :start_date, :end_date, :status
 
-  attr_reader :start_date, :end_date
-
-  # def self.derivative_type_definitions
-  #   {
-  #     pdf_file: {
-  #       suffix: "pdf",
-  #       content_type: "application/pdf",
-  #       creator_class_name: "WorkPdfCreator2"
-  #     },
-  #     zip_file: {
-  #       suffix: "zip",
-  #       content_type: "application/zip",
-  #       creator_class_name: "WorkZipCreator"
-  #     }
-  #   }
-  # end 
-
-  # PRESIGNED_URL_EXPIRES_IN = 2.days.to_i
-
-  #enum :deriv_type, self.derivative_type_definitions.keys.collect {|v| [v.to_s, v.to_s]}.to_h.freeze
   enum :status, %w{in_progress success error}.collect {|v| [v, v]}.to_h.freeze
 
   belongs_to :user #, inverse_of: google_arts_and_culture_downloads
-
-  # def initialize(user)
-  #   # unless OnDemandDerivative.derivative_type_definitions.keys.include?(derivative_type.to_sym)
-  #   #   raise ArgumentError.new("unrecognized derivative type: #{derivative_type}")
-  #   # end
-
-  #   @user = user
-  #   #@work = work
-  #   #@derivative_type = derivative_type
-  # end
-
-  #def deriv_type_definition
-  #  self.class.derivative_type_definitions[deriv_type.to_sym] || raise(ArgumentError.new("unrecognized derivative type: #{deriv_type}"))
-  #end
 
   # What is our expected filename/path/key in storage? Based on inputs_checksum so unique
   # location if inputs_checksum changes.
@@ -76,7 +42,6 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
   def file_url
     uploaded_file.url(
       public: false,
-      expires_in: PRESIGNED_URL_EXPIRES_IN,
       response_content_type: uploaded_file.metadata["mime_type"],
       response_content_disposition: ContentDisposition.attachment(desired_filename)
     )
@@ -90,11 +55,10 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
 
   def desired_filename
     parts = [
-      DownloadFilenameHelper.first_three_words(work.title),
-      work.friendlier_id,
-      deriv_type
+      'google_arts_and_culture_',
+      id
     ].collect(&:presence).compact
 
-    Pathname.new(parts.join("_")).sub_ext(".#{deriv_type_definition[:suffix]}").to_s
+    Pathname.new(parts.join("_")).sub_ext(".csv").to_s
   end
 end
