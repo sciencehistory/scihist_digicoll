@@ -95,12 +95,13 @@ class OralHistoryContent
         safe_footnote_values ||= footnote_array
       end
 
+      def paragraphs
+        @paragraphs ||= cues.collect(&:paragraphs).flatten
+      end
 
       # eg for indexing, actual human-readable indexable plain text after parsed and extracted webVTT
       def transcript_text
-        @transcript_text ||= cues.collect(&:paragraphs).flatten.
-                               collect(&:text_with_forced_speaker_label).
-                               join("\n\n")
+        @transcript_text ||= paragraphs.collect(&:text_with_forced_speaker_label).join("\n\n")
       end
 
       # our cue wraps webvtt cue with further parsed escaped content

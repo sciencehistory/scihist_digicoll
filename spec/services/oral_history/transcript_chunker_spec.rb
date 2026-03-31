@@ -5,12 +5,14 @@ describe OralHistory::TranscriptChunker do
   let(:oral_history_content) { work.oral_history_content }
   let(:chunker) { described_class.new(oral_history_content: oral_history_content) }
 
-  def word_count(*strings)
-    # use consistent word count algorithm
-    OralHistoryContent::OhmsXml::LegacyTranscript.word_count(*strings)
-  end
+
 
   describe "OHMS Legacy Transcript" do
+    def word_count(*strings)
+      # use consistent word count algorithm
+      OralHistoryContent::OhmsXml::LegacyTranscript.word_count(*strings)
+    end
+
     let(:work) {
         build(:oral_history_work, :ohms_xml,
           ohms_xml_text: File.read(ohms_xml_path),
@@ -137,6 +139,50 @@ describe OralHistory::TranscriptChunker do
           expect(chunks).to be_present
           expect(chunks.first.start_paragraph_number).to eq 1
           expect(chunks.last.end_paragraph_number).to eq legacy_transcript.paragraphs.count
+        end
+      end
+    end
+  end
+
+  describe "new-style OHMS vtt transcript" do
+    let(:vtt_transcript_src) { File.read( Rails.root + "spec/test_support/ohms_xml/chappelear-ohmsvtt-example.xml") }
+    let(:transcript_obj) { oral_history_content.ohms_xml.vtt_transcript }
+
+    let(:work) {
+      build(:oral_history_work, :ohms_xml,
+        ohms_xml_text: vtt_transcript_src,
+        creator: [{ category: "interviewee", value: "Chappelear, Patsy Stallings, 1931-"},
+                  { category: "interviewer", value: "Schneider, Sarah, 1991-"},
+                  { category: "interviewer", value: "Gibson, Gayle J."}]
+      )
+    }
+
+    describe "#split_chunks" do
+      let(:chunks) { chunker.split_chunks }
+
+      it "creates chunks as arrays of Paragraphs" do
+        expect(chunks).to be_kind_of(Array)
+        expect(chunks).to be_present
+
+        expect(chunks).to all satisfy { |chunk| chunk.kind_of?(Array) }
+        expect(chunks).to all satisfy { |chunk| chunk.present? }
+        expect(chunks).to all satisfy { |chunk| chunk.all? {|item| item.kind_of?(OralHistoryContent::Paragraph) } }
+      end
+
+      it "begins with first paragraph" do
+        expect(chunks.first.first).to eq transcript_obj.paragraphs.first
+      end
+
+      it "ends with last paragraph" do
+        expect(chunks.last.last).to eq transcript_obj.paragraphs.last
+      end
+
+      it "has two paragraphs of overlap in each chunk" do
+        0.upto(chunks.length - 2).each do |index|
+          first_chunk = chunks[index]
+          second_chunk = chunks[index + 1]
+
+          expect(second_chunk.first(1)).to eq (first_chunk.last(1))
         end
       end
     end
