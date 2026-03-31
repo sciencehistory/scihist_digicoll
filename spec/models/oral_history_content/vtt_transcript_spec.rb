@@ -37,6 +37,7 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     cues = vtt_transcript.cues
 
     expect(cues.length).to eq 4
+    expect(cues.collect(&:paragraphs).flatten).to all(be_kind_of(OralHistoryContent::Paragraph))
 
     first_cue = cues[0]
     expect(first_cue.start.to_s).to eq "00:00:00.000"
