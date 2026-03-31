@@ -48,14 +48,16 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(first_cue.paragraphs[0].speaker_name).to eq "Esme Johnson"
     expect(first_cue.paragraphs[0].scrubbed_ohms_vtt_html).to eq "It’s a <i>blue</i> apple tree!"
     expect(first_cue.paragraphs[0].paragraph_index).to eq 1
-    expect(first_cue.paragraphs).to all(have_attributes(included_timestamps: [0.0]))
+    expect(first_cue.paragraphs[0]).to have_attributes(included_timestamps: [0.0])
 
     second_cue = cues[1]
     expect(second_cue.start.to_s).to eq "00:00:02.400"
     expect(second_cue.start_sec_f).to eq 2.4
     expect(second_cue.end.to_s).to eq "00:00:04.000"
     expect(second_cue.end_sec_f).to eq 4.0
-    expect(second_cue.paragraphs).to all(have_attributes(included_timestamps: [2.4]))
+    expect(second_cue.paragraphs.first).to have_attributes(included_timestamps: [2.4])
+    expect(second_cue.paragraphs.slice(1..-1)).to all(have_attributes(included_timestamps: nil))
+
 
     expect(second_cue.paragraphs.length).to eq 3
     expect(second_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).to eq [
@@ -72,14 +74,18 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(third_cue.paragraphs.collect(&:speaker_name)).to eq ['Esme', nil]
     expect(third_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).not_to include( be_html_safe)
     expect(third_cue.paragraphs.collect(&:paragraph_index)).to eq [5, 6]
-    expect(third_cue.paragraphs).to all(have_attributes(included_timestamps: [4.4]))
+    expect(third_cue.paragraphs.first).to have_attributes(included_timestamps: [4.4])
+    expect(third_cue.paragraphs.slice(1..-1)).to all(have_attributes(included_timestamps: nil))
+
 
     fourth_cue = cues[3]
     expect(fourth_cue.paragraphs.length).to eq 2
     expect(fourth_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).to eq ['Why did the chicken cross the road', 'To get to the other side']
     expect(fourth_cue.paragraphs.collect(&:speaker_name)).to eq ['Mary', 'Doug']
     expect(fourth_cue.paragraphs.collect(&:paragraph_index)).to eq [7, 8]
-    expect(fourth_cue.paragraphs).to all(have_attributes(included_timestamps: [6.0]))
+    expect(fourth_cue.paragraphs.first).to have_attributes(included_timestamps: [6.0])
+    expect(fourth_cue.paragraphs.slice(1..-1)).to all(have_attributes(included_timestamps: nil))
+
   end
 
   it "has transcript_text" do
