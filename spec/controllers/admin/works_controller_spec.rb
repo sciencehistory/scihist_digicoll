@@ -269,6 +269,18 @@ RSpec.describe Admin::WorksController, type: :controller, queue_adapter: :test d
           end
         end
 
+        context "video work can have a jpeg representative" do
+          let(:work) { create(:video_work, :published, :with_poster_frame) }
+          it "can publish" do
+            put :unpublish, params: { id: work.friendlier_id, cascade: 'true' }
+            work.reload
+            expect(work.published?).to be false
+            put :publish, params: { id: work.friendlier_id, cascade: 'true' }
+            work.reload
+            expect(work.published?).to be true
+          end
+        end
+
         it "can publish, and publishes children" do
           expect(work.members.first.content_type).to eq "image/tiff"
           put :publish, params: { id: work.friendlier_id, cascade: 'true' }
