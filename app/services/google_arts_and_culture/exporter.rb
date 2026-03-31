@@ -17,17 +17,23 @@ module GoogleArtsAndCulture
 
       @verbose_mode = true
       if @verbose_mode
-        Rails.logger.info "Works we are exporting:"
-        Rails.logger.info pp(@scope.pluck('friendlier_id'))
+        Rails.logger.info <<-MESSAGE
+        Starting a Google Arts and Culture export.
+        Class name:
+        #{self.class.name}
 
-        Rails.logger.info "Metadata we are exporting:"
-        Rails.logger.info pp(@attribute_keys)
+        Works we are exporting:
+        #{@scope.pluck('friendlier_id').inspect}
 
-        Rails.logger.info "Array attributes:"
-        Rails.logger.info pp(array_attributes)
+        Metadata we are exporting:
+        #{@attribute_keys.inspect}
 
-        Rails.logger.info "Count for each array attribute:"
-        Rails.logger.info pp(column_counts)
+        Array attributes:
+        #{array_attributes.inspect}
+
+        Count for each array attribute:
+        #{column_counts.inspect}
+MESSAGE
       end
 
     end
