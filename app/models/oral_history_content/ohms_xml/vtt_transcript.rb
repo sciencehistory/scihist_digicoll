@@ -58,6 +58,13 @@ class OralHistoryContent
               # keep our running paragraph count accurate
               paragraph_index += cue.paragraphs.count
             end
+          end.tap do |cues|
+            # fill in assumed_speaker_name if needed
+            cues.collect(&:paragraphs).flatten.each_cons(2) do |first_p, second_p|
+              if second_p.speaker_name.nil?
+                second_p.assumed_speaker_name = (first_p.speaker_name || first_p.assumed_speaker_name)
+              end
+            end
           end
         end
       end
