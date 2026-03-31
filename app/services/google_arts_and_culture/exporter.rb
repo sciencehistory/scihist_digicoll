@@ -13,6 +13,23 @@ module GoogleArtsAndCulture
       else
         columns.select { |c| all_attributes.keys.include? c }
       end
+
+
+      @verbose_mode = true
+      if @verbose_mode
+        puts "Works we are exporting:"
+        pp @scope.pluck('friendlier_id')
+
+        puts "Metadata we are exporting:"
+        pp @attribute_keys
+
+        puts "Array attributes:"
+        pp array_attributes
+
+        puts "Count for each array attribute:"
+        pp column_counts
+      end
+
     end
 
     # Does not close the tempfile.
