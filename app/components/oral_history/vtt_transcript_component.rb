@@ -23,12 +23,12 @@ module OralHistory
     end
 
 
-    # Takes scrubbed OHMS VTT HTML text with prepared `<c ref="N">` tags, and
+    # Takes scrubbed OHMS VTT HTML text with prepared `<c cref="N">` tags, and
     # replaces with rendered footnote references.
     def render_footnote_tags(str)
       # And now we need to turn those <c> tags into our footnote reference links!
       # Note non-greedy regex match '+?' or '*?' operator so it gets first </c>. They can't be nested!
-      str.gsub!(/<c cref="(\d+)"[^>]*>(.+?)<\/c>/) do |_matched|
+      str.gsub!(/<c cref=(?:"|')(\d+)(?:"|')[^>]*>(.+?)<\/c>/) do |_matched|
         refNum = $1
         inner_content = $2.html_safe
 
