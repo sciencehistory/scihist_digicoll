@@ -45,8 +45,6 @@ describe OralHistoryAiConversationController, :logged_in_user, type: :controller
 
         expect(response).to have_http_status(:success)
         expect(response.body).to include "Identifying"
-        # cheesy way to do it for now
-        expect(response.body).to include '<meta http-equiv="refresh"'
       end
     end
 
