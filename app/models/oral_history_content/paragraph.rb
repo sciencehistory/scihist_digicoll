@@ -7,6 +7,10 @@ class OralHistoryContent
   #
   # Some may create sub-classes specific to their format, but this is a general API for chunkers.
   class Paragraph
+    def self.fragment_id(transcript_id:, paragraph_index:)
+      "oh-t#{transcript_id}-p#{paragraph_index}"
+    end
+
     # add multiline to the one from legacy ohms, cause we do have internal newlines sometimes now
     HAS_SPEAKER_REGEX = Regexp.new(
       OralHistoryContent::OhmsXml::LegacyTranscript::OHMS_SPEAKER_LABEL_RE.source,
@@ -69,6 +73,12 @@ class OralHistoryContent
       @paragraph_index = paragraph_index
       @speaker_name = speaker_name
       @included_timestamps = included_timestamps
+    end
+
+    # @return [String] to be used as an `id` attribute within an HTML doc, identifying a particular
+    #         paragraph.
+    def fragment_id
+      self.class.fragment_id(transcript_id: transcript_id, paragraph_index: paragraph_index)
     end
 
     def word_count
