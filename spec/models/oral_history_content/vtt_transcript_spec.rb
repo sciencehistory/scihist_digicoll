@@ -46,6 +46,7 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(first_cue.paragraphs.length).to eq 1
     expect(first_cue.paragraphs[0].speaker_name).to eq "Esme Johnson"
     expect(first_cue.paragraphs[0].scrubbed_ohms_vtt_html).to eq "It’s a <i>blue</i> apple tree!"
+    expect(first_cue.paragraphs[0].paragraph_index).to eq 1
 
     second_cue = cues[1]
     expect(second_cue.start.to_s).to eq "00:00:02.400"
@@ -60,17 +61,20 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
       "And even three."
     ]
     expect(second_cue.paragraphs.collect(&:speaker_name)).to eq ['Mary','Mary','Mary']
+    expect(second_cue.paragraphs.collect(&:paragraph_index)).to eq [2, 3, 4]
 
     third_cue = cues[2]
     expect(third_cue.paragraphs.length).to eq 2
     expect(third_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).to eq ['Hee!', '<i>laughter</i>']
     expect(third_cue.paragraphs.collect(&:speaker_name)).to eq ['Esme', nil]
     expect(third_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).not_to include( be_html_safe)
+    expect(third_cue.paragraphs.collect(&:paragraph_index)).to eq [5, 6]
 
     fourth_cue = cues[3]
     expect(fourth_cue.paragraphs.length).to eq 2
     expect(fourth_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).to eq ['Why did the chicken cross the road', 'To get to the other side']
     expect(fourth_cue.paragraphs.collect(&:speaker_name)).to eq ['Mary', 'Doug']
+    expect(fourth_cue.paragraphs.collect(&:paragraph_index)).to eq [7, 8]
   end
 
   it "has transcript_text" do
@@ -148,6 +152,8 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
       expect(vtt_transcript.cues.first.paragraphs.length).to eq 2
       expect(vtt_transcript.cues.first.paragraphs.first.scrubbed_ohms_vtt_html).to eq "Paragraph One"
       expect(vtt_transcript.cues.first.paragraphs.second.scrubbed_ohms_vtt_html).to eq "Paragraph Two"
+
+      expect(vtt_transcript.cues.first.paragraphs.collect(&:paragraph_index)).to eq [1, 2]
     end
   end
 

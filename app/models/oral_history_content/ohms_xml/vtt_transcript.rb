@@ -53,7 +53,15 @@ class OralHistoryContent
       end
 
       def cues
-        @cues ||= parsed_webvtt.cues.collect.with_index { |webvtt_cue, index| Cue.new(webvtt_cue, cue_index: index + 1) }
+        @cues ||= begin
+          paragraph_index = 1
+          parsed_webvtt.cues.collect do |webvtt_cue|
+            Cue.new(webvtt_cue, start_paragraph_index: paragraph_index).tap do |cue|
+              # keep our running paragraph count accurate
+              paragraph_index += cue.paragraphs.count
+            end
+          end
+        end
       end
 
       # delivers extracted and indexed footnotes from OHMS WebVTT
@@ -113,12 +121,13 @@ class OralHistoryContent
       class Cue
         delegate :identifier, :start, :end, :settings, :text, to: :@webvtt_cue
 
-        # 1-based index of cues
-        attr_reader :cue_index
+        # 1-based index that we start at, so we can number our paragraphs
+        # as we parse em.
+        attr_reader :start_paragraph_index
 
-        def initialize(webvtt_cue, cue_index:)
+        def initialize(webvtt_cue, start_paragraph_index:)
           @webvtt_cue = webvtt_cue
-          @cue_index = cue_index
+          @start_paragraph_index = start_paragraph_index
         end
 
         def start_sec_f
@@ -137,6 +146,7 @@ class OralHistoryContent
         # A change in WebVTT "voice" (speaker) will also result in a paragraph split, which
         # isn't quite right, but works out fine for how OHMS does things.
         def paragraphs
+          paragraph_index = start_paragraph_index
           @paragraphs ||= begin
             # This tricky regex using both positive lookahead and negative lookahead
             # will split into voice tags, taking into account that some text might not
@@ -158,8 +168,8 @@ class OralHistoryContent
                   speaker_name: speaker_name,
                   ohms_vtt_html: paragraph_text,
                   included_timestamps: [start_sec_f],
-                  paragraph_index: cue_index
-                )
+                  paragraph_index: paragraph_index
+                ).tap { paragraph_index += 1 }
               end
             end.flatten
           end
