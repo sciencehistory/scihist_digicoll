@@ -19,8 +19,6 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
 
   belongs_to :user #, inverse_of: google_arts_and_culture_downloads
 
-  # What is our expected filename/path/key in storage? Based on inputs_checksum so unique
-  # location if inputs_checksum changes.
   def file_key
     "google_arts_and_culture_downloads_#{id}.zip"
   end
@@ -48,7 +46,12 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
   end
 
   def put_file(io)
-    Shrine.storages[SHRINE_STORAGE_KEY].upload(io, file_key)
+    begin
+        Shrine.storages[SHRINE_STORAGE_KEY].upload(io, file_key)
+    rescue Aws::S3::MultipartUploadError => e
+      puts e.message
+      e.errors.each { |err| puts err.inspect }
+    end
   end
 
   protected

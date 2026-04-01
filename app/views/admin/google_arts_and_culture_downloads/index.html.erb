@@ -1,0 +1,27 @@
+<table class="table admin-list">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>User ID</th>
+      <th>Status</th>
+      <th>Error Info</th>
+      <th>Progress</th>
+      <th>Progress Total</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @google_arts_and_culture_downloads.each do |download| %>
+      <tr>
+        <td><%= download.id %></td>
+        <td><%= download.user.id %></td>
+        <td><%= download.status %></td>
+        <td><%= download.error_info %></td>
+        <td><%= download.progress %></td>
+        <td><%= download.progress_total %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= paginate @google_arts_and_culture_downloads, theme: 'twitter-bootstrap-4' %>
