@@ -49,8 +49,9 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
     begin
         Shrine.storages[SHRINE_STORAGE_KEY].upload(io, file_key)
     rescue Aws::S3::MultipartUploadError => e
-      puts e.message
-      e.errors.each { |err| puts err.inspect }
+      Rails.logger.info e.message
+      e.errors.each { |err| Rails.logger.info err.inspect }
+      raise
     end
   end
 
@@ -62,6 +63,6 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
       id
     ].collect(&:presence).compact
 
-    Pathname.new(parts.join("_")).sub_ext(".csv").to_s
+    Pathname.new(parts.join("_")).sub_ext(".zip").to_s
   end
 end
