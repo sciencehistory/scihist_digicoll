@@ -32,8 +32,6 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
 
           works_added = works_added + 1
           download.update!({progress: works_added})
-
-          # puts "Added a file to the zip file. Current: #{zipfile.entries.count}. Current size: #{zipfile.size}"
         end
       end
 
