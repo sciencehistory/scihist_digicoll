@@ -19,17 +19,12 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
       works_added = 0
 
       Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
-
         metadata_csv_tempfile = exporter.metadata_csv_tempfile
         entry = ::Zip::Entry.new(zipfile.name, 'metadata.csv', compression_method: ::Zip::Entry::STORED)
         zipfile.add(entry, metadata_csv_tempfile)
         files_to_close << metadata_csv_tempfile
-
-
         download.update!({progress: 0})
-
         exporter.file_hash.each do |file_name, uploaded_file_obj|
-
           downloaded_file = uploaded_file_obj.download
           entry = ::Zip::Entry.new(zipfile.name, file_name, compression_method: ::Zip::Entry::STORED)
           zipfile.add(entry, downloaded_file)
@@ -37,13 +32,20 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
 
           works_added = works_added + 1
           download.update!({progress: works_added})
-          # TODO: update the download object with number of items added
+
+          # puts "Added a file to the zip file. Current: #{zipfile.entries.count}. Current size: #{zipfile.size}"
         end
       end
 
+
+      tmp_zipfile.close
       download.put_file(tmp_zipfile)
       download.status = "success"
       download.save!
+
+      puts "File uploaded!"
+      puts "File exists: #{download.file_exists?}"
+      puts "File exists: #{download.uploaded_file}"
     rescue StandardError => e
       download.status = "error"
       download.error_info = e.message

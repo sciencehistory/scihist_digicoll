@@ -22,7 +22,7 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
   # What is our expected filename/path/key in storage? Based on inputs_checksum so unique
   # location if inputs_checksum changes.
   def file_key
-    "google_arts_and_culture_downloads/google_arts_and_culture_downloads_#{id}.zip"
+    "google_arts_and_culture_downloads_#{id}.zip"
   end
 
   def uploaded_file
