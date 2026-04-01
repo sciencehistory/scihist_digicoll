@@ -15,7 +15,7 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
       files_to_close = []
       tmp_zipfile = Tempfile.new(["files", ".zip"]).tap { |t| t.binmode }
       download = user.google_arts_and_culture_downloads.create!
-      download.update!({progress_total: work_count})
+      download.update!({progress_total: exporter.file_hash.count })
       works_added = 0
 
       Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
@@ -37,11 +37,15 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
         end
       end
 
-
       tmp_zipfile.close
-      download.put_file(tmp_zipfile)
-      download.status = "success"
-      download.save!
+
+      download.update!({status: 'uploading'})
+
+      File.open(tmp_zipfile.path, "r") do |io|
+        download.put_file(io)
+      end
+
+      download.update!({status: 'success'})
 
       puts "File uploaded!"
       puts "File exists: #{download.file_exists?}"

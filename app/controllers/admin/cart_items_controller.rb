@@ -105,8 +105,7 @@ class Admin::CartItemsController < AdminController
 
 
   def google_arts_and_culture_export
-    #GoogleArtsAndCultureDownloadCreatorJob.perform_later(user: current_user)
-    GoogleArtsAndCultureDownloadCreatorJob.perform_now(user: current_user)
+    GoogleArtsAndCultureDownloadCreatorJob.perform_later(user: current_user)
     redirect_to admin_cart_items_url, notice: "Currently preparing a new download based on the works in your cart. It will be available on your GAC downloads page soon."
   end
 end

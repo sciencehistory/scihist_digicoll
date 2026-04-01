@@ -13,9 +13,7 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
 
   SHRINE_STORAGE_KEY = :google_arts_and_culture_storage
 
-  attr_reader :start_date, :end_date, :status
-
-  enum :status, %w{in_progress success error}.collect {|v| [v, v]}.to_h.freeze
+  enum :status, %w{in_progress uploading success error}.collect {|v| [v, v]}.to_h.freeze
 
   belongs_to :user #, inverse_of: google_arts_and_culture_downloads
 
@@ -41,7 +39,7 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
     uploaded_file.url(
       public: false,
       response_content_type: uploaded_file.metadata["mime_type"],
-      response_content_disposition: ContentDisposition.attachment(desired_filename)
+      response_content_disposition: ContentDisposition.attachment(file_key)
     )
   end
 
@@ -57,12 +55,5 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
 
   protected
 
-  def desired_filename
-    parts = [
-      'google_arts_and_culture_',
-      id
-    ].collect(&:presence).compact
 
-    Pathname.new(parts.join("_")).sub_ext(".zip").to_s
-  end
 end

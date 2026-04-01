@@ -1,12 +1,17 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Google Arts and Culture Downloads</h1>
+
 <table class="table admin-list">
   <thead>
     <tr>
       <th>ID</th>
-      <th>User ID</th>
+      <th>Started</th>
+      <th>Link to file</th>
+      <th>User</th>
+      <th>Progress</th>
       <th>Status</th>
       <th>Error Info</th>
-      <th>Progress</th>
-      <th>Progress Total</th>
     </tr>
   </thead>
 
@@ -14,11 +19,13 @@
     <% @google_arts_and_culture_downloads.each do |download| %>
       <tr>
         <td><%= download.id %></td>
-        <td><%= download.user.id %></td>
+        <td><%= l download.created_at %></td>
+        <td><%= link_to('Download', download.file_url) if download.status == 'success' %></td>
+        <td><%= download.user.name %></td>
+        <td><%= download.progress %> of <%= download.progress_total %></td>
         <td><%= download.status %></td>
         <td><%= download.error_info %></td>
-        <td><%= download.progress %></td>
-        <td><%= download.progress_total %></td>
+        <td></td>
       </tr>
     <% end %>
   </tbody>

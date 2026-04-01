@@ -402,14 +402,8 @@ Rails.application.routes.draw do
       end
     end
 
-
-
-
-    #Cart:
-    resources :google_arts_and_culture_downloads, only: [:index] do
-      collection do
-      end
-    end
+    #GAC downloads:
+    resources :google_arts_and_culture_downloads, only: [:index]
 
     post "cart_items/update_multiple",
       to: "cart_items#update_multiple",

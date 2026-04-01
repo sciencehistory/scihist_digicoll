@@ -66,11 +66,13 @@ MESSAGE
     # Returns a hash of filenames and downloadable files:
     # file_hash.each { |filename, downloadable_file| [...] }
     def file_hash
-      result = {}
-      @scope.each do |work|
-        result.merge!(WorkSerializer.file_hash(work))
+      @file_hash ||= begin
+        result = {}
+        @scope.each do |work|
+          result.merge!(WorkSerializer.file_hash(work))
+        end
+        result
       end
-      result
     end
 
 
