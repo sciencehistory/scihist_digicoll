@@ -2,33 +2,82 @@
 
 <h1>Google Arts and Culture Downloads</h1>
 
-<table class="table admin-list">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Started</th>
-      <th>Link to file</th>
-      <th>User</th>
-      <th>Progress</th>
-      <th>Status</th>
-      <th>Error Info</th>
-    </tr>
-  </thead>
+<p>To create a new download of files and metadata that can be imported into Google Arts and Culture, add works to
+<%= link_to('your cart', admin_cart_items_path) %>, then click the "Google Arts and Culture export" button.</p>
 
-  <tbody>
-    <% @google_arts_and_culture_downloads.each do |download| %>
+<hr />
+
+<h2>Load eligible works into your cart</h1>
+
+
+<div class="border p-3 mb-5">
+
+
+  <p>Add works eligible for Google Arts and Culture export into your cart.</p>
+  <%= simple_form_for(:load_into_cart, url: load_into_cart_admin_google_arts_and_culture_downloads_path, method: :post) do |f| %>
+    <div class="row">
+      <div class="col">
+        <%= f.input :created_at_start_date,
+          as: :date, html5: true, required: false,
+          label: "Created on or after" %>
+      </div>
+      <div class="col">
+        <%= f.input :created_at_end_date,
+          as: :date, html5: true, required: false,
+          label: "Created on or after"  %>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <%= f.input :modified_at_start_date,
+          as: :date, html5: true, required: false,
+          label: "Modified on or before" %>
+      </div>
+      <div class="col">
+        <%= f.input :modified_at_end_date,
+          as: :date, html5: true, required: false,
+          label: "Modified on or after"  %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.button :submit, value: "Add works to your cart" %>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<h2>Recent downloads:</h2>
+<div class="border p-3 mb-5">
+  <table class="table admin-list">
+    <thead>
       <tr>
-        <td><%= download.id %></td>
-        <td><%= l download.created_at %></td>
-        <td><%= link_to('Download', download.file_url) if download.status == 'success' %></td>
-        <td><%= download.user.name %></td>
-        <td><%= download.progress %> of <%= download.progress_total %></td>
-        <td><%= download.status %></td>
-        <td><%= download.error_info %></td>
-        <td></td>
+        <th>ID</th>
+        <th>Started</th>
+        <th>Link to file</th>
+        <th>User</th>
+        <th>Progress</th>
+        <th>Status</th>
+        <th>Error Info</th>
       </tr>
-    <% end %>
-  </tbody>
-</table>
+    </thead>
 
-<%= paginate @google_arts_and_culture_downloads, theme: 'twitter-bootstrap-4' %>
+    <tbody>
+      <% @google_arts_and_culture_downloads.each do |download| %>
+        <tr>
+          <td><%= download.id %></td>
+          <td><%= l download.created_at %></td>
+          <td><%= link_to('Download', download.file_url) if download.status == 'success' %></td>
+          <td><%= download.user.name %></td>
+          <td><%= download.progress %> of <%= download.progress_total %></td>
+          <td><%= download.status %></td>
+          <td><%= download.error_info %></td>
+          <td></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <%= paginate @google_arts_and_culture_downloads, theme: 'twitter-bootstrap-4' %>
+</div>

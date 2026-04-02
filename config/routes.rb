@@ -403,7 +403,19 @@ Rails.application.routes.draw do
     end
 
     #GAC downloads:
-    resources :google_arts_and_culture_downloads, only: [:index]
+    resources :google_arts_and_culture_downloads, only: [:index] do
+      collection do
+        post "load_into_cart", to: "google_arts_and_culture_downloads#load_into_cart"
+      end
+    end
+
+
+#     :load_into_cart
+#       <%= simple_form_for(:load_into_cart, url: report_admin_oral_history_requests_path, method: :post) do |f| %>
+# post "report", to: "oral_history_requests#report"
+#       collection do
+#         post "report", to: "oral_history_requests#report"
+#       end
 
     post "cart_items/update_multiple",
       to: "cart_items#update_multiple",

@@ -22,5 +22,5 @@ Shrine.storages = {
   on_demand_derivatives: ScihistDigicoll::Env.shrine_on_demand_derivatives_storage,
   combined_audio_derivatives: ScihistDigicoll::Env.shrine_combined_audio_derivatives_storage,
   dzi_storage: ScihistDigicoll::Env.shrine_dzi_storage,
-  google_arts_and_culture_storage: ScihistDigicoll::Env.google_arts_and_culture_storage
+  google_arts_and_culture: ScihistDigicoll::Env.google_arts_and_culture_storage
 }

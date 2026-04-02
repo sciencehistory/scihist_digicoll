@@ -11,7 +11,7 @@
 # objects directly, without using Shrine Attachment code.
 class GoogleArtsAndCultureDownload < ApplicationRecord
 
-  SHRINE_STORAGE_KEY = :google_arts_and_culture_storage
+  SHRINE_STORAGE_KEY = :google_arts_and_culture
 
   enum :status, %w{in_progress uploading success error}.collect {|v| [v, v]}.to_h.freeze
 
