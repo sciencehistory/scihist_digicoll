@@ -155,14 +155,14 @@ describe "System Environment" do
   describe "python CLI utilities" do
     describe "img2pdf" do
       it "is present" do
-        `img2pdf -h`
+        `uv run img2pdf -h`
       end
 
       it "can create a pdf from a jp2" do
         input_path =  File.join(test_support_dir, "images/30x30.jp2")
         output_path = File.join(tmp_output_dir, "sample.pdf")
 
-        `img2pdf #{input_path} > #{output_path}`
+        `uv run img2pdf #{input_path} > #{output_path}`
       ensure
         FileUtils.rm(output_path) if File.exist?(output_path)
       end
