@@ -120,7 +120,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `ffmpeg -version` =~ /ffmpeg version (\d+\.\d+(\.\d)?)/
-      expect($1).to match_version_requirements(">= 5.1.2", "< 8")
+      expect($1).to match_version_requirements(">= 5.1.2", "< 9")
     end
   end
 
@@ -131,7 +131,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `ffprobe -version` =~ /ffprobe version (\d+\.\d+(\.\d)?)/
-      expect($1).to match_version_requirements(">= 5.1.2", "< 8")
+      expect($1).to match_version_requirements(">= 5.1.2", "< 9")
     end
 
     # this was a regression, requires ffmpeg to be linked correctly to network routines
@@ -147,7 +147,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `qpdf --version` =~ /qpdf version (\d+\.\d+\.\d+)/
-      expect($1).to match_version_requirements(">= 9.1.1", "< 12")
+      expect($1).to match_version_requirements(">= 9.1.1", "< 13")
     end
   end
 

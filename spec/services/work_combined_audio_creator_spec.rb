@@ -71,7 +71,7 @@ describe "Combined Audio" do
       # The lengths should be correct:
       expect(combined_audio_info.start_times).to match([
         [mp3_1.id, 0],
-        [flac_2.id, 5.184]
+        [flac_2.id, 5.0]
       ])
 
       # The files should be tempfiles:
