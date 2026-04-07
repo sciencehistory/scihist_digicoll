@@ -1,3 +1,14 @@
+<h2 class="h5 mt-0">Current Design Goals for this Project</h2>
+
+ <ul>
+  <li><b>Answers should be based only on what is in the transcripts</b>, with minimal interpretation or synthesis.</li>
+  <li>The tool should not provide conclusions or answers about the world, but <b>reliably describe what the transcripts contain</b>. Without hallucinations, and always with citations to sources that can be checked</li>
+  <li>We aim to provide <b>transparency and education</b> into how the tool works, and it's limitations, integrated into the user interface, experience, and answer text.</li>
+  <li>The tool should <b>encourage and facilitate engagement</b> with the original oral history transcripts in context.</li>
+</ul>
+
+<h2 class="h5 mt-0">Technical Details</h2>
+
 <p>This tool is powered by
     <a href="https://en.wikipedia.org/wiki/Large_language_model" target="_blank">Large Language Model (LLM)</a> technology, also known as "AI".
   The current implementation is a basic
@@ -17,7 +28,9 @@
    <a href="https://github.com/sciencehistory/scihist_digicoll/blob/master/app/views/claude_interactor/initial_user_prompt.text.erb" target="_blank">engineered user prompt</a>.
  </p>
 
- <p>Some of the goals guiding the ongoing experimental development of this tool are…</p>
 
- <p>If you have any questions or concerns, please contact us at <a href="mailto:<%= ScihistDigicoll::Env.lookup!(:admin_email) %>"><%= ScihistDigicoll::Env.lookup!(:admin_email) %></a>.
+
+ <h2 class="h5 mt-0">Let us know your thoughts</h2>
+
+ <p>This is an ongoing experiment. If you have any questions or concerns, please contact us at <a href="mailto:<%= ScihistDigicoll::Env.lookup!(:admin_email) %>"><%= ScihistDigicoll::Env.lookup!(:admin_email) %></a>.
  </p>
