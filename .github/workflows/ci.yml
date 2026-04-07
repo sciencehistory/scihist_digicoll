@@ -37,19 +37,13 @@ jobs:
             # bundler-cache should be save to use cause we
             # have a checked in Gemfile.lock
 
-        - name: Set up Python
-          uses: actions/setup-python@v6
-          with:
-            python-version: "3.11"
-
         - name: Install uv for python dependencies
           uses: astral-sh/setup-uv@v3
           with:
             enable-cache: true
 
-        - name: Install python dependencies with uv
+        - name: Install python and pip package dependencies with uv
           run: uv sync --frozen
-
 
         - name: Install apt dependencies
           run: |
