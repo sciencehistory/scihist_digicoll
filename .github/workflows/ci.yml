@@ -41,9 +41,16 @@ jobs:
           uses: actions/setup-python@v6
           with:
             python-version: "3.11"
-            cache: 'pip'
-        - name: Install python dependencies
-          run: pip install -r requirements.txt
+          permissions:
+            contents: read
+
+        - name: Install uv for python dependencies
+          uses: astral-sh/setup-uv@v3
+          with:
+            enable-cache: true
+
+        - name: Install python dependencies with uv
+          run: uv sync --frozen
 
 
         - name: Install apt dependencies
