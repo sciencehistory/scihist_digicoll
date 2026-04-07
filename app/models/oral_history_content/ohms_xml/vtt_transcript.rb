@@ -20,8 +20,6 @@ class OralHistoryContent
     #
     # See an example mock OHMS XML with WebVTT at ./spec/test_support/ohms_xml/small-sample-vtt-ohms.xml
     class VttTranscript
-      FullSanitizer = Rails::HTML5::FullSanitizer.new
-
       attr_reader :raw_webvtt_text, :parsed_webvtt
 
       # @param raw_webvtt_text [String] WebVTT text as included in an OHMS xml export
@@ -53,7 +51,15 @@ class OralHistoryContent
       end
 
       def cues
-        @cues ||= parsed_webvtt.cues.collect { |webvtt_cue| Cue.new(webvtt_cue) }
+        @cues ||= begin
+          paragraph_index = 1
+          parsed_webvtt.cues.collect do |webvtt_cue|
+            Cue.new(webvtt_cue, start_paragraph_index: paragraph_index).tap do |cue|
+              # keep our running paragraph count accurate
+              paragraph_index += cue.paragraphs.count
+            end
+          end
+        end
       end
 
       # delivers extracted and indexed footnotes from OHMS WebVTT
@@ -85,19 +91,9 @@ class OralHistoryContent
 
       # eg for indexing, actual human-readable indexable plain text after parsed and extracted webVTT
       def transcript_text
-        @transcript_text ||= cues.collect { |c| c.paragraphs }.flatten.collect do |p|
-          if p.speaker_name
-            "#{strip_tags p.speaker_name}: #{strip_tags p.raw_html}"
-          else
-            strip_tags p.raw_html
-          end
-        end.join("\n\n")
-      end
-
-      def strip_tags(s)
-        # for some reason sometimes br's in input, which can end up eating up whitespace
-        # and jamming two words together on strip, so we replace first
-        FullSanitizer.sanitize( s.gsub("<br>", "\n") )
+        @transcript_text ||= cues.collect(&:paragraphs).flatten.
+                               collect(&:text_with_forced_speaker_label).
+                               join("\n\n")
       end
 
       # our cue wraps webvtt cue with further parsed escaped content
@@ -113,8 +109,13 @@ class OralHistoryContent
       class Cue
         delegate :identifier, :start, :end, :settings, :text, to: :@webvtt_cue
 
-        def initialize(webvtt_cue)
+        # 1-based index that we start at, so we can number our paragraphs
+        # as we parse em.
+        attr_reader :start_paragraph_index
+
+        def initialize(webvtt_cue, start_paragraph_index:)
           @webvtt_cue = webvtt_cue
+          @start_paragraph_index = start_paragraph_index
         end
 
         def start_sec_f
@@ -133,6 +134,7 @@ class OralHistoryContent
         # A change in WebVTT "voice" (speaker) will also result in a paragraph split, which
         # isn't quite right, but works out fine for how OHMS does things.
         def paragraphs
+          paragraph_index = start_paragraph_index
           @paragraphs ||= begin
             # This tricky regex using both positive lookahead and negative lookahead
             # will split into voice tags, taking into account that some text might not
@@ -148,20 +150,17 @@ class OralHistoryContent
               # Split paragraphs on two more consecutive <br>
               voice_span.split(/\R|(?:\<br\>){2,}/).collect do |paragraph_text|
                 paragraph_text.gsub!("</v>", "") # remove stray ending tags
-                Paragraph.new(speaker_name: speaker_name, raw_html: paragraph_text)
+
+                # we'll just use cue_index as paragraph index, a cue should be only one paragraph in OHMS
+                OralHistoryContent::Paragraph.new(
+                  speaker_name: speaker_name,
+                  ohms_vtt_html: paragraph_text,
+                  included_timestamps: [start_sec_f],
+                  paragraph_index: paragraph_index
+                ).tap { paragraph_index += 1 }
               end
             end.flatten
           end
-        end
-      end
-
-      class Paragraph
-        # named raw_html to make sure we don't forget to scrub!
-        attr_reader :speaker_name, :raw_html
-
-        def initialize(speaker_name:, raw_html:)
-          @raw_html = raw_html.strip
-          @speaker_name = speaker_name
         end
       end
     end
