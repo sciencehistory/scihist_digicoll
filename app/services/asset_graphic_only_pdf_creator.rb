@@ -13,7 +13,7 @@ class AssetGraphicOnlyPdfCreator
 
   # A python pip package, that we still haven't totally figured out how we're
   # going to get installed.
-  class_attribute :img2pdf_convert_command, default: "uv run img2pdf"
+  class_attribute :img2pdf_convert_command, default: ScihistDigicoll::Util.prefix_python_exec_command("img2pdf")
 
 
   # Will resize output to this DPI, based on known input DPI

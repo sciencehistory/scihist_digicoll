@@ -72,6 +72,24 @@ module ScihistDigicoll
       "%.#{decimal_places}f %s" % [display_number, display_units]
     end
 
+    # We use uv and pyproject.toml to manage python dependencies.
+    #
+    # On Dev and CI we use (and have to use) `uv run`, but on Heroku, even though
+    # it uses uv to install dependencies, it installs them into PATH directly and you
+    # don't/can't use `uv run`, a bit inconvenient.
+    def self.prefix_python_exec_command(bare_command)
+      if Rails.env.development? || Rails.env.test? || system("which uv")
+        "uv run #{bare_command}"
+      elsif bare_command.start_with?("./")
+        # it's a path to script inside our app like ./python_script/something, we use `python3` on heroku
+        "python3 #{bare_command}"
+      else
+        # it's a python-dependent command installed by a package, like img2pdf, we
+        # just use the command itself which will be avail in PATH
+        bare_command
+      end
+    end
+
     # Attempt to implement a convenience for ActiveRecord find_each that is more
     # memory efficient, using less RAM.
     #

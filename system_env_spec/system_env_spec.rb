@@ -1,6 +1,5 @@
 require_relative "env_spec_helper"
 
-
 describe "System Environment" do
   let(:test_support_dir) { File.absolute_path(File.join(__dir__, "../spec/test_support/")) }
   let(:tmp_output_dir) { File.absolute_path(File.join(__dir__, "../tmp")) }
@@ -154,15 +153,17 @@ describe "System Environment" do
 
   describe "python CLI utilities" do
     describe "img2pdf" do
+      let(:cmd) { system("which uv") ? 'uv run img2pdf' : 'img2pdf' }
+
       it "is present" do
-        `uv run img2pdf -h`
+        `#{cmd} -h`
       end
 
       it "can create a pdf from a jp2" do
         input_path =  File.join(test_support_dir, "images/30x30.jp2")
         output_path = File.join(tmp_output_dir, "sample.pdf")
 
-        `uv run img2pdf #{input_path} > #{output_path}`
+        `#{cmd} #{input_path} > #{output_path}`
       ensure
         FileUtils.rm(output_path) if File.exist?(output_path)
       end
