@@ -48,14 +48,16 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(first_cue.paragraphs[0].speaker_name).to eq "Esme Johnson"
     expect(first_cue.paragraphs[0].scrubbed_ohms_vtt_html).to eq "It’s a <i>blue</i> apple tree!"
     expect(first_cue.paragraphs[0].paragraph_index).to eq 1
-    expect(first_cue.paragraphs).to all(have_attributes(included_timestamps: [0.0]))
+    expect(first_cue.paragraphs[0]).to have_attributes(included_timestamps: [0.0])
 
     second_cue = cues[1]
     expect(second_cue.start.to_s).to eq "00:00:02.400"
     expect(second_cue.start_sec_f).to eq 2.4
     expect(second_cue.end.to_s).to eq "00:00:04.000"
     expect(second_cue.end_sec_f).to eq 4.0
-    expect(second_cue.paragraphs).to all(have_attributes(included_timestamps: [2.4]))
+    expect(second_cue.paragraphs.first).to have_attributes(included_timestamps: [2.4])
+    expect(second_cue.paragraphs.slice(1..-1)).to all(have_attributes(included_timestamps: nil))
+
 
     expect(second_cue.paragraphs.length).to eq 3
     expect(second_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).to eq [
@@ -72,14 +74,18 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
     expect(third_cue.paragraphs.collect(&:speaker_name)).to eq ['Esme', nil]
     expect(third_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).not_to include( be_html_safe)
     expect(third_cue.paragraphs.collect(&:paragraph_index)).to eq [5, 6]
-    expect(third_cue.paragraphs).to all(have_attributes(included_timestamps: [4.4]))
+    expect(third_cue.paragraphs.first).to have_attributes(included_timestamps: [4.4])
+    expect(third_cue.paragraphs.slice(1..-1)).to all(have_attributes(included_timestamps: nil))
+
 
     fourth_cue = cues[3]
     expect(fourth_cue.paragraphs.length).to eq 2
     expect(fourth_cue.paragraphs.collect(&:scrubbed_ohms_vtt_html)).to eq ['Why did the chicken cross the road', 'To get to the other side']
     expect(fourth_cue.paragraphs.collect(&:speaker_name)).to eq ['Mary', 'Doug']
     expect(fourth_cue.paragraphs.collect(&:paragraph_index)).to eq [7, 8]
-    expect(fourth_cue.paragraphs).to all(have_attributes(included_timestamps: [6.0]))
+    expect(fourth_cue.paragraphs.first).to have_attributes(included_timestamps: [6.0])
+    expect(fourth_cue.paragraphs.slice(1..-1)).to all(have_attributes(included_timestamps: nil))
+
   end
 
   it "has transcript_text" do
@@ -88,6 +94,49 @@ describe OralHistoryContent::OhmsXml::VttTranscript do
 
     expect(text).to include "Esme Johnson: It’s a blue apple tree!"
     expect(text).to include "Why did the chicken cross the road"
+  end
+
+  describe "assumed speakers" do
+    let(:sample_webvtt) do
+      # Example includes what OHMS might, but also some extra stuff in WebVTT
+      # standard (but not necessarily everything!), to be a bit forward looking.
+      <<~EOS
+        WEBVTT
+
+        NOTE
+        TRANSCRIPTION BEGIN
+
+        00:00:29.000 --> 00:00:39.000
+        <v SCHNEIDER>   Burnet. And so I’m curious about your childhood, and to start off, if you could talk a little bit about your parents and what they were like, and maybe a little bit about their backgrounds.
+
+        00:00:39.000 --> 00:01:31.000
+        <v CHAPPELEAR>   Well, I was born in 1931 when the [Great] Depression was in the United States. My father [Raymond Dero Stallings] was working as a laborer on the dam for Buchanan Lake. When I was two weeks old, he lost his job, as so many people did. And they packed up everything they owned with me and my older half-brother, ten years older than I, in the sedan and went to my grandmother’s [Serena “Rena” Adams Trainer] house in West Texas [Sonora, Texas]. So that was how we started. There were no jobs. So whenever there was a job opening any place at all in West Texas when I was a baby, my parents would load up and go and go there, and they might work a day or a week or two weeks and then be laid off, and they’d go back to my grandmother’s. And this went on.
+
+        00:01:31.000 --> 00:02:28.000
+        At one point when I was still a very small baby, they went to California and tried working there. My uncles of my mother’s—through my mother’s family—would hop freights there in Sonora, [Texas] and go out and try to work on the dams. You . . . Depression was really, really a hard, hard time. My father had a seventh-grade education. My mother [Cora Burleson “Cody” Trainer Nicks Stallings] had quit in the eleventh grade because she didn’t have shoes to wear to school. So they both valued education very, very much. My older brother [Sammie “Sam” Roy Nicks], during those very early years that I can’t remember, checked in and out of the Sonora [Independent] School District in one year, seven times. That’s what looking for a job during those years meant.
+
+        00:02:28.000 --> 00:03:34.000
+        At any rate, we ended up—when I was starting school we were in Big Spring, Texas again, and I went to a private school. My birthday being in October, somehow or other, they got the money to send me to private school. I don’t know how, but they did. And so I went first grade all to this private school, and I started second grade there in Big Spring. But from that point on, my father was a salesman, a really good one, and he did various things with insurance and other stuff, and we would move and back and forth. And eventually he went into construction business when I was ten years old. But moving around, I went to a total of about ten different elementary schools, so it was quite different. Fortunately, I am very bright, so I didn’t have any problem making straight A’s except for penmanship. Solid C’s. I liked school very much. It was fun.
+
+        00:08:43.000 --> 00:08:46.000
+        <v SCHNEIDER>   And what were some of the things that you did at camp?
+
+        NOTE
+        TRANSCRIPTION END
+      EOS
+    end
+
+    it "are assigned" do
+      paragraphs = vtt_transcript.cues.collect(&:paragraphs).flatten
+
+      expect(paragraphs.collect(&:speaker_name)).to eq(
+        ["SCHNEIDER", "CHAPPELEAR", nil, nil, "SCHNEIDER"]
+      )
+
+      expect(paragraphs.collect(&:assumed_speaker_name)).to eq(
+        [nil, nil, "CHAPPELEAR", "CHAPPELEAR", nil]
+      )
+    end
   end
 
   describe "unsafe html in transcript" do

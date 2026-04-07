@@ -58,6 +58,13 @@ class OralHistoryContent
               # keep our running paragraph count accurate
               paragraph_index += cue.paragraphs.count
             end
+          end.tap do |cues|
+            # fill in assumed_speaker_name if needed
+            cues.collect(&:paragraphs).flatten.each_cons(2) do |first_p, second_p|
+              if second_p.speaker_name.nil?
+                second_p.assumed_speaker_name = (first_p.speaker_name || first_p.assumed_speaker_name)
+              end
+            end
           end
         end
       end
@@ -88,12 +95,13 @@ class OralHistoryContent
         safe_footnote_values ||= footnote_array
       end
 
+      def paragraphs
+        @paragraphs ||= cues.collect(&:paragraphs).flatten
+      end
 
       # eg for indexing, actual human-readable indexable plain text after parsed and extracted webVTT
       def transcript_text
-        @transcript_text ||= cues.collect(&:paragraphs).flatten.
-                               collect(&:text_with_forced_speaker_label).
-                               join("\n\n")
+        @transcript_text ||= paragraphs.collect(&:text_with_forced_speaker_label).join("\n\n")
       end
 
       # our cue wraps webvtt cue with further parsed escaped content
@@ -134,8 +142,10 @@ class OralHistoryContent
         # A change in WebVTT "voice" (speaker) will also result in a paragraph split, which
         # isn't quite right, but works out fine for how OHMS does things.
         def paragraphs
-          paragraph_index = start_paragraph_index
           @paragraphs ||= begin
+            paragraph_index = start_paragraph_index
+            included_timestamps_used = false
+
             # This tricky regex using both positive lookahead and negative lookahead
             # will split into voice tags, taking into account that some text might not
             # be in a voice tag, and that voice tag does not have to ber closed when it's the whole cue
@@ -151,11 +161,19 @@ class OralHistoryContent
               voice_span.split(/\R|(?:\<br\>){2,}/).collect do |paragraph_text|
                 paragraph_text.gsub!("</v>", "") # remove stray ending tags
 
+                # included timestamps only on first paragraph in cue, others we don't have if present.
+                if included_timestamps_used
+                  included_timestamps = nil
+                else
+                  included_timestamps = [start_sec_f]
+                  included_timestamps_used = true
+                end
+
                 # we'll just use cue_index as paragraph index, a cue should be only one paragraph in OHMS
                 OralHistoryContent::Paragraph.new(
                   speaker_name: speaker_name,
                   ohms_vtt_html: paragraph_text,
-                  included_timestamps: [start_sec_f],
+                  included_timestamps: included_timestamps,
                   paragraph_index: paragraph_index
                 ).tap { paragraph_index += 1 }
               end

@@ -59,13 +59,18 @@ module OralHistory
     def display_paragraphs
       last_speaker = nil # don't do same speaker twice in a row
       @vtt_transcript.cues.each do |cue|
-        start_sec_f = cue.start_sec_f # we only want to do this once per cue
-                                      #
         cue.paragraphs.each do |paragraph|
           paragraph_safe_html = render_footnote_tags(paragraph.scrubbed_ohms_vtt_html)
+          paragraph_speaker_name = (paragraph.speaker_name || paragraph.assumed_speaker_name)
 
-          yield start_sec_f, (paragraph.speaker_name if paragraph.speaker_name != last_speaker), paragraph_safe_html
-          last_speaker = paragraph.speaker_name
+          yield(
+            start_seconds: paragraph.included_timestamps&.first,
+            speaker_name: (paragraph_speaker_name if paragraph_speaker_name != last_speaker),
+            html_text: paragraph_safe_html,
+            fragment_id: paragraph.fragment_id
+          )
+
+          last_speaker = paragraph_speaker_name
           start_sec_f = nil
         end
       end
