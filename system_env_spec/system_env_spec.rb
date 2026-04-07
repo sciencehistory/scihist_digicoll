@@ -153,7 +153,7 @@ describe "System Environment" do
 
   describe "python CLI utilities" do
     describe "img2pdf" do
-      let(:cmd) { system("which uv") ? 'uv run img2pdf' : 'img2pdf' }
+      let(:cmd) { system("which uv 2>1 >/dev/null") ? 'uv run img2pdf' : 'img2pdf' }
 
       it "is present" do
         `#{cmd} -h`
