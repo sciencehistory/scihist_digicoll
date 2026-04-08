@@ -146,6 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_24_170634) do
 
   create_table "google_arts_and_culture_downloads", force: :cascade do |t|
     t.datetime "created_at", null: false
+    t.jsonb "date_info"
     t.text "error_info"
     t.jsonb "file_data"
     t.integer "progress"
@@ -153,6 +154,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_24_170634) do
     t.string "status", default: "in_progress", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.text "user_notes"
     t.index ["user_id"], name: "index_google_arts_and_culture_downloads_on_user_id"
   end
 

@@ -37,6 +37,14 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
 
   end
 
+
+  def export_cart
+    user_notes = params.dig('export_cart', 'user_notes')
+    GoogleArtsAndCultureDownloadCreatorJob.perform_later(user: current_user, user_notes: user_notes)
+    redirect_to admin_google_arts_and_culture_downloads_url, notice: "Currently preparing a new download based on the works. Reload this page to see progress."
+  end
+
+
   def eligible_scope
     @eligible_scope ||= begin
 
@@ -48,30 +56,11 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
       library_scope = Work.where(published: true).
       where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Library'] ).
       where("json_attributes -> 'format'     ?| array[:formats]", formats: ['image'] ).
-      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] ).
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] )
 
       museum_scope.or(library_scope)
     end
   end
   helper_method :eligible_scope
 
-
-
 end
-
-  # ids_to_include = eligible_scope.pluck(:id)
-
-
-
-# w = Work.find(id)
-
-# # Only include library works if they're published between 1450 and 1929
-# if w.department == "Library"
-#   helper = DateIndexHelper.new(w)
-#   earliest = helper.min_date&.year
-#   latest =   helper.max_date&.year
-#   unless earliest.present? && earliest >= 1450 && latest.present? && latest <= 1929
-#     next
-#   end
-# end
-

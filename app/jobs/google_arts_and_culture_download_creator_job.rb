@@ -1,11 +1,8 @@
 class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
 
-  def perform(user: user, start_date: nil, end_date: nil)
+  def perform(user: user, user_notes: nil)
     begin
       logger.info("#{self.class}: Preparing download for #{user.name}.")
-
-      # No, you can't pass in a scope.
-      # Unless dates are provided we just use all eligible works in the user's cart.
 
       scope = user.works_in_cart
       exporter = GoogleArtsAndCulture::Exporter.new(scope)
@@ -15,7 +12,7 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
       files_to_close = []
       tmp_zipfile = Tempfile.new(["files", ".zip"]).tap { |t| t.binmode }
       download = user.google_arts_and_culture_downloads.create!
-      download.update!({progress_total: exporter.file_hash.count })
+      download.update!({user_notes: user_notes, progress: 0, progress_total: exporter.file_hash.count })
       works_added = 0
 
       Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|

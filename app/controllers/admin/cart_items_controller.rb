@@ -103,9 +103,4 @@ class Admin::CartItemsController < AdminController
     end
   end
 
-
-  def google_arts_and_culture_export
-    GoogleArtsAndCultureDownloadCreatorJob.perform_later(user: current_user)
-    redirect_to admin_cart_items_url, notice: "Currently preparing a new download based on the works. It will be available on the Google Arts and Culture downloads page soon.".html_safe
-  end
 end

@@ -2,18 +2,9 @@
 
 <h1>Google Arts and Culture Downloads</h1>
 
-<p>To create a new download of files and metadata that can be imported into Google Arts and Culture, add works to
-<%= link_to('your cart', admin_cart_items_path) %>, then click the "Google Arts and Culture export" button.</p>
-
-<hr />
-
-<h2>Load eligible works into your cart</h1>
-
-
 <div class="border p-3 mb-5">
-
-
-  <p>Add works eligible for Google Arts and Culture export into your cart.</p>
+  <h2>1: Load eligible works into your cart</h1>
+  <p>Only works that are eligible for Google Arts and Culture will be added. This will not remove any works from your cart; it only adds them.</p>
   <%= simple_form_for(:load_into_cart, url: load_into_cart_admin_google_arts_and_culture_downloads_path, method: :post) do |f| %>
     <div class="row">
       <div class="col">
@@ -24,19 +15,19 @@
       <div class="col">
         <%= f.input :created_at_end_date,
           as: :date, html5: true, required: false,
-          label: "Created on or after"  %>
+          label: "Created on or before"  %>
       </div>
     </div>
     <div class="row">
       <div class="col">
         <%= f.input :modified_at_start_date,
           as: :date, html5: true, required: false,
-          label: "Modified on or before" %>
+          label: "Modified on or after" %>
       </div>
       <div class="col">
         <%= f.input :modified_at_end_date,
           as: :date, html5: true, required: false,
-          label: "Modified on or after"  %>
+          label: "Modified on or before"  %>
       </div>
     </div>
 
@@ -48,17 +39,27 @@
   <% end %>
 </div>
 
-<h2>Recent downloads:</h2>
 <div class="border p-3 mb-5">
+  <h2>2: Prepare a download</h1>
+  <p>The file prepared will contain all the published works in your cart. You can add some bookkeeping notes for later reference, if you want.</p>
+  <%= simple_form_for(:export_cart, url: export_cart_admin_google_arts_and_culture_downloads_path, method: :post) do |f| %>
+    <%= f.input :user_notes, required: false, label: "Your notes"  %>
+  <%= f.button :submit, value: "Prepare your download", data: { confirm: "Prepare a GAC download containing metadata and files for all the works in your cart? This may take several hours."} %>
+  <% end %>
+</div>
+
+<div class="border p-3 mb-5">
+  <h2>3: Download your files and metadata</h2>
   <table class="table admin-list">
     <thead>
       <tr>
         <th>ID</th>
         <th>Started</th>
         <th>Link to file</th>
-        <th>User</th>
+        <th>Requested by</th>
         <th>Progress</th>
         <th>Status</th>
+        <th>Notes</th>
         <th>Error Info</th>
       </tr>
     </thead>
@@ -71,7 +72,8 @@
           <td><%= link_to('Download', download.file_url) if download.status == 'success' %></td>
           <td><%= download.user.name %></td>
           <td><%= download.progress %> of <%= download.progress_total %></td>
-          <td><%= download.status %></td>
+          <td><%= download.status.humanize %></td>
+          <td><%= download.user_notes %></td>
           <td><%= download.error_info %></td>
           <td></td>
         </tr>
