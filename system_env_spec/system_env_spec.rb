@@ -1,3 +1,4 @@
+require 'open3'
 require_relative "env_spec_helper"
 
 describe "System Environment" do
@@ -167,6 +168,15 @@ describe "System Environment" do
       ensure
         FileUtils.rm(output_path) if File.exist?(output_path)
       end
+    end
+  end
+
+  describe "our `extract_pdf_text` python script" do
+    let(:cmd) { system("which uv 2>1 >/dev/null") ? 'uv run ./python_script/extract_pdf_text.py' : 'python3 ./python_script/extract_pdf_text.py' }
+
+    it "can be run by system python with imports available" do
+      stdout, stderr, status = Open3.capture3("#{cmd} -h")
+      expect("#{stdout} #{stderr}").to include "usage: extract_pdf_text.py"
     end
   end
 
