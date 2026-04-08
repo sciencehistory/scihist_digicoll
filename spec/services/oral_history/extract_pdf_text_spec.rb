@@ -31,6 +31,19 @@ describe OralHistory::ExtractPdfText do
         expect { extracter.extract_pdf_text }.to raise_error(OralHistory::ExtractPdfText::Error)
       end
     end
+
+    describe "error from shell" do
+      let(:extracter) do
+        described_class.new(pdf_file_path: old_oh_sample_pages_pdf_path).tap do |obj|
+          allow(obj).to receive(:extract_pdf_text_command).and_return("false") # bash command to fail
+        end
+      end
+
+      it "raises error" do
+        expect { extracter.extract_pdf_text }.to raise_error(OralHistory::ExtractPdfText::Error)
+      end
+    end
   end
+
 
 end

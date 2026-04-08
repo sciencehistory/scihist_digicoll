@@ -32,6 +32,8 @@ module OralHistory
       end
 
       parsed
+    rescue TTY::Command::ExitError => e
+      raise Error.new(e.message)
     end
 
     private
