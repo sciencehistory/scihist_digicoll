@@ -38,7 +38,16 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
   end
 
   def eligible_scope
+
+    start_date_older_than_95_years_ago = """ exists ( select 1
+      from jsonb_array_elements(kithe_models.json_attributes -> 'date_of_work') as d(elem)
+        where (d.elem ->> 'start') ~ '^\\d{4}'
+        and (LEFT(d.elem ->> 'start', 4))::int <= extract(year from current_date)::int - 95
+        and (LEFT(d.elem ->> 'start', 4))::int >= 1450
+    )"""
+
     @eligible_scope ||= begin
+
       scope_1 = Work.where(published: true).
       where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Museum'] ).
       where("json_attributes -> 'format'     ?| array[:formats]", formats: ['physical_object'] ).
@@ -47,9 +56,11 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
       scope_2 = Work.where(published: true).
       where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Library'] ).
       where("json_attributes -> 'format'     ?| array[:formats]", formats: ['image'] ).
-      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] )
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] ).
+      where(start_date_older_than_95_years_ago)
 
       scope_1.or(scope_2)
+
     end
   end
   helper_method :eligible_scope
