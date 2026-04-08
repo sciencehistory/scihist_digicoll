@@ -32,8 +32,8 @@ module OralHistory
       end
 
       parsed
-    rescue TTY::Command::ExitError => e
-      raise Error.new(e.message)
+    rescue TTY::Command::ExitError, JSON::ParserError => e
+      raise Error.new("#{e.class.name}: #{e.message}")
     end
 
     private
