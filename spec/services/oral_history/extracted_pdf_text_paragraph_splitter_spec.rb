@@ -28,6 +28,9 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     # from text.
     expect(paragraphs.first.speaker_name).to eq "HEITMANN"
     expect(paragraphs.first.text).to start_with "I'm with Dr. Francis O. Rice in South Bend,Indiana."
+
+    expect(paragraphs.last.speaker_name).to eq "HEITMANN"
+    expect(paragraphs.last.text).to eq "I think I'll close the taping for now. Thank you for the interview, Dr. Rice."
   end
 
 
