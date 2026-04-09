@@ -152,7 +152,7 @@ module OralHistory
     end
 
     def json_to_paragraph(paragraph_json, logical_page_number:)
-      new_style_timecode_re = /\A[[:space:]]*\[(\d+\:\d+:\d+)\]/
+      new_style_timecode_re = /\A[[:space:]]*\[(\d+\:\d+:\d+)\][[:space:]]*/
       old_style_timecode_re = /<T: (\d+) min>/
 
       text = paragraph_json["text"]
@@ -168,7 +168,7 @@ module OralHistory
 
       # Do we have a speaker name? Remove it from text but record it as speaker name.
       if text.sub!(SPEAKER_NAME_RE, '')
-        speaker_name = $1.upcase
+        speaker_name = $1.upcase.strip
       end
 
       OralHistoryContent::Paragraph.new(
