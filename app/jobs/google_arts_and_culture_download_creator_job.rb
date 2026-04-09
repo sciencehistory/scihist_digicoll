@@ -1,6 +1,7 @@
 class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
 
   def perform(user: user, user_notes: nil)
+    files_to_close = []
     begin
       logger.info("#{self.class}: Preparing download for #{user.name}.")
 
@@ -9,7 +10,7 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
 
       work_count = exporter.scope.count
       raise StandardError, "No works in scope." unless work_count > 0
-      files_to_close = []
+      
       tmp_zipfile = Tempfile.new(["files", ".zip"]).tap { |t| t.binmode }
       download = user.google_arts_and_culture_downloads.create!
       download.update!({user_notes: user_notes, progress: 0, progress_total: exporter.file_hash.count })
@@ -33,22 +34,11 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
       end
 
       tmp_zipfile.close
-
-      download.update!({status: 'uploading'})
-
-      File.open(tmp_zipfile.path, "r") do |io|
-        download.put_file(io)
-      end
-
+      File.open(tmp_zipfile.path, "r") { |io| download.put_file io }
       download.update!({status: 'success'})
 
-      puts "File uploaded!"
-      puts "File exists: #{download.file_exists?}"
-      puts "File exists: #{download.uploaded_file}"
     rescue StandardError => e
-      download.status = "error"
-      download.error_info = e.message
-      download.save!
+      download.log_error(e)
       raise
     end
   ensure
