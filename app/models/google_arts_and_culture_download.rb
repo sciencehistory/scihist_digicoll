@@ -15,7 +15,17 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
 
   enum :status, %w{in_progress uploading success error}.collect {|v| [v, v]}.to_h.freeze
 
-  belongs_to :user #, inverse_of: google_arts_and_culture_downloads
+  belongs_to :user
+
+
+  def works_added
+    @works_added ||= 0
+  end
+
+  def log_work_added!
+    @works_added = works_added + 1
+    update!({progress: works_added})
+  end
 
   def file_key
     "google_arts_and_culture_downloads_#{id}.zip"
@@ -45,7 +55,6 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
 
   def put_file(io)
     update!({status: 'uploading'})
-    error_strings = []
     begin
         Shrine.storages[SHRINE_STORAGE_KEY].upload(io, file_key)
     rescue => e
@@ -56,16 +65,10 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
 
   end
 
-  protected
 
-   def log_error(e)
+  def log_error(e)
     Rails.logger.info e.message
-    error_strings << e.message
-    e.errors.each do |err|
-      Rails.logger.info err.inspect
-      error_strings << e.message
-    end
-    update!({status: 'error', error_info: error_strings.join('; ')})
+    update!({status: 'error', error_info: e.message})
   end
 
 
