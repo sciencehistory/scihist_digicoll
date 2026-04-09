@@ -15,7 +15,7 @@ module OhmsHelper
 
   # in is "hh:mm:ss", out is seconds integer
   def parse_ohms_timestamp(timestamp_str)
-    unless timestamp_str =~ /\A(\d\d):(\d\d):(\d\d)\Z/
+    unless timestamp_str =~ /\A(\d{2,}):(\d\d):(\d\d)\Z/
       raise ArgumentError.new("timestamp str must match \d\d:\d\d:\d\d,not #{timestamp_str}")
     end
 
