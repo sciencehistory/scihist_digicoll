@@ -64,13 +64,7 @@ module OralHistory
 
         next if page_paragraphs.empty?
 
-        logical_page_number = nil
-        if page_paragraphs.last["text"].strip =~ /\A(\d+)\Z/
-          logical_page_number = $1.to_i
-
-          # remove that last paragraph from array, it's a page number
-          page_paragraphs.pop
-        end
+        logical_page_number = extract_and_remove_logical_page_number(page_paragraphs)
 
         # Should the first paragraph be joined to the last paragraph of the prior page, does
         # it look like a split paragraph?
@@ -149,6 +143,21 @@ module OralHistory
       if date_header_index
         paragraph_json_list.slice!(0..date_header_index)
       end
+    end
+
+    # if a pagination marking paragraph is identified , we return the page number
+    # extracted, and mutate page_paragraphs_json to remove it. Otherwise return nil.
+    def extract_and_remove_logical_page_number(page_paragraphs_json)
+      if page_paragraphs_json.last["text"].strip =~ /\A(\d+)\Z/
+        logical_page_number = $1.to_i
+
+        # remove that last paragraph from array, it's a page number
+        page_paragraphs_json.pop
+
+        return logical_page_number
+      end
+
+      return nil
     end
 
     def json_to_paragraph(paragraph_json, logical_page_number:)
