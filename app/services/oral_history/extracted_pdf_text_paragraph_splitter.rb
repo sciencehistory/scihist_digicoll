@@ -72,6 +72,20 @@ module OralHistory
           page_paragraphs.pop
         end
 
+        # Should the first paragraph be joined to the last paragraph of the prior page, does
+        # it look like a split paragraph?
+        last_paragraph = paragraphs.last
+        if last_paragraph && (last_paragraph.text !~ (/\.?\!\Z/)) && !page_paragraphs.first["text"].start_with?(SPEAKER_NAME_RE)
+          # first doesn't end punctuation, and second doesn't begin with a speaker label? let's join em
+          last_paragraph.text = [
+            last_paragraph.text,
+            page_paragraphs.first["text"]
+          ].join(" <START-PAGE p='#{logical_page_number}'></START-PAGE> ")
+
+          # and remove the first paragraph from our list for this page
+          page_paragraphs.shift
+        end
+
         paragraphs.concat(page_paragraphs.collect do |paragraph_json|
           json_to_paragraph(paragraph_json, logical_page_number: logical_page_number)
         end)

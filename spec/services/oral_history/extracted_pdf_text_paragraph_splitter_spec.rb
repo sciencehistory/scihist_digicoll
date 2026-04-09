@@ -33,5 +33,11 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     expect(paragraphs.last.text).to eq "I think I'll close the taping for now. Thank you for the interview, Dr. Rice."
   end
 
+  it "joins paragraphs split across pages, with marker" do
+    paragraphs = splitter.paragraphs
+    #expect(paragraphs[9].text) to eq  "foo"
+    #{}"About six miles south of Armagh which is the capital of <PAGE-START p='2'></PAGE-START> Northern Ireland, I think. It's a historic little town. Our home was right on the border between Ulster and the Free State, although technically in Ulster. I think I have a picture someplace of the house"
+  end
+
 
 end
