@@ -10,31 +10,27 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
 
   # Post to this method to load a bunch of works into the cart
   def load_into_cart
-
     scope = eligible_scope
 
     created_at_start_date = params.dig('load_into_cart', 'created_at_start_date')
     scope = scope.where('created_at >= ?', created_at_start_date) if created_at_start_date.present?
 
     modified_at_start_date = params.dig('load_into_cart', 'modified_at_start_date')
-    scope = scope.where('created_at >= ?', modified_at_start_date) if modified_at_start_date.present?
+    scope = scope.where('modified_at >= ?', modified_at_start_date) if modified_at_start_date.present?
 
     created_at_end_date =  params.dig('load_into_cart', 'created_at_end_date')
     scope = scope.where('created_at <= ?', created_at_end_date) if created_at_end_date.present?
-    
+
     modified_at_end_date =  params.dig('load_into_cart', 'modified_at_end_date')
-    scope = scope.where('created_at <= ?', modified_at_end_date) if modified_at_end_date.present?
+    scope = scope.where('modified_at <= ?', modified_at_end_date) if modified_at_end_date.present?
 
     all_ids = scope.pluck('id')
-
     CartItem.transaction do
       all_ids.each_slice(500) do |ids|
         CartItem.upsert_all( ids.map { |id| { user_id: current_user.id, work_id: id } } ,  unique_by: [:user_id, :work_id])
       end
     end
-
     redirect_to admin_google_arts_and_culture_downloads_url, notice: "Added #{scope.count} works to your cart."
-
   end
 
 
