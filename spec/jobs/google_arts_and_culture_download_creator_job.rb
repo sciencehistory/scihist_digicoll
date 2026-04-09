@@ -1,9 +1,5 @@
 require 'rails_helper'
 
-# DBQueryMatchers.configure do |config|
-#   config.schemaless = true
-# end
-
 describe GoogleArtsAndCultureDownloadCreatorJob do
 
   let(:user) {FactoryBot.create(:admin_user)}
@@ -15,8 +11,6 @@ describe GoogleArtsAndCultureDownloadCreatorJob do
   let(:work_4) { FactoryBot.build(:public_work)}
   let(:work_5) { FactoryBot.build(:public_work)}
   let(:work_6) { FactoryBot.build(:public_work)}
-
-  #let(:works_in_cart) {controller.current_user.works_in_cart.to_a}
 
   before do
     user.works_in_cart = [work_1, work_2, work_3, work_4, work_5, work_6]
