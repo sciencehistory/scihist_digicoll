@@ -19,11 +19,15 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     # all page numbers are increasing
     expect(paragraphs.each_cons(2)).to all(satisfy { |a, b| a.pdf_logical_page_number <= b.pdf_logical_page_number })
 
-    # Some details of the PDF we know and check
+    # Some details of the PDF we know and check, first and last paragraphs
     expect(paragraphs.first.pdf_logical_page_number).to eq 1
     # we skipped some internal pages in this sample
-    expect(paragraphs.lastfirst.pdf_logical_page_number).to eq "25"
+    expect(paragraphs.last.pdf_logical_page_number).to eq 25
 
+    # Check known first and last paragraphs, including up-casing of speaker name, and removal
+    # from text.
+    expect(paragraphs.first.speaker_name).to eq "HEITMANN"
+    expect(paragraphs.first.text).to start_with "I'm with Dr. Francis O. Rice in South Bend,Indiana."
   end
 
 

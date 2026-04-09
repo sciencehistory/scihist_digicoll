@@ -58,6 +58,10 @@ module OralHistory
         # care about blocks for processing at the moment.
         page_paragraphs = page_json["blocks"].collect {|h| h["paragraphs"]}.flatten
 
+        if page_index == first_index
+          trim_first_page_prefatory(page_paragraphs)
+        end
+
         next if page_paragraphs.empty?
 
         logical_page_number = nil
@@ -120,6 +124,17 @@ module OralHistory
       end
 
       found_index && found_index - 1
+    end
+
+    # The first page has "INTERVIEWER(S):", etc, which vary, but we think
+    # always END with "DATE:", so we use that to trim em all
+    def trim_first_page_prefatory(paragraph_json_list)
+      date_header_index = paragraph_json_list.index { |p| p["text"]&.upcase&.start_with?("DATE:") }
+
+      # now trim everything up to there please
+      if date_header_index
+        paragraph_json_list.slice!(0..date_header_index)
+      end
     end
 
     def json_to_paragraph(paragraph_json, logical_page_number:)
