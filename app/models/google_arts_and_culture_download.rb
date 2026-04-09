@@ -44,16 +44,29 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
   end
 
   def put_file(io)
+    update!({status: 'uploading'})
+    error_strings = []
     begin
         Shrine.storages[SHRINE_STORAGE_KEY].upload(io, file_key)
-    rescue Aws::S3::MultipartUploadError => e
-      Rails.logger.info e.message
-      e.errors.each { |err| Rails.logger.info err.inspect }
+    rescue => e
+      log_error(e)
       raise
     end
+
+
   end
 
   protected
+
+   def log_error(e)
+    Rails.logger.info e.message
+    error_strings << e.message
+    e.errors.each do |err|
+      Rails.logger.info err.inspect
+      error_strings << e.message
+    end
+    update!({status: 'error', error_info: error_strings.join('; ')})
+  end
 
 
 end
