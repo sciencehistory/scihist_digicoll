@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe OralHistory::ExtractedPdfTextParagraphSplitter do
-  let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/old_sample_pages_rice_b2l9q.pdf"}
+  let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/sample_pages_1984_rice_b2l9q.pdf"}
   let(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
   let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text) }
@@ -38,6 +38,4 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     #expect(paragraphs[9].text) to eq  "foo"
     #{}"About six miles south of Armagh which is the capital of <PAGE-START p='2'></PAGE-START> Northern Ireland, I think. It's a historic little town. Our home was right on the border between Ulster and the Free State, although technically in Ulster. I think I have a picture someplace of the house"
   end
-
-
 end
