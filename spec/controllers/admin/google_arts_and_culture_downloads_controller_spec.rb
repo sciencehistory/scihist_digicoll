@@ -45,18 +45,14 @@ RSpec.describe Admin::GoogleArtsAndCultureDownloadsController, :logged_in_user, 
     create(:public_work, **attrs)
   end
 
-  def cart_titles
-    controller.current_user.works_in_cart.pluck(:title).sort
-  end
-
-  let!(:eligible_museum_work)  { create_work(museum_work_attrs) }
-  let!(:eligible_library_work) { create_work(library_work_attrs) }
-  let!(:archives_work)         { create_work(archives_work_attrs) }
-
   context "#load_into_cart", :admin_user do
+    let(:cart_titles) { controller.current_user.works_in_cart.pluck(:title).sort }
+    let!(:eligible_museum_work)  { create_work(museum_work_attrs) }
+    let!(:eligible_library_work) { create_work(library_work_attrs) }
+    let!(:archives_work)         { create_work(archives_work_attrs) }
+
     it "loads all eligible museum and library works into the cart" do
       expect(controller.current_user.works_in_cart.count).to eq 0
-
       get :load_into_cart
 
       expect(controller.current_user.works_in_cart.count).to eq 2
@@ -288,30 +284,17 @@ RSpec.describe Admin::GoogleArtsAndCultureDownloadsController, :logged_in_user, 
     end
   end
 
-  context "export GAC" do
-    let(:scope) { Work.where(id: [work_1.id, work_2.id]) }
+  context "#export_cart" do
+    let(:eligible_museum_work)  { create_work(museum_work_attrs) }
+    let(:eligible_library_work) { create_work(library_work_attrs) }
+    it "starts an export" do
+      controller.current_user.works_in_cart = [eligible_museum_work, eligible_library_work]
+      expect(controller.current_user.works_in_cart.count).to eq 2
+      post :export_cart, params: {export_cart: {user_notes: 'notes'}}
+      expect(GoogleArtsAndCultureDownloadCreatorJob).to have_been_enqueued
+      expect(response).to redirect_to(admin_google_arts_and_culture_downloads_path)
+    end
 
-    # it "builds a zip file that includes a manifest.csv and asset entries" do
-    #   get :export_cart
-    #
-    #   expect(response).to have_http_status(:found)
-    #   expect(response.headers['Content-Type']).to eq('application/zip')
-    #   expect(response.headers['Content-Disposition']).to include "attachment; filename=\"google-arts-and-culture-export-#{Date.today.to_s}.zip\""
-    #
-    #   entry_names = []
-    #   zip_io = StringIO.new(response.body)
-    #
-    #   Zip::InputStream.open(zip_io) do |io|
-    #     while entry = io.get_next_entry
-    #       entry_names << entry.name
-    #     end
-    #   end
-    #
-    #   expect(entry_names[0]).to eq "metadata.csv"
-    #   expect(entry_names[1]).to match "test_title_.*\.jpg"
-    #   expect(entry_names[2]).to match "test_title_.*\.jpg"
-    # ensure
-    #   zip_io.close if zip_io
-    # end
   end
+
 end
