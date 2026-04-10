@@ -16,13 +16,13 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
     scope = scope.where('created_at >= ?', created_at_start_date) if created_at_start_date.present?
 
     modified_at_start_date = params.dig('load_into_cart', 'modified_at_start_date')
-    scope = scope.where('modified_at >= ?', modified_at_start_date) if modified_at_start_date.present?
+    scope = scope.where('updated_at >= ?', modified_at_start_date) if modified_at_start_date.present?
 
     created_at_end_date =  params.dig('load_into_cart', 'created_at_end_date')
     scope = scope.where('created_at <= ?', created_at_end_date) if created_at_end_date.present?
 
     modified_at_end_date =  params.dig('load_into_cart', 'modified_at_end_date')
-    scope = scope.where('modified_at <= ?', modified_at_end_date) if modified_at_end_date.present?
+    scope = scope.where('updated_at <= ?', modified_at_end_date) if modified_at_end_date.present?
 
     all_ids = scope.pluck('id')
     CartItem.transaction do
