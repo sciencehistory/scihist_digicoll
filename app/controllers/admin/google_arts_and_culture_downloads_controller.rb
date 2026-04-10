@@ -12,14 +12,15 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
   def load_into_cart
     scope = eligible_scope
 
-    created_at_start_date = params.dig('load_into_cart', 'created_at_start_date')
-    scope = scope.where('DATE(created_at) >= ?', created_at_start_date.to_date) if created_at_start_date.present?
-    modified_at_start_date = params.dig('load_into_cart', 'modified_at_start_date')
-    scope = scope.where('DATE(updated_at) >= ?', modified_at_start_date.to_date) if modified_at_start_date.present?
-    created_at_end_date =  params.dig('load_into_cart', 'created_at_end_date')
-    scope = scope.where('DATE(created_at) <= ?', created_at_end_date.to_date.to_date) if created_at_end_date.present?
-    modified_at_end_date =  params.dig('load_into_cart', 'modified_at_end_date')
-    scope = scope.where('DATE(updated_at) <= ?', modified_at_end_date.to_date) if modified_at_end_date.present?
+    cs = params.dig('load_into_cart', 'created_at_start_date' )
+    ms = params.dig('load_into_cart', 'modified_at_start_date')
+    ce = params.dig('load_into_cart', 'created_at_end_date'   )
+    me = params.dig('load_into_cart', 'modified_at_end_date'  )
+
+    scope = scope.where('DATE(created_at) >= ?', cs.to_date ) if cs.present?
+    scope = scope.where('DATE(updated_at) >= ?', ms.to_date ) if ms.present?
+    scope = scope.where('DATE(created_at) <= ?', ce.to_date ) if ce.present?
+    scope = scope.where('DATE(updated_at) <= ?', me.to_date ) if me.present?
 
     all_ids = scope.pluck('id')
     CartItem.transaction do
@@ -27,14 +28,14 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
         CartItem.upsert_all( ids.map { |id| { user_id: current_user.id, work_id: id } } ,  unique_by: [:user_id, :work_id])
       end
     end
-    redirect_to admin_google_arts_and_culture_downloads_url, notice: "Added #{scope.count} works to your cart."
+    redirect_to admin_google_arts_and_culture_downloads_path, notice: "Added #{scope.count} works to your cart."
   end
 
 
   def export_cart
     user_notes = params.dig('export_cart', 'user_notes')
     GoogleArtsAndCultureDownloadCreatorJob.perform_later(user: current_user, user_notes: user_notes)
-    redirect_to admin_google_arts_and_culture_downloads_url, notice: "Currently preparing a new download based on the works. Reload this page to see progress."
+    redirect_to admin_google_arts_and_culture_downloads_path, notice: "Currently preparing a new download based on the works. Reload this page to see progress."
   end
 
 
