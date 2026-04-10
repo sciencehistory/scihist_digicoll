@@ -1,0 +1,21 @@
+# These are our python pip dependencies, at this point only for command-line
+# utilities. We use this file to load them in production (heroku), in test
+# (github actions), and in development (MacOS)
+#
+# We `uv` with all of these, so lockfile at uv.lock
+#
+# Heroku should install these automatically.
+#
+# Run commands or scripts with `uv run *`.
+#
+# Can upgrade packages within version specs with `uv sync --upgrade-package <package_name>` or `uv sync --upgrade`
+
+[project]
+name = "scihist-digicoll"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "img2pdf==0.6.1",
+]

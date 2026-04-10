@@ -43,9 +43,8 @@ module OralHistory
       @paragraphs = if oral_history_content.ohms_xml&.legacy_transcript.present?
         oral_history_content.ohms_xml.legacy_transcript.paragraphs
 
-      elsif oral_history_content.ohms_xml
-        # TODO, new style transcript
-        raise ArgumentError.new("#{self.class.name} can only be used with OHMS transcripts if they are legacy: #{oral_history_content.inspect}")
+      elsif oral_history_content.ohms_xml&.vtt_transcript.present?
+        oral_history_content.ohms_xml.vtt_transcript.paragraphs
 
       elsif oral_history_content.searchable_transcript_source.present?
         OralHistory::PlainTextParagraphSplitter.new(

@@ -21,10 +21,11 @@ To set up a development instance on your workstation.
 * Various OS-package brew-installable packages are listed in the `Brewfile`, just run: `brew bundle` to install them from there.
   * Note these packages in ubuntu apt variants generally have to be cross-listed in `Aptfile` for heroku, and in `.github/workflows/ci.yml` for test.
 
-* We now have some python dependencies. You need to install python on MacOS somehow, and then install from `requirements.txt`. We're not sure what the best way is.
-  * `brew install python` gives you a `pip` command, then `pip install -r requirements.txt`. You may have to re-install your requirements.txt if brew updates python underneath you?
-  * Python installer from https://www.python.org/downloads/macos/ gives you `pip3`, for `pip3 install -r requirements.txt`. Tends to leave lots of mismatched stuff around if you ever want to upgrade python.
+* We now have some python dependencies. Use `uv` installed by Brewfile to `uv sync` in project directory to install python interpreter and all python pip dependencies.
+  * In dev or CI, you will run python commands or scripts with `uv run command_or_script`.
 
+
+### Verify system pre-requisites
 
 To ensure expected command-line utilities are present after install, you can run:
 

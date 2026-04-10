@@ -21,7 +21,7 @@
   "devDependencies": {
     "rollup-plugin-gzip": "^4.1.1",
     "sass": "1.77.6",
-    "vite": "^7.1.11",
+    "vite": "^7.3.2",
     "vite-plugin-ruby": "^5.1.1",
     "vite-plugin-sass-glob-import": "^6.0.0"
   },
@@ -30,7 +30,7 @@
   ],
   "science_history_institute_comment_about_engines": "Heroku installs the latest version of node and yarn that conform to the requirements below. (As of early 2024, Heroku installs node 20.9, and GitHub Actions VMs come with node 18.19. Hence the range of versions below.)",
   "engines": {
-    "node": ">=18.19.0 <24.0.0",
+    "node": ">=18.19.0 <26.0.0",
     "yarn": "^1.22.19"
   }
 }

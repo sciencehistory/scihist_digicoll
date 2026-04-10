@@ -1,6 +1,5 @@
 require_relative "env_spec_helper"
 
-
 describe "System Environment" do
   let(:test_support_dir) { File.absolute_path(File.join(__dir__, "../spec/test_support/")) }
   let(:tmp_output_dir) { File.absolute_path(File.join(__dir__, "../tmp")) }
@@ -121,7 +120,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `ffmpeg -version` =~ /ffmpeg version (\d+\.\d+(\.\d)?)/
-      expect($1).to match_version_requirements(">= 5.1.2", "< 8")
+      expect($1).to match_version_requirements(">= 5.1.2", "< 9")
     end
   end
 
@@ -132,7 +131,7 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `ffprobe -version` =~ /ffprobe version (\d+\.\d+(\.\d)?)/
-      expect($1).to match_version_requirements(">= 5.1.2", "< 8")
+      expect($1).to match_version_requirements(">= 5.1.2", "< 9")
     end
 
     # this was a regression, requires ffmpeg to be linked correctly to network routines
@@ -148,21 +147,23 @@ describe "System Environment" do
 
     it "has acceptable version" do
       `qpdf --version` =~ /qpdf version (\d+\.\d+\.\d+)/
-      expect($1).to match_version_requirements(">= 9.1.1", "< 12")
+      expect($1).to match_version_requirements(">= 9.1.1", "< 13")
     end
   end
 
   describe "python CLI utilities" do
     describe "img2pdf" do
+      let(:cmd) { system("which uv 2>1 >/dev/null") ? 'uv run img2pdf' : 'img2pdf' }
+
       it "is present" do
-        `img2pdf -h`
+        `#{cmd} -h`
       end
 
       it "can create a pdf from a jp2" do
         input_path =  File.join(test_support_dir, "images/30x30.jp2")
         output_path = File.join(tmp_output_dir, "sample.pdf")
 
-        `img2pdf #{input_path} > #{output_path}`
+        `#{cmd} #{input_path} > #{output_path}`
       ensure
         FileUtils.rm(output_path) if File.exist?(output_path)
       end
