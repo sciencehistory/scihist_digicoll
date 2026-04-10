@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
+ActiveRecord::Schema[8.1].define(version: 2026_03_24_170634) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -352,6 +352,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_10_185449) do
   end
 
   add_foreign_key "fixity_checks", "kithe_models", column: "asset_id"
+  add_foreign_key "google_arts_and_culture_downloads", "users"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "containee_id"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "container_id"
   add_foreign_key "kithe_models", "digitization_queue_items"
