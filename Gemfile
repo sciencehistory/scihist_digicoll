@@ -269,3 +269,5 @@ gem 'equivalent-xml'
 gem "bot_challenge_page", ">= 1.1.0", "< 2"
 
 gem "ruby-openai", "~> 8.0"
+
+gem "json_schemer", "~> 2.5.0"
