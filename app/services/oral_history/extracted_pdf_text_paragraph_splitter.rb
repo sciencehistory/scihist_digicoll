@@ -27,6 +27,10 @@ module OralHistory
     # <T: N min>  usually found in mid-paragraph.
     OLD_STYLE_TIMECODE_RE = /<T: (\d+) min>/
 
+    # We insert these ourselves to mark page breaks inside a paragraph.
+    # we make it legal html5 custom tag cause seems better. With placeholder for % interpolation.
+    PAGE_BREAK_MARKER = "<PAGE-BREAK next='%s'></PAGE-BREAK>"
+
     attr_reader :extracted_pdf_text
 
     def initialize(extracted_pdf_text:, validate: false)
@@ -81,7 +85,7 @@ module OralHistory
           last_paragraph.text = [
             last_paragraph.text,
             page_paragraphs.first["text"]
-          ].join(" <START-PAGE p='#{logical_page_number}'></START-PAGE> ")
+          ].join(" #{PAGE_BREAK_MARKER % logical_page_number} ")
 
           # and remove the first paragraph from our list for this page
           page_paragraphs.shift

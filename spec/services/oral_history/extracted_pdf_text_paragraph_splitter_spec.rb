@@ -37,7 +37,8 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
 
     it "joins paragraphs split across pages, with marker" do
       paragraphs = splitter.paragraphs
-      expect(paragraphs[9].text).to eq "About six miles south of Armagh which is the capital of <START-PAGE p='2'></START-PAGE> Northern Ireland, I think. It's a historic little town. Our home was right on the border between Ulster and the Free State, although technically in Ulster. I think I have a picture someplace of the house."
+
+      expect(paragraphs[9].text).to eq "About six miles south of Armagh which is the capital of <PAGE-BREAK next='2'></PAGE-BREAK> Northern Ireland, I think. It's a historic little town. Our home was right on the border between Ulster and the Free State, although technically in Ulster. I think I have a picture someplace of the house."
       expect(paragraphs[9].pdf_logical_page_number).to eq 1
     end
   end
@@ -84,7 +85,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       expect(joined_paragraph).to be_present
       expect(joined_paragraph.text).to end_with("I had the whole field to myself.")
       expect(joined_paragraph.pdf_logical_page_number).to eq 8
-      expect(joined_paragraph.text).to include "<START-PAGE p='9'></START-PAGE>"
+      expect(joined_paragraph.text).to include "<PAGE-BREAK next='9'></PAGE-BREAK>"
     end
   end
 
