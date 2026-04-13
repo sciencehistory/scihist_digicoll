@@ -18,11 +18,15 @@ namespace :scihist do
       progress_bar = ProgressBar.create(total: scope.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
       in_copyright_url = 'http://rightsstatements.org/vocab/InC/1.0/'
-      scope.find_each do |w|
-        w.rights = in_copyright_url
-        w.save!
-        progress_bar.increment
+
+      Kithe::Indexable.index_with(batching: true) do
+        scope.find_each do |w|
+          w.rights = in_copyright_url
+          w.save!
+          progress_bar.increment
+        end
       end
+
     end
   end
 end
