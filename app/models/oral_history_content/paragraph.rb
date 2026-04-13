@@ -61,7 +61,9 @@ class OralHistoryContent
     attr_accessor :speaker_name, :text
 
     # Requires at least one of `text` or `ohms_vtt_html`.
-    def initialize(text:nil, ohms_vtt_html:nil,paragraph_index:nil, speaker_name:nil, included_timestamps:nil)
+    def initialize(text:nil, ohms_vtt_html:nil,
+        paragraph_index:nil, speaker_name:nil, included_timestamps:nil, pdf_logical_page_number: nil)
+
       if text.nil? && ohms_vtt_html.nil?
         raise ArgumentError.new("Need one of text: or ohms_vtt_html but both blank")
       end
