@@ -20,6 +20,13 @@ module OralHistory
     # Some have hyphens!
     SPEAKER_NAME_RE = /\A([\p{Word}\- '`\.]{1,40}): */
 
+    # [hh::mm::ss] and suck up spaces on either side. Usually found at beginning
+    # of paragraph.
+    NEW_STYLE_TIMECODE_RE  = /\A[[:space:]]*\[(\d+\:\d+:\d+)\][[:space:]]*/
+
+    # <T: N min>  usually found in mid-paragraph.
+    OLD_STYLE_TIMECODE_RE = /<T: (\d+) min>/
+
     attr_reader :extracted_pdf_text
 
     def initialize(extracted_pdf_text:, validate: false)
@@ -161,15 +168,12 @@ module OralHistory
     end
 
     def json_to_paragraph(paragraph_json, logical_page_number:)
-      new_style_timecode_re = /\A[[:space:]]*\[(\d+\:\d+:\d+)\][[:space:]]*/
-      old_style_timecode_re = /<T: (\d+) min>/
-
       text = paragraph_json["text"]
 
       # look for new style timecode as prefix
-      if text.sub!(new_style_timecode_re, '')
+      if text.sub!(NEW_STYLE_TIMECODE_RE, '')
         timestamp = OhmsHelper.parse_ohms_timestamp($1)
-      elsif text =~ old_style_timecode_re
+      elsif text =~ OLD_STYLE_TIMECODE_RE
         # look for timecode in old style <T: \d min> thing, leave
         # in text in case we want to mark exact timecode location later
         timestamp = $1.to_i * 60
