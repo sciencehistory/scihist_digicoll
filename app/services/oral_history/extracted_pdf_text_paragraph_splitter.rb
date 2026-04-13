@@ -27,6 +27,9 @@ module OralHistory
     # <T: N min>  usually found in mid-paragraph.
     OLD_STYLE_TIMECODE_RE = /<T: (\d+) min>/
 
+    # A paragraph consisting solely of a page number
+    PAGE_NUMBER_RE = /\A(?:[Pp]age )?(\d+)\Z/
+
     # We insert these ourselves to mark page breaks inside a paragraph.
     # we make it legal html5 custom tag cause seems better. With placeholder for % interpolation.
     PAGE_BREAK_MARKER = "<PAGE-BREAK next='%s'></PAGE-BREAK>"
@@ -69,13 +72,20 @@ module OralHistory
         # care about blocks for processing at the moment.
         page_paragraphs = page_json["blocks"].collect {|h| h["paragraphs"]}.flatten
 
+        # usually on bottom, sometimes on top
+        logical_page_number = extract_and_remove_logical_page_number(page_paragraphs)
+
         if page_index == first_index
           trim_first_page_prefatory(page_paragraphs)
         end
 
-        next if page_paragraphs.empty?
+        # A heading htat matches the post-transcript material, we're done!
+        if page_paragraphs.first&.dig("text")&.downcase&.strip&.in?(POST_TRANSCRIPT_HEADINGS)
+          break
+        end
 
-        logical_page_number = extract_and_remove_logical_page_number(page_paragraphs)
+
+        next if page_paragraphs.empty?
 
         # Should the first paragraph be joined to the last paragraph of the prior page, does
         # it look like a split paragraph?
@@ -110,25 +120,26 @@ module OralHistory
       return paragraphs
     end
 
-    # Block with only one paragraph, whose whole text is a integer page number -- we don't worry
-    # about roman numerals for now, cause all of those are prefatory material we don't care about
-    # at the moment.
+    # Block with only one paragraph, whose whole text is a integer page number (possibly preceded
+    # by 'Page') -- we don't worry  about roman numerals for now, cause all of those are prefatory
+    # material we don't care about at the moment.
     #
     # @return [False,Integer] if it's a page number block, Integer page number extracted, otherwise false.
     def block_is_page_number(json_block)
       return false unless json_block
 
-      if json_block["paragraphs"].count == 1 && (json_block["paragraphs"].first["text"] =~ /\A(\d+)\Z/)
+      if json_block["paragraphs"].count == 1 && (json_block["paragraphs"].first["text"] =~ PAGE_NUMBER_RE)
         return $1.to_i
       else
         return false
       end
     end
 
-    # index in array of page with numeral "1" as page number
+    # index in array of page with numeral "1" as page number, can be at top or bottom
     def find_page_1_index(pages)
       pages.find_index do |page_json|
-        block_is_page_number(page_json["blocks"]&.last).to_s == "1"
+        block_is_page_number(page_json["blocks"]&.last).to_s == "1" ||
+        block_is_page_number(page_json["blocks"]&.first).to_s.downcase.in?([ "1", "page 1"])
       end
     end
 
@@ -139,7 +150,7 @@ module OralHistory
     def find_last_transcript_page_index(pages, start_at_index:0)
       found_index = pages.each_with_index.find_index do |page_json, index|
         index >= start_at_index &&
-        page_json["blocks"].first&.dig("paragraphs")&.first&.dig("text")&.downcase&.strip&.in?(POST_TRANSCRIPT_HEADINGS)
+           page_json["blocks"].first&.dig("paragraphs")&.first&.dig("text")&.downcase&.strip&.in?(POST_TRANSCRIPT_HEADINGS)
       end
 
       found_index && found_index - 1
@@ -159,17 +170,19 @@ module OralHistory
     # if a pagination marking paragraph is identified , we return the page number
     # extracted, and mutate page_paragraphs_json to remove it. Otherwise return nil.
     def extract_and_remove_logical_page_number(page_paragraphs_json)
-      if page_paragraphs_json.last["text"].strip =~ /\A(\d+)\Z/
+      if page_paragraphs_json.last["text"].strip =~ PAGE_NUMBER_RE
         logical_page_number = $1.to_i
-
-        # remove that last paragraph from array, it's a page number
         page_paragraphs_json.pop
-
-        return logical_page_number
+      elsif page_paragraphs_json.first["text"].strip =~ PAGE_NUMBER_RE
+        logical_page_number = $1.to_i
+        page_paragraphs_json.shift
       end
 
-      return nil
+      return logical_page_number
     end
+
+
+
 
     def json_to_paragraph(paragraph_json, logical_page_number:)
       text = paragraph_json["text"]

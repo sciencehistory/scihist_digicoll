@@ -43,6 +43,33 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     end
   end
 
+  describe "old transcript with upper page numbers" do
+    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q 2.pdf"}
+
+    it "can still get page numbers" do
+      paragraphs = splitter.paragraphs
+
+      expect(paragraphs).to all(be_kind_of(OralHistoryContent::Paragraph))
+
+      expect(paragraphs).to all(have_attributes(
+        paragraph_index: be_present, pdf_logical_page_number: be_present, text: be_present)
+      )
+      # this one does not have timestamps
+      expect(paragraphs).to all(have_attributes(included_timestamps: be_blank))
+
+      # all page numbers are increasing
+      expect(paragraphs.each_cons(2)).to all(satisfy { |a, b| a.pdf_logical_page_number <= b.pdf_logical_page_number })
+
+      # Some details of the PDF we know and check, first and last paragraphs
+      expect(paragraphs.first.pdf_logical_page_number).to eq 1
+      # we skipped some internal pages in this sample
+      expect(paragraphs.last.pdf_logical_page_number).to eq 33
+
+
+      expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,32,33]
+    end
+  end
+
   describe "mid-era transcript, with minute timestamp style" do
     let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"}
 
