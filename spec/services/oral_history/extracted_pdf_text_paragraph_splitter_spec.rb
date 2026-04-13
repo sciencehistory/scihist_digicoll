@@ -6,7 +6,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
   let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text) }
 
   describe "very old transcript" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/sample_pages_1984_rice_b2l9q.pdf"}
+    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/rice_1984_sample_pages_fhb2l9q.pdf"}
 
     it "extracts good paragraphs" do
       paragraphs = splitter.paragraphs
@@ -91,7 +91,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
 
 
   describe "newer transcript, with new style per-paragraph timestamps" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sample_pages_nw2l9.pdf"}
+    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sample_pages_ebnw2l9.pdf"}
 
     it "extracts timestamps" do
       paragraphs = splitter.paragraphs
@@ -123,7 +123,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       # paragraph 5 is assumed speaker name AND should be joined to end on next page
       expect(paragraphs[4].speaker_name).to be_nil
       expect(paragraphs[4].assumed_speaker_name).to eq "GLUSKER"
-      expect(paragraphs[4].text).to match %r{\AAnd my father’s father.*<START-PAGE p='2'></START-PAGE>.*I don’t know if you can turn that around\.\Z}
+      expect(paragraphs[4].text).to match %r{\AAnd my father’s father.*<PAGE-BREAK next='2'></PAGE-BREAK>.*I don’t know if you can turn that around\.\Z}
       expect(paragraphs[4].included_timestamps).to eq [91]
       expect(paragraphs[4].pdf_logical_page_number).to eq 1
     end
