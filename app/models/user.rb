@@ -19,6 +19,7 @@ class User < ApplicationRecord
 
   has_many :cart_items, dependent: :delete_all
   has_many :works_in_cart, through: :cart_items, source: :work
+  has_many :google_arts_and_culture_downloads
 
   # This will correspond to a "role" in the AccessPolicy class.
   # basic_internal is anyone with a @sciencehistory.org login, others are elevated permissions
