@@ -62,10 +62,7 @@ module OralHistory
         raise Error.new("Could not find page 1 index")
       end
 
-      # just default to last page though if we can't find one
-      last_index = find_last_transcript_page_index(extracted_pdf_text_pages) || extracted_pdf_text_pages.count - 1
-
-      (first_index..last_index).each do |page_index|
+      (first_index..(extracted_pdf_text_pages.count - 1)).each do |page_index|
         page_json = extracted_pdf_text_pages[page_index]
 
         # dup em so we can modify the list to remove page numbers paragraphs. We don't
@@ -141,19 +138,6 @@ module OralHistory
         block_is_page_number(page_json["blocks"]&.last).to_s == "1" ||
         block_is_page_number(page_json["blocks"]&.first).to_s.downcase.in?([ "1", "page 1"])
       end
-    end
-
-    # Index in array of LAST page of interview transcript itself, before
-    # any post-transcript info, which we recognize from headings.
-    #
-    # @return [Integer,nil] nil if it can't find
-    def find_last_transcript_page_index(pages, start_at_index:0)
-      found_index = pages.each_with_index.find_index do |page_json, index|
-        index >= start_at_index &&
-           page_json["blocks"].first&.dig("paragraphs")&.first&.dig("text")&.downcase&.strip&.in?(POST_TRANSCRIPT_HEADINGS)
-      end
-
-      found_index && found_index - 1
     end
 
     # The first page has "INTERVIEWER(S):", etc, which vary, but we think

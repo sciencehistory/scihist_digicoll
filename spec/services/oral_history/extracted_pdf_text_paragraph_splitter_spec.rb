@@ -44,7 +44,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
   end
 
   describe "old transcript with upper page numbers" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q 2.pdf"}
+    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q.pdf"}
 
     it "can still get page numbers" do
       paragraphs = splitter.paragraphs
