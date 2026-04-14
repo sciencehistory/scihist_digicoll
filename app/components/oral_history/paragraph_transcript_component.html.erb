@@ -1,7 +1,11 @@
 <div class="ohms-transcript-container">
-  <% display_paragraphs do |start_seconds:, speaker_label:, html_text:, fragment_id:| %>
+  <% display_paragraphs do |html_text:, fragment_id:, page_marker: nil, start_seconds:nil, speaker_label:nil| %>
       <div class="ohms-transcript-paragraph-wrapper">
         <p class="ohms-transcript-paragraph" data-searchable-transcript-line="true" id="<%= fragment_id %>">
+          <% if page_marker.present? %>
+            <span class="ohms-transcript-timestamp text-muted">Page <%= page_marker %></span>
+          <% end %>
+
           <% if start_seconds %>
             <%=  content_tag(
                     "a",
