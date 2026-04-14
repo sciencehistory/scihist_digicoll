@@ -30,13 +30,35 @@ module OralHistory
     # A paragraph consisting solely of a page number
     PAGE_NUMBER_RE = /\A(?:[Pp]age )?(\d+)\Z/
 
+    # often it's own paragraph, but can also be mid-paragraph, maybe from zoom!
+    END_OF_AUDIO_FILE_RE = /\[END OF AUDIO, FILE .*\]/
+
     # We insert these ourselves to mark page breaks inside a paragraph.
     # we make it legal html5 custom tag cause seems better. With placeholder for % interpolation.
     PAGE_BREAK_MARKER = "<PAGE-BREAK next='%s'></PAGE-BREAK>"
 
-    attr_reader :extracted_pdf_text
+    attr_reader :extracted_pdf_text, :file_start_times
 
-    def initialize(extracted_pdf_text:, validate: false)
+
+    # @param extracted_pdf_text [Hash] jsonable Hash of text and structural metadata from PDF
+    #        as returned by OralHistory::ExtractPdftext
+    #
+    # @param validate [Boolean] default true, will validate extracted_pdf_text to a JSON schema.
+    #
+    # @param file_start_times [Hash] as if might come from metadata 'start_times' in an
+    #   oral_history_content&.combined_audio_component_metadata. Eg
+    #
+    #       {
+    #          uuid  => 0,
+    #          uuid1 => 2837,
+    #          uuid2 => 3723
+    #       }
+    #
+    #    The key uuid is actually ignored, but the ORDER in hash matters, to represent
+    #    actual order of files. While optional, if it is needed for accurate timestamps,
+    #    it's required and you'll get an error.
+    #
+    def initialize(extracted_pdf_text:, validate: false, file_start_times: nil)
       unless extracted_pdf_text.kind_of?(Hash) && extracted_pdf_text["pages"].kind_of?(Array)
         raise ArgumentError.new("extracted_pdf_text: needs to be a hash matching ExtractPdfText::JSON_SCHEMER")
       end
@@ -47,6 +69,7 @@ module OralHistory
       end
 
       @extracted_pdf_text = extracted_pdf_text
+      @file_start_times = file_start_times
     end
 
     def paragraphs
@@ -61,6 +84,8 @@ module OralHistory
       unless first_index
         raise Error.new("Could not find page 1 index")
       end
+
+      timestamp_file_offset_index = 0
 
       (first_index..(extracted_pdf_text_pages.count - 1)).each do |page_index|
         page_json = extracted_pdf_text_pages[page_index]
@@ -81,12 +106,17 @@ module OralHistory
           break
         end
 
-
         next if page_paragraphs.empty?
 
         # Should the first paragraph be joined to the last paragraph of the prior page, does
         # it look like a split paragraph?
         last_paragraph = paragraphs.last
+
+        # Analyze paragraphs for [END OF AUDIO] mark to assign proper file offset index,
+        # and update our current index if it got incremented.
+        timestamp_file_offset_index =
+          assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
+
         if last_paragraph && (last_paragraph.text !~ (/\.?\!\Z/)) && !page_paragraphs.first["text"].start_with?(SPEAKER_NAME_RE)
           # first doesn't end punctuation, and second doesn't begin with a speaker label? let's join em
           last_paragraph.text = [
@@ -167,7 +197,29 @@ module OralHistory
     end
 
 
+    # Analyze paragraphs for [END OF AUDIO] mark to assign proper file offset index,
+    # and update our current index.
+    #
+    # @param page_paragrahs [Array<Hash>] of json page paragraphs. Will mutate to add
+    # `timestamp_file_offset_index` key
+    #
+    # @param timestamp_file_offset_index [Integer] initial
+    #
+    # @return [Integer] updated timestamp_file_offset_index
+    #
+    def assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
+      page_paragraphs.each do |paragraph_json|
 
+        paragraph_json["timestamp_file_offset_index"] = timestamp_file_offset_index
+
+        # OFten it's own paragraph, but can also be mid-paragraph, perahps from zoom!
+        if paragraph_json["text"] =~ END_OF_AUDIO_FILE_RE
+          timestamp_file_offset_index += 1
+        end
+      end
+
+      return timestamp_file_offset_index
+    end
 
     def json_to_paragraph(paragraph_json, logical_page_number:)
       text = paragraph_json["text"]
@@ -179,6 +231,18 @@ module OralHistory
         # look for timecode in old style <T: \d min> thing, leave
         # in text in case we want to mark exact timecode location later
         timestamp = $1.to_i * 60
+      end
+
+      # adjust for offset if it's got a file offset index recorded, can apply to newstyle and old
+      if timestamp && (current_index = paragraph_json["timestamp_file_offset_index"].to_i) != 0
+        # we need to add on the start time of current non-0 segment
+        offset = file_start_times&.values&.dig(current_index)
+
+        unless offset.present?
+          raise Error.new("Could not find file start time offset for index #{current_index.inspect} in offsets #{file_start_times.inspect}")
+        end
+
+        timestamp += offset
       end
 
       # Do we have a speaker name? Remove it from text but record it as speaker name.

@@ -113,6 +113,35 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       expect(joined_paragraph.pdf_logical_page_number).to eq 8
       expect(joined_paragraph.text).to include "<PAGE-BREAK next='9'></PAGE-BREAK>"
     end
+
+    describe "that need re-sequencing for starting over at new audio files" do
+      let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/macfarlane_1982_sequence_timestamps_example.pdf"}
+
+      it "raises if it does not have file_start_times sequencing info" do
+        expect {
+          splitter.paragraphs
+        }.to raise_error( OralHistory::ExtractedPdfTextParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
+      end
+
+      describe "with file_start_times offsets" do
+        let(:file_start_times) { { "random1" => 0, "random2" => 152*60 } }
+        let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times) }
+
+
+        it "re-sequences timestamps in one order with offsets" do
+          paragraphs = splitter.paragraphs
+
+          with_timestamps = paragraphs.find_all { |p| p.included_timestamps.present? }
+
+          # everything that has a timestamp is increasing
+          expect(
+            with_timestamps.each_cons(2)
+          ).to all(satisfy { |a, b|  a.included_timestamps.first <= b.included_timestamps.first })
+
+          expect(with_timestamps.collect(&:included_timestamps).collect(&:first)).to eq [150 * 60, 5*60 + 152*60, 10*60 +  152*60]
+        end
+      end
+    end
   end
 
 
@@ -153,5 +182,31 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       expect(paragraphs[4].included_timestamps).to eq [91]
       expect(paragraphs[4].pdf_logical_page_number).to eq 1
     end
+
+
+    describe "that need re-sequencing for starting over at new audio files" do
+      let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf"}
+
+      it "raises if it does not have file_start_times sequencing info" do
+        expect {
+          splitter.paragraphs
+        }.to raise_error( OralHistory::ExtractedPdfTextParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
+      end
+
+      describe "with file_start_times offsets" do
+        let(:file_start_times) { { "random1" => 60*60*2, "random2" => 60*60*4, "random3" => 60*60*6 } }
+        let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times) }
+
+        it "re-sequences timestamps in one order with offsets" do
+          paragraphs = splitter.paragraphs
+
+          # everything that has a timestamp is increasing
+          expect(
+            paragraphs.find_all {|p| p.included_timestamps.present? }.each_cons(2)
+          ).to all(satisfy { |a, b|  a.included_timestamps.first <= b.included_timestamps.first })
+        end
+      end
+    end
+
   end
 end
