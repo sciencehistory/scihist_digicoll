@@ -1,5 +1,5 @@
-# Represents a zip file containing files and metadata meant to be downloaded from S3 and then exported into Google Arts and Culture.
 
+# Represents a zip file containing files and metadata meant to be downloaded from S3 and then exported into Google Arts and Culture.
 class GoogleArtsAndCultureDownload < ApplicationRecord
   SHRINE_STORAGE_KEY = :google_arts_and_culture
   enum :status, %w{in_progress uploading success error}.collect {|v| [v, v]}.to_h.freeze
@@ -54,4 +54,5 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
     Rails.logger.info e.message
     update!({status: 'error', error_info: e.message})
   end
+  
 end
