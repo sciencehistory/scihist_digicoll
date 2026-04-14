@@ -11,18 +11,9 @@ namespace :scihist do
 
     task :change_oral_histories_rights => :environment do
 
-      cc_licenses = Work.where("json_attributes -> 'genre' ?  'Oral histories'").
-        where("json_attributes ->> 'rights' ilike '%creativecommons%'")
-
-      blank_licenses = Work.where("json_attributes -> 'genre' ?  'Oral histories'").
-        where("json_attributes ->> 'rights' is null")
-
       works_changed = []
 
-      puts "CC licenses:    #{cc_licenses.count}"
-      puts "Blank licenses: #{blank_licenses.count}"
-
-      scope = cc_licenses.or(blank_licenses)
+      scope = Work.where("json_attributes -> 'genre' ?  'Oral histories'")
 
       progress_bar = ProgressBar.create(total: scope.count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
 
@@ -30,10 +21,15 @@ namespace :scihist do
 
       Kithe::Indexable.index_with(batching: true) do
         scope.find_each do |w|
-          w.rights = in_copyright_url
-          w.save!
-          works_changed << w.friendlier_id
-          progress_bar.increment
+          if  (!w.rights.present?) || w.rights.include?('creativecommons')
+            old_rights = w.rights
+            works_changed << [w.friendlier_id, old_rights]
+            
+            w.rights = in_copyright_url
+            w.save!
+            
+            progress_bar.increment
+          end
         end
       end
 
