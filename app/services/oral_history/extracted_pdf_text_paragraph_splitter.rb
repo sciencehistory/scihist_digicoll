@@ -3,10 +3,20 @@ module OralHistory
   # just the actual interview transcript itself (no intro or suffix material), parsed
   # into our OralHistory::Paragraph objects.
   #
-  # We do NOT currently parse notes out, they are a lot harder (esp over the years)
+  # We do NOT currently parse footnote/endnotes out, they are a lot harder (esp over the years)
   #
-  # Record any identified page numbers and timecodes in Paragraph, and join paragraphs
-  # across page boundaries.
+  # Ended up having to handle some tricky edge cases, leading to a bit squirrely code:
+  #
+  # * Joins paragraphs split across page bounds
+  #
+  # * Finds page numbers in standard bottom of page and unusual old top-of-page locations,
+  #   and strips and records in metadata
+  #
+  # * Finds internal timestamps in old `<T: N min>` format and new [hh:mm:ss] format,
+  #   and records timestamp metadata.
+  #
+  # * handles timestamps taht reset after `[END OF AUDIO` markers, re-seqencing
+  #  full-transcript timestamps.
   #
   class ExtractedPdfTextParagraphSplitter
     class Error < StandardError; end
