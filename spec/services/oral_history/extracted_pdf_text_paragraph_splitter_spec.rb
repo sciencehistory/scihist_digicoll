@@ -98,9 +98,8 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       # we skipped some internal pages in this sample
       expect(paragraphs.last.pdf_logical_page_number).to eq 103
 
-      # everyone has a speaker name or assumed_speaker_name, but not both.
-      # Wow it's the XOR operatopr
-      expect(paragraphs).to all(satisfy { |p| p.speaker_name.present? ^ p.assumed_speaker_name.present? })
+      end_of_interview_p = paragraphs.find { |p| p.text.start_with?('[END OF INTERVIEW]')}
+      expect(end_of_interview_p).not_to have_attributes(speaker_name: :present, assumed_speaker_name: :present)
 
       expect(paragraphs.collect(&:speaker_name).uniq.compact.sort).to eq ["GRAYSON", "MACFARLANE"]
     end

@@ -109,7 +109,8 @@ module OralHistory
       # Make sure everyone has an assumed speaker if they didn't have a speaker,
       # just keep it going from previous paragraph.
       paragraphs.each_cons(2) do |p1, p2|
-        if p2.speaker_name.nil?
+        # if it begins with `[` it's a note like "[END OF TAPE]" and not an utterance
+        if p2.speaker_name.nil? && !p2.text&.start_with?('[')
           p2.assumed_speaker_name = p1.speaker_name || p1.assumed_speaker_name
         end
       end
