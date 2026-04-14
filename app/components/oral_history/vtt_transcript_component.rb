@@ -65,7 +65,7 @@ module OralHistory
 
           yield(
             start_seconds: paragraph.included_timestamps&.first,
-            speaker_name: (paragraph_speaker_name if paragraph_speaker_name != last_speaker),
+            speaker_label: (paragraph_speaker_name if paragraph_speaker_name != last_speaker),
             html_text: paragraph_safe_html,
             fragment_id: paragraph.fragment_id
           )

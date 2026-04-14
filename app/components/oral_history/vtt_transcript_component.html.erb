@@ -1,5 +1,5 @@
 <div class="ohms-transcript-container">
-  <% display_paragraphs do |start_seconds:, speaker_name:, html_text:, fragment_id:| %>
+  <% display_paragraphs do |start_seconds:, speaker_label:, html_text:, fragment_id:| %>
       <div class="ohms-transcript-paragraph-wrapper">
         <p class="ohms-transcript-paragraph" data-searchable-transcript-line="true" id="<%= fragment_id %>">
           <% if start_seconds %>
@@ -15,8 +15,8 @@
             %>
           <% end %>
 
-          <% if speaker_name %>
-            <span class="transcript-speaker"><%= speaker_name %></span>:
+          <% if speaker_label.present? %>
+            <span class="transcript-speaker"><%= speaker_label %></span>:
           <% end %>
 
           <%= html_text %>
