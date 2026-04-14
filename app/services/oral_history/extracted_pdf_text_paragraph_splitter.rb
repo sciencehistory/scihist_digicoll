@@ -41,7 +41,7 @@ module OralHistory
     PAGE_NUMBER_RE = /\A(?:[Pp]age )?(\d+)\Z/
 
     # often it's own paragraph, but can also be mid-paragraph, maybe from zoom!
-    END_OF_AUDIO_FILE_RE = /\[END OF AUDIO, FILE .*\]/
+    END_OF_AUDIO_FILE_RE = /\[END OF (AUDIO, FILE)|(TAPE, SIDE) .*\]/
 
     # We insert these ourselves to mark page breaks inside a paragraph.
     # we make it legal html5 custom tag cause seems better. With placeholder for % interpolation.
