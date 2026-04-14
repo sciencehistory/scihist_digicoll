@@ -16,30 +16,21 @@ module GoogleArtsAndCulture
       else
         columns.select { |c| all_attributes.keys.include? c }
       end
+    end
 
+    # Only works within this scope should be exported to Google Arts and Culture.
+    def self.eligible_scope
+      museum_scope = Work.where(published: true).
+      where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Museum'] ).
+      where("json_attributes -> 'format'     ?| array[:formats]", formats: ['physical_object'] ).
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['https://creativecommons.org/licenses/by/4.0/'] )
 
-      @verbose_mode = false
-      if @verbose_mode
-        message = <<-MESSAGE
-        Starting a Google Arts and Culture export.
-        Class name:
-        #{self.class.name}
+      library_scope = Work.where(published: true).
+      where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Library'] ).
+      where("json_attributes -> 'format'     ?| array[:formats]", formats: ['image'] ).
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] )
 
-        Works we are exporting:
-        #{@scope.pluck('friendlier_id').inspect}
-
-        Metadata we are exporting:
-        #{@attribute_keys.inspect}
-
-        Array attributes:
-        #{array_attributes.inspect}
-
-        Count for each array attribute:
-        #{column_counts.inspect}
-MESSAGE
-        Rails.logger.info message
-      end
-
+      museum_scope.or(library_scope)
     end
 
     # Does not close the tempfile.
