@@ -8,6 +8,9 @@ module GoogleArtsAndCulture
     def initialize(scope, columns: nil)
       @original_scope = scope
       @scope = scope.where(published: true, type: "Work")
+
+      raise StandardError, "No works in scope." unless @scope.count > 0
+
       @attribute_keys = if columns.nil?
         all_attributes.keys
       else
@@ -15,9 +18,9 @@ module GoogleArtsAndCulture
       end
 
 
-      @verbose_mode = true
+      @verbose_mode = false
       if @verbose_mode
-        Rails.logger.info <<-MESSAGE
+        message = <<-MESSAGE
         Starting a Google Arts and Culture export.
         Class name:
         #{self.class.name}
@@ -34,6 +37,7 @@ module GoogleArtsAndCulture
         Count for each array attribute:
         #{column_counts.inspect}
 MESSAGE
+        Rails.logger.info message
       end
 
     end
@@ -62,11 +66,13 @@ MESSAGE
     # Returns a hash of filenames and downloadable files:
     # file_hash.each { |filename, downloadable_file| [...] }
     def file_hash
-      result = {}
-      @scope.each do |work|
-        result.merge!(WorkSerializer.file_hash(work))
+      @file_hash ||= begin
+        result = {}
+        @scope.each do |work|
+          result.merge!(WorkSerializer.file_hash(work))
+        end
+        result
       end
-      result
     end
 
 
