@@ -41,7 +41,7 @@
 
 <div class="border p-3 mb-5">
   <h2>2: Prepare a download</h1>
-  <p>The file prepared will contain all the published works in your cart. You can add some bookkeeping notes for later reference, if you want.</p>
+  <p>The download will contain all the published works in your cart. You can add some bookkeeping notes for later reference.</p>
   <%= simple_form_for(:export_cart, url: export_cart_admin_google_arts_and_culture_downloads_path, method: :post) do |f| %>
     <%= f.input :user_notes, required: false, label: "Your notes"  %>
   <%= f.button :submit, value: "Prepare your download", data: { confirm: "Prepare a GAC download containing metadata and files for all the works in your cart? This may take several hours."} %>
@@ -49,7 +49,7 @@
 </div>
 
 <div class="border p-3 mb-5">
-  <h2>3: Download your files and metadata</h2>
+  <h2>3: Download files and metadata</h2>
   <table class="table admin-list">
     <thead>
       <tr>
