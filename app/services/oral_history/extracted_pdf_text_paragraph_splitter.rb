@@ -118,29 +118,34 @@ module OralHistory
 
         next if page_paragraphs.empty?
 
-        # Should the first paragraph be joined to the last paragraph of the prior page, does
-        # it look like a split paragraph?
-        last_paragraph = paragraphs.last
-
         # Analyze paragraphs for [END OF AUDIO] mark to assign proper file offset index,
         # and update our current index if it got incremented.
         timestamp_file_offset_index =
           assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
 
-        if last_paragraph && (last_paragraph.text !~ (/\.?\!\Z/)) && !page_paragraphs.first["text"].start_with?(SPEAKER_NAME_RE)
+
+        # Turn from hashes to good objects
+        page_paragraph_objects = page_paragraphs.collect do |paragraph_json|
+          json_to_paragraph(paragraph_json, logical_page_number: logical_page_number)
+        end
+
+        # Should the first paragraph be joined to the last paragraph of the prior page, does
+        # it look like a split paragraph?
+        last_paragraph = paragraphs.last
+
+        if last_paragraph && last_paragraph.text !~ (/\.?\!\Z/) && page_paragraph_objects.first.speaker_name.blank?
           # first doesn't end punctuation, and second doesn't begin with a speaker label? let's join em
           last_paragraph.text = [
             last_paragraph.text,
-            page_paragraphs.first["text"]
+            page_paragraph_objects.first.text
           ].join(" #{PAGE_BREAK_MARKER % logical_page_number} ")
 
           # and remove the first paragraph from our list for this page
-          page_paragraphs.shift
+          page_paragraph_objects.shift
         end
 
-        paragraphs.concat(page_paragraphs.collect do |paragraph_json|
-          json_to_paragraph(paragraph_json, logical_page_number: logical_page_number)
-        end)
+        # And now add em all to big paragraph list!
+        paragraphs.concat(page_paragraph_objects)
       end
 
       # add in 1-based paragraph indexes

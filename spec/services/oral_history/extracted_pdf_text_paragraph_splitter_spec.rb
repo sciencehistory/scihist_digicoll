@@ -178,9 +178,20 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       # paragraph 5 is assumed speaker name AND should be joined to end on next page
       expect(paragraphs[4].speaker_name).to be_nil
       expect(paragraphs[4].assumed_speaker_name).to eq "GLUSKER"
+
       expect(paragraphs[4].text).to match %r{\AAnd my father’s father.*<PAGE-BREAK next='2'></PAGE-BREAK>.*I don’t know if you can turn that around\.\Z}
       expect(paragraphs[4].included_timestamps).to eq [91]
       expect(paragraphs[4].pdf_logical_page_number).to eq 1
+
+
+      # should not be joined to separate paragraph on next page, cause it starts with
+      # a speaker label.
+      end_of_page_p_index = paragraphs.index { |p| p.text =~ /handled the gasoline/ }
+      end_of_page_p = paragraphs[end_of_page_p_index]
+      expect(end_of_page_p.text).not_to match /Oh, you’re welcome/
+      next_p = paragraphs[end_of_page_p_index + 1]
+      expect(next_p.speaker_name).to eq "GLUSKER"
+      expect(next_p.text).to eq "Oh, you’re welcome."
     end
 
 
