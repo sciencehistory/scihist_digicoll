@@ -34,6 +34,11 @@ class Admin::GoogleArtsAndCultureDownloadsController < AdminController
 
   def export_cart
     user_notes = params.dig('export_cart', 'user_notes')
+    unless current_user.works_in_cart.where(published:true).present?
+      redirect_to admin_google_arts_and_culture_downloads_path, notice: "Add at least one published work to your cart first."
+      return
+    end
+
     GoogleArtsAndCultureDownloadCreatorJob.perform_later(user: current_user, user_notes: user_notes)
     redirect_to admin_google_arts_and_culture_downloads_path, notice: "Currently preparing a new download based on the works. Reload this page to see progress."
   end
