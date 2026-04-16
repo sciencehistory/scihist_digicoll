@@ -16,6 +16,8 @@ class OralHistory::AiConversation < ApplicationRecord
 
   self.filter_attributes += [:question_embedding] # it's just too long
 
+  has_many :ai_coversation_feedback, dependent: :delete_all
+
   enum :status, { queued: "queued", in_process: "in_process", success: "success", error: "error" }, prefix: :status
 
   before_save do
