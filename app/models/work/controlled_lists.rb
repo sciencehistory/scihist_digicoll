@@ -100,6 +100,7 @@ class Work
       'Miller, Megan',
       'Mirror Image Media, LLC',
       'Muhlin, Jay',
+      'Myers, Emmett',
       'Newhouse, Sarah',
       'Pinkney, Annabel',
       'Reflex Technologies',
