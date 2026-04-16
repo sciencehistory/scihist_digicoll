@@ -33,6 +33,16 @@ class AccessPolicy
       # right now we let them read all conversations, we aren't yet restricting to only see own
       can :read, OralHistory::AiConversation
       can :create, OralHistory::AiConversation
+
+      # We have to look at associated work/oh, can bebit expensive in bulk, beware
+      # basic_internal read published AND automatic-approval requestable.
+      can :read, Asset do |asset, user|
+        asset.published? ||
+          (
+            asset.oh_available_by_request? &&
+            asset.work.oral_history_content.available_by_request_automatic?
+          )
+      end
     end
 
     role :public do
