@@ -19,6 +19,10 @@ module OralHistory
       @pdf_file_path = pdf_file_path.to_s
     end
 
+    def extracted_pdf_text
+      @extracted_pdf_text ||= extract_pdf_text
+    end
+
     # use our extract_pdf_text.py python helper based on PyMyPDF to
     # get a json-compat hash representation that is pretty structural.
     #
@@ -28,7 +32,7 @@ module OralHistory
 
       parsed = JSON.parse(out)
       if validate
-        validate_extract_pdf_text_json(parsed)
+        self.class.validate_extract_pdf_text_json(parsed)
       end
 
       parsed
@@ -43,7 +47,7 @@ module OralHistory
       @extract_pdf_text_tty_command ||= TTY::Command.new(printer: :null)
     end
 
-    def validate_extract_pdf_text_json(as_json)
+    def self.validate_extract_pdf_text_json(as_json)
       errors = JSON_SCHEMER.validate(as_json).to_a
 
       if errors.present?

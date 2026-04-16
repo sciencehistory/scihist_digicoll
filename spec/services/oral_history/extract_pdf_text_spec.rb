@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe OralHistory::ExtractPdfText do
-  let(:old_oh_sample_pages_pdf_path) { Rails.root + "spec/test_support/pdf/oh/old_sample_pages_rice_b2l9q.pdf"}
+  let(:old_oh_sample_pages_pdf_path) { Rails.root + "spec/test_support/pdf/oh/rice_1984_sample_pages_fhb2l9q.pdf"}
 
   describe "#extract_pdf_text" do
     it "extracts text from an older oh pdf" do

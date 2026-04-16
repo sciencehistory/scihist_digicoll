@@ -30,7 +30,7 @@ class OralHistoryContent
     attr_reader :transcript_id
 
     # @return [integer] 1-based index of paragraph in document
-    attr_reader :paragraph_index
+    attr_accessor :paragraph_index
 
     # Plain text, will always be present, may be converted from html
     attr_reader :text
@@ -54,17 +54,23 @@ class OralHistoryContent
     #    from previous paragraph here.
     attr_accessor :assumed_speaker_name
 
+    # Can be blank, but page number in PDF from marked pagination (not physical page)
+    attr_accessor :pdf_logical_page_number
+
     # OHMS transcript sub-classes get these from OHMS transcript model classes
     attr_accessor :speaker_name, :text
 
     # Requires at least one of `text` or `ohms_vtt_html`.
-    def initialize(text:nil, ohms_vtt_html:nil,paragraph_index:, speaker_name:, included_timestamps:nil)
+    def initialize(text:nil, ohms_vtt_html:nil,
+        paragraph_index:nil, speaker_name:nil, included_timestamps:nil, pdf_logical_page_number: nil)
+
       if text.nil? && ohms_vtt_html.nil?
         raise ArgumentError.new("Need one of text: or ohms_vtt_html but both blank")
       end
 
       @scrubbed_ohms_vtt_html = scrub_vtt_html(ohms_vtt_html).strip if ohms_vtt_html
       @text = text
+
       if (scrubbed_ohms_vtt_html && ! text)
         # make text by removing tags from scrub please
         @text = strip_tags(scrubbed_ohms_vtt_html)
@@ -73,6 +79,7 @@ class OralHistoryContent
       @paragraph_index = paragraph_index
       @speaker_name = speaker_name
       @included_timestamps = included_timestamps
+      @pdf_logical_page_number = pdf_logical_page_number
     end
 
     # @return [String] to be used as an `id` attribute within an HTML doc, identifying a particular
