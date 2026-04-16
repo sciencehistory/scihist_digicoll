@@ -51,6 +51,7 @@
             <%= link_to request_button_name,
               oral_history_request_form_path(@work.friendlier_id),
               class: "btn btn-brand-main mb-2",
+              id: "oh-request-trigger",
               data: {
                 blacklight_modal: "trigger"
               }

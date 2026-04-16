@@ -13,14 +13,16 @@ class OralHistoryAiConversationController < ApplicationController
 
   # empty question form
   def new
-    @immediate_ohms_only_count = OralHistory::CategoryWithChunksCount.new(category: :immediate_ohms_only).fetch_count
-    @immediate_only_count = OralHistory::CategoryWithChunksCount.new(category: :immediate_only).fetch_count
-    @immediate_or_automatic_count = OralHistory::CategoryWithChunksCount.new(category: :immediate_or_automatic).fetch_count
-    @all_count = OralHistory::CategoryWithChunksCount.new(category: :all).fetch_count
+    # for now maybe we're not showing counts at all actually.
+    #@immediate_or_automatic_count = OralHistory::CategoryWithChunksCount.new(category: :immediate_or_automatic).fetch_count
+    #@all_count = OralHistory::CategoryWithChunksCount.new(category: :all).fetch_count
   end
 
   def create
-    search_params = params.slice(:access_limit).to_unsafe_h
+    #search_params = params.slice(:access_limit,).to_unsafe_h
+    # convert include_restricted presence/absence to an access limit restriction. Misisng
+    # access limit means everything.
+    search_params = { "access_limit" => (params["include_restricted"] == "1" ? nil : 'immediate_or_automatic')}
 
     conversation = OralHistoryAiConversationJob.launch(session_id: session.id, question: params.require(:q), search_params: search_params)
 
