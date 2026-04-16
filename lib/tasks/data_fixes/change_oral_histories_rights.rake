@@ -5,7 +5,7 @@ namespace :scihist do
       If the rights are CC
       then change the rights to “In Copyright.”
 
-    bundle exec bin/rake scihist:data_fixes:change_oral_histories_rights
+      DRY_RUN=true    bundle exec bin/rake scihist:data_fixes:change_oral_histories_rights
 
     """
 
@@ -20,16 +20,26 @@ namespace :scihist do
       in_copyright_url = 'http://rightsstatements.org/vocab/InC/1.0/'
 
       Kithe::Indexable.index_with(batching: true) do
+
+        if ENV['DRY_RUN'] == "true"
+          puts "DRY RUN\n\n"
+        else
+          puts "CHANGiNG DATA\n\n"
+        end
+
+
         scope.find_each do |w|
           if  (!w.rights.present?) || w.rights.include?('creativecommons')
             old_rights = w.rights
             works_changed << [w.friendlier_id, old_rights]
             
-            w.rights = in_copyright_url
-            w.save!
-            
-            progress_bar.increment
+            if ENV['DRY_RUN'] == "true"
+              w.rights = in_copyright_url
+              w.save!
+            end
+
           end
+          progress_bar.increment
         end
       end
 
