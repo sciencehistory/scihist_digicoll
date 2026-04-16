@@ -39,7 +39,12 @@
     </div>
 
     <div>
-      <%= f.input :access_limit, as: :radio_buttons, required: false,
+      <%= f.input :include_restricted, as: :boolean, input_html: { checked: true },
+              label: "Include restricted-access oral history transcripts",
+              hint: "Restricted-access transcripts require a request and approval proces to access complete transcripts"
+      %>
+
+      <%# f.input :access_limit, as: :radio_buttons, required: false,
             collection: [
               ['immediate_ohms_only', "Only those with synchronized audio (OHMS) — #{@immediate_ohms_only_count}"],
               ['immediate_only', "Only those fully public (do not require request) — #{@immediate_only_count}"],
