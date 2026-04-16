@@ -94,8 +94,12 @@ en:
     sign_in_link_label: "Access Science History Institute Requests"
     access_limit:
       immediate_ohms_only: "Only with synchronized audio"
-      immediate_only: "Only fully public"
-      immediate_or_automatic: "Fully public or with automatically approved request"
+      immediate_only: "Only fully public without request" # these names need work if we are to use them.
+      immediate_or_automatic: "Fully public"
+    access_limit_feedback:
+      immediate_ohms_only: "Synchronized audio"
+      immediate_only: "Fully public withotu requests" # these names need work if we are to use them.
+      immediate_or_automatic: "Only fully public transcripts"
 
   user:
     user_type:
