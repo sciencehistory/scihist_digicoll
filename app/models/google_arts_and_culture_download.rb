@@ -4,6 +4,7 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
   SHRINE_STORAGE_KEY = :google_arts_and_culture
   enum :status, %w{in_progress uploading success error}.collect {|v| [v, v]}.to_h.freeze
   belongs_to :user
+  before_destroy :delete_file
 
   def works_added
     @works_added ||= 0
@@ -19,17 +20,15 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
   end
 
   def uploaded_file
-    @uploaded_file ||= Shrine::UploadedFile.new(
+    @uploaded_file ||= Shrine::UploadedFile.new({
       "id" => file_key,
       "storage" => SHRINE_STORAGE_KEY,
       "metadata" => {
-        "mime_type" => 'application/zip'
+        "mime_type" => 'application/zip',
+        "created_at" => Time.current.utc.iso8601.to_s,
+        "created_by" => user.name
       }
-    )
-  end
-
-  def file_exists?
-    uploaded_file.exists?
+    })
   end
 
   def file_url
@@ -48,6 +47,11 @@ class GoogleArtsAndCultureDownload < ApplicationRecord
       log_error(e)
       raise
     end
+    update!({file_data: uploaded_file.as_json, status: 'success'})
+  end
+
+  def delete_file
+    uploaded_file.delete
   end
 
   def log_error(e)

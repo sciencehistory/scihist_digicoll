@@ -48,7 +48,6 @@ class GoogleArtsAndCultureDownloadCreatorJob < ApplicationJob
 
   def upload_to_s3
     File.open(tmp_zipfile.path, "r") { |io| download.put_file io }
-    @download.update!({status: 'success'})
   end
 
   def tmp_zipfile

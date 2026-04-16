@@ -32,7 +32,6 @@ module GoogleArtsAndCulture
         friendlier_id:  @asset.parent.friendlier_id, # friendlier_id is just used for works
         subitem_id:     @asset.friendlier_id,
         order_id:       @asset.position || no_value,
-        title:          @asset.title,
       }
 
       @attribute_keys.map do |k|
