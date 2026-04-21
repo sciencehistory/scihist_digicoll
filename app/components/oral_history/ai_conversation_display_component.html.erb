@@ -50,7 +50,7 @@
 
       <div class="feedback-btn mt-5">
         <%= link_to "Give us feedback on this answer",
-              feedback_oral_history_ai_conversation_path,
+              feedback_oral_history_ai_conversation_path(ai_conversation.external_id),
               class: "default-link-style btn btn-brand-alt",
               data: { blacklight_modal: "trigger" } %>
       </div>
