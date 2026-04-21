@@ -29,6 +29,7 @@
       <th scope="col">Created at</th>
       <th scope="col">Question</th>
       <th scope="col">Answer</th>
+      <th scope="col">Feedback</th>
     </tr>
   </thead>
   <% @ai_conversations.each do |ai_conversation| %>
@@ -46,6 +47,11 @@
         <%= truncate(ai_conversation.answer_json&.dig("introduction") || ai_conversation.answer_json&.dig("narrative"), length: 140, separator: /\b/).presence ||
               ai_conversation.error_info&.slice("exception_class", "message").presence
         %>
+      </td>
+      <td>
+        <% ai_conversation.feedbacks.each do |feedback| %>
+          <div><span class="text-danger"><%= "★" * feedback.rating %></span> <%= "• " * (5 - feedback.rating) %></div>
+        <% end %>
       </td>
     </tr>
   <% end %>
