@@ -114,6 +114,21 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       expect(joined_paragraph.text).to include "<PAGE-BREAK next='9'></PAGE-BREAK>"
     end
 
+    describe "with footnotes" do
+      it "are recognized stripped out of paragraphs" do
+        paragraphs = splitter.paragraphs
+
+        expect(paragraphs.collect(&:text)).not_to include /Natural Alpha Radioactivity in Medium-Heavy Elements/
+
+        before_footnote_index = paragraphs.index {|p| p.text =~ /And so this is just a really basic, scaled-up concept/}
+        next_paragraph = paragraphs[before_footnote_index + 1]
+        expect(next_paragraph.text). to eq "[Yes]. Right"
+        expect(next_paragraph.speaker_name).to eq "MACFARLANE"
+
+        expect(paragraphs.collect(&:text)).not_to include /Frank Field, Oral History Transcript/
+      end
+    end
+
     describe "that need re-sequencing for starting over at new audio files" do
       let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/macfarlane_1982_sequence_timestamps_example.pdf"}
 
