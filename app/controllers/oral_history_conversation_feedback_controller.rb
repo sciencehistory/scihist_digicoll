@@ -5,6 +5,8 @@ class OralHistoryConversationFeedbackController < ApplicationController
     authorize! :create, OralHistory::AiConversation
   end
 
+  before_action :set_ai_conversation
+
   # displayed in modal
   def new
 
@@ -12,7 +14,25 @@ class OralHistoryConversationFeedbackController < ApplicationController
 
   # response displayed in modal
   def create
-
+    OralHistory::AiConversationFeedback.create!(
+      feedback_params.merge(
+        user: current_user,
+        oral_history_ai_conversation: @ai_conversation,
+      )
+    )
   end
 
+  private
+
+  def set_ai_conversation
+    # will raise NotFound leading to 404 if not found
+    @ai_conversation = OralHistory::AiConversation.find_by_external_id!(params[:id])
+  end
+
+  def feedback_params
+    params.require(:feedback).permit(:rating, :comment).tap do |hash|
+      hash.delete(:comment) if hash[:comment].blank?
+      hash.delete(:rating) if hash[:rating].to_i.zero?
+    end
+  end
 end
