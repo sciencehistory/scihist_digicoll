@@ -90,6 +90,7 @@ module GoogleArtsAndCulture
         'additional_title',
         'genre',
         'creator',
+        'contributor',
         'medium',
         'extent',
         'place',
@@ -149,8 +150,19 @@ module GoogleArtsAndCulture
         url_text:                 'relation:text',
         url:                      'relation:url',
 
+
+
+                       
         # Non-publisher creators
+        #CREATORS:
+        #author interviewee creator_of_work interviewer photographer
+
         creator:                  'creator',
+
+        #CONTRIBUTORS
+        #addressee after artist attributed_to editor director engraver contributor manner_of manufacturer printer printer_of_plates producer school_of sponsor
+
+        contributor:              'contributor',
 
         # Publisher(s). Separated by commas; we don't have a lot of works with multiple publishers.
         publisher:                'publisher',

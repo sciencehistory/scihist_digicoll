@@ -25,6 +25,8 @@ module GoogleArtsAndCulture
     def initialize(model, callback: nil, attribute_keys:, column_counts:)
       super
       @work = model
+
+      pp sorted_creators
     end
 
     def members_to_include
@@ -183,6 +185,30 @@ module GoogleArtsAndCulture
 
     def rights
       RightsTerm.label_for(@work.rights)
+    end
+
+    def sorted_creators
+      creator_categories = %w{artist  author creator_of_work  interviewee interviewer  photographer }
+      publisher_categories = ['publisher']
+      contributor_categories =  (Work::Creator::CATEGORY_VALUES - publisher_categories) - creator_categories
+
+      categories = {
+        creator:     creator_categories,
+        publisher:   publisher_categories,
+        contributor: contributor_categories
+      }
+
+      #pp categories
+
+      puts "publishers:"
+      pp @work.creator.find_all { |creator| categories[:publisher].include? creator.category }
+      puts "contributors:"
+      pp @work.creator.find_all { |creator| categories[:contributor].include? creator.category }
+      puts "publishers:"
+      pp @work.creator.find_all { |creator| categories[:creator].include? creator.category }
+
+
+
     end
 
   end
