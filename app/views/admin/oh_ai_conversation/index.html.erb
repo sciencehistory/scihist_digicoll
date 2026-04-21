@@ -2,8 +2,8 @@
 
 <%= link_to "Ask New Question", new_oral_history_ai_conversation_path, class: "btn btn-brand-main" %>
 
-<%= form_with(url: admin_oh_ai_conversations_path, method: :get) do |f| %>
-  <div class="input-group mb-4 mt-5">
+<%= simple_form_for("", url: admin_oh_ai_conversations_path, method: :get) do |f| %>
+  <div class="input-group mb-2 mt-5">
     <div class="input-group-prepend">
       <%= f.label :q, "Questions containing", class: "input-group-text" %>
     </div>
@@ -13,8 +13,15 @@
     <div class="input-group-append">
       <%= f.submit value: "Search", class: "input-group-text btn btn-brand-dark" %>
     </div>
-
   </div>
+
+  <%= f.input "feedbacks", as: :boolean,
+        label: "Only show questions with feedback",
+        input_html: {
+                      checked: (params[:feedbacks] == "1"),
+                      onchange: "this.form.submit()"
+                    }
+   %>
 <% end %>
 
 <div class="mt-5 mb-3">
