@@ -11,6 +11,11 @@
 
 
     <div class="modal-body max-readable-width-block">
+
+      <p>
+        <span class="fw-bold">From:</span> <%= current_user.email %>
+      </p>
+
       <%= f.input "rating", as: :range, required: false,
           label: "How useful was the answer to you?",
           default: 1,
