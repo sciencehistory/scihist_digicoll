@@ -17,7 +17,7 @@ class OralHistoryConversationFeedbackController < ApplicationController
     OralHistory::AiConversationFeedback.create!(
       feedback_params.merge(
         user: current_user,
-        oral_history_ai_conversation: @ai_conversation,
+        ai_conversation: @ai_conversation,
       )
     )
   end
