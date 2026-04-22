@@ -123,13 +123,12 @@ module OralHistory
         timestamp_file_offset_index =
           assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
 
-
-        remove_footnotes(page_paragraphs)
-
         # Turn from hashes to good objects
         page_paragraph_objects = page_paragraphs.collect do |paragraph_json|
           json_to_paragraph(paragraph_json, logical_page_number: logical_page_number)
         end
+
+        remove_footnotes(page_paragraph_objects)
 
         # Should the first paragraph be joined to the last paragraph of the prior page, does
         # it look like a split paragraph?
@@ -217,7 +216,7 @@ module OralHistory
     #
     # If the LAST one(s) look like footnotes, skip em.
     def remove_footnotes(paragraphs_json)
-      if paragraphs_json.last["text"].strip =~ /\A(\*|\d+)[ .]/
+      if paragraphs_json.last.text.strip =~ /\A(\*|\d+)[ .]/
         # looks like a footnote, we just toss it out, but maybe later we'll keep it
         # to try to turn into endnotes.
         reference = $1
