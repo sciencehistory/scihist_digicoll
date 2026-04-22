@@ -43,7 +43,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     end
   end
 
-  describe "old transcript with upper page numbers" do
+  describe "old transcript with upper page numbers, and asterisk footnotes" do
     let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q.pdf"}
 
     it "can still get page numbers" do
@@ -67,6 +67,12 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
 
 
       expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,32,33]
+    end
+
+    it "skips footnotes properly" do
+      paragraphs = splitter.paragraphs
+
+      expect(paragraphs).to all(satisfy {|p| p.text !~ /Vladimir Prelog, "Eine Titriervorrichtung,"/})
     end
   end
 
