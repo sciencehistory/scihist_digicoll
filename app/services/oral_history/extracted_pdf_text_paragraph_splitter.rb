@@ -218,16 +218,19 @@ module OralHistory
     # if it begins with "*" or a number -- doesn't catch too much in our
     # domain.
     def remove_footnotes(paragraphs_json)
-      if paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
+      # there could be more than one dependign on how paragraph are split
+      while paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
         # looks like a footnote, we just toss it out, but maybe later we'll keep it
         # to try to turn into endnotes.
         reference = $1
         paragraphs_json.pop
-      elsif note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/)
-        # OKAY, weird one for Prelog asterisk not split by paragraph but
-        # with a big line separator first, argh.
-        # eg:
-        #     ____________________________________ *Footnote
+      end
+
+      # OKAY, weird one for Prelog asterisk not split by paragraph but
+      # with a big line separator first, argh.
+      # eg:
+      #     ____________________________________ *Footnote
+      if note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/)
 
         # we need to cut that last paragraph to stop there
         paragraphs_json.last['text'].slice!(note_index..-1)

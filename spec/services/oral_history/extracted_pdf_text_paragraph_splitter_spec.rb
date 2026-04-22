@@ -66,7 +66,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       expect(paragraphs.last.pdf_logical_page_number).to eq 33
 
 
-      expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,4,32,33]
+      expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,4,15,32,33]
     end
 
     it "skips footnotes properly" do
@@ -76,6 +76,10 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
 
       # joined paragraphs across page, over footnote
       expect(paragraphs.collect(&:text)).to include /even my  <PAGE-BREAK next='4'><\/PAGE-BREAK> grandfather was a historian/
+
+      # two on a page, get rid of them both
+      expect(paragraphs).to all(satisfy {|p| p.text !~ /Über die Synthese des Adamantans/})
+      expect(paragraphs).to all(satisfy {|p| p.text !~ /The Constitution of Cevine and Some Related Alkaloids/})
     end
   end
 
