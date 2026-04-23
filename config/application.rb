@@ -132,5 +132,7 @@ require 'rack/attack'
     config.twitter_acct = "scihistoryorg"
     config.facebook_acct = "SciHistoryOrg"
     config.instagram_acct = "scihistoryorg"
+
+    config.view_component.previews.paths << "#{Rails.root}/spec/components/previews"
   end
 end
