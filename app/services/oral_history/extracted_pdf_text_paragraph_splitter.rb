@@ -123,6 +123,7 @@ module OralHistory
         timestamp_file_offset_index =
           assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
 
+        remove_footnotes(page_paragraphs)
 
         # Turn from hashes to good objects
         page_paragraph_objects = page_paragraphs.collect do |paragraph_json|
@@ -209,6 +210,31 @@ module OralHistory
       end
 
       return logical_page_number
+    end
+
+    # @param paragraphs_json [Array<Hash>] of a single page's paragraph jsons.
+    #
+    # If the LAST one(s) look like footnotes, skip em. Looks like a footnote
+    # if it begins with "*" or a number -- doesn't catch too much in our
+    # domain.
+    def remove_footnotes(paragraphs_json)
+      # there could be more than one dependign on how paragraph are split
+      while paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
+        # looks like a footnote, we just toss it out, but maybe later we'll keep it
+        # to try to turn into endnotes.
+        reference = $1
+        paragraphs_json.pop
+      end
+
+      # OKAY, weird one for Prelog asterisk not split by paragraph but
+      # with a big line separator first, argh.
+      # eg:
+      #     ____________________________________ *Footnote
+      if note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/)
+
+        # we need to cut that last paragraph to stop there
+        paragraphs_json.last['text'].slice!(note_index..-1)
+      end
     end
 
 

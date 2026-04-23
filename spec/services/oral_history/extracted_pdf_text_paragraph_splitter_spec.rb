@@ -43,7 +43,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     end
   end
 
-  describe "old transcript with upper page numbers" do
+  describe "old transcript with upper page numbers, and asterisk footnotes" do
     let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q.pdf"}
 
     it "can still get page numbers" do
@@ -66,7 +66,20 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       expect(paragraphs.last.pdf_logical_page_number).to eq 33
 
 
-      expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,32,33]
+      expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,4,15,32,33]
+    end
+
+    it "skips footnotes properly" do
+      paragraphs = splitter.paragraphs
+
+      expect(paragraphs).to all(satisfy {|p| p.text !~ /Vladimir Prelog, "Eine Titriervorrichtung,"/})
+
+      # joined paragraphs across page, over footnote
+      expect(paragraphs.collect(&:text)).to include /even my  <PAGE-BREAK next='4'><\/PAGE-BREAK> grandfather was a historian/
+
+      # two on a page, get rid of them both
+      expect(paragraphs).to all(satisfy {|p| p.text !~ /Über die Synthese des Adamantans/})
+      expect(paragraphs).to all(satisfy {|p| p.text !~ /The Constitution of Cevine and Some Related Alkaloids/})
     end
   end
 
@@ -112,6 +125,21 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       expect(joined_paragraph.text).to end_with("I had the whole field to myself.")
       expect(joined_paragraph.pdf_logical_page_number).to eq 8
       expect(joined_paragraph.text).to include "<PAGE-BREAK next='9'></PAGE-BREAK>"
+    end
+
+    describe "with footnotes" do
+      it "are recognized stripped out of paragraphs" do
+        paragraphs = splitter.paragraphs
+
+        expect(paragraphs.collect(&:text)).not_to include /Natural Alpha Radioactivity in Medium-Heavy Elements/
+
+        before_footnote_index = paragraphs.index {|p| p.text =~ /And so this is just a really basic, scaled-up concept/}
+        next_paragraph = paragraphs[before_footnote_index + 1]
+        expect(next_paragraph.text). to eq "[Yes]. Right"
+        expect(next_paragraph.speaker_name).to eq "MACFARLANE"
+
+        expect(paragraphs.collect(&:text)).not_to include /Frank Field, Oral History Transcript/
+      end
     end
 
     describe "that need re-sequencing for starting over at new audio files" do
