@@ -57,7 +57,7 @@ describe OralHistory::ParagraphTranscriptComponent, type: :component do
         ),
         OralHistoryContent::Paragraph.new(
           speaker_name: "JOHNSON",
-          text: "Here is a <PAGE-BREAK next='2'></PAGE-BREAK> one with page break"
+          text: "Here is a <PAGE-BREAK next='2'></PAGE-BREAK> one with page <b>break</b> that should still escape other tags"
         )
       ]
     end
@@ -71,8 +71,73 @@ describe OralHistory::ParagraphTranscriptComponent, type: :component do
 
       # escape everything
       expect(paragraphs[0].inner_html).to include "It’s a &lt;i&gt;blue&lt;/i&gt; &lt;script&gt;apple&lt;/script&gt; tree!"
-      expect(paragraphs[1].inner_html).to include "This content has some &lt;b&gt;bold&lt;/b&gt; and &lt;T: 5 min&gt; &lt;i&gt;italics&lt;/i&gt"
-      expect(paragraphs[2].inner_html).to include "Here is a &lt;PAGE-BREAK next='2'&gt;&lt;/PAGE-BREAK&gt; one with page break"
+
+      # omits <t:> marker with no replacement, cause we didn't have timestamp info. Still escapes other stuff.
+      expect(paragraphs[1].inner_html).to include "This content has some &lt;b&gt;bold&lt;/b&gt; and  &lt;i&gt;italics&lt;/i&gt"
+
+      # replaces original page break marker with display html, still escapes other stuff
+      expect(paragraphs[2].inner_html).to include %r{Here is a <span.*</span> one with page &lt;b&gt;break&lt;/b&gt; that should still escape other tags}
+    end
+  end
+
+  describe "inline page-break and timestamp tags" do
+    let(:paragraph_objs) do
+      [
+        OralHistoryContent::Paragraph.new(
+          speaker_name: "JOHNSON",
+          pdf_logical_page_number: 1,
+          included_timestamps: [60],
+          text: "some text with an inline <T: 5 min> timestamp"
+        ),
+        OralHistoryContent::Paragraph.new(
+          speaker_name: "HERNANDEZ",
+          pdf_logical_page_number: 1,
+          text: "We have an internal <PAGE-BREAK next='2'></PAGE-BREAK> inline page break"
+        ),
+        OralHistoryContent::Paragraph.new(
+          speaker_name: "JOHNSON",
+          pdf_logical_page_number: 2,
+          text: "More stuff."
+        ),
+        OralHistoryContent::Paragraph.new(
+          speaker_name: "HERNANDEZ",
+          pdf_logical_page_number: 2,
+          included_timestamps: [112],
+          text: "We have an inline page <PAGE-BREAK next='3'></PAGE-BREAK> break and an inline <T: 15 min> timestamp"
+        ),
+        OralHistoryContent::Paragraph.new(
+          speaker_name: "JOHNSON",
+          pdf_logical_page_number: 3,
+          text: "More stuff."
+        )
+      ]
+    end
+
+    it "replaces and adjusts metadata properly" do
+      parsed = render_inline(paragraph_transcript_component)
+      paragraphs = parsed.css(".ohms-transcript-container p.ohms-transcript-paragraph")
+
+      expect(paragraphs.length).to eq 5
+
+      # no duplicate page markers or timestamp markers
+      markers = parsed.css("span.ohms-transcript-timestamp").collect(&:text)
+      expect(markers.size).to eq markers.uniq.size
+
+      timestamp_replaced = paragraphs.first
+      expect(timestamp_replaced.inner_html).to include "an inline <a href=\"#t=60\" class=\"ohms-transcript-timestamp default-link-style\" data-ohms-timestamp-s=\"60.000\">00:01:00</a> timestamp"
+
+      # second paragraph should have a page marker for page 2!
+      second_paragraph = paragraphs[1]
+      expect(second_paragraph.at_css("span.ohms-transcript-timestamp", text: "Page 2")).to be_present
+
+      # next paragraph should NOT cause it was already in the previous one
+      third_paragraph = paragraphs[2]
+      expect(third_paragraph.at_css("span.ohms-transcript-timestamp")).not_to be_present
+
+      # fourth paragraph has a page marker and a timestamp
+      fourth_paragraph = paragraphs[3]
+      expect(second_paragraph.at_css("span.ohms-transcript-timestamp", text: "Page 3")).to be_present
+      expect(second_paragraph.at_css("span.ohms-transcript-timestamp", text: "[00:01:52]")).to be_present
     end
   end
 
