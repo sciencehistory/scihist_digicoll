@@ -187,10 +187,13 @@ module OralHistory
       end
     end
 
-    # The first page has "INTERVIEWER(S):", etc, which vary, but we think
-    # always END with "DATE:", so we use that to trim em all
+    # The first page has headers like "INTERVIEWER(S):", and "DATE:", which
+    # can in some cases be in any order. We want to recognize the LAST one
+    # on page, and trim everything up to and including it, to get rid of headers.
     def trim_first_page_prefatory(paragraph_json_list)
-      date_header_index = paragraph_json_list.index { |p| p["text"]&.upcase&.start_with?("DATE:") }
+      date_header_index = paragraph_json_list.rindex do |p|
+        p["text"]&.upcase&.start_with? /(INTERVIEWEE|INTERVIEWED BY|INTERVIWER|LOCATION|PLACE|DATE)S?:/
+      end
 
       # now trim everything up to there please
       if date_header_index
