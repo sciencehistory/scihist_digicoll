@@ -16,6 +16,11 @@ class OralHistory::AiConversation < ApplicationRecord
 
   self.filter_attributes += [:question_embedding] # it's just too long
 
+  has_many :feedbacks,
+    dependent: :delete_all,
+    class_name: "OralHistory::AiConversationFeedback",
+    foreign_key: :oral_history_ai_conversation_id
+
   enum :status, { queued: "queued", in_process: "in_process", success: "success", error: "error" }, prefix: :status
 
   before_save do

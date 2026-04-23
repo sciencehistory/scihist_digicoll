@@ -1,7 +1,5 @@
 module OralHistory
-  class VttTranscriptComponent < ApplicationComponent
-    delegate :format_ohms_timestamp, to: :helpers
-
+  class VttTranscriptComponent < ParagraphTranscriptComponent
     FootnoteTextScrubber = Rails::Html::PermitScrubber.new.tap do |scrubber|
       scrubber.tags = ['i', 'b', 'u', 'a']
     end
@@ -65,7 +63,7 @@ module OralHistory
 
           yield(
             start_seconds: paragraph.included_timestamps&.first,
-            speaker_name: (paragraph_speaker_name if paragraph_speaker_name != last_speaker),
+            speaker_label: (paragraph_speaker_name if paragraph_speaker_name != last_speaker),
             html_text: paragraph_safe_html,
             fragment_id: paragraph.fragment_id
           )

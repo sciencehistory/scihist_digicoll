@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_03_24_170634) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_16_175054) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -244,6 +244,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_24_170634) do
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
   end
 
+  create_table "oral_history_ai_conversation_feedbacks", force: :cascade do |t|
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.bigint "oral_history_ai_conversation_id", null: false
+    t.integer "rating"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["oral_history_ai_conversation_id"], name: "idx_on_oral_history_ai_conversation_id_33d8a144e0"
+    t.index ["user_id"], name: "index_oral_history_ai_conversation_feedbacks_on_user_id"
+  end
+
   create_table "oral_history_ai_conversations", force: :cascade do |t|
     t.string "status", default: "queued", null: false
     t.uuid "external_id", default: -> { "gen_random_uuid()" }, null: false
@@ -362,6 +373,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_03_24_170634) do
   add_foreign_key "on_demand_derivatives", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "oral_history_requester_emails"
+  add_foreign_key "oral_history_ai_conversation_feedbacks", "oral_history_ai_conversations"
+  add_foreign_key "oral_history_ai_conversation_feedbacks", "users"
   add_foreign_key "oral_history_chunks", "oral_history_content"
   add_foreign_key "oral_history_content", "kithe_models", column: "work_id"
   add_foreign_key "queue_item_comments", "digitization_queue_items"

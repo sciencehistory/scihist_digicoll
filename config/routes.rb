@@ -85,6 +85,8 @@ Rails.application.routes.draw do
     get "works/:id/:derivative_type", to: "on_demand_derivatives#on_demand_status", as: :on_demand_derivative_status
   end
 
+  get "google_arts_and_culture_download_status/:id", to: "google_arts_and_culture#download_status", as: :google_arts_and_culture_download_status
+
   # By-request oral history stuff
   get "works/:work_friendlier_id/request_oral_history", to: "oral_history_requests#new", as: 'oral_history_request_form'
   post "request_oral_history", to: "oral_history_requests#create", as: 'request_oral_history'
@@ -101,6 +103,9 @@ Rails.application.routes.draw do
     # /oral_histories/ask
     resources :oral_history_ai_conversation, only: [:show, :create, :new], path: :ask do
       member do
+        get 'feedback', to: "oral_history_conversation_feedback#new"
+        post 'feedback', to: "oral_history_conversation_feedback#create"
+
         get 'refresh'
       end
     end
@@ -396,7 +401,15 @@ Rails.application.routes.draw do
       collection do
         delete 'clear'
         post 'report'
-        post 'google_arts_and_culture_export'
+        #post 'google_arts_and_culture_export' export_cart
+      end
+    end
+
+    #GAC downloads:
+    resources :google_arts_and_culture_downloads, only: [:index] do
+      collection do
+        post "load_into_cart", to: "google_arts_and_culture_downloads#load_into_cart"
+        post 'export_cart'
       end
     end
 

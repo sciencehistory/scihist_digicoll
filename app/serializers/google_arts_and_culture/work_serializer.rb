@@ -69,7 +69,6 @@ module GoogleArtsAndCulture
     def work_attribute_methods
       tmp = @attribute_keys.map do |attribute_label|
         new_proc = if self.respond_to? attribute_label
-          #puts "We do respond to #{attribute_label}"
           # If k is defined in this class, use that (e.g. :created)
           Proc.new { self.send attribute_label }
         elsif Work.method_defined? attribute_label

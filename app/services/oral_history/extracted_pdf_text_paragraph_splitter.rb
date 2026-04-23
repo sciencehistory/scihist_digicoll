@@ -123,6 +123,7 @@ module OralHistory
         timestamp_file_offset_index =
           assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
 
+        remove_footnotes(page_paragraphs)
 
         # Turn from hashes to good objects
         page_paragraph_objects = page_paragraphs.collect do |paragraph_json|
@@ -186,10 +187,13 @@ module OralHistory
       end
     end
 
-    # The first page has "INTERVIEWER(S):", etc, which vary, but we think
-    # always END with "DATE:", so we use that to trim em all
+    # The first page has headers like "INTERVIEWER(S):", and "DATE:", which
+    # can in some cases be in any order. We want to recognize the LAST one
+    # on page, and trim everything up to and including it, to get rid of headers.
     def trim_first_page_prefatory(paragraph_json_list)
-      date_header_index = paragraph_json_list.index { |p| p["text"]&.upcase&.start_with?("DATE:") }
+      date_header_index = paragraph_json_list.rindex do |p|
+        p["text"]&.upcase&.start_with? /(INTERVIEWEE|INTERVIEWED BY|INTERVIWER|LOCATION|PLACE|DATE)S?:/
+      end
 
       # now trim everything up to there please
       if date_header_index
@@ -209,6 +213,31 @@ module OralHistory
       end
 
       return logical_page_number
+    end
+
+    # @param paragraphs_json [Array<Hash>] of a single page's paragraph jsons.
+    #
+    # If the LAST one(s) look like footnotes, skip em. Looks like a footnote
+    # if it begins with "*" or a number -- doesn't catch too much in our
+    # domain.
+    def remove_footnotes(paragraphs_json)
+      # there could be more than one dependign on how paragraph are split
+      while paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
+        # looks like a footnote, we just toss it out, but maybe later we'll keep it
+        # to try to turn into endnotes.
+        reference = $1
+        paragraphs_json.pop
+      end
+
+      # OKAY, weird one for Prelog asterisk not split by paragraph but
+      # with a big line separator first, argh.
+      # eg:
+      #     ____________________________________ *Footnote
+      if note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/)
+
+        # we need to cut that last paragraph to stop there
+        paragraphs_json.last['text'].slice!(note_index..-1)
+      end
     end
 
 

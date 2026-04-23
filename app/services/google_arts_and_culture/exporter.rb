@@ -8,34 +8,29 @@ module GoogleArtsAndCulture
     def initialize(scope, columns: nil)
       @original_scope = scope
       @scope = scope.where(published: true, type: "Work")
+
+      raise StandardError, "No works in scope." unless @scope.count > 0
+
       @attribute_keys = if columns.nil?
         all_attributes.keys
       else
         columns.select { |c| all_attributes.keys.include? c }
       end
+    end
 
+    # Only works within this scope should be exported to Google Arts and Culture.
+    def self.eligible_scope
+      museum_scope = Work.where(published: true).
+      where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Museum'] ).
+      where("json_attributes -> 'format'     ?| array[:formats]", formats: ['physical_object'] ).
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['https://creativecommons.org/licenses/by/4.0/'] )
 
-      @verbose_mode = true
-      if @verbose_mode
-        Rails.logger.info <<-MESSAGE
-        Starting a Google Arts and Culture export.
-        Class name:
-        #{self.class.name}
+      library_scope = Work.where(published: true).
+      where("json_attributes -> 'department' ?| array[:depts  ]", depts:   ['Library'] ).
+      where("json_attributes -> 'format'     ?| array[:formats]", formats: ['image'] ).
+      where("json_attributes -> 'rights'     ?| array[:rights ]", rights:  ['http://creativecommons.org/publicdomain/mark/1.0/'] )
 
-        Works we are exporting:
-        #{@scope.pluck('friendlier_id').inspect}
-
-        Metadata we are exporting:
-        #{@attribute_keys.inspect}
-
-        Array attributes:
-        #{array_attributes.inspect}
-
-        Count for each array attribute:
-        #{column_counts.inspect}
-MESSAGE
-      end
-
+      museum_scope.or(library_scope)
     end
 
     # Does not close the tempfile.
@@ -62,11 +57,13 @@ MESSAGE
     # Returns a hash of filenames and downloadable files:
     # file_hash.each { |filename, downloadable_file| [...] }
     def file_hash
-      result = {}
-      @scope.each do |work|
-        result.merge!(WorkSerializer.file_hash(work))
+      @file_hash ||= begin
+        result = {}
+        @scope.each do |work|
+          result.merge!(WorkSerializer.file_hash(work))
+        end
+        result
       end
-      result
     end
 
 
