@@ -51,6 +51,22 @@ module OralHistory
       end
     end
 
+    def render_page_marker(page_marker)
+      content_tag("span", "Page #{page_marker}", class: "ohms-transcript-timestamp text-muted")
+    end
+
+    def render_timestamp_marker(start_seconds)
+      content_tag("a",
+                  format_ohms_timestamp(start_seconds),
+                  href: "#{base_link}#t=#{start_seconds}",
+                  class: "ohms-transcript-timestamp default-link-style",
+                    # must be formatted exactly the same in JS transcript highlighter
+                    # code that searches for it.
+                  data: { "ohms_timestamp_s" => "%.3f" % start_seconds.round(3)}
+      )
+    end
+
+
     # We don't handle this yet, but sub-class does. Should refactor and make more encapsulated
     # when we bump up to here, maybe change name of method even.
     def sanitized_footnotes
