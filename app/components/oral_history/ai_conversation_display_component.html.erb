@@ -47,6 +47,13 @@
           </li>
         <% end %>
       </ul>
+
+      <div class="feedback-btn mt-5">
+        <%= link_to "Give us feedback on this answer",
+              feedback_oral_history_ai_conversation_path(ai_conversation.external_id),
+              class: "default-link-style btn btn-brand-alt",
+              data: { blacklight_modal: "trigger" } %>
+      </div>
     </div>
   <% end %>
 
@@ -59,6 +66,22 @@
   <% if answer_available? && can?(:access_staff_functions) %>
     <details class="ai-conversation-help admin-debug-info mt-5">
       <summary class="text-link">Admin Debug Info</summary>
+
+      <% if ai_conversation.feedbacks.present? %>
+        <h3 class="h5">User Feedback</h3>
+
+        <% ai_conversation.feedbacks.each do |feedback| %>
+          <details class="mt-2">
+            <summary>
+              <span class="fw-bold"><%= feedback.user.name.presence || feedback.user.email %></span>, <%= l(feedback.created_at, format: :admin_compact) %>
+            </summary>
+            <div class="ms-5">
+              <span class="text-danger"><%= "★" * feedback.rating %></span> <%= "• " * (5 - feedback.rating) %>
+              <%= simple_format(feedback.comment) %>
+            </div>
+          </details>
+        <% end %>
+      <% end %>
 
       <dl class="mt-2">
         <dt>estimated cost</dt>

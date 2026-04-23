@@ -1,0 +1,19 @@
+
+<div data-blacklight-modal="container">
+  <%= simple_form_for :feedback, url: feedback_oral_history_ai_conversation_path, method: :post, data: { blacklight_modal: "preserve"} do |f| %>
+
+    <div class="modal-header">
+      <h1 class="modal-title">Feedback on answer</h1>
+      <button type="button" class="blacklight-modal-close btn-close" data-bl-dismiss="modal" aria-label="Close"></button>
+    </div>
+
+    <div class="modal-body">
+      Thank you for your feedback.
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" data-bl-dismiss="modal">OK</button>
+    </div>
+  <% end %>
+</div>
+
