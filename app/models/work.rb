@@ -236,9 +236,8 @@ class Work < Kithe::Work
     genre && genre.include?("Oral histories")
   end
 
+  # Likewise, a convenience method for distinguishing video works
   def is_video?
     format && format.include?('moving_image')
   end
-
-
 end
