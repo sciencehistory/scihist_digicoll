@@ -25,8 +25,6 @@ module GoogleArtsAndCulture
     def initialize(model, callback: nil, attribute_keys:, column_counts:)
       super
       @work = model
-
-      pp sorted_creators
     end
 
     def members_to_include
@@ -130,11 +128,21 @@ module GoogleArtsAndCulture
     end
 
     def creator
-      @work.creator.find_all { |creator| creator.category.to_s != "publisher" }.map(&:value)
+      sorted_creators[:creators].map(&:value)
     end
 
     def publisher
-      @work.creator.find_all { |creator| creator.category.to_s == "publisher" }.map(&:value).join(", ")
+      sorted_creators[:publishers].map(&:value)
+    end
+
+    def contributor
+      sorted_creators[:contributors].map(&:value)
+    end
+
+    ['interviewee'].each do |cat|
+      def cat
+        @work.creator.find_all { |creator| creator.category == cat }.map(&:value)
+      end
     end
 
     def place
@@ -188,27 +196,14 @@ module GoogleArtsAndCulture
     end
 
     def sorted_creators
-      creator_categories = %w{artist  author creator_of_work  interviewee interviewer  photographer }
-      publisher_categories = ['publisher']
-      contributor_categories =  (Work::Creator::CATEGORY_VALUES - publisher_categories) - creator_categories
-
-      categories = {
-        creator:     creator_categories,
-        publisher:   publisher_categories,
-        contributor: contributor_categories
-      }
-
-      #pp categories
-
-      puts "publishers:"
-      pp @work.creator.find_all { |creator| categories[:publisher].include? creator.category }
-      puts "contributors:"
-      pp @work.creator.find_all { |creator| categories[:contributor].include? creator.category }
-      puts "publishers:"
-      pp @work.creator.find_all { |creator| categories[:creator].include? creator.category }
-
-
-
+      @sorted_creators ||= begin
+        categories = GoogleArtsAndCulture::Exporter.creator_categories
+        {
+          creators: @work.creator.find_all { |creator| categories[:creator].include? creator.category },
+          publishers: @work.creator.find_all { |creator| categories[:publisher].include? creator.category },
+          contributors: @work.creator.find_all { |creator| categories[:contributor].include? creator.category },
+        }
+      end
     end
 
   end

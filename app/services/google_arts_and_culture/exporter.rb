@@ -33,6 +33,18 @@ module GoogleArtsAndCulture
       museum_scope.or(library_scope)
     end
 
+    # TODO memoize this.
+    def self.creator_categories
+      creator = %w{ artist author creator_of_work interviewee interviewer photographer }
+      publisher = [ 'publisher' ]
+      contributor =  (Work::Creator::CATEGORY_VALUES - publisher) - creator
+      {
+        creator:     creator,
+        publisher:   publisher,
+        contributor: contributor
+      }
+    end
+
     # Does not close the tempfile.
     def metadata_csv_tempfile
       output_csv_file = Tempfile.new
@@ -80,21 +92,35 @@ module GoogleArtsAndCulture
       end.flatten
     end
 
-    # We store multiple values for each of these types of metadata. Note that we don't make much of an attempt to
-    # distinguish creator categories, at least for now.
-    # Likewise, `external_id` is treated as an array, with categories ignored.
+    # We store multiple values for each of these types of metadata.
     def array_attributes
       [
-        'subject',
-        'external_id',
         'additional_title',
-        'genre',
-        'creator',
+        'addressee',
+        'after',
+        'artist',
+        'attributed_to',
+        'author',
         'contributor',
-        'medium',
+        'creator',
+        'engraver',
         'extent',
-        'place',
+        'external_id',
         'format',
+        'genre',
+        'interviewee',
+        'interviewer',
+        'manner_of',
+        'manufacturer',
+        'medium',
+        'photographer',
+        'place',
+        'printer',
+        'printer_of_plates',
+        'publisher',
+        'school_of',
+        'sponsor',
+        'subject',
       ]
     end
 
@@ -150,21 +176,10 @@ module GoogleArtsAndCulture
         url_text:                 'relation:text',
         url:                      'relation:url',
 
-
-
-                       
-        # Non-publisher creators
-        #CREATORS:
-        #author interviewee creator_of_work interviewer photographer
-
         creator:                  'creator',
-
-        #CONTRIBUTORS
-        #addressee after artist attributed_to editor director engraver contributor manner_of manufacturer printer printer_of_plates producer school_of sponsor
 
         contributor:              'contributor',
 
-        # Publisher(s). Separated by commas; we don't have a lot of works with multiple publishers.
         publisher:                'publisher',
 
         subject:                   'subject',
@@ -188,6 +203,29 @@ module GoogleArtsAndCulture
 
         # GAC doesn't seem to have a field for what we call "format"
         # format:                   '???',
+
+        rights_holder:             'customtext:rights_holder',
+
+        # More specific creator metadata (these are also lumped together under "creator" above).
+        artist:                    'customtext:artist',
+        author:                    'customtext:author',
+        interviewee:               'customtext:interviewee',
+        interviewer:               'customtext:interviewer',
+        photographer:              'customtext:photographer',
+
+        # More specific creator metadata (these are also lumped together under "contributor" above).
+        addressee:                  'customtext:addressee',
+        after:                      'customtext:after',
+        attributed_to:              'customtext:attributed_to',
+        engraver:                   'customtext:engraver',
+        manufacturer:               'customtext:manufacturer',
+        manner_of:                  'customtext:manner_of',
+        printer:                    'customtext:printer',
+        printer_of_plates:          'customtext:printer_of_plates',
+        school_of:                  'customtext:school_of',
+        sponsor:                    'customtext:sponsor',
+
+
       }
     end
   end

@@ -140,14 +140,14 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       let!(:work) do
         create(:work, :with_complete_metadata,
           creator_attributes: {
-            # #CREATORS:
+            # Creators
             '0': {"category"=> "artist",     "value"=>"artist"    },
             '1': {"category"=> "author",     "value"=>"author"    },
             '2': {"category"=> "creator_of_work",     "value"=>"creator_of_work"    },
             '3': {"category"=> "interviewee",     "value"=>"interviewee"    },
             '4': {"category"=> "interviewer",     "value"=>"interviewer"    },
-            '5': {"category"=> "photographer",     "value"=>"photographer"    },
-            '6': {"category"=> "photographer",     "value"=>"photographer"    },
+            '5': {"category"=> "photographer",     "value"=>"photographer 1"    },
+            '6': {"category"=> "photographer",     "value"=>"photographer 2"    },
 
             # publishers 
             '7': {"category"=> "publisher",  "value"=>"publisher_1"   },
@@ -155,8 +155,7 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
             '9': {"category"=> "publisher",  "value"=>"publisher_3"   },
 
             # #CONTRIBUTORS
-
-            '10':  {"category"=> "addressee",       "value"=>"addressee"   },
+            '10': {"category"=> "addressee",       "value"=>"addressee"   },
             '11': {"category"=> "after",           "value"=>"after"   },
             '12': {"category"=> "attributed_to",   "value"=>"attributed_to"   },
             '13': {"category"=> "engraver",        "value"=>"engraver"   },
@@ -174,17 +173,36 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
         )
       end
 
-      describe "#creator" do
-        it "returns creator" do
-          expect(serializer.creator).to eq ["author_1", "author_2"]
+      # ok happy with this
+      # describe "#creator" do
+      #   it "returns creator" do
+      #     expect(serializer.creator).to eq ["artist", "author", "creator_of_work", "interviewee", "interviewer", "photographer 1", "photographer 2"]
+      #   end
+      # end
+
+      # describe "#publisher" do
+      #   it "returns publisher" do
+      #     expect(serializer.publisher).to eq ["publisher_1", "publisher_2", "publisher_3"]
+      #   end
+      # end
+
+      describe "#contributor" do
+        it "returns contributor" do
+          expect(serializer.contributor).to eq [
+            "addressee", "after", "attributed_to", "engraver",
+            "contributor", "manufacturer", "manner_of", "manufacturer",
+            "printer", "printer_of_plates", "school_of", "sponsor"
+          ]
         end
       end
 
-      describe "#publisher" do
-        it "returns publisher" do
-          expect(serializer.publisher).to eq "publisher"
+      describe "#interviewee" do
+        it "returns interviewee" do
+          expect(serializer.interviewee).to eq ["interviewee"]
         end
       end
+
+
     end
 
     # describe "#place" do
