@@ -79,6 +79,10 @@ describe "work factory" do
         expect(work.format).to eq(["moving_image"])
       end
 
+      it "is considered a video" do
+        expect(work.is_video?).to be true
+      end
+
       it "has an attached video with the proper mime type" do
         expect(work.representative.file_data['storage']).to eq("store")
         expect(work.representative.file_data['metadata']['mime_type']).to eq("video/mpeg")

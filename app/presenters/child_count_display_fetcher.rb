@@ -39,7 +39,7 @@ class ChildCountDisplayFetcher
   def display_count_for(model)
     if model.kind_of?(Collection)
       contains_count_for_friendlier_id(model.friendlier_id)
-    elsif model&.format.include?('moving_image')
+    elsif model.work? && model.is_video?
       1
     else
       member_count_for_friendlier_id(model.friendlier_id)
