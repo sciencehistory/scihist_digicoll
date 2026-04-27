@@ -124,25 +124,12 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
     # end
 
     context "creator; contributor; publisher" do
-
-
-
-
-      # creator:                  'creator',
-
-
-      # contributor:              'contributor',
-
-      # # Publisher(s). Separated by commas; we don't have a lot of works with multiple publishers.
-      # publisher:                'publisher',
-
-
       let!(:work) do
         create(:work, :with_complete_metadata,
           creator_attributes: {
             # Creators
-            '0': {"category"=> "artist",     "value"=>"artist"    },
-            '1': {"category"=> "author",     "value"=>"author"    },
+            '0': {"category"=> "artist",          "value"=>"artist"    },
+            '1': {"category"=> "author",          "value"=>"author"    },
             '2': {"category"=> "creator_of_work",     "value"=>"creator_of_work"    },
             '3': {"category"=> "interviewee",     "value"=>"interviewee"    },
             '4': {"category"=> "interviewer",     "value"=>"interviewer"    },
@@ -150,9 +137,9 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
             '6': {"category"=> "photographer",     "value"=>"photographer 2"    },
 
             # publishers 
-            '7': {"category"=> "publisher",  "value"=>"publisher_1"   },
-            '8': {"category"=> "publisher",  "value"=>"publisher_2"   },
-            '9': {"category"=> "publisher",  "value"=>"publisher_3"   },
+            '7': {"category"=> "publisher",        "value"=>"publisher_1"   },
+            '8': {"category"=> "publisher",        "value"=>"publisher_2"   },
+            '9': {"category"=> "publisher",        "value"=>"publisher_3"   },
 
             # #CONTRIBUTORS
             '10': {"category"=> "addressee",       "value"=>"addressee"   },
@@ -160,31 +147,30 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
             '12': {"category"=> "attributed_to",   "value"=>"attributed_to"   },
             '13': {"category"=> "engraver",        "value"=>"engraver"   },
             '14': {"category"=> "contributor",     "value"=>"contributor"   },
-            '15': {"category"=> "manufacturer",    "value"=>"manufacturer"   },
             '16': {"category"=> "manner_of",       "value"=>"manner_of"   },
             '17': {"category"=> "manufacturer",    "value"=>"manufacturer"   },
             '18': {"category"=> "printer",         "value"=>"printer"   },
             '19': {"category"=> "printer_of_plates",  "value"=>"printer_of_plates"   },
-            '20':  {"category"=> "school_of",       "value"=>"school_of"   },
+            '20': {"category"=> "school_of",       "value"=>"school_of"   },
             '21': {"category"=> "sponsor",         "value"=>"sponsor"   },
+            '22': {"category"=> "sponsor",         "value"=>"sponsor_2"   },
 
 
           }
         )
       end
 
-      # ok happy with this
-      # describe "#creator" do
-      #   it "returns creator" do
-      #     expect(serializer.creator).to eq ["artist", "author", "creator_of_work", "interviewee", "interviewer", "photographer 1", "photographer 2"]
-      #   end
-      # end
+      describe "#creator" do
+        it "returns creator" do
+          expect(serializer.creator).to eq ["artist", "author", "creator_of_work", "interviewee", "interviewer", "photographer 1", "photographer 2"]
+        end
+      end
 
-      # describe "#publisher" do
-      #   it "returns publisher" do
-      #     expect(serializer.publisher).to eq ["publisher_1", "publisher_2", "publisher_3"]
-      #   end
-      # end
+      describe "#publisher" do
+        it "returns publisher" do
+          expect(serializer.publisher).to eq ["publisher_1", "publisher_2", "publisher_3"]
+        end
+      end
 
       describe "#contributor" do
         it "returns contributor" do

@@ -127,8 +127,25 @@ module GoogleArtsAndCulture
       @work.external_id.map(&:value)
     end
 
+    # Creator methods
     def creator
       sorted_creators[:creators].map(&:value)
+    end
+
+    # These values are also included in "creator" but also get their own special column (e.g. customtext:artist)
+    # Otherwise there's no way of knowing that a particular person or organization was e.g. the artist.
+    [
+      'artist',
+      'author',
+      'creator_of_work',
+      'interviewee',
+      'interviewer',
+      'photographer'
+
+    ].each do |cat|
+      define_method(cat) do
+        @work.creator.find_all { |creator| creator.category == cat }.map(&:value)
+      end
     end
 
     def publisher
@@ -139,11 +156,26 @@ module GoogleArtsAndCulture
       sorted_creators[:contributors].map(&:value)
     end
 
-    ['interviewee'].each do |cat|
-      def cat
+    # Contributor methods
+    # These values are also included in "contributor" but also
+    # get their own special column (e.g. customtext:school_of)
+    [
+      'addressee',
+      'after',
+      'attributed_to',
+      'engraver',
+      'manner_of',
+      'manufacturer',
+      'printer',
+      'printer_of_plates',
+      'school_of',
+      'sponsor'
+    ].each do |cat|
+      define_method(cat) do
         @work.creator.find_all { |creator| creator.category == cat }.map(&:value)
       end
     end
+
 
     def place
       @work.place.map(&:value)
