@@ -90,9 +90,9 @@ module OralHistory
     def create_paragraphs(extracted_pdf_text_pages)
       paragraphs = []
 
-      first_index = find_page_1_index(extracted_pdf_text_pages)
+      first_index = find_first_transcript_page(extracted_pdf_text_pages)
       unless first_index
-        raise Error.new("Could not find page 1 index")
+        raise Error.new("Could not find first transcript page numbered 1 or 2?")
       end
 
       timestamp_file_offset_index = 0
@@ -180,10 +180,12 @@ module OralHistory
     end
 
     # index in array of page with numeral "1" as page number, can be at top or bottom
-    def find_page_1_index(pages)
+    #
+    # Or sometimes numbered '2', sometimes there is no page 1 really, yeah.
+    def find_first_transcript_page(pages)
       pages.find_index do |page_json|
-        block_is_page_number(page_json["blocks"]&.last).to_s == "1" ||
-        block_is_page_number(page_json["blocks"]&.first).to_s.downcase.in?([ "1", "page 1"])
+        block_is_page_number(page_json["blocks"]&.last).to_s.in?(["1", "2"]) ||
+        block_is_page_number(page_json["blocks"]&.first).to_s.downcase.in?([ "1", "page 1", "2", "page 2"])
       end
     end
 
