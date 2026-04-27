@@ -83,6 +83,7 @@ module GoogleArtsAndCulture
       # if a given attribute stretches over several columns, label the columns correctly (creator#0, creator#1, creator#2, etc.)
       @attribute_keys.map do |k|
         if array_attributes.include? k.to_s
+          raise "Unable to calculate column counts for #{k}" if column_counts[k.to_s].nil?
           (0..(column_counts[k.to_s] - 1)).map do |i|
             "#{ all_attributes[k ]}##{ i }"
            end
@@ -124,12 +125,34 @@ module GoogleArtsAndCulture
       ]
     end
 
-    # Count of of columns we need for each array attribute.
+
+    def creator_attributes
+      @creator_attributes ||= self.class.creator_categories.map{|c, v| v}.flatten.sort
+    end
+
     def column_counts
+      column_counts_1.merge column_counts_2
+    end
+
+    # TODO RENAME THESE METHODS
+    # Count of of columns we need for each array attribute.
+    def column_counts_1
+      attributes = array_attributes - creator_attributes
       @column_counts ||= Hash[
-          array_attributes.zip(
+          attributes.zip(
           @scope.pluck(
-              *array_attributes.map { |c| column_max_arel c }
+              *attributes.map { |c| column_max_arel c }
+          ).first
+        )
+      ]
+    end
+
+    def column_counts_2
+      attributes = creator_attributes
+      @column_counts_2 ||= Hash[
+          attributes.zip(
+          @scope.pluck(
+              *attributes.map { |c| column_max_2_arel c }
           ).first
         )
       ]
@@ -138,6 +161,11 @@ module GoogleArtsAndCulture
     # sql to determine the maximum number of columns needed for a multiple-column attribute
     def column_max_arel(attribute_name)
       Arel.sql("max(jsonb_array_length(kithe_models.json_attributes -> '#{attribute_name}'))" )
+    end
+
+    # yeah, this is unholy
+    def column_max_2_arel(attribute_name)
+      Arel.sql("max( jsonb_array_length(jsonb_path_query_array(kithe_models.json_attributes -> 'creator','$[*] ? (@.category == \"#{attribute_name}\" )')))" )
     end
 
     # A hash of possible columns
@@ -203,8 +231,6 @@ module GoogleArtsAndCulture
 
         # GAC doesn't seem to have a field for what we call "format"
         # format:                   '???',
-
-        rights_holder:             'customtext:rights_holder',
 
         # More specific creator metadata (these are also lumped together under "creator" above).
         artist:                    'customtext:artist',
