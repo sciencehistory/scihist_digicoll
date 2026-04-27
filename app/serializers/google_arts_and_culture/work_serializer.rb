@@ -234,8 +234,8 @@ module GoogleArtsAndCulture
       @sorted_creators ||= begin
         categories = GoogleArtsAndCulture::Exporter.creator_categories
         {
-          creators: @work.creator.find_all { |creator| categories[:creator].include? creator.category },
-          publishers: @work.creator.find_all { |creator| categories[:publisher].include? creator.category },
+          creators:     @work.creator.find_all { |creator| categories[:creator].include?     creator.category },
+          publishers:   @work.creator.find_all { |creator| categories[:publisher].include?   creator.category },
           contributors: @work.creator.find_all { |creator| categories[:contributor].include? creator.category },
         }
       end
