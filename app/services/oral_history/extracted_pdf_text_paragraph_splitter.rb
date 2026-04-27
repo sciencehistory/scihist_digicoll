@@ -204,6 +204,10 @@ module OralHistory
     # if a pagination marking paragraph is identified , we return the page number
     # extracted, and mutate page_paragraphs_json to remove it. Otherwise return nil.
     def extract_and_remove_logical_page_number(page_paragraphs_json)
+      return nil unless page_paragraphs_json.present?
+
+      logical_page_number = nil
+
       if page_paragraphs_json.last["text"].strip =~ PAGE_NUMBER_RE
         logical_page_number = $1.to_i
         page_paragraphs_json.pop

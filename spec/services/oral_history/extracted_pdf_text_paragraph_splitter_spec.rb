@@ -83,6 +83,23 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     end
   end
 
+  describe "with page with figure and no assigned page number" do
+    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/boyer-skipped-page-example.pdf"}
+
+    it "can process and properly number pages" do
+      paragraphs = splitter.paragraphs
+
+      expect(paragraphs).to all(have_attributes(text: be_present))
+      expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,4,5,6]
+
+      index_of_last_5 = paragraphs.index { |p| p.text =~ /Well, when I tried to get a job/}
+      expect(paragraphs[index_of_last_5].text).to end_with "so-called alpha transition."
+      expect(paragraphs[index_of_last_5].pdf_logical_page_number).to eq 5
+      expect(paragraphs[index_of_last_5 + 1].pdf_logical_page_number).to eq 6
+      expect(paragraphs[index_of_last_5 + 1].text).to match /Was that done in conjunction/
+    end
+  end
+
   describe "mid-era transcript, with minute timestamp style" do
     let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"}
 
