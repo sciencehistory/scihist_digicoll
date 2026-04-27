@@ -132,8 +132,11 @@ module GoogleArtsAndCulture
       sorted_creators[:creators].map(&:value)
     end
 
-    # These values are also included in "creator" but also get their own special column (e.g. customtext:artist)
-    # Otherwise there's no way of knowing that a particular person or organization was e.g. the artist.
+    # These values are also included in "creator" but also get their own customtext column
+    # (e.g. customtext:artist)
+    # Otherwise there's no way of knowing, for instance,
+    # that a particular person or organization was the artist (as opposed to the author)
+    # of a given work, as everything is lumped into #creator .
     [
       'artist',
       'author',
@@ -142,9 +145,9 @@ module GoogleArtsAndCulture
       'interviewer',
       'photographer'
 
-    ].each do |cat|
-      define_method(cat) do
-        @work.creator.find_all { |creator| creator.category == cat }.map(&:value)
+    ].each do |creator_category|
+      define_method(creator_category) do
+        @work.creator.find_all { |creator| creator.category == creator_category }.map(&:value)
       end
     end
 
@@ -158,7 +161,7 @@ module GoogleArtsAndCulture
 
     # Contributor methods
     # These values are also included in "contributor" but also
-    # get their own special column (e.g. customtext:school_of)
+    # get their own customtext column (e.g. customtext:school_of)
     [
       'addressee',
       'after',
@@ -170,9 +173,9 @@ module GoogleArtsAndCulture
       'printer_of_plates',
       'school_of',
       'sponsor'
-    ].each do |cat|
-      define_method(cat) do
-        @work.creator.find_all { |creator| creator.category == cat }.map(&:value)
+    ].each do |creator_category|
+      define_method(creator_category) do
+        @work.creator.find_all { |creator| creator.category == creator_category }.map(&:value)
       end
     end
 
