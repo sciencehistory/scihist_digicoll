@@ -80,8 +80,8 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
     let!(:work) do
       create(:work, :with_complete_metadata,
         creator_attributes: {
-          "0"=>{"category"=> "author",     "value"=>"author_1"    },
-          "1"=>{"category"=> "author",     "value"=>"author_2"    },
+          "0"=>{"category"=> "author",     "value"=>"author_1" },
+          "1"=>{"category"=> "author",     "value"=>"author_2" },
           "2"=>{"category"=> "publisher",  "value"=>"publisher" }
         }
       )
@@ -128,32 +128,32 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
         create(:work, :with_complete_metadata,
           creator_attributes: {
             # Creators
-            '0': {"category"=> "artist",          "value"=>"artist"    },
-            '1': {"category"=> "author",          "value"=>"author"    },
-            '2': {"category"=> "creator_of_work",     "value"=>"creator_of_work"    },
-            '3': {"category"=> "interviewee",     "value"=>"interviewee"    },
-            '4': {"category"=> "interviewer",     "value"=>"interviewer"    },
-            '5': {"category"=> "photographer",     "value"=>"photographer 1"    },
-            '6': {"category"=> "photographer",     "value"=>"photographer 2"    },
+            '0': {"category"=> "artist",          "value"=>"artist" },
+            '1': {"category"=> "author",          "value"=>"author" },
+            '2': {"category"=> "creator_of_work", "value"=>"creator_of_work" },
+            '3': {"category"=> "interviewee",     "value"=>"interviewee" },
+            '4': {"category"=> "interviewer",     "value"=>"interviewer" },
+            '5': {"category"=> "photographer",     "value"=>"photographer 1" },
+            '6': {"category"=> "photographer",     "value"=>"photographer 2" },
 
-            # publishers 
-            '7': {"category"=> "publisher",        "value"=>"publisher_1"   },
-            '8': {"category"=> "publisher",        "value"=>"publisher_2"   },
-            '9': {"category"=> "publisher",        "value"=>"publisher_3"   },
+            # Publishers 
+            '7': {"category"=> "publisher",        "value"=>"publisher_1" },
+            '8': {"category"=> "publisher",        "value"=>"publisher_2" },
+            '9': {"category"=> "publisher",        "value"=>"publisher_3" },
 
-            # #CONTRIBUTORS
-            '10': {"category"=> "addressee",       "value"=>"addressee"   },
-            '11': {"category"=> "after",           "value"=>"after"   },
-            '12': {"category"=> "attributed_to",   "value"=>"attributed_to"   },
-            '13': {"category"=> "engraver",        "value"=>"engraver"   },
-            '14': {"category"=> "contributor",     "value"=>"contributor"   },
-            '16': {"category"=> "manner_of",       "value"=>"manner_of"   },
-            '17': {"category"=> "manufacturer",    "value"=>"manufacturer"   },
-            '18': {"category"=> "printer",         "value"=>"printer"   },
-            '19': {"category"=> "printer_of_plates",  "value"=>"printer_of_plates"   },
-            '20': {"category"=> "school_of",       "value"=>"school_of"   },
-            '21': {"category"=> "sponsor",         "value"=>"sponsor"   },
-            '22': {"category"=> "sponsor",         "value"=>"sponsor_2"   },
+            # Contributors
+            '10': {"category"=> "addressee",       "value"=>"addressee" },
+            '11': {"category"=> "after",           "value"=>"after" },
+            '12': {"category"=> "attributed_to",   "value"=>"attributed_to" },
+            '13': {"category"=> "engraver",        "value"=>"engraver" },
+            '14': {"category"=> "contributor",     "value"=>"contributor" },
+            '16': {"category"=> "manner_of",       "value"=>"manner_of" },
+            '17': {"category"=> "manufacturer",    "value"=>"manufacturer" },
+            '18': {"category"=> "printer",         "value"=>"printer" },
+            '19': {"category"=> "printer_of_plates",  "value"=>"printer_of_plates" },
+            '20': {"category"=> "school_of",       "value"=>"school_of" },
+            '21': {"category"=> "sponsor",         "value"=>"sponsor" },
+            '22': {"category"=> "sponsor",         "value"=>"sponsor_2" },
 
 
           }
@@ -176,8 +176,8 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
         it "returns contributor" do
           expect(serializer.contributor).to eq [
             "addressee", "after", "attributed_to", "engraver",
-            "contributor", "manufacturer", "manner_of", "manufacturer",
-            "printer", "printer_of_plates", "school_of", "sponsor"
+            "contributor", "manner_of", "manufacturer",
+            "printer", "printer_of_plates", "school_of", "sponsor", "sponsor_2"
           ]
         end
       end
@@ -188,7 +188,11 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
         end
       end
 
-
+      describe "#school_of" do
+        it "returns school_of" do
+          expect(serializer.school_of).to eq ["school_of"]
+        end
+      end
     end
 
     # describe "#place" do
