@@ -107,7 +107,9 @@ module OralHistory
         # usually on bottom, sometimes on top
         logical_page_number = extract_and_remove_logical_page_number(page_paragraphs)
 
-        if page_index == first_index
+        last_paragraph = paragraphs.last
+
+        if page_index == first_index || (last_paragraph && last_paragraph.text =~ /[END OF INTEVIEW]/)
           trim_first_page_prefatory(page_paragraphs)
         end
 
@@ -132,8 +134,6 @@ module OralHistory
 
         # Should the first paragraph be joined to the last paragraph of the prior page, does
         # it look like a split paragraph?
-        last_paragraph = paragraphs.last
-
         if last_paragraph && last_paragraph.text !~ (/\.?\!\Z/) && page_paragraph_objects.first.speaker_name.blank?
           # first doesn't end punctuation, and second doesn't begin with a speaker label? let's join em
           last_paragraph.text = [
