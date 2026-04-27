@@ -7,6 +7,10 @@ class Admin::OhAiConversationController < AdminController
       relation = relation.where("question ILIKE ?", "%#{params[:q]}%")
     end
 
+    if params[:feedbacks] == "1"
+      relation = relation.joins(:feedbacks).where.not(feedbacks: { id: nil }).distinct
+    end
+
     @ai_conversations = relation.all
   end
 end

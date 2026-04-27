@@ -103,6 +103,9 @@ Rails.application.routes.draw do
     # /oral_histories/ask
     resources :oral_history_ai_conversation, only: [:show, :create, :new], path: :ask do
       member do
+        get 'feedback', to: "oral_history_conversation_feedback#new"
+        post 'feedback', to: "oral_history_conversation_feedback#create"
+
         get 'refresh'
       end
     end
