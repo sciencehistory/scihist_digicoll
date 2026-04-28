@@ -134,7 +134,7 @@ module OralHistory
 
         # Should the first paragraph be joined to the last paragraph of the prior page, does
         # it look like a split paragraph?
-        if last_paragraph && last_paragraph.text !~ (/\.?\!\Z/) && page_paragraph_objects.first.speaker_name.blank?
+        if last_paragraph && last_paragraph.text !~ (/\.?\!\Z/) && page_paragraph_objects.present? && page_paragraph_objects.first.speaker_name.blank?
           # first doesn't end punctuation, and second doesn't begin with a speaker label? let's join em
           last_paragraph.text = [
             last_paragraph.text,
@@ -228,7 +228,7 @@ module OralHistory
     # domain.
     def remove_footnotes(paragraphs_json)
       # there could be more than one dependign on how paragraph are split
-      while paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
+      while paragraphs_json.present? && paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
         # looks like a footnote, we just toss it out, but maybe later we'll keep it
         # to try to turn into endnotes.
         reference = $1
@@ -239,7 +239,7 @@ module OralHistory
       # with a big line separator first, argh.
       # eg:
       #     ____________________________________ *Footnote
-      if note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/)
+      if paragraphs_json.present? && (note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/))
 
         # we need to cut that last paragraph to stop there
         paragraphs_json.last['text'].slice!(note_index..-1)
