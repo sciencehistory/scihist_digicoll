@@ -115,11 +115,7 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
 
       describe "#contributor" do
         it "returns contributor" do
-          expect(serializer.contributor).to eq [
-            "addressee", "after", "attributed_to", "engraver",
-            "contributor", "manner_of", "manufacturer",
-            "printer", "printer_of_plates", "school_of", "sponsor", "sponsor 2"
-          ]
+          expect(serializer.contributor).to eq ['contributor']
         end
       end
 

@@ -64,6 +64,21 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
     end
   end
 
+  describe "#title_row with regular metadata" do
+    let(:scope) { Work.where(id: [work_1.id, work_2.id, work_3.id, work_4.id]) }
+    let(:creator) { described_class.new(scope) }
+    let(:work_4) do
+      create(:work, :published)
+    end
+
+    it "can output correct titles for columns" do
+      title_row = creator.title_row.sort
+      expect(title_row).to eq %w[art=genre#0 customtext:rights_holder dateCreated:display
+        dateCreated:end dateCreated:start description filespec filetype itemid orderid
+        relation:text relation:url rights subitemid title]
+    end
+  end
+  
   describe "#title_row" do
     let(:scope) { Work.where(id: [work_1.id, work_2.id, work_3.id, work_4.id]) }
     let(:creator) { described_class.new(scope) }
@@ -71,7 +86,7 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
       create(:work, :published, :extra_creator_metadata)
     end
 
-    it "organizes complex creator metdata into columns" do
+    it "can handle lots of niche creators" do
       expect(creator.title_row.sort).to eq %w[art=genre#0 contributor#0 creator#0 creator#1
         creator#10 creator#11 creator#12 creator#13 creator#14 creator#15 creator#16 creator#17
         creator#18 creator#19 creator#2 creator#20 creator#21 creator#22 creator#3 creator#4
@@ -86,6 +101,56 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
         format#0 format#1 itemid locationCreated:placename#0 locationCreated:placename#1 medium#0
         medium#1 medium#2 orderid publisher#0 publisher#1 publisher#2 relation:text
         relation:url rights subitemid subject#0 title]
+    end
+  end
+
+
+  describe "#manner_of" do
+    let(:scope) { Work.where(id: [work_1.id]) }
+    let(:creator) { described_class.new(scope) }
+    let(:work_1) do
+      create(:work, :published, friendlier_id: '17dbws9', title: "Teniers",
+        creator: [Work::Creator.new({ value:"Teniers, David, 1610-1690", category: "manner_of"})]
+      )
+    end
+
+    it "smoke test" do
+      expect(creator.metadata[0].count).to eq 17
+      expect(creator.metadata[1][9..18]).to eq [
+        "2019-01-01", "2019-12-31", "2019",
+        "Rare books", "", "Public Domain Mark 1.0",
+        "", "Teniers, David, 1610-1690"
+      ]
+    end
+  end
+
+
+  describe "#publisher" do
+    let(:scope) { Work.where(id: [work_1.id]) }
+    let(:creator) { described_class.new(scope) }
+    let(:work_1) do
+      create(:work, :published,
+        creator: [Work::Creator.new({ value:"Henle Verlag", category: "publisher"})]
+      )
+    end
+    it "smoke test" do
+      expect(creator.metadata[0].count).to eq 17
+      expect(creator.metadata[1].count).to eq 17
+    end
+  end
+
+
+  describe "#interviewee" do
+    let(:scope) { Work.where(id: [work_1.id]) }
+    let(:creator) { described_class.new(scope) }
+    let(:work_1) do
+      create(:work, :published,
+        creator: [Work::Creator.new({ value:"Victor Hugo", category: "interviewee"})]
+      )
+    end
+    it "smoke test" do
+      expect(creator.metadata[0].count).to eq 17
+      expect(creator.metadata[1].count).to eq 17
     end
   end
 
