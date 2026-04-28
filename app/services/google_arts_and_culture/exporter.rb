@@ -33,16 +33,18 @@ module GoogleArtsAndCulture
       museum_scope.or(library_scope)
     end
 
-    # TODO memoize this.
+    # Separate creator categories into creators, publishers, and contributors.
     def self.creator_categories
-      creator = %w{ artist author creator_of_work interviewee interviewer photographer }
-      publisher = [ 'publisher' ]
-      contributor =  (Work::Creator::CATEGORY_VALUES - publisher) - creator
-      {
-        creator:     creator,
-        publisher:   publisher,
-        contributor: contributor
-      }
+      @creator_categories ||= begin
+        creator = %w{ artist author creator_of_work interviewee interviewer photographer }
+        publisher = [ 'publisher' ]
+        contributor =  (Work::Creator::CATEGORY_VALUES - publisher) - creator
+        {
+          creator:     creator,
+          publisher:   publisher,
+          contributor: contributor
+        }
+      end
     end
 
     # Does not close the tempfile.
@@ -65,7 +67,6 @@ module GoogleArtsAndCulture
       end
     end
 
-
     # Returns a hash of filenames and downloadable files:
     # file_hash.each { |filename, downloadable_file| [...] }
     def file_hash
@@ -78,22 +79,23 @@ module GoogleArtsAndCulture
       end
     end
 
-
     def title_row
-      # if a given attribute stretches over several columns, label the columns correctly (creator#0, creator#1, creator#2, etc.)
-      @attribute_keys.map do |k|
-        if array_attributes.include? k.to_s
-          raise "Unable to calculate column counts for #{k}" if column_counts[k.to_s].nil?
-          (0..(column_counts[k.to_s] - 1)).map do |i|
-            "#{ all_attributes[k ]}##{ i }"
-           end
-        else
-          all_attributes[k]
-        end
-      end.flatten
+      @title_row ||= begin
+        # if a given attribute stretches over several columns, label the columns correctly (creator#0, creator#1, creator#2, etc.)
+        @attribute_keys.map do |k|
+          if array_attributes.include? k.to_s
+            raise "Unable to calculate column counts for #{k}" if column_counts[k.to_s].nil?
+            (0..(column_counts[k.to_s] - 1)).map do |i|
+              "#{ all_attributes[k ]}##{ i }"
+             end
+          else
+            all_attributes[k]
+          end
+        end.flatten
+      end
     end
 
-    # We store multiple values for each of these types of metadata.
+    # We export multiple values for each of these types of metadata.
     def array_attributes
       [
         'additional_title',
@@ -137,18 +139,20 @@ module GoogleArtsAndCulture
 
     # Count of columns we need for each array attribute.
     def column_counts
-      # how many columns do we need for each non-creator attribute?
-      non_creator_column_counts = column_count_sql(
-        non_creator_attributes,
-        :column_max_arel
-      )
+      @column_counts ||= begin
+        # how many columns do we need for each non-creator attribute?
+        non_creator_column_counts = column_count_sql(
+          non_creator_attributes,
+          :column_max_arel
+        )
 
-      # how many columns do we need for each creator attribute?
-      creator_column_counts = column_count_sql(
-        creator_attributes,
-        :creator_column_max_arel
-      )
-      Hash[ non_creator_column_counts.concat(creator_column_counts) ]
+        # how many columns do we need for each creator attribute?
+        creator_column_counts = column_count_sql(
+          creator_attributes,
+          :creator_column_max_arel
+        )
+        Hash[ non_creator_column_counts.concat(creator_column_counts) ]
+      end
     end
 
     # Given a series of attributes, plucks arbitrary info from the scope about those attributes.
@@ -236,6 +240,7 @@ module GoogleArtsAndCulture
 
         contributor:              'contributor',
 
+        # This comes from the work's creator metadata, but is treated separately by GAC.
         publisher:                'publisher',
 
         subject:                   'subject',
@@ -253,7 +258,6 @@ module GoogleArtsAndCulture
         genre:                    'art=genre',
         description:              'description',
 
-
         rights:                    'rights',
         rights_holder:             'customtext:rights_holder',
 
@@ -267,7 +271,7 @@ module GoogleArtsAndCulture
         interviewer:               'customtext:interviewer',
         photographer:              'customtext:photographer',
 
-        # More specific creator metadata (these are also lumped together under "contributor" above).
+        # More specific contributor metadata (these are also lumped together under "contributor" above).
         addressee:                  'customtext:addressee',
         after:                      'customtext:after',
         attributed_to:              'customtext:attributed_to',
@@ -278,7 +282,6 @@ module GoogleArtsAndCulture
         printer_of_plates:          'customtext:printer_of_plates',
         school_of:                  'customtext:school_of',
         sponsor:                    'customtext:sponsor',
-
 
       }
     end
