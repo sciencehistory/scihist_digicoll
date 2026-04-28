@@ -120,6 +120,32 @@ class AssetUploader < Kithe::AssetUploader
   end
 
 
+  # These are only meant and probably useful for for Oral History transcript PDFs.
+  # This will also get misclenaeous other PDFs and Oral History "Front Matter" PDFs
+  # which we don't need -- but it's pretty cheap to calculate, and it's just so much
+  # easier to do it on ingest, with every PDF, not reliant on attributes of PDF that
+  # could change.
+  #
+  # Does not OCR only extracts actual text, so at worst might be mostly blank pages.
+  #
+  # We save the pdf_md5 fingerprint and the git sha (source_version) for technical
+  # provenance and debugging.
+  Attacher.define_derivative("extracted_pdf_text_json", content_type: "application/pdf") do |original_file, attacher:, add_metadata:|
+    json = OralHistory::ExtractPdfText.new(pdf_file_path: original_file.path).extract_pdf_text
+
+    add_metadata.merge!(
+      original_filename: "extracted_pdf_text.json",
+      mime_type: "application/json",
+      source: {
+        pdf_md5: attacher.file&.md5,
+        source_version: ENV['SOURCE_VERSION']
+      }
+    )
+
+    StringIO.new(JSON.dump(json))
+  end
+
+
   # For FLAC originals, we create a mono m4a derivative.
   # Typically this deriv is only 5% of the size of the original FLAC,
   # while still fine for listening, at least for for oral histories.
