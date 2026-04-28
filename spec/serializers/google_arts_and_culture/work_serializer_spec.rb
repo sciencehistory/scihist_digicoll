@@ -31,35 +31,8 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       "format" => 2
     }
   end
-  
-  let(:attribute_keys) do
-    [
-      :friendlier_id,
-      :subitem_id,
-      :order_id,
-      :title,
-      :additional_title,
-      :file_name,
-      :filetype,
-      :url_text,
-      :url,
-      :creator,
-      :publisher,
-      :subject,
-      :extent,
-      :min_date,
-      :max_date,
-      :date_of_work,
-      :place,
-      :medium,
-      :genre,
-      :description,
-      :rights,
-      :rights_holder
-    ]
-  end
 
-  let(:serializer) { described_class.new(work, attribute_keys:attribute_keys, column_counts:column_counts) }
+  let(:serializer) { described_class.new(work, attribute_keys:nil, column_counts:column_counts) }
 
   describe "#members_to_include" do
     it "returns a collection of public tiff assets for a work" do
@@ -87,88 +60,56 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       )
     end
 
-    # describe "#subitem_id" do
-    #   it "returns n/a" do
-    #     expect(serializer.subitem_id).to eq "N/A"
-    #   end
-    # end
+    describe "#subitem_id" do
+      it "returns n/a" do
+        expect(serializer.subitem_id).to eq "N/A"
+      end
+    end
 
-    # describe "#file_name" do
-    #   it "returns n/a" do
-    #     expect(serializer.file_name).to eq "N/A"
-    #   end
-    # end
+    describe "#file_name" do
+      it "returns n/a" do
+        expect(serializer.file_name).to eq "N/A"
+      end
+    end
 
-    # describe "#order_id" do
-    #   it "returns n/a" do
-    #     expect(serializer.order_id).to eq "N/A"
-    #   end
-    # end
+    describe "#order_id" do
+      it "returns n/a" do
+        expect(serializer.order_id).to eq "N/A"
+      end
+    end
 
-    # describe "#url_text" do
-    #   it "returns boilerplate text" do
-    #     expect(serializer.url_text).to eq 'Science History Institute Digital Collections'
-    #   end
-    # end
+    describe "#url_text" do
+      it "returns boilerplate text" do
+        expect(serializer.url_text).to eq 'Science History Institute Digital Collections'
+      end
+    end
 
-    # describe "#url" do
-    #   it "returns URL of work" do
-    #     expect(serializer.url).to eq "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{work.friendlier_id}"
-    #   end
-    # end
+    describe "#url" do
+      it "returns URL of work" do
+        expect(serializer.url).to eq "#{ScihistDigicoll::Env.lookup!(:app_url_base)}/works/#{work.friendlier_id}"
+      end
+    end
 
-    # describe "#external_id" do
-    #   it "returns external_id" do
-    #     expect(serializer.external_id).to eq ["Past Perfect ID 1", "Sierra Bib Number 1", "Sierra Bib Number 2", "Accession Number 1"]
-    #   end
-    # end
+    describe "#external_id" do
+      it "returns external_id" do
+        expect(serializer.external_id).to eq ["Past Perfect ID 1", "Sierra Bib Number 1", "Sierra Bib Number 2", "Accession Number 1"]
+      end
+    end
 
     context "creator; contributor; publisher" do
       let!(:work) do
-        create(:work, :with_complete_metadata,
-          creator_attributes: {
-            # Creators
-            '0': {"category"=> "artist",          "value"=>"artist" },
-            '1': {"category"=> "author",          "value"=>"author" },
-            '2': {"category"=> "creator_of_work", "value"=>"creator_of_work" },
-            '3': {"category"=> "interviewee",     "value"=>"interviewee" },
-            '4': {"category"=> "interviewer",     "value"=>"interviewer" },
-            '5': {"category"=> "photographer",     "value"=>"photographer 1" },
-            '6': {"category"=> "photographer",     "value"=>"photographer 2" },
-
-            # Publishers 
-            '7': {"category"=> "publisher",        "value"=>"publisher_1" },
-            '8': {"category"=> "publisher",        "value"=>"publisher_2" },
-            '9': {"category"=> "publisher",        "value"=>"publisher_3" },
-
-            # Contributors
-            '10': {"category"=> "addressee",       "value"=>"addressee" },
-            '11': {"category"=> "after",           "value"=>"after" },
-            '12': {"category"=> "attributed_to",   "value"=>"attributed_to" },
-            '13': {"category"=> "engraver",        "value"=>"engraver" },
-            '14': {"category"=> "contributor",     "value"=>"contributor" },
-            '16': {"category"=> "manner_of",       "value"=>"manner_of" },
-            '17': {"category"=> "manufacturer",    "value"=>"manufacturer" },
-            '18': {"category"=> "printer",         "value"=>"printer" },
-            '19': {"category"=> "printer_of_plates",  "value"=>"printer_of_plates" },
-            '20': {"category"=> "school_of",       "value"=>"school_of" },
-            '21': {"category"=> "sponsor",         "value"=>"sponsor" },
-            '22': {"category"=> "sponsor",         "value"=>"sponsor_2" },
-
-
-          }
-        )
+        create(:work, :extra_creator_metadata)
       end
 
       describe "#creator" do
         it "returns creator" do
-          expect(serializer.creator).to eq ["artist", "author", "creator_of_work", "interviewee", "interviewer", "photographer 1", "photographer 2"]
+          expect(serializer.creator).to eq ["artist", "author", "creator_of_work", "interviewee", "interviewer", "photographer", "photographer 2", "photographer 3"]
         end
       end
 
       describe "#publisher" do
         it "returns publisher" do
-          expect(serializer.publisher).to eq ["publisher_1", "publisher_2", "publisher_3"]
+          expect(serializer.publisher).to eq ["publisher", "publisher 2", "publisher 3"]
         end
       end
 
@@ -177,7 +118,7 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
           expect(serializer.contributor).to eq [
             "addressee", "after", "attributed_to", "engraver",
             "contributor", "manner_of", "manufacturer",
-            "printer", "printer_of_plates", "school_of", "sponsor", "sponsor_2"
+            "printer", "printer_of_plates", "school_of", "sponsor", "sponsor 2"
           ]
         end
       end
@@ -195,64 +136,64 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       end
     end
 
-    # describe "#place" do
-    #   it "returns place" do
-    #     expect(serializer.place).to eq ["Place of interview", "Place of Manufacture"]
-    #   end
-    # end
+    describe "#place" do
+      it "returns place" do
+        expect(serializer.place).to eq ["Place of interview", "Place of Manufacture"]
+      end
+    end
 
-    # describe "#filetype" do
-    #   it "returns Sequence" do
-    #     expect(serializer.filetype).to eq "Sequence"
-    #   end
-    # end
+    describe "#filetype" do
+      it "returns Sequence" do
+        expect(serializer.filetype).to eq "Sequence"
+      end
+    end
 
-    # describe "#min_date" do
-    #   it "returns date" do
-    #     expect(serializer.min_date).to eq "2014-01-01"
-    #   end
-    # end
+    describe "#min_date" do
+      it "returns date" do
+        expect(serializer.min_date).to eq "2014-01-01"
+      end
+    end
 
-    # describe "#max_date" do
-    #   it "returns date" do
-    #     expect(serializer.min_date).to eq "2014-01-01"
-    #   end
-    # end
+    describe "#max_date" do
+      it "returns date" do
+        expect(serializer.min_date).to eq "2014-01-01"
+      end
+    end
 
-    # describe "#date_of_work" do
-    #   it "returns all dates in a single string" do
-    #     expect(serializer.date_of_work).to eq "Before 2014-Jan-01 – circa 2014-Jan-02 (Note 1); Before 2014-Feb-03 – circa 2014-Feb-04 (Note 2); Before 2014-Mar-05 – circa 2014-Mar-06 (Note 3)"
-    #   end
-    # end
+    describe "#date_of_work" do
+      it "returns all dates in a single string" do
+        expect(serializer.date_of_work).to eq "Before 2014-Jan-01 – circa 2014-Jan-02 (Note 1); Before 2014-Feb-03 – circa 2014-Feb-04 (Note 2); Before 2014-Mar-05 – circa 2014-Mar-06 (Note 3)"
+      end
+    end
 
-    # describe "#description" do
-    #   it "returns description" do
-    #     expect(serializer.description).to eq "Description 1"
-    #   end
-    # end
+    describe "#description" do
+      it "returns description" do
+        expect(serializer.description).to eq "Description 1"
+      end
+    end
 
-    # describe "#physical_container" do
-    #   it "returns physical_container" do
-    #     expect(serializer.physical_container).to eq ["Box: Box", "Page: Page", "Part: Part", "Folder: Folder", "Volume: Volume", "Shelfmark: Shelfmark", "Reel: Reel"]
-    #   end
-    # end
+    describe "#physical_container" do
+      it "returns physical_container" do
+        expect(serializer.physical_container).to eq ["Box: Box", "Page: Page", "Part: Part", "Folder: Folder", "Volume: Volume", "Shelfmark: Shelfmark", "Reel: Reel"]
+      end
+    end
 
-    # describe "#additional_credit" do
-    #   it "returns additional_credit" do
-    #     expect(serializer.additional_credit).to eq ["photographed_by:Douglas Lockard", "photographed_by:Mark Backrath"]
-    #   end
-    # end
+    describe "#additional_credit" do
+      it "returns additional_credit" do
+        expect(serializer.additional_credit).to eq ["photographed_by:Douglas Lockard", "photographed_by:Mark Backrath"]
+      end
+    end
 
-    # describe "#created" do
-    #   it "returns a date string" do
-    #     expect(serializer.created).to be_a String
-    #   end
-    # end
+    describe "#created" do
+      it "returns a date string" do
+        expect(serializer.created).to be_a String
+      end
+    end
 
-    # describe "#last_modified" do
-    #   it "returns a date string" do
-    #     expect(serializer.last_modified).to be_a String
-    #   end
-    # end
+    describe "#last_modified" do
+      it "returns a date string" do
+        expect(serializer.last_modified).to be_a String
+      end
+    end
   end
 end
