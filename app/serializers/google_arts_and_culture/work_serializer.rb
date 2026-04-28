@@ -127,7 +127,7 @@ module GoogleArtsAndCulture
       @work.external_id.map(&:value)
     end
 
-    # Creator methods
+    # Note we also define a #creator_of_work method below.
     def creator
       sorted_creators[:creators].map(&:value)
     end
@@ -155,17 +155,12 @@ module GoogleArtsAndCulture
       sorted_creators[:publishers].map(&:value)
     end
 
-    def contributor
-      sorted_creators[:contributors].map(&:value)
-    end
-
-    # Contributor methods
-    # These values are also included in "contributor" but also
-    # get their own customtext column (e.g. customtext:school_of)
+    # Contributor methods (e.g. customtext:school_of)
     [
       'addressee',
       'after',
       'attributed_to',
+      'contributor',
       'engraver',
       'manner_of',
       'manufacturer',
