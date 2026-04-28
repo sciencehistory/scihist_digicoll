@@ -130,32 +130,35 @@ module GoogleArtsAndCulture
       @creator_attributes ||= self.class.creator_categories.map{|c, v| v}.flatten.sort
     end
 
+    def non_creator_attributes
+      @non_creator_attributes ||= array_attributes - creator_attributes
+    end
+
+
+    # Count of columns we need for each array attribute.
     def column_counts
-      column_counts_1.merge column_counts_2
+      # how many columns do we need for each non-creator attribute?
+      non_creator_column_counts = column_count_sql(
+        non_creator_attributes,
+        :column_max_arel
+      )
+
+      # how many columns do we need for each creator attribute?
+      creator_column_counts = column_count_sql(
+        creator_attributes,
+        :creator_column_max_arel
+      )
+      Hash[ non_creator_column_counts.concat(creator_column_counts) ]
     end
 
-    # TODO RENAME THESE METHODS
-    # Count of of columns we need for each array attribute.
-    def column_counts_1
-      attributes = array_attributes - creator_attributes
-      @column_counts ||= Hash[
-          attributes.zip(
-          @scope.pluck(
-              *attributes.map { |c| column_max_arel c }
-          ).first
-        )
-      ]
-    end
-
-    def column_counts_2
-      attributes = creator_attributes
-      @column_counts_2 ||= Hash[
-          attributes.zip(
-          @scope.pluck(
-              *attributes.map { |c| column_max_2_arel c }
-          ).first
-        )
-      ]
+    # Given a series of attributes, plucks arbitrary info from the scope about those attributes.
+    # Pass in any method column_arel_method .
+    def column_count_sql(attributes, column_arel_method)
+      attributes.zip(
+        @scope.pluck(
+            *attributes.map { |c| self.send(column_arel_method, c) }
+        ).first
+      )
     end
 
     # sql to determine the maximum number of columns needed for a multiple-column attribute
@@ -163,9 +166,34 @@ module GoogleArtsAndCulture
       Arel.sql("max(jsonb_array_length(kithe_models.json_attributes -> '#{attribute_name}'))" )
     end
 
-    # yeah, this is unholy
-    def column_max_2_arel(attribute_name)
-      Arel.sql("max( jsonb_array_length(jsonb_path_query_array(kithe_models.json_attributes -> 'creator','$[*] ? (@.category == \"#{attribute_name}\" )')))" )
+    # similar to column_max_arel above, but filters
+    # creators by their category.
+    #
+    # Given a creator category (like "sponsor")
+    # returns the max number of columns needed
+    # for that category of creators.
+    #
+    # Makes use of some obscure JSONPath:
+    #
+    # $[*] ? (@.category == "sponsor")
+    #
+    # means “Take the root array $ (of creators),
+    #   iterate over all elements $[*],
+    #   and return only those objects $[*] ? whose
+    #   category field is 'sponsor'.”
+    def creator_column_max_arel(creator_category)
+      Arel.sql(
+        """
+          max(
+            jsonb_array_length(
+              jsonb_path_query_array(
+                kithe_models.json_attributes -> 'creator',
+                '$[*] ? (@.category == \"#{creator_category}\")'
+              )
+            )
+          )
+        """
+      )
     end
 
     # A hash of possible columns
