@@ -249,6 +249,15 @@ class OralHistoryContent
         def speaker_name
           lines.first&.speaker_label&.chomp(":")
         end
+
+        # override to raise just to indicate we haven't done this yet, we could.
+        def as_json(*)
+          raise "Not yet Implemented"
+        end
+
+        def self.from_json(*)
+          raise "Not yet Implemented"
+        end
       end
 
       class Line

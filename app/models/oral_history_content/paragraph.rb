@@ -5,7 +5,7 @@ class OralHistoryContent
   # Different classes can create these, depending on what format of transcript they are creating
   # from (OHMS, plain text, etc)  in some cases there may be subsets.
   #
-  # Some may create sub-classes specific to their format, but this is a general API for chunkers.
+# There is at least one sub-class as well, OralHistoryContent::OhmsXml::LegacyTranscript::Paragraph
   class Paragraph
     def self.fragment_id(paragraph_index:)
       "oh-t-p#{paragraph_index}"
@@ -122,6 +122,45 @@ class OralHistoryContent
       FullSanitizer.sanitize( s.gsub("<br>", "\n") )
     end
 
+    # object as json-able hash with all instance variables automatically included as keys
+    def as_json
+      instance_variables.to_h do |ivar|
+        [ivar.to_s.delete_prefix("@"), instance_variable_get(ivar)]
+      end
+    end
 
+    # Serialied string version of as_json
+    def to_json(*args)
+      as_json.to_json(*args)
+    end
+
+    # keep track of which new() keyword params are defined, for from_json
+    def self.init_kw_params
+      @init_kw_params ||= self.instance_method(:initialize).parameters.
+        find_all { |type, _| [:keyreq, :key].include?(type) }.
+        collect(&:second).
+        collect(&:to_s)
+    end
+
+    # turn json hash (can be ruby has or serialized string) back into Paragraph
+    def self.from_json(json)
+      data = json.is_a?(String) ? JSON.parse(json) : json
+
+      init_hash, other_hash = data.slice(*init_kw_params), data.except(*init_kw_params)
+
+      obj = self.new(**init_hash.symbolize_keys)
+      other_hash.each do |key, value|
+        obj.send("#{key}=".to_sym, value)
+      end
+
+      return obj
+    end
+
+    # Can take json array of hashes, either as a ruby Array or serialized string.
+    # Each hash will be sent to from_json.
+    def self.from_json_array(json)
+      data = json.is_a?(String) ? JSON.parse(json, symbolize_names: true) : json
+      data.collect { |hash| self.from_json(hash) }
+    end
   end
 end
