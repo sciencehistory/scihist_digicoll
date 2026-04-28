@@ -90,9 +90,15 @@ module OralHistory
     def create_paragraphs(extracted_pdf_text_pages)
       paragraphs = []
 
-      first_index = find_page_1_index(extracted_pdf_text_pages)
+      first_index = find_first_transcript_page(extracted_pdf_text_pages)
       unless first_index
-        raise Error.new("Could not find page 1 index")
+        message = "Could not find first transcript page numbered 1 or 2?"
+        # OK, if it has almost no text, let's put a more useful error message in.
+        blocks = extracted_pdf_text["pages"]&.collect { |h| h["blocks"] }
+        if blocks && blocks.count { |b| b.blank? } > blocks.count * 0.9
+          message = "Could not find first transcript page, PDF likely lacks embedded text"
+        end
+        raise Error.new(message)
       end
 
       timestamp_file_offset_index = 0
@@ -107,7 +113,9 @@ module OralHistory
         # usually on bottom, sometimes on top
         logical_page_number = extract_and_remove_logical_page_number(page_paragraphs)
 
-        if page_index == first_index
+        last_paragraph = paragraphs.last
+
+        if page_index == first_index || (last_paragraph && last_paragraph.text =~ /[END OF INTEVIEW]/)
           trim_first_page_prefatory(page_paragraphs)
         end
 
@@ -132,9 +140,7 @@ module OralHistory
 
         # Should the first paragraph be joined to the last paragraph of the prior page, does
         # it look like a split paragraph?
-        last_paragraph = paragraphs.last
-
-        if last_paragraph && last_paragraph.text !~ (/\.?\!\Z/) && page_paragraph_objects.first.speaker_name.blank?
+        if last_paragraph && last_paragraph.text !~ (/\.?\!\Z/) && page_paragraph_objects.present? && page_paragraph_objects.first.speaker_name.blank?
           # first doesn't end punctuation, and second doesn't begin with a speaker label? let's join em
           last_paragraph.text = [
             last_paragraph.text,
@@ -180,10 +186,12 @@ module OralHistory
     end
 
     # index in array of page with numeral "1" as page number, can be at top or bottom
-    def find_page_1_index(pages)
+    #
+    # Or sometimes numbered '2', sometimes there is no page 1 really, yeah.
+    def find_first_transcript_page(pages)
       pages.find_index do |page_json|
-        block_is_page_number(page_json["blocks"]&.last).to_s == "1" ||
-        block_is_page_number(page_json["blocks"]&.first).to_s.downcase.in?([ "1", "page 1"])
+        block_is_page_number(page_json["blocks"]&.last).to_s.in?(["1", "2"]) ||
+        block_is_page_number(page_json["blocks"]&.first).to_s.downcase.in?([ "1", "page 1", "2", "page 2"])
       end
     end
 
@@ -204,6 +212,10 @@ module OralHistory
     # if a pagination marking paragraph is identified , we return the page number
     # extracted, and mutate page_paragraphs_json to remove it. Otherwise return nil.
     def extract_and_remove_logical_page_number(page_paragraphs_json)
+      return nil unless page_paragraphs_json.present?
+
+      logical_page_number = nil
+
       if page_paragraphs_json.last["text"].strip =~ PAGE_NUMBER_RE
         logical_page_number = $1.to_i
         page_paragraphs_json.pop
@@ -222,7 +234,7 @@ module OralHistory
     # domain.
     def remove_footnotes(paragraphs_json)
       # there could be more than one dependign on how paragraph are split
-      while paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
+      while paragraphs_json.present? && paragraphs_json.last['text'].strip =~ /\A(\*|\d+)/
         # looks like a footnote, we just toss it out, but maybe later we'll keep it
         # to try to turn into endnotes.
         reference = $1
@@ -233,7 +245,7 @@ module OralHistory
       # with a big line separator first, argh.
       # eg:
       #     ____________________________________ *Footnote
-      if note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/)
+      if paragraphs_json.present? && (note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/))
 
         # we need to cut that last paragraph to stop there
         paragraphs_json.last['text'].slice!(note_index..-1)
