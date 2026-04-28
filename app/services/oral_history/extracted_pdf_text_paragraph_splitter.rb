@@ -92,7 +92,13 @@ module OralHistory
 
       first_index = find_first_transcript_page(extracted_pdf_text_pages)
       unless first_index
-        raise Error.new("Could not find first transcript page numbered 1 or 2?")
+        message = "Could not find first transcript page numbered 1 or 2?"
+        # OK, if it has almost no text, let's put a more useful error message in.
+        blocks = extracted_pdf_text["pages"]&.collect { |h| h["blocks"] }
+        if blocks && blocks.count { |b| b.blank? } > blocks.count * 0.9
+          message = "Could not find first transcript page, PDF likely lacks embedded text"
+        end
+        raise Error.new(message)
       end
 
       timestamp_file_offset_index = 0
