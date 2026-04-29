@@ -102,13 +102,19 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       end
 
       describe "#creator" do
-        it "returns creator" do
+        it "all creators are in creator#0, creator#1, creator#2 etc. , but are also listed under their own columns" do
           expect(serializer.creator).to eq ["artist", "author", "creator_of_work", "interviewee", "interviewer", "photographer", "photographer 2", "photographer 3"]
+          expect(serializer.creator_of_work).to eq ["creator_of_work"]
+          expect(serializer.artist).to eq ["artist"]
+          expect(serializer.interviewee).to eq ["interviewee"]
+          expect(serializer.interviewer).to eq ["interviewer"]
+          expect(serializer.photographer).to eq ["photographer", "photographer 2", "photographer 3"]
         end
       end
 
+      # Note this used to be a comma-separated list.
       describe "#publisher" do
-        it "returns publisher" do
+        it "all publishers are listed in separate columns" do
           expect(serializer.publisher).to eq ["publisher", "publisher 2", "publisher 3"]
         end
       end
