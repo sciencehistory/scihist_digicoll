@@ -6,7 +6,11 @@ class OralHistoryContent
   # from (OHMS, plain text, etc)  in some cases there may be subsets.
   #
   # Some may create sub-classes specific to their format, but this is a general API for chunkers.
+  #
+  # Is an AttrJson::Model so we can serialize to JSON easily to store cached derived paragraphs.
   class Paragraph
+    include AttrJson::Model
+
     def self.fragment_id(paragraph_index:)
       "oh-t-p#{paragraph_index}"
     end
@@ -27,59 +31,52 @@ class OralHistoryContent
 
     FullSanitizer = Rails::HTML5::FullSanitizer.new
 
-    attr_reader :transcript_id
+    attr_json :transcript_id, :string
 
     # @return [integer] 1-based index of paragraph in document
-    attr_accessor :paragraph_index
+    attr_json :paragraph_index, :integer
 
     # Plain text, will always be present, may be converted from html
-    attr_reader :text
+    attr_json :text, :string
 
     # From OHMS VTT text, with limited HTML tags, and footnote references.
     # OHMS non-legal-XML <c.N> tags have been turned into <c ref="N"> tags, and
     # HTML has been scrubbed for only allow-listed tags and attributes.
     #
     # Can be nil, if not coming from new style OHMS
-    attr_reader :scrubbed_ohms_vtt_html
+    attr_json :scrubbed_ohms_vtt_html, :string
 
     # @return [Array<Integer>] list of timestamps (as seconds) included in ths paragraph
-    attr_accessor :included_timestamps
+    attr_json :included_timestamps, :float, array: true, default: AttrJson::AttributeDefinition::NO_DEFAULT_PROVIDED
 
     # @return [Integer] timestamp in seconds of the PREVIOUS timestamp to this paragraph,
     #                   to latest the timestamp sure not to miss beginning of paragraph.
-    attr_accessor :previous_timestamp
+    attr_json :previous_timestamp, :float
 
     # @return [String] when the paragraph has no speaker name internally, we guess/assume
     #    it has the same speaker as previous paragraph. Store such an assumed speaker name
     #    from previous paragraph here.
-    attr_accessor :assumed_speaker_name
+    attr_json :assumed_speaker_name, :string
 
     # Can be blank, but page number in PDF from marked pagination (not physical page)
-    attr_accessor :pdf_logical_page_number
+    attr_json :pdf_logical_page_number, :integer
 
     # OHMS transcript sub-classes get these from OHMS transcript model classes
-    attr_accessor :speaker_name, :text
+    attr_json :speaker_name, :string
 
-    # Requires at least one of `text` or `ohms_vtt_html`.
-    def initialize(text:nil, ohms_vtt_html:nil,
-        paragraph_index:nil, speaker_name:nil, included_timestamps:nil, pdf_logical_page_number: nil)
 
-      if text.nil? && ohms_vtt_html.nil?
-        raise ArgumentError.new("Need one of text: or ohms_vtt_html but both blank")
-      end
+    # If we are coming from OHMS VTT, we scrub it of any non-permitted HTML, and then
+    # strip ALL html to convert it to required plain `text`.
+    def self.from_ohms_vtt_html(ohms_vtt_html:, **attributes)
+      attributes[:scrubbed_ohms_vtt_html] = scrub_vtt_html(ohms_vtt_html).strip
+      attributes[:text] = strip_tags(attributes[:scrubbed_ohms_vtt_html]) unless attributes[:text]
 
-      @scrubbed_ohms_vtt_html = scrub_vtt_html(ohms_vtt_html).strip if ohms_vtt_html
-      @text = text
+      self.new(**attributes)
+    end
 
-      if (scrubbed_ohms_vtt_html && ! text)
-        # make text by removing tags from scrub please
-        @text = strip_tags(scrubbed_ohms_vtt_html)
-      end
-
-      @paragraph_index = paragraph_index
-      @speaker_name = speaker_name
-      @included_timestamps = included_timestamps
-      @pdf_logical_page_number = pdf_logical_page_number
+    # Requires text:
+    def initialize(text:, **attributes)
+      super
     end
 
     # @return [String] to be used as an `id` attribute within an HTML doc, identifying a particular
@@ -106,7 +103,7 @@ class OralHistoryContent
       end
     end
 
-    def scrub_vtt_html(raw_html)
+    def self.scrub_vtt_html(raw_html)
       # Turn <c.1> tags to XML-legal <c ref='1'> tags with the one in a ref attribute
       str = raw_html.gsub(/<c\.(\d+)/, "<c cref='\\1'")
 
@@ -116,7 +113,7 @@ class OralHistoryContent
               to_s
     end
 
-    def strip_tags(s)
+    def self.strip_tags(s)
       # for some reason sometimes br's in input, which can end up eating up whitespace
       # and jamming two words together on strip, so we replace first
       FullSanitizer.sanitize( s.gsub("<br>", "\n") )

@@ -170,7 +170,7 @@ class OralHistoryContent
                 end
 
                 # we'll just use cue_index as paragraph index, a cue should be only one paragraph in OHMS
-                OralHistoryContent::Paragraph.new(
+                OralHistoryContent::Paragraph.from_ohms_vtt_html(
                   speaker_name: speaker_name,
                   ohms_vtt_html: paragraph_text,
                   included_timestamps: included_timestamps,

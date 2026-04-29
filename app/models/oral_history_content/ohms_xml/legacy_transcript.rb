@@ -222,7 +222,7 @@ class OralHistoryContent
 
         def initialize(lines = nil, paragraph_index:)
           @lines = lines || []
-          @paragraph_index = paragraph_index
+          self.paragraph_index = paragraph_index
         end
 
         # @param line [OralHistoryContent::LegacyTranscript::Line] add a line, used to build
