@@ -127,13 +127,53 @@ module GoogleArtsAndCulture
       @work.external_id.map(&:value)
     end
 
+    # Note we also define a #creator_of_work method below.
     def creator
-      @work.creator.find_all { |creator| creator.category.to_s != "publisher" }.map(&:value)
+      sorted_creators[:creators].map(&:value)
+    end
+
+    # These values are also included in "creator" but also get their own customtext column
+    # (e.g. customtext:artist)
+    # Otherwise there's no way of knowing, for instance,
+    # that a particular person or organization was the artist (as opposed to the author)
+    # of a given work, as everything is lumped into #creator .
+    [
+      'artist',
+      'author',
+      'creator_of_work',
+      'interviewee',
+      'interviewer',
+      'photographer'
+
+    ].each do |creator_category|
+      define_method(creator_category) do
+        @work.creator.find_all { |creator| creator.category == creator_category }.map(&:value)
+      end
     end
 
     def publisher
-      @work.creator.find_all { |creator| creator.category.to_s == "publisher" }.map(&:value).join(", ")
+      sorted_creators[:publishers].map(&:value)
     end
+
+    # Contributor methods (e.g. customtext:school_of)
+    [
+      'addressee',
+      'after',
+      'attributed_to',
+      'contributor',
+      'engraver',
+      'manner_of',
+      'manufacturer',
+      'printer',
+      'printer_of_plates',
+      'school_of',
+      'sponsor'
+    ].each do |creator_category|
+      define_method(creator_category) do
+        @work.creator.find_all { |creator| creator.category == creator_category }.map(&:value)
+      end
+    end
+
 
     def place
       @work.place.map(&:value)
@@ -183,6 +223,17 @@ module GoogleArtsAndCulture
 
     def rights
       RightsTerm.label_for(@work.rights)
+    end
+
+    def sorted_creators
+      @sorted_creators ||= begin
+        categories = GoogleArtsAndCulture::Exporter.creator_categories
+        {
+          creators:     @work.creator.find_all { |creator| categories[:creator].include?     creator.category },
+          publishers:   @work.creator.find_all { |creator| categories[:publisher].include?   creator.category },
+          contributors: @work.creator.find_all { |creator| categories[:contributor].include? creator.category },
+        }
+      end
     end
 
   end

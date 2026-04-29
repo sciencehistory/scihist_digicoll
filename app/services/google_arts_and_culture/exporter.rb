@@ -33,6 +33,20 @@ module GoogleArtsAndCulture
       museum_scope.or(library_scope)
     end
 
+    # Separate creator categories into creators, publishers, and contributors.
+    def self.creator_categories
+      @creator_categories ||= begin
+        creator = %w{ artist author creator_of_work interviewee interviewer photographer }
+        publisher = [ 'publisher' ]
+        contributor =  (Work::Creator::CATEGORY_VALUES - publisher) - creator
+        {
+          creator:     creator,
+          publisher:   publisher,
+          contributor: contributor
+        }
+      end
+    end
+
     # Does not close the tempfile.
     def metadata_csv_tempfile
       output_csv_file = Tempfile.new
@@ -53,7 +67,6 @@ module GoogleArtsAndCulture
       end
     end
 
-
     # Returns a hash of filenames and downloadable files:
     # file_hash.each { |filename, downloadable_file| [...] }
     def file_hash
@@ -66,51 +79,125 @@ module GoogleArtsAndCulture
       end
     end
 
-
     def title_row
-      # if a given attribute stretches over several columns, label the columns correctly (creator#0, creator#1, creator#2, etc.)
-      @attribute_keys.map do |k|
-        if array_attributes.include? k.to_s
-          (0..(column_counts[k.to_s] - 1)).map do |i|
-            "#{ all_attributes[k ]}##{ i }"
-           end
-        else
-          all_attributes[k]
-        end
-      end.flatten
+      @title_row ||= begin
+        # if a given attribute stretches over several columns, label the columns correctly (creator#0, creator#1, creator#2, etc.)
+        @attribute_keys.map do |k|
+          if array_attributes.include? k.to_s
+            raise "Unable to calculate column counts for #{k}" if column_counts[k.to_s].nil?
+            (0..(column_counts[k.to_s] - 1)).map do |i|
+              "#{ all_attributes[k ]}##{ i }"
+             end
+          else
+            all_attributes[k]
+          end
+        end.flatten
+      end
     end
 
-    # We store multiple values for each of these types of metadata. Note that we don't make much of an attempt to
-    # distinguish creator categories, at least for now.
-    # Likewise, `external_id` is treated as an array, with categories ignored.
+    # We export multiple values for each of these types of metadata.
     def array_attributes
       [
-        'subject',
-        'external_id',
         'additional_title',
-        'genre',
+        'addressee',
+        'after',
+        'artist',
+        'attributed_to',
+        'author',
+        'contributor',
         'creator',
-        'medium',
+        'engraver',
         'extent',
-        'place',
+        'external_id',
         'format',
+        'genre',
+        'interviewee',
+        'interviewer',
+        'manner_of',
+        'manufacturer',
+        'medium',
+        'photographer',
+        'place',
+        'printer',
+        'printer_of_plates',
+        'publisher',
+        'school_of',
+        'sponsor',
+        'subject',
       ]
     end
 
-    # Count of of columns we need for each array attribute.
+
+    def creator_attributes
+      @creator_attributes ||= self.class.creator_categories.map{|c, v| v}.flatten.sort
+    end
+
+    def non_creator_attributes
+      @non_creator_attributes ||= array_attributes - creator_attributes
+    end
+
+
+    # Count of columns we need for each array attribute.
     def column_counts
-      @column_counts ||= Hash[
-          array_attributes.zip(
-          @scope.pluck(
-              *array_attributes.map { |c| column_max_arel c }
-          ).first
+      @column_counts ||= begin
+        # how many columns do we need for each non-creator attribute?
+        non_creator_column_counts = column_count_sql(
+          non_creator_attributes,
+          :column_max_arel
         )
-      ]
+
+        # how many columns do we need for each creator attribute?
+        creator_column_counts = column_count_sql(
+          creator_attributes,
+          :creator_column_max_arel
+        )
+        Hash[ non_creator_column_counts.concat(creator_column_counts) ]
+      end
+    end
+
+    # Given a series of attributes, plucks arbitrary info from the scope about those attributes.
+    # Pass in any method column_arel_method .
+    def column_count_sql(attributes, column_arel_method)
+      attributes.zip(
+        @scope.pluck(
+            *attributes.map { |c| self.send(column_arel_method, c) }
+        ).first
+      )
     end
 
     # sql to determine the maximum number of columns needed for a multiple-column attribute
     def column_max_arel(attribute_name)
       Arel.sql("max(jsonb_array_length(kithe_models.json_attributes -> '#{attribute_name}'))" )
+    end
+
+    # similar to column_max_arel above, but filters
+    # creators by their category.
+    #
+    # Given a creator category (like "sponsor")
+    # returns the max number of columns needed
+    # for that category of creators.
+    #
+    # Makes use of some obscure JSONPath:
+    #
+    # $[*] ? (@.category == "sponsor")
+    #
+    # means “Take the root array $ (of creators),
+    #   iterate over all elements $[*],
+    #   and return only those objects $[*] ? whose
+    #   category field is 'sponsor'.”
+    def creator_column_max_arel(creator_category)
+      Arel.sql(
+        """
+          max(
+            jsonb_array_length(
+              jsonb_path_query_array(
+                kithe_models.json_attributes -> 'creator',
+                '$[*] ? (@.category == \"#{creator_category}\")'
+              )
+            )
+          )
+        """.gsub(/\s+/, ' ')
+      )
     end
 
     # A hash of possible columns
@@ -149,10 +236,11 @@ module GoogleArtsAndCulture
         url_text:                 'relation:text',
         url:                      'relation:url',
 
-        # Non-publisher creators
         creator:                  'creator',
 
-        # Publisher(s). Separated by commas; we don't have a lot of works with multiple publishers.
+        contributor:              'contributor',
+
+        # This comes from the work's creator metadata, but is treated separately by GAC.
         publisher:                'publisher',
 
         subject:                   'subject',
@@ -170,12 +258,31 @@ module GoogleArtsAndCulture
         genre:                    'art=genre',
         description:              'description',
 
-
         rights:                    'rights',
         rights_holder:             'customtext:rights_holder',
 
         # GAC doesn't seem to have a field for what we call "format"
         # format:                   '???',
+
+        # More specific creator metadata (these are also lumped together under "creator" above).
+        artist:                    'customtext:artist',
+        author:                    'customtext:author',
+        interviewee:               'customtext:interviewee',
+        interviewer:               'customtext:interviewer',
+        photographer:              'customtext:photographer',
+
+        # More specific contributor metadata (these are also lumped together under "contributor" above).
+        addressee:                  'customtext:addressee',
+        after:                      'customtext:after',
+        attributed_to:              'customtext:attributed_to',
+        engraver:                   'customtext:engraver',
+        manufacturer:               'customtext:manufacturer',
+        manner_of:                  'customtext:manner_of',
+        printer:                    'customtext:printer',
+        printer_of_plates:          'customtext:printer_of_plates',
+        school_of:                  'customtext:school_of',
+        sponsor:                    'customtext:sponsor',
+
       }
     end
   end
