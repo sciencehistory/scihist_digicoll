@@ -196,7 +196,7 @@ module GoogleArtsAndCulture
               )
             )
           )
-        """
+        """.gsub(/\s+/, ' ')
       )
     end
 
