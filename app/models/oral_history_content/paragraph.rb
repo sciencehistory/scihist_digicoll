@@ -74,11 +74,6 @@ class OralHistoryContent
       self.new(**attributes)
     end
 
-    # Requires text:
-    def initialize(text:, **attributes)
-      super
-    end
-
     # @return [String] to be used as an `id` attribute within an HTML doc, identifying a particular
     #         paragraph.
     def fragment_id
