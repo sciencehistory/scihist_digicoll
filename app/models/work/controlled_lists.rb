@@ -27,6 +27,7 @@ class Work
     FORMAT = %w{image mixed_material moving_image physical_object sound text}.freeze
 
     GENRE = [
+      'Abstract (general art genre)',
       'Advertisements',
       'Artifacts',
       'Business correspondence',
