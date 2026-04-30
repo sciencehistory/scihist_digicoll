@@ -135,6 +135,52 @@ describe OralHistoryContent do
     end
   end
 
+  # should this be in oralhistorycontent spec instead? meh.
+  describe "#extracted_pdf_paragraphs" do
+    let(:pdf_file_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sample_pages_ebnw2l9.pdf"}
+
+    let(:oral_history_content) { OralHistoryContent.new(combined_audio_component_metadata: { "start_times" => [["id", 0]]}, work: build(:work)) }
+    let(:pdf_asset) { build(:asset_with_faked_file, :pdf, faked_file: File.open(pdf_file_path)) }
+
+    # create a real one? OK why not.
+    let(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: pdf_file_path).extract_pdf_text }
+
+    let(:paragraphs) {
+      OralHistory::ExtractedPdfTextParagraphSplitter.new(
+        extracted_pdf_text: extracted_pdf_text,
+        file_start_times: oral_history_content&.combined_audio_component_metadata["start_times"].to_h
+      ).paragraphs
+    }
+
+    it "serializes and maintains freshness" do
+      container = OralHistoryContent::ParagraphContainer.create(
+        paragraphs: paragraphs,
+        oral_history_content: oral_history_content,
+        pdf_asset: pdf_asset
+      )
+
+      oral_history_content.extracted_pdf_paragraphs = container
+      oral_history_content.save!
+
+      oral_history_content.reload
+
+      expect(oral_history_content.extracted_pdf_paragraphs.paragraphs).to all(be_kind_of(OralHistoryContent::Paragraph))
+      expect(oral_history_content.extracted_pdf_paragraphs.fresh?(pdf_asset: pdf_asset, oral_history_content: oral_history_content)).to be true
+
+      # changing pdf md5 makes not fresh anymore
+      pdf_asset.file_metadata["md5"] = "bad"
+      expect(oral_history_content.extracted_pdf_paragraphs.fresh?(
+        pdf_asset: pdf_asset, oral_history_content: oral_history_content
+      )).not_to be true
+      pdf_asset.restore_attributes
+
+      # changing file start times makes not fresh anymore
+      oral_history_content.combined_audio_component_metadata["start_times"] = [["id", 0], ["newid", 1000]]
+      expect(oral_history_content.extracted_pdf_paragraphs.fresh?(pdf_asset: pdf_asset, oral_history_content: oral_history_content)).not_to be true
+    end
+  end
+
+
 
   describe "scopes" do
     let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH")}

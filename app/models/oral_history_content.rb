@@ -57,6 +57,10 @@ class OralHistoryContent < ApplicationRecord
   include GenericActiveRecordUploader::Attachment.new(:input_docx_transcript)
   include GenericActiveRecordUploader::Attachment.new(:output_sequenced_docx_transcript)
 
+  # an array of OralHistoryCotent::Paragraphs extracted from PDF, with source.provenance
+  # metadata to tell freshness.
+  attr_json :extracted_pdf_paragraphs, OralHistoryContent::ParagraphContainer.to_type
+
   enum :combined_audio_derivatives_job_status,  {
     queued:    'queued',
     started:   'started',
