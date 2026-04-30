@@ -195,7 +195,7 @@
     <% related_or_more_like_this_works.each do |work| %>
       <li class="related-work">
         <div class="related-work-thumb">
-          <%= link_to work_path(work.friendlier_id), class: ("img-wrapper-video-icon" if is_video?(check_for_video_asset:false)) do %>
+          <%= link_to work_path(work.friendlier_id), class: ("img-wrapper-video-icon" if has_genre_moving_image?) do %>
             <%= render ThumbComponent.new(work.leaf_representative, thumb_size: :standard, lazy: true) %>
           <% end %>
         </div>

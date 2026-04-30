@@ -157,7 +157,7 @@ class WorksController < ApplicationController
     # It's actually fine to NOT check for a video asset here.
     # WorkVideoShowComponent contains that check and
     # fails gracefully if the video asset is absent.
-    @show_video_player =  @work.is_video?(check_for_video_asset:false)
+    @show_video_player =  @work.has_genre_moving_image?
   end
 
   def set_work

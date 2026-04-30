@@ -237,19 +237,15 @@ class Work < Kithe::Work
   end
 
 
-  # Whether a work is considered a video for UI purposes.
-  # You may pass in check_for_video_asset:true
-  # if you want to make sure the work
-  # actually has a video asset
-  # that can be displayed for the user.
-  def is_video?(check_for_video_asset:false)
-    # weak check
-    format_is_video = format&.include?('moving_image') || false
-    return format_is_video unless check_for_video_asset
-
-    # strong check
-    # is there a real video asset to display in the browser ?
-    has_video_asset = members&.any? { |m| m.asset? && m&.content_type&.start_with?("video/") } || false
-    format_is_video && has_video_asset
+  # Genre metadata determines whether a
+  # work is considered a video for UI purposes.
+  #
+  # This method does not examine whether the work
+  # actually has a video asset; the only place
+  # we currently need to run that check
+  # is in WorkVideoShowComponent.
+  def has_genre_moving_image?
+    format&.include?('moving_image') || false
   end
+
 end

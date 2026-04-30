@@ -80,26 +80,13 @@ describe "work factory" do
       end
 
       it "is considered a video" do
-        expect(work.is_video?(check_for_video_asset:false)).to be true
+        expect(work.has_genre_moving_image?).to be true
       end
 
       it "has an attached video with the proper mime type" do
         expect(work.representative.file_data['storage']).to eq("store")
         expect(work.representative.file_data['metadata']['mime_type']).to eq("video/mpeg")
       end
-
-      describe "Video work with faked video asset" do
-        let(:work) { create(
-          :video_work,
-          :published,
-          members: [build(:asset_with_faked_file, :video, :asr_vtt)]
-        ) }
-        it "has members" do
-          expect(work.members).to be_present
-          expect(work.is_video?(check_for_video_asset:true)).to be true
-        end
-      end
-
     end
 
     describe "published video work with a poster frame asset" do
