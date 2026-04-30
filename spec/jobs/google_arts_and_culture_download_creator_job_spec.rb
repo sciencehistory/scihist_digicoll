@@ -4,7 +4,7 @@ describe GoogleArtsAndCultureDownloadCreatorJob do
 
   let(:user) {FactoryBot.create(:admin_user)}
 
-  let(:work_1) { FactoryBot.build(:public_work, :with_assets)}
+  let(:work_1) { FactoryBot.build(:public_work, :with_assets, creator_attributes: {'0': {"category"=> "artist", "value"=>"artist" } } )}
   let(:work_2) { FactoryBot.build(:public_work, :with_assets)}
   let(:work_3) { FactoryBot.build(:public_work, :with_assets)}
 
