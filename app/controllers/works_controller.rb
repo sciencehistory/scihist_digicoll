@@ -151,8 +151,13 @@ class WorksController < ApplicationController
   end
 
   def show_video_player?
-    return @show_video_player if defined?(@show_video_player)
-    @show_video_player = @work.is_video? && @work.members.any? { |m| m&.content_type&.start_with?("video/") }
+    @show_video_player if defined?(@show_video_player)
+
+
+    # It's actually fine to NOT check for a video asset here.
+    # WorkVideoShowComponent contains that check and
+    # fails gracefully if the video asset is absent.
+    @show_video_player =  @work.is_video?(check_for_video_asset:false)
   end
 
   def set_work

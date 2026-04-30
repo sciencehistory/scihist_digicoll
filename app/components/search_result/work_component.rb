@@ -27,7 +27,7 @@ module SearchResult
     end
 
     def display_extent
-      return [] unless model.is_video?
+      return [] unless model.is_video?(check_for_video_asset:false)
       model&.extent || []
     end
 
