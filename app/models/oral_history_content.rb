@@ -68,6 +68,9 @@ class OralHistoryContent < ApplicationRecord
     succeeded: 'succeeded'
   }
 
+  # omit really long ones from inspect
+  self.filter_attributes = [:json_attributes, :extracted_pdf_paragraphs]
+
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
