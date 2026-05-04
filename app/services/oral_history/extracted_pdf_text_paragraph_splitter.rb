@@ -115,7 +115,7 @@ module OralHistory
 
         last_paragraph = paragraphs.last
 
-        if page_index == first_index || (last_paragraph && last_paragraph.text =~ /[END OF INTEVIEW]/)
+        if page_index == first_index || (last_paragraph && last_paragraph.text.include?('[END OF INTERVIEW]'))
           trim_first_page_prefatory(page_paragraphs)
         end
 
