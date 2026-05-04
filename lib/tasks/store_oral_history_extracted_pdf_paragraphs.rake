@@ -9,7 +9,11 @@ namespace :scihist do
 
       scope.find_each do |oc|
         # TODO make it lazy optionally? or better based on freshness!
-        OralHistoryStoreExtractedParagraphsJob.set(queue: "special_jobs").perform_later(oc)
+        if ENV['BG_JOB'] == "true"
+          OralHistoryStoreExtractedParagraphsJob.set(queue: "special_jobs").perform_later(oc)
+        else
+          OralHistoryContent::ParagraphContainer.create(oral_history_content: oc)
+        end
         progress_bar.increment
       end
     end
