@@ -2,7 +2,8 @@ require 'rails_helper'
 
 describe OralHistoryContent::ParagraphContainer do
   describe "#extracted_pdf_paragraphs" do
-    let(:pdf_file_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sample_pages_ebnw2l9.pdf" }
+    # has two embedded inteviews, three audio files total, requires timestamp arithmatic
+    let(:pdf_file_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf" }
 
     # At the moment we have to actually create this in DB due to how some helper
     # services require it, it is slow, sorry.
@@ -26,9 +27,23 @@ describe OralHistoryContent::ParagraphContainer do
       create(:asset_with_faked_file, :mp3,
           title: "audio_recording.mp3",
           published: true,
-          faked_filename: "#{generate(:oh_filename)}.mp3",
-          faked_size: 21.2.megabytes,
           faked_duration_seconds: 44.minutes,
+          faked_derivatives: {} )
+    end
+
+    let(:mp3_asset2) do
+      create(:asset_with_faked_file, :mp3,
+          title: "audio_recording.mp3",
+          published: true,
+          faked_duration_seconds: 55.minutes,
+          faked_derivatives: {} )
+    end
+
+    let(:mp3_asset3) do
+      create(:asset_with_faked_file, :mp3,
+          title: "audio_recording.mp3",
+          published: true,
+          faked_duration_seconds: 12.minutes,
           faked_derivatives: {} )
     end
 
@@ -36,6 +51,8 @@ describe OralHistoryContent::ParagraphContainer do
       create(:oral_history_work, members: [
         pdf_asset,
         mp3_asset,
+        mp3_asset2,
+        mp3_asset3
       ])
     end
 
