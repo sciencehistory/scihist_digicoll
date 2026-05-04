@@ -88,7 +88,7 @@ module OralHistory
 
     # @return [OralHistory::Paragraph]
     def create_paragraphs(extracted_pdf_text_pages)
-      paragraphs = []
+      all_paragraphs = []
 
       first_index = find_first_transcript_page(extracted_pdf_text_pages)
       unless first_index
@@ -108,33 +108,33 @@ module OralHistory
 
         # dup em so we can modify the list to remove page numbers paragraphs. We don't
         # care about blocks for processing at the moment.
-        page_paragraphs = page_json["blocks"].collect {|h| h["paragraphs"]}.flatten
+        page_paragraphs_json = page_json["blocks"].collect {|h| h["paragraphs"]}.flatten
 
         # usually on bottom, sometimes on top
-        logical_page_number = extract_and_remove_logical_page_number(page_paragraphs)
+        logical_page_number = extract_and_remove_logical_page_number(page_paragraphs_json)
 
-        last_paragraph = paragraphs.last
+        last_paragraph = all_paragraphs.last
 
         if page_index == first_index || (last_paragraph && last_paragraph.text.include?('[END OF INTERVIEW]'))
-          trim_first_page_prefatory(page_paragraphs)
+          trim_first_page_prefatory(page_paragraphs_json)
         end
 
         # A heading htat matches the post-transcript material, we're done!
-        if page_paragraphs.first&.dig("text")&.downcase&.strip&.in?(POST_TRANSCRIPT_HEADINGS)
+        if page_paragraphs_json.first&.dig("text")&.downcase&.strip&.in?(POST_TRANSCRIPT_HEADINGS)
           break
         end
 
-        next if page_paragraphs.empty?
+        next if page_paragraphs_json.empty?
 
         # Analyze paragraphs for [END OF AUDIO] mark to assign proper file offset index,
         # and update our current index if it got incremented.
         timestamp_file_offset_index =
-          assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
+          assign_timestmap_file_offset_index(page_paragraphs_json, timestamp_file_offset_index)
 
-        remove_footnotes(page_paragraphs)
+        remove_footnotes(page_paragraphs_json)
 
         # Turn from hashes to good objects
-        page_paragraph_objects = page_paragraphs.collect do |paragraph_json|
+        page_paragraph_objects = page_paragraphs_json.collect do |paragraph_json|
           json_to_paragraph(paragraph_json, logical_page_number: logical_page_number)
         end
 
@@ -152,22 +152,22 @@ module OralHistory
         end
 
         # And now add em all to big paragraph list!
-        paragraphs.concat(page_paragraph_objects)
+        all_paragraphs.concat(page_paragraph_objects)
       end
 
       # add in 1-based paragraph indexes
-      paragraphs.each_with_index { |p, i| p.paragraph_index = i + 1 }
+      all_paragraphs.each_with_index { |p, i| p.paragraph_index = i + 1 }
 
       # Make sure everyone has an assumed speaker if they didn't have a speaker,
       # just keep it going from previous paragraph.
-      paragraphs.each_cons(2) do |p1, p2|
+      all_paragraphs.each_cons(2) do |p1, p2|
         # if it begins with `[` it's a note like "[END OF TAPE]" and not an utterance
         if p2.speaker_name.nil? && !p2.text&.start_with?('[')
           p2.assumed_speaker_name = p1.speaker_name || p1.assumed_speaker_name
         end
       end
 
-      return paragraphs
+      return all_paragraphs
     end
 
     # Block with only one paragraph, whose whole text is a integer page number (possibly preceded
@@ -210,18 +210,18 @@ module OralHistory
     end
 
     # if a pagination marking paragraph is identified , we return the page number
-    # extracted, and mutate page_paragraphs_json to remove it. Otherwise return nil.
-    def extract_and_remove_logical_page_number(page_paragraphs_json)
-      return nil unless page_paragraphs_json.present?
+    # extracted, and mutate page_paragraphs_json_json to remove it. Otherwise return nil.
+    def extract_and_remove_logical_page_number(page_paragraphs_json_json)
+      return nil unless page_paragraphs_json_json.present?
 
       logical_page_number = nil
 
-      if page_paragraphs_json.last["text"].strip =~ PAGE_NUMBER_RE
+      if page_paragraphs_json_json.last["text"].strip =~ PAGE_NUMBER_RE
         logical_page_number = $1.to_i
-        page_paragraphs_json.pop
-      elsif page_paragraphs_json.first["text"].strip =~ PAGE_NUMBER_RE
+        page_paragraphs_json_json.pop
+      elsif page_paragraphs_json_json.first["text"].strip =~ PAGE_NUMBER_RE
         logical_page_number = $1.to_i
-        page_paragraphs_json.shift
+        page_paragraphs_json_json.shift
       end
 
       return logical_page_number
@@ -263,8 +263,8 @@ module OralHistory
     #
     # @return [Integer] updated timestamp_file_offset_index
     #
-    def assign_timestmap_file_offset_index(page_paragraphs, timestamp_file_offset_index)
-      page_paragraphs.each do |paragraph_json|
+    def assign_timestmap_file_offset_index(page_paragraphs_json, timestamp_file_offset_index)
+      page_paragraphs_json.each do |paragraph_json|
 
         paragraph_json["timestamp_file_offset_index"] = timestamp_file_offset_index
 
