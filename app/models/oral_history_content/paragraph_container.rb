@@ -73,10 +73,6 @@ class OralHistoryContent
       oral_history_content.save!
     end
 
-    def self.fingerprint_audio_start_times(oral_history_content:)
-      Digest::MD5.hexdigest(oral_history_content.combined_audio_component_metadata["start_times"].to_json)
-    end
-
     # Will fetch the work#members if not already fetched. Fingerprinting includes
     # audio files as well as PDF becuase the audio file lengths are used to calculate
     # offsets for some internal timestamps.
