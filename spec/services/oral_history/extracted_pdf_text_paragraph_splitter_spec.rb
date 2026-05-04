@@ -83,6 +83,38 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
     end
   end
 
+  describe "with page with figure and no assigned page number" do
+    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/boyer-skipped-page-example.pdf" }
+
+    it "can process and properly number pages" do
+      paragraphs = splitter.paragraphs
+
+      expect(paragraphs).to all(have_attributes(text: be_present))
+      expect(paragraphs.collect(&:pdf_logical_page_number).uniq).to eq [1,2,3,4,5,6]
+
+      index_of_last_5 = paragraphs.index { |p| p.text =~ /Well, when I tried to get a job/}
+      expect(paragraphs[index_of_last_5].text).to end_with "so-called alpha transition."
+      expect(paragraphs[index_of_last_5].pdf_logical_page_number).to eq 5
+      expect(paragraphs[index_of_last_5 + 1].pdf_logical_page_number).to eq 6
+      expect(paragraphs[index_of_last_5 + 1].text).to match /Was that done in conjunction/
+    end
+  end
+
+  describe "with two interviews in one pdf" do
+    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf" }
+    let(:file_start_times) { { "random1" => 60*60*2, "random2" => 60*60*4, "random3" => 60*60*6 } }
+    let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times) }
+
+    it "strips on-page header metadata from internal second inteview" do
+      paragraphs = splitter.paragraphs
+
+      page_40_paragraphs = paragraphs.find_all { |p| p.pdf_logical_page_number.to_s == "40" }
+      expect(page_40_paragraphs).to all(satisfy { |p| p.text !~ /Interviewee’s home/ })
+
+      expect(page_40_paragraphs.first.text).to include "So today is Thursday"
+    end
+  end
+
   describe "mid-era transcript, with minute timestamp style" do
     let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"}
 
