@@ -1,22 +1,17 @@
 <div class="ohms-transcript-container">
-  <% display_paragraphs do |start_seconds:, speaker_name:, html_text:, fragment_id:| %>
+  <% display_paragraphs do |html_text:, fragment_id:, page_marker: nil, start_seconds:nil, speaker_label:nil| %>
       <div class="ohms-transcript-paragraph-wrapper">
         <p class="ohms-transcript-paragraph" data-searchable-transcript-line="true" id="<%= fragment_id %>">
-          <% if start_seconds %>
-            <%=  content_tag(
-                    "a",
-                    format_ohms_timestamp(start_seconds),
-                    href: "#{base_link}#t=#{start_seconds}",
-                    class: "ohms-transcript-timestamp default-link-style",
-                      # must be formatted exactly the same in JS transcript highlighter
-                      # code that searches for it.
-                    data: { "ohms_timestamp_s" => "%.3f" % start_seconds.round(3)}
-                  )
-            %>
+          <% if page_marker.present? %>
+            <%= render_page_marker(page_marker) %>
           <% end %>
 
-          <% if speaker_name %>
-            <span class="transcript-speaker"><%= speaker_name %></span>:
+          <% if start_seconds %>
+            <%= render_timestamp_marker(start_seconds) %>
+          <% end %>
+
+          <% if speaker_label.present? %>
+            <span class="transcript-speaker"><%= speaker_label %></span>:
           <% end %>
 
           <%= html_text %>
