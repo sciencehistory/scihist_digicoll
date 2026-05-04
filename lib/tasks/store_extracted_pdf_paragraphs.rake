@@ -5,18 +5,24 @@ namespace :scihist do
       scope = OralHistoryContent.where(ohms_xml_text: [nil, ""])
 
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
-
+      errors = 0
       scope.find_each(batch_size: 10) do |oc|
         # TODO make it lazy optionally? or better based on freshness!
         if ENV['BG_JOB'] == "true"
           OralHistoryStoreExtractedParagraphsJob.set(queue: "special_jobs").perform_later(oc)
         else
-          OralHistoryContent::ParagraphContainer.create(oral_history_content: oc)
+          begin
+            OralHistoryContent::ParagraphContainer.create(oral_history_content: oc)
+          rescue StandardError => e
+            errors += 1
+            puts "store_extracted_pdf_paragraphs: error on oral_history_content #{oc.id}, work #{oc&.work&.friendlier_id}, #{e}\n\n"
+          end
         end
         progress_bar.increment
-      rescue StandardError => e
-        Rails.logger.fatal("store_extracted_pdf_paragraphs: error on oral_history_content #{oc.id}, work #{oc&.work&.friendlier_id}")
-        raise e
+      end
+
+      if errors > 0
+        puts "Errors in #{errors} / #{scope.count}"
       end
     end
   end
