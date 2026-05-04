@@ -8,6 +8,8 @@ class OralHistoryContent
   class ParagraphContainer
     include AttrJson::Model
 
+    attr_json_config(unknown_key: :strip)
+
     attr_json :paragraphs, OralHistoryContent::Paragraph.to_type, array: true
 
     attr_json :created_at, :datetime, default: -> { Time.current.utc }
