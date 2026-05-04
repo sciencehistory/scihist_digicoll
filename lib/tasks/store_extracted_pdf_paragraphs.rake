@@ -4,6 +4,11 @@ namespace :scihist do
       # no ohms
       scope = OralHistoryContent.where(ohms_xml_text: [nil, ""])
 
+      # for now, only publicially accessible ones without request, we aren't
+      # totally able to calculate offsets for non-public ones. This scope is currently
+      # not great performance.
+      scope = scope.available_immediate
+
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
       errors = 0
       scope.find_each(batch_size: 10) do |oc|
