@@ -43,7 +43,7 @@ class OralHistoryContent
       extracted_pdf_text_json = pdf_asset.file_derivatives[:extracted_pdf_text_json]
 
       unless extracted_pdf_text_json
-        raise "#{self.class.name}#create: could not find extracted_pdf_text_json derivative from asset #{pdf_file.friendlier_id}"
+        raise "#{self.class.name}#create: could not find extracted_pdf_text_json derivative from asset #{pdf_asset.friendlier_id}"
       end
 
       extracted_pdf_text = JSON.parse(extracted_pdf_text_json.read)
