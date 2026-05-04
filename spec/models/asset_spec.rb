@@ -290,4 +290,12 @@ describe Asset do
       end
     end
   end
+
+  describe "dzi callbacks" do
+    let(:asset) { create(:asset_with_faked_file, :m4a)}
+    it "only runs callbacks if the asset is an image" do
+      expect(Rails.logger).not_to receive(:warn).with(/Calling DziPackage::ActiveRecordCallbacks.*/)
+      id = asset.id
+    end
+  end
 end

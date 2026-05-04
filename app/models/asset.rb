@@ -40,7 +40,7 @@ class Asset < Kithe::Asset
     Rails.logger.error("AssetPromotionValidation: Asset `#{friendlier_id}` failed ingest: #{promotion_validation_errors.inspect}")
   end
 
-  kithe_earlier_after_commit DziPackage::ActiveRecordCallbacks, only: [:update, :destroy]
+  kithe_earlier_after_commit DziPackage::ActiveRecordCallbacks, only: [:update, :destroy], if: ->(asset) { asset.content_type&.start_with?("image/") }
 
   set_shrine_uploader(AssetUploader)
 
