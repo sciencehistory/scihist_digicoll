@@ -171,10 +171,12 @@ class OralHistoryContent
 
                 # we'll just use cue_index as paragraph index, a cue should be only one paragraph in OHMS
                 OralHistoryContent::Paragraph.from_ohms_vtt_html(
-                  speaker_name: speaker_name,
-                  ohms_vtt_html: paragraph_text,
-                  included_timestamps: included_timestamps,
-                  paragraph_index: paragraph_index
+                  # keep nils out to avoid making extra unneeded keys in json serialization
+                  **{ speaker_name: speaker_name,
+                    ohms_vtt_html: paragraph_text,
+                    included_timestamps: included_timestamps,
+                    paragraph_index: paragraph_index
+                  }.compact
                 ).tap { paragraph_index += 1 }
               end
             end.flatten
