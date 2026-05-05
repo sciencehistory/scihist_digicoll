@@ -1,6 +1,6 @@
 namespace :scihist do
   namespace :oral_history do
-    task :store_extracted_pdf_paragraphs => [:environment] do
+    task :store_pdf_paragraphs => [:environment] do
       # no ohms
       scope = OralHistoryContent.where(ohms_xml_text: [nil, ""])
 
