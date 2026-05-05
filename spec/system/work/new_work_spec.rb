@@ -13,7 +13,11 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       headers: {}
     )
 
-    stub_request(:get, %r{\Ahttps?://vocab\.getty\.edu/sparql\.json\?}).to_return(
+    # This regex used to be
+    # %r{\Ahttps?://vocab\.getty\.edu/sparql\.json\?}
+    # but the sparql.json endpoint is no longer accessible.
+    # Let's stub any and all requests to vocab.getty.com for now.
+    stub_request(:get, %r{\Ahttps?://vocab\.getty\.edu/}).to_return(
       status: 200,
       body: {results: { bindings: [] }}.to_json,
       headers: {}
