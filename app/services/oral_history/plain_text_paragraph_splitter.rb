@@ -65,12 +65,17 @@ module OralHistory
           raw_paragraph.sub!(/\A#{TIMECODE_REGEX.source}/, '')
         end
 
-        paragraph = OralHistoryContent::Paragraph.new(
+        # keep keys out of our arguments with empty values, to
+        # keep them out of the json serialization where they are unnecessary,
+        # to keep it smaller.
+        attributes = {
           speaker_name: current_speaker_name,
           paragraph_index: paragraph_index,
           text: raw_paragraph.strip,
-          included_timestamps: ([previous_timestamp].compact if previous_timestamp)
-        )
+          included_timestamps: ([previous_timestamp] if previous_timestamp)
+        }.compact
+
+        paragraph = OralHistoryContent::Paragraph.new(**attributes)
 
         if paragraph.speaker_name.blank?
           paragraph.assumed_speaker_name = last_speaker_name

@@ -124,7 +124,7 @@ describe OralHistory::ParagraphTranscriptComponent, type: :component do
       expect(markers.size).to eq markers.uniq.size
 
       timestamp_replaced = paragraphs.first
-      expect(timestamp_replaced.inner_html).to include "an inline <a href=\"#t=60\" class=\"ohms-transcript-timestamp default-link-style\" data-ohms-timestamp-s=\"60.000\">00:01:00</a> timestamp"
+      expect(timestamp_replaced.inner_html).to include "an inline <a href=\"#t=60.0\" class=\"ohms-transcript-timestamp default-link-style\" data-ohms-timestamp-s=\"60.000\">00:01:00</a> timestamp"
 
       # second paragraph should have a page marker for page 2!
       second_paragraph = paragraphs[1]
