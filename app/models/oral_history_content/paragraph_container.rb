@@ -12,6 +12,8 @@ class OralHistoryContent
 
     attr_json :paragraphs, OralHistoryContent::Paragraph.to_type, array: true
 
+    attr_json :warnings, :string, array: true
+
     attr_json :created_at, :datetime, default: -> { Time.current.utc }
 
     # start times that go with fingerprint to calculate offsets from transcript
@@ -32,7 +34,7 @@ class OralHistoryContent
     #
     # Will do computational work of calculating paragraphs from stored extracted_pdf_text_json
     # derivative.
-    def self.create(oral_history_content:)
+    def self.create(oral_history_content:, allow_failure_to_sync: false)
       work = oral_history_content.work
       pdf_asset = oral_history_content.work.members.find { |a| a.respond_to?(:role) && a.role == "transcript" }
 
@@ -55,10 +57,14 @@ class OralHistoryContent
       combined_audio_fingerprint = combined_audio.fingerprint
       file_start_times = combined_audio.calculate_start_times
 
-      paragraphs = OralHistory::ExtractedPdfTextParagraphSplitter.new(
+      splitter = OralHistory::ExtractedPdfTextParagraphSplitter.new(
         extracted_pdf_text: extracted_pdf_text,
-        file_start_times: file_start_times.to_h
-      ).paragraphs
+        file_start_times: file_start_times.to_h,
+        allow_failure_to_sync: allow_failure_to_sync
+      )
+
+      paragraphs = splitter.paragraphs
+      warnings = splitter.warnings
 
       container = OralHistoryContent::ParagraphContainer.new(
         paragraphs: paragraphs,
@@ -67,10 +73,13 @@ class OralHistoryContent
         file_start_times: file_start_times,
         combined_audio_fingerprint: combined_audio_fingerprint
       )
+      container.warnings = warnings if warnings
 
       # And save it in the model passed in
       oral_history_content.extracted_pdf_paragraphs = container
       oral_history_content.save!
+
+      return container
     end
 
     # Will fetch the work#members if not already fetched. Fingerprinting includes
