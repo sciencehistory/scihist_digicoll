@@ -53,7 +53,7 @@ class WorkVideoShowComponent < ApplicationComponent
   def video_asset
     @video_asset ||= begin
       candidate = @work.members.find { |mem| mem.asset? && mem&.content_type&.start_with?("video/") }
-      candidate if (candidate.published? || can_see_unpublished_records?)
+      candidate if (candidate&.published? || can_see_unpublished_records?)
     end
   end
 
