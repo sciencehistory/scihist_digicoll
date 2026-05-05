@@ -83,11 +83,13 @@ module OralHistory
     end
 
     def paragraphs
-      @paragraphs ||= create_paragraphs(extracted_pdf_text["pages"])
+      @paragraphs ||= create_paragraphs
     end
 
     # @return [OralHistory::Paragraph]
-    def create_paragraphs(extracted_pdf_text_pages)
+    def create_paragraphs
+      extracted_pdf_text_pages = extracted_pdf_text["pages"]
+
       all_paragraphs = []
 
       first_index = find_first_transcript_page(extracted_pdf_text_pages)
