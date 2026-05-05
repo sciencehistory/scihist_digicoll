@@ -1,4 +1,4 @@
-class OralHistoryStoreExtractedParagraphsJob < ApplicationJob
+class StoreOralHistoryPdfParagraphsJob < ApplicationJob
 
   # TODO extract this to a method in OralHistoryContent, yeah.
   def perform(oral_history_content, allow_failure_to_sync: false)
