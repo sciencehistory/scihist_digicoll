@@ -157,6 +157,7 @@ module OralHistory
         end
       end
 
+      # unused
       def short_citation_paragraphs
         [paragraph_start, paragraph_end].uniq.join("-")
       end
