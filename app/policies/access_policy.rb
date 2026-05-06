@@ -34,16 +34,16 @@ class AccessPolicy
       if ScihistDigicoll::Env.lookup("feature_ai_for_basic_internal")
         can :read, OralHistory::AiConversation
         can :create, OralHistory::AiConversation
-      end
 
-      # We have to look at associated work/oh, can bebit expensive in bulk, beware
-      # basic_internal read published AND automatic-approval requestable.
-      can :read, Asset do |asset, user|
-        asset.published? ||
-          (
-            asset.oh_available_by_request? &&
-            asset.work.oral_history_content.available_by_request_automatic?
-          )
+        # We have to look at associated work/oh, can bebit expensive in bulk, beware
+        # basic_internal read published AND automatic-approval requestable.
+        can :read, Asset do |asset, user|
+          asset.published? ||
+            (
+              asset.oh_available_by_request? &&
+              asset.work.oral_history_content.available_by_request_automatic?
+            )
+        end
       end
     end
 
@@ -81,7 +81,7 @@ class AccessPolicy
   end
 
   def has_staff_viewer_permissions?(user)
-    user&.admin_user? || has_editor_permissions?(user)
+    user&.staff_viewer_user? || has_editor_permissions?(user)
   end
 
   # Anyone with a @sciencehistory.org login!
