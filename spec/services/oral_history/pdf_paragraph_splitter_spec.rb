@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe OralHistory::ExtractedPdfTextParagraphSplitter do
+describe OralHistory::PdfParagraphSplitter do
   let(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
   let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text) }
@@ -180,7 +180,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       it "raises if it does not have file_start_times sequencing info" do
         expect {
           splitter.paragraphs
-        }.to raise_error( OralHistory::ExtractedPdfTextParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
+        }.to raise_error( OralHistory::PdfParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
       end
 
       describe "with file_start_times offsets" do
@@ -274,7 +274,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       it "raises if it does not have file_start_times sequencing info" do
         expect {
           splitter.paragraphs
-        }.to raise_error( OralHistory::ExtractedPdfTextParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
+        }.to raise_error( OralHistory::PdfParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
       end
 
       describe "with file_start_times offsets" do

@@ -57,7 +57,7 @@ class OralHistoryContent
       combined_audio_fingerprint = combined_audio.fingerprint
       file_start_times = combined_audio.calculate_start_times
 
-      splitter = OralHistory::ExtractedPdfTextParagraphSplitter.new(
+      splitter = OralHistory::PdfParagraphSplitter.new(
         extracted_pdf_text: extracted_pdf_text,
         file_start_times: file_start_times.to_h,
         allow_failure_to_sync: allow_failure_to_sync

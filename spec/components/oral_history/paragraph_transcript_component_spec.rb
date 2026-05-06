@@ -7,7 +7,7 @@ describe OralHistory::ParagraphTranscriptComponent, type: :component do
     # We could make tests go faster by loading pre-formed Paragraph json instead of
     # transforming it live? Is that still safe enough?
     let(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
-    let(:splitter) { OralHistory::ExtractedPdfTextParagraphSplitter.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times) }
+    let(:splitter) { OralHistory::PdfParagraphSplitter.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times) }
 
     # A good one that has <T:> timestamps and lets us test a number of things.
     let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/macfarlane_1982_sequence_timestamps_example.pdf" }

@@ -18,7 +18,7 @@ module OralHistory
   # * handles timestamps taht reset after `[END OF AUDIO` markers, re-seqencing
   #  full-transcript timestamps.
   #
-  class ExtractedPdfTextParagraphSplitter
+  class PdfParagraphSplitter
     class Error < StandardError; end
 
     # any page beginning with one of these is deemed post-transcript material. Normalized
