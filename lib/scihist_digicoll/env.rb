@@ -765,6 +765,8 @@ module ScihistDigicoll
     #   ScihistDigicoll::Env.staging? || !Rails.env.production?
     # }, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
+    define_key "feature_display_pdf_paragraph_transcripts", default: true, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
+
     define_key "feature_search_inside_work", default: true, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
     define_key "disable_downloads", default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
