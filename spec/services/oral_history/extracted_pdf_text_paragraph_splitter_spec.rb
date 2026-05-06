@@ -201,6 +201,19 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
           expect(with_timestamps.collect(&:included_timestamps).collect(&:first)).to eq [150 * 60, 5*60 + 152*60, 10*60 +  152*60]
         end
       end
+
+      describe "with insufficient file_start_times and allow_failure_to_sync" do
+        let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text, allow_failure_to_sync: true) }
+
+        it "syncs what it can, with warning" do
+          paragraphs = splitter.paragraphs
+
+          marker_index = paragraphs.index { |p| p.text =~ described_class::END_OF_AUDIO_FILE_RE }
+          expect(paragraphs.slice(marker_index..-1)).to all(satisfy { |p| p.included_timestamps.blank? })
+
+          expect(splitter.warnings).to include "Failed to sync some timestamps, with 2 audio segments, but file_start_times nil"
+        end
+      end
     end
   end
 

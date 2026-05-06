@@ -96,5 +96,25 @@ describe OralHistoryContent::ParagraphContainer do
 
       expect(oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)).to be false
     end
+
+    describe "with warnings" do
+      # missing mp3 assets, so there will be a sync warning
+      let(:work) do
+        create(:oral_history_work, members: [
+          pdf_asset,
+          mp3_asset,
+        ])
+      end
+
+      it "stores warnings" do
+        container = OralHistoryContent::ParagraphContainer.create(
+          oral_history_content: oral_history_content,
+          allow_failure_to_sync: true
+        )
+
+        expect(container.warnings).to be_present
+        expect(container.warnings).to include(/Failed to sync some timestamps/)
+      end
+    end
   end
 end

@@ -14,10 +14,10 @@ namespace :scihist do
       scope.find_each(batch_size: 10) do |oc|
         # TODO make it lazy optionally? or better based on freshness!
         if ENV['BG_JOB'] == "true"
-          OralHistoryStoreExtractedParagraphsJob.set(queue: "special_jobs").perform_later(oc)
+          OralHistoryStoreExtractedParagraphsJob.set(queue: "special_jobs").perform_later(oc, allow_failure_to_sync: true)
         else
           begin
-            OralHistoryContent::ParagraphContainer.create(oral_history_content: oc)
+            OralHistoryContent::ParagraphContainer.create(oral_history_content: oc, allow_failure_to_sync: true)
           rescue StandardError => e
             errors += 1
             puts "store_extracted_pdf_paragraphs: error on oral_history_content #{oc.id}, work #{oc&.work&.friendlier_id}, #{e}\n\n"
