@@ -74,7 +74,7 @@
             </li>
           <% end %>
 
-          <% if has_ohms_transcript? %>
+          <% if has_transcript? %>
             <li class="nav-item" role="presentation">
               <a class="nav-link btn btn-danger" id="ohTranscriptTab" data-bs-toggle="tab" href="#ohTranscript" role="tab" aria-controls="ohTranscript" aria-selected="false">
                 Transcript <span data-ohms-hitcount="transcript"></span>
@@ -155,13 +155,16 @@
           </div>
         <% end %>
 
-        <% if has_ohms_transcript? %>
+        <% if has_transcript? %>
           <div class="tab-pane" id="ohTranscript" role="tabpanel" aria-labelledby="ohTranscriptTab">
             <% if work.oral_history_content&.ohms_xml&.vtt_transcript %>
               <%= render OralHistory::VttTranscriptComponent.new(work.oral_history_content.ohms_xml.vtt_transcript) %>
             <% elsif work.oral_history_content&.ohms_xml&.legacy_transcript %>
               <%= render OralHistory::LegacyTranscriptComponent.new(work.oral_history_content.ohms_xml.legacy_transcript,
                                                                     transcript_log_id: work.oral_history_content.ohms_xml.accession) %>
+
+            <% elsif work.oral_history_content&.extracted_pdf_paragraphs.present? %>
+              <%= render OralHistory::ParagraphTranscriptComponent.new(work.oral_history_content.extracted_pdf_paragraphs.paragraphs) %>
             <% end %>
           </div>
         <% end %>
