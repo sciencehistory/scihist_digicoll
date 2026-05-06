@@ -38,10 +38,11 @@ describe "Turnstile bot limiting", js:true do
     end
 
     it "smoke tests" do
-      visit search_catalog_path(q: "foo")
-      expect(page).to have_content(/you searched for/i)
+      # now challenge on first try
+      # visit search_catalog_path(q: "foo")
+      #expect(page).to have_content(/you searched for/i)
 
-      # on second try, we're gonna get redirected to bot check page
+      # now on first try
       visit search_catalog_path(q: "bar")
       expect(page).to have_content(/traffic control/i)
 

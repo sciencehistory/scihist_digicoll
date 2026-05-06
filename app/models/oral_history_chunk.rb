@@ -1,5 +1,8 @@
 # Chunks of text for LLM RAG research
 class OralHistoryChunk < ApplicationRecord
+  # used in docs, keep it up to date!
+  HUMAN_READABLE_EMBEDDING_MODEL_NAME = "OpenAI text-embedding-3-large"
+
   # Filter embedding from logs just cause it's so darn long!
   self.filter_attributes += [:embedding]
 
@@ -11,6 +14,9 @@ class OralHistoryChunk < ApplicationRecord
   # normally populated by neigbor gem with custom SELECT, but declaring it
   # as an attribute helps us mock it in tests.
   attribute :neighbor_distance, :float
+
+  # paragraph numbers are 1-based
+  validates :start_paragraph_number, :end_paragraph_number, numericality: { greater_than: 0 }
 
   # Scope to fetch neighbors for embedding, to find relevant chunks to supply for RAG.
   #

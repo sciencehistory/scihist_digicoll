@@ -31,35 +31,8 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       "format" => 2
     }
   end
-  
-  let(:attribute_keys) do
-    [
-      :friendlier_id,
-      :subitem_id,
-      :order_id,
-      :title,
-      :additional_title,
-      :file_name,
-      :filetype,
-      :url_text,
-      :url,
-      :creator,
-      :publisher,
-      :subject,
-      :extent,
-      :min_date,
-      :max_date,
-      :date_of_work,
-      :place,
-      :medium,
-      :genre,
-      :description,
-      :rights,
-      :rights_holder
-    ]
-  end
 
-  let(:serializer) { described_class.new(work, attribute_keys:attribute_keys, column_counts:column_counts) }
+  let(:serializer) { described_class.new(work, attribute_keys:nil, column_counts:column_counts) }
 
   describe "#members_to_include" do
     it "returns a collection of public tiff assets for a work" do
@@ -80,8 +53,8 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
     let!(:work) do
       create(:work, :with_complete_metadata,
         creator_attributes: {
-          "0"=>{"category"=> "author",     "value"=>"author_1"    },
-          "1"=>{"category"=> "author",     "value"=>"author_2"    },
+          "0"=>{"category"=> "author",     "value"=>"author_1" },
+          "1"=>{"category"=> "author",     "value"=>"author_2" },
           "2"=>{"category"=> "publisher",  "value"=>"publisher" }
         }
       )
@@ -123,15 +96,45 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       end
     end
 
-    describe "#creator" do
-      it "returns creator" do
-        expect(serializer.creator).to eq ["author_1", "author_2"]
+    context "creator; contributor; publisher" do
+      let!(:work) do
+        create(:work, :extra_creator_metadata)
       end
-    end
 
-    describe "#publisher" do
-      it "returns publisher" do
-        expect(serializer.publisher).to eq "publisher"
+      describe "#creator" do
+        it "all creators are in creator#0, creator#1, creator#2 etc. , but are also listed under their own columns" do
+          expect(serializer.creator).to eq ["artist", "author", "creator_of_work", "interviewee", "interviewer", "photographer", "photographer 2", "photographer 3"]
+          expect(serializer.creator_of_work).to eq ["creator_of_work"]
+          expect(serializer.artist).to eq ["artist"]
+          expect(serializer.interviewee).to eq ["interviewee"]
+          expect(serializer.interviewer).to eq ["interviewer"]
+          expect(serializer.photographer).to eq ["photographer", "photographer 2", "photographer 3"]
+        end
+      end
+
+      # Note this used to be a comma-separated list.
+      describe "#publisher" do
+        it "all publishers are listed in separate columns" do
+          expect(serializer.publisher).to eq ["publisher", "publisher 2", "publisher 3"]
+        end
+      end
+
+      describe "#contributor" do
+        it "returns contributor" do
+          expect(serializer.contributor).to eq ['contributor']
+        end
+      end
+
+      describe "#interviewee" do
+        it "returns interviewee" do
+          expect(serializer.interviewee).to eq ["interviewee"]
+        end
+      end
+
+      describe "#school_of" do
+        it "returns school_of" do
+          expect(serializer.school_of).to eq ["school_of"]
+        end
       end
     end
 

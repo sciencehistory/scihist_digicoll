@@ -69,12 +69,12 @@
   </head>
 
   <body class="<%= render_body_class %> scihist-main-layout <%= content_for :body_classes %>">
-    <% if show_ie_unsupported_warning? %>
+    <% if respond_to?(:show_ie_unsupported_warning?) && show_ie_unsupported_warning? %>
       <%= render 'ie_unsupported_warning' %>
     <% end %>
 
     <% if can? :access_staff_functions %>
-      <%= render 'front_end_admin_navbar' %>
+      <%= render 'application/front_end_admin_navbar' %>
     <% end %>
 
     <%= render ScihistMasthead.new(suppress_product_subhead: content_for(:suppress_product_subhead)) %>
@@ -84,7 +84,7 @@
 
     <main id="mainContainer" class="container-fluid">
       <%= content_for(:container_header) %>
-      <%= render 'flash_message_display' %>
+      <%= render 'application/flash_message_display' %>
       <% if content_for? :full_width_layout %>
         <%# The only template to use this is homepage/index . %>
         <%= yield %>

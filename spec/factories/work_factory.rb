@@ -160,8 +160,24 @@ FactoryBot.define do
       series_arrangement {
         ["Series arrangement 1", "Series arrangement 2"]
       }
+    end
 
-
+    trait :extra_creator_metadata do
+      with_complete_metadata
+      creator do
+       creators = %w[artist author creator_of_work interviewee interviewer photographer
+         publisher addressee after attributed_to engraver
+         contributor manner_of manufacturer printer printer_of_plates
+         school_of sponsor
+       ].map do |cat|
+          Work::Creator.new({value: "#{cat}", category: "#{cat}"})
+        end
+        creators.push(Work::Creator.new({value: "photographer 2", category: "photographer"}))
+        creators.push(Work::Creator.new({value: "photographer 3", category: "photographer"}))
+        creators.push(Work::Creator.new({value: "sponsor 2",      category: "sponsor"}))
+        creators.push(Work::Creator.new({value: "publisher 2",    category: "publisher"}))
+        creators.push(Work::Creator.new({value: "publisher 3",    category: "publisher"}))
+      end
     end
 
     trait :with_assets do

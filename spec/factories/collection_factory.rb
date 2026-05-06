@@ -11,6 +11,7 @@ FactoryBot.define do
         }
       ]
     }
+    admin_note { ['admin note', 'second admin note']}
     department { "Archives" }
     published { true }
 

@@ -18,7 +18,8 @@ describe "derivative creation" do
       expect(pdf_asset.file_derivatives.keys.sort).
         to contain_exactly(:thumb_large,:thumb_large_2X,
           :thumb_mini, :thumb_mini_2X,
-          :thumb_standard, :thumb_standard_2X
+          :thumb_standard, :thumb_standard_2X,
+          :extracted_pdf_text_json
         )
       expect(pdf_asset.file_derivatives[:thumb_mini].metadata['width']).to eq(54)
       expect(pdf_asset.file_derivatives[:thumb_large_2X].metadata['width']).to eq(1050)

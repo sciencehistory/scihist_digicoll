@@ -26,8 +26,10 @@ class CatalogController < ApplicationController
   # We let bots through if they have NO query params, we want let collection/focus sploash
   # pages be indexed -- this will actually let bot paginate through entire results with
   # no query/facets, which we seem to be able to tolerate.
-  bot_challenge after: 1, within: 12.hours,
-    if: -> {
+  #
+  # Used to be `after: 1, within: 12.hours,` -- but now we bot challenge on first request,
+  # I think some of the botnets were really onll doing one request per ip!
+  bot_challenge if: -> {
       # A fix that ought not to be necessary (but won't hurt) after
       # https://github.com/projectblacklight/blacklight_range_limit/pull/320
       (blacklight_config.search_state_fields += BlacklightRangeLimit::ControllerOverride::RANGE_LIMIT_FIELDS).uniq!

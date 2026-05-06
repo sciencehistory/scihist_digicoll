@@ -24,7 +24,7 @@ describe OralHistory::ClaudeInteractor do
   describe "render_user_promopt" do
     it "includes formatted chunks" do
       expect(interaction.render_user_prompt([chunk1, chunk2])).to include <<~EOS.strip
-       RETRIEVED CONTEXT CHUNKS:
+       ## RETRIEVED CONTEXT CHUNKS
        ------------------------------
        ORAL HISTORY TITLE: Oral history interview with William John Bailey
        ORAL HISTORY ID: OH#{chunk1.oral_history_content.work.oral_history_number}
@@ -113,8 +113,8 @@ describe OralHistory::ClaudeInteractor do
 
           interaction.get_response(conversation_record: ai_conversation)
 
-          # Doesn't save it
-          expect(ai_conversation).not_to be_persisted
+          # Does save it now, to have chunks and timing saved for early showing
+          expect(ai_conversation).to be_persisted
 
           expect(ai_conversation.request_sent_at).to be_present
 

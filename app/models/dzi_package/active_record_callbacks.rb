@@ -4,6 +4,7 @@ class DziPackage
   # and after_promotion registrations.
   module ActiveRecordCallbacks
     def self.after_promotion(asset)
+      self.warn_unless_image(asset)
       # we're gonna use the same kithe promotion_directives for derivatives to
       # control how we do dzi
       Kithe::TimingPromotionDirective.new(
@@ -19,6 +20,7 @@ class DziPackage
     end
 
     def self.after_commit(asset)
+      self.warn_unless_image(asset)
       if asset.destroyed?
         if asset.dzi_manifest_file.blank?
           Rails.logger.warn("Deleting file without a dzi_manifest_file listed, can't find/delete DZI: #{asset.friendlier_id || asset.id}")
@@ -62,5 +64,14 @@ class DziPackage
       end
       #
     end
+
+    private
+    def self.warn_unless_image(asset)
+      return if asset.content_type&.start_with?("image/")
+      Rails.logger.warn """Calling DziPackage::ActiveRecordCallbacks
+        on asset #{asset.friendlier_id} even though
+        it has content type #{asset&.content_type}."""
+    end
+
   end
 end

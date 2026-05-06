@@ -6,12 +6,33 @@
 
 
 <%= simple_form_for(admin_users_path, method: "get") do %>
-  <div class="admin-filters">
-    <div class="admin-filter">
-        <label for="filter">Show</label>
+  <div class="admin-filters row">
+    <div class="admin-filter col">
+      <div class="input-group">
+
+        <div class="input-group-prepend">
+          <label for="filter" class="input-group-text">Show users</label>
+        </div>
+
         <%= select_tag "filter",
           options_for_select(['Current', 'All'] + @user_types_map.values, @filter),
           onchange: "this.form.submit()", class: "form-select" %>
+      </div>
+    </div>
+
+    <div class="admin-filter col">
+      <div class="input-group">
+          <div class="input-group-prepend">
+          <span class="input-group-text">Filter</span>
+        </div>
+
+        <%= search_field_tag :q, params[:q], class: "form-control" %>
+
+        <button type="submit" class="btn btn-primary">
+          <i class="fa fa-search" aria-hidden="true" title="Search"></i>
+          <span class="sr-only">Search</span>
+        </button>
+      </div>
     </div>
   </div>
 <% end %>

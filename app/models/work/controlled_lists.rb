@@ -27,6 +27,7 @@ class Work
     FORMAT = %w{image mixed_material moving_image physical_object sound text}.freeze
 
     GENRE = [
+      'Abstract (general art genre)',
       'Advertisements',
       'Artifacts',
       'Business correspondence',
@@ -100,6 +101,7 @@ class Work
       'Miller, Megan',
       'Mirror Image Media, LLC',
       'Muhlin, Jay',
+      'Myers, Emmett',
       'Newhouse, Sarah',
       'Pinkney, Annabel',
       'Reflex Technologies',

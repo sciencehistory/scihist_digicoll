@@ -29,3 +29,7 @@ brew 'tesseract-lang'
 brew 'exiftool'
 
 brew "ghostscript" # maybe already a dependency of vips but we also use directly for PDF downscaling
+
+## Development dependencies:
+
+brew "uv" # for python dependency management

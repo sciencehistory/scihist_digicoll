@@ -347,21 +347,28 @@
 }
 
 // make room for and position the timecode links
-// This is more or less how standard OHMS viewer does it.
+// We started with absolute position,  more or less how standard OHMS viewer does it -- but
+// moved to float but with very similar layout. Float stacks better when we have multiple
+// in the way.
 .ohms-transcript-container {
+  $margin-size: 5.5em;
+
   // hack to disable margin collapsing
   display: flex;
   flex-direction: column;
 
   .ohms-transcript-paragraph {
-    position: relative;
-    padding-left: 5.5em;
-    max-width: calc(5.5em + #{$max-readable-width});
+    padding-left: $margin_size;
+    max-width: calc(#{$margin_size} + #{$max-readable-width});
 
     .ohms-transcript-timestamp {
       font-family: $brand-sans-serif;
-      position: absolute;
-      left: 0;
+      float: left;
+      clear: both;
+      // we need to take it out of it's parent(s), which we can do with negative margin
+      // matching padding added above for margin!
+      margin-left: -1 * $margin-size;
+      max-width: calc(#{$margin-size} - 0.66em);
     }
   }
 

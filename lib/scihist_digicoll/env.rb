@@ -127,11 +127,6 @@ module ScihistDigicoll
     # This is effectively a password - a shared secret.
     define_key :microsoft_sso_client_secret
 
-    define_key :google_arts_and_culture_project_id
-    define_key :google_arts_and_culture_bucket_name
-    define_key :google_arts_and_culture_credentials
-
-
     # MediaConvert requires a special role to be passed to MediaConvert
     # jobs, that has access to input/output buckets, and MediaConvert itself.
     #
@@ -298,6 +293,9 @@ module ScihistDigicoll
     define_key :s3_bucket_uploads
     define_key :s3_bucket_on_demand_derivatives
     define_key :s3_bucket_dzi
+    define_key :s3_bucket_public
+
+
 
     # if we are using CloudFront in front of a bucket, we set Cloudfront Distro hostname
     # in variables corresponding to bucket name env, with `_host` on the end. These
@@ -470,7 +468,7 @@ module ScihistDigicoll
     def self.appropriate_shrine_storage(bucket_key:, public: false, mode: lookup!(:storage_mode), prefix: nil,
                                         host: nil, s3_storage_options: {} )
       unless %I{s3_bucket_uploads s3_bucket_originals s3_bucket_originals_video s3_bucket_derivatives
-                s3_bucket_derivatives_video
+                s3_bucket_derivatives_video s3_bucket_public
                 s3_bucket_on_demand_derivatives s3_bucket_dzi}.include?(bucket_key)
         raise ArgumentError.new("Unrecognized bucket_key: #{bucket_key}")
       end
@@ -604,6 +602,13 @@ module ScihistDigicoll
                                       }
                                     }
                                   )
+    end
+
+    def self.google_arts_and_culture_storage
+      @google_arts_and_culture_storage ||=
+        appropriate_shrine_storage(bucket_key: :s3_bucket_public,
+          public: true,
+          prefix: "google_arts_and_culture_downloads")
     end
 
     def self.shrine_combined_audio_derivatives_storage

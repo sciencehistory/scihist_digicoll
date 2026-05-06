@@ -236,4 +236,16 @@ class Work < Kithe::Work
     genre && genre.include?("Oral histories")
   end
 
+
+  # Genre metadata determines whether a
+  # work is considered a video for UI purposes.
+  #
+  # This method does not examine whether the work
+  # actually has a video asset; the only place
+  # we currently need to run that check
+  # is in WorkVideoShowComponent.
+  def has_genre_moving_image?
+    format&.include?('moving_image') || false
+  end
+
 end

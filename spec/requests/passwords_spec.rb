@@ -72,7 +72,7 @@ RSpec.describe "passwords", type: :request, queue_adapter: :test do
     describe "Request to reset password" do
       it "routes to the devise password controller" do
         get new_user_password_path
-        expect(response.body).to match /Send me reset password instructions/
+        expect(response.body).to match /Send me password reset instructions/
       end
     end
     describe "Password reset request for a particular user" do

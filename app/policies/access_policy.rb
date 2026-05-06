@@ -5,11 +5,11 @@ class AccessPolicy
   include AccessGranted::Policy
   # :publish and :admin are only defined in our code.
   # as is :access_staff_viewer_functions.
-  # 
+  #
   # The :admin, :editor and :staff_viewer roles are cumulative:
   # e.g. if the :staff_viewer role can do something, so can :editor and :admin.
   #
-  # If you edit this file, please also update 
+  # If you edit this file, please also update
   # spec/policies/access_policy_spec.rb
   def configure
     role :admin, proc { |user| has_admin_permissions?(user) } do
@@ -27,6 +27,9 @@ class AccessPolicy
         comment.user_id == user.id
       end
       can :access_staff_functions
+
+      # Can be removed once #3326 is merged, covering it.
+      can :create, OralHistory::AiConversation
     end
 
     role :public do
@@ -55,11 +58,11 @@ class AccessPolicy
   def has_admin_permissions?(user)
     user&.admin_user?
   end
-  
+
   def has_editor_permissions?(user)
     user&.admin_user? || user&.editor_user?
   end
-  
+
   def has_staff_viewer_permissions?(user)
     user&.admin_user? || user&.editor_user? || user&.staff_viewer_user?
   end

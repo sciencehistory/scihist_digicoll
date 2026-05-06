@@ -27,7 +27,7 @@ module SearchResult
     end
 
     def display_extent
-      return [] unless model&.format.include?('moving_image')
+      return [] unless model.has_genre_moving_image?
       model&.extent || []
     end
 

@@ -44,6 +44,7 @@ class Collection < Kithe::Collection
   validates :department, presence: {}, inclusion: { in: DEPARTMENTS, allow_blank: true }
 
   attr_json :funding_credit, FundingCredit.to_type
+  attr_json :admin_note, :text, array: true, default: -> { [] }
 
   # Override the default ActiveRecord one to create a new Asset if it didn't exist already.
   # The default AR didn't work quite right because of STI and other reasons, but this works

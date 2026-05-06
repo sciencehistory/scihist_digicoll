@@ -24,6 +24,9 @@
 # MacOS bookkeeping file
 .DS_Store
 
+# uv venv, def don't want in repo
+.venv
+
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
@@ -60,4 +63,6 @@ node_modules
 
 # Brew bundle creates this pretty useless file, it's not a useful lock file like you think
 Brewfile.lock.json
+
+
 

@@ -12,7 +12,7 @@ ruby "~> #{File.read(File.join(__dir__ , '.ruby-version')).chomp.split('.').slic
 gem 'lockbox'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
-gem 'rails', '~> 8.0.0'
+gem 'rails', '~> 8.1.2'
 
 # note we use vite-ruby for css and JS, but propshaft delivers some static images and
 # other static assets, as well as produced files from vite.
@@ -72,11 +72,6 @@ gem "aws-sdk-s3", "~> 1.208"
 gem "aws-sdk-cloudfront", "~> 1.91"
 gem 'aws-sdk-bedrockruntime', '~> 1.66'
 
-gem "google-cloud-storage", "~> 1.57.1"
-gem "google-api-client", "~> 0.7.1"
-gem "googleauth", "~> 1.15.0"
-
-
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
@@ -85,7 +80,7 @@ gem 'puma', '>= 7.0.0.pre1', '< 8'
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
 # https://github.com/nevans/resque-pool/issues/170
-gem "resque", "~> 2.0"
+gem "resque", "~> 3.0"
 gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
 
@@ -131,7 +126,7 @@ gem 'faster_s3_url', "~> 1.1" # for generating s3 urls faster!
 gem "kaminari", "~> 1.2"
 gem 'bootstrap4-kaminari-views'
 
-gem 'devise', "~> 4.5" # user accounts and login
+gem 'devise', "~> 5.0" # user accounts and login
 gem 'access-granted', "~> 1.0" # authorization
 gem 'omniauth-entra-id'
 gem 'omniauth-rails_csrf_protection'
@@ -190,7 +185,7 @@ gem "docx", "< 1.0"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'pry-byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'pry-byebug', platforms: [:mri, :windows]
   gem 'solr_wrapper', "~> 4.0"
   # gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
 end
@@ -255,7 +250,7 @@ end
 
 # faraday is a transitive dependency, but we interact with it directly
 # to configure Blacklight, for automatic retry
- gem "faraday", "~> 2.0"
+ gem "faraday", "~> 2.14"
  gem "faraday-retry", "~> 2.0"
 
  gem "csv", "~> 3.3.0"
@@ -271,6 +266,8 @@ gem "barnes"
 gem 'equivalent-xml'
 
 # temporary new bot challenge page
-gem "bot_challenge_page", ">= 0.10.0", "< 2"
+gem "bot_challenge_page", ">= 1.1.0", "< 2"
 
 gem "ruby-openai", "~> 8.0"
+
+gem "json_schemer", "~> 2.5.0"

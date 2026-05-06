@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_01_21_211717) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_16_175054) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -144,6 +144,19 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_21_211717) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "google_arts_and_culture_downloads", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.string "status", default: "in_progress", null: false
+    t.text "error_info"
+    t.text "user_notes"
+    t.integer "progress"
+    t.integer "progress_total"
+    t.jsonb "file_data"
+    t.index ["user_id"], name: "index_google_arts_and_culture_downloads_on_user_id"
+  end
+
   create_table "interviewee_biographies", force: :cascade do |t|
     t.string "name", null: false
     t.jsonb "json_attributes"
@@ -229,6 +242,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_21_211717) do
     t.text "notes_from_staff"
     t.index ["oral_history_requester_email_id"], name: "idx_on_oral_history_requester_email_id_ff2cc727ac"
     t.index ["work_id"], name: "index_oral_history_access_requests_on_work_id"
+  end
+
+  create_table "oral_history_ai_conversation_feedbacks", force: :cascade do |t|
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.bigint "oral_history_ai_conversation_id", null: false
+    t.integer "rating"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["oral_history_ai_conversation_id"], name: "idx_on_oral_history_ai_conversation_id_33d8a144e0"
+    t.index ["user_id"], name: "index_oral_history_ai_conversation_feedbacks_on_user_id"
   end
 
   create_table "oral_history_ai_conversations", force: :cascade do |t|
@@ -332,13 +356,14 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_21_211717) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.string "name"
-    t.boolean "locked_out"
-    t.string "user_type", default: "editor"
+    t.boolean "locked_out", default: false
+    t.string "user_type", default: "basic_internal"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "fixity_checks", "kithe_models", column: "asset_id"
+  add_foreign_key "google_arts_and_culture_downloads", "users"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "containee_id"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "container_id"
   add_foreign_key "kithe_models", "digitization_queue_items"
@@ -348,6 +373,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_01_21_211717) do
   add_foreign_key "on_demand_derivatives", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "oral_history_requester_emails"
+  add_foreign_key "oral_history_ai_conversation_feedbacks", "oral_history_ai_conversations"
+  add_foreign_key "oral_history_ai_conversation_feedbacks", "users"
   add_foreign_key "oral_history_chunks", "oral_history_content"
   add_foreign_key "oral_history_content", "kithe_models", column: "work_id"
   add_foreign_key "queue_item_comments", "digitization_queue_items"

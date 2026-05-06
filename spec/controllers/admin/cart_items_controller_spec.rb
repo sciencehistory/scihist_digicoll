@@ -42,5 +42,4 @@ RSpec.describe Admin::CartItemsController, :logged_in_user, type: :controller, q
     end
   end
 
-
 end

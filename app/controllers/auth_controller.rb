@@ -2,7 +2,7 @@
 # Microsoft Single Sign On / Entra / Azure.
 # Links to more documentation are at config/initializers/devise.rb.
 #
-# Note that if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) is not set to true, 
+# Note that if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) is not set to true,
 # this *entire* controller is turned off in config/routes.rb .
 # (See devise_for :users in that file.)
 class AuthController < Devise::OmniauthCallbacksController
@@ -11,14 +11,27 @@ class AuthController < Devise::OmniauthCallbacksController
 
   # This method signs a user in after they authenticate with Microsoft SSO.
   def entra_id
-    email = request.env['omniauth.auth']['info']['email']
-    @user = User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first
-
-    unless @user&.persisted?
-      flash[:alert] = "You can't currently log in to the Digital Collections. Please contact a Digital Collections administrator."
-      redirect_back(fallback_location: root_path)
-      return
+    # While we store it in our system as email, some unusual SSO users don't have
+    # emails, but have usernames listed of similar format, that we will use (although
+    # can't actually send email to them, warning! Our internal model could use a refactor!)
+    email = request.env['omniauth.auth']&.dig('info', 'email') || request.env['omniauth.auth']&.dig("extra", "raw_info", "preferred_username")
+    # usually "lastname, firstname", but this is the only one we're guaranteed-ish to get.
+    remote_name = if request.env['omniauth.auth']&.dig('info', 'first_name')
+      "#{request.env['omniauth.auth']&.dig('info', 'first_name')} #{request.env['omniauth.auth']&.dig('info', 'last_name')}"
+    else
+      request.env['omniauth.auth']&.dig('info', 'name')
     end
+
+    if email.nil?
+      debug_info = request.env['omniauth.auth']&.to_h&.slice("provider", "uid")
+      Rails.logger.warn("#{self.class.name}: Could not find email from omniauth.auth for uid #{debug_info}")
+      raise TypeError.new("Could not find auth email from: #{debug_info}")
+    end
+
+    # Find case-insensitive, or create a new one.
+    @user =
+      User.where('email ILIKE ?', "%#{ User.sanitize_sql_like(email) }%").first ||
+      User.create!(email: email, name: remote_name)
 
     if @user.locked_out?
       flash[:alert] = "Sorry, this user is not allowed to log in."
@@ -52,9 +65,9 @@ class AuthController < Devise::OmniauthCallbacksController
   end
 
   def sso_logout_path
-    @logout_path ||= OmniAuth::Strategies::EntraId::BASE_URL + 
-      "/common/oauth2/v2.0/logout" + 
-      "?post_logout_redirect_uri=" + 
+    @logout_path ||= OmniAuth::Strategies::EntraId::BASE_URL +
+      "/common/oauth2/v2.0/logout" +
+      "?post_logout_redirect_uri=" +
       ScihistDigicoll::Env.lookup(:app_url_base) +
       root_path
   end

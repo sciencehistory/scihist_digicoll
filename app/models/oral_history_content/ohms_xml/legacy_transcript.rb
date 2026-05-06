@@ -4,7 +4,8 @@ class OralHistoryContent
     # For LEGACY kind of Ohms XML, with <ohms:sync> and <ohms:transcript> elements.
     class LegacyTranscript
       # catch speaker prefix, adapted from standard PHP OHMS viewer
-      OHMS_SPEAKER_LABEL_RE = /\A[[:space:]]*([A-Z\-.\' ]+:) (.*)\Z/
+      BARE_OHMS_SPEAKER_LABEL_RE = /[[:space:]]*([A-Z\-.\' ]+:)/m
+      OHMS_SPEAKER_LABEL_RE = /\A#{BARE_OHMS_SPEAKER_LABEL_RE.source} (.*)\Z/
 
       attr_reader :nokogiri_xml
 
@@ -247,12 +248,6 @@ class OralHistoryContent
         #                  SHOULD be true, but weird things may happen if it ain't.
         def speaker_name
           lines.first&.speaker_label&.chomp(":")
-        end
-
-        # @return [String] to be used as an `id` attribute within an HTML doc, identifying a particular
-        #         paragraph.
-        def fragment_id
-          "oh-t#{transcript_id}-p#{paragraph_index}"
         end
       end
 
