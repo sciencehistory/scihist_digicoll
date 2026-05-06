@@ -30,6 +30,10 @@ class AccessPolicy
 
       # Better than basic_internal, these guys can read all assets unpublished too.
       can :read, Asset
+
+      # redundant once feature-flag is removed in basic_internal
+      can :read, OralHistory::AiConversation
+      can :create, OralHistory::AiConversation
     end
 
     role :basic_internal, proc { |user| has_basic_internal_permissions?(user) } do
