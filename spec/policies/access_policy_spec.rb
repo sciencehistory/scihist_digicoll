@@ -103,7 +103,7 @@ describe "access policies:" do
   end
 
   describe 'staff_viewer' do
-    let(:user) { FactoryBot.create(:staff_viewer_user, email: "staff_viewer@b.c") }
+    let(:user) { FactoryBot.create(:staff_viewer_user) }
     let(:policy) { AccessPolicy.new(user) }
 
     it "is a staff_viewer user" do
@@ -145,6 +145,11 @@ describe "access policies:" do
     it "can't delete a QueueItemComment by someone else" do
       expect(policy.can?(:destroy, coment_you_can_t_delete)).to be false
     end
+  end
+
+  describe "basic_internal user" do
+    let(:user) { FactoryBot.create(:basic_internal_user) }
+    let(:policy) { AccessPolicy.new(user) }
 
     describe "oral histories" do
       describe "automatically requestable" do
@@ -161,7 +166,7 @@ describe "access policies:" do
 
       describe "manually requestable" do
         let(:asset) {
-          build(:asset, oh_available_by_request: true,
+          build(:asset, published: false, oh_available_by_request: true,
             parent: build(:oral_history_work,  :available_by_request, available_by_request_mode: :manual_review)
           )
         }

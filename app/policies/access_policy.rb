@@ -27,6 +27,9 @@ class AccessPolicy
         comment.user_id == user.id
       end
       can :access_staff_functions
+
+      # Better than basic_internal, these guys can read all assets unpublished too.
+      can :read, Asset
     end
 
     role :basic_internal, proc { |user| has_basic_internal_permissions?(user) } do
@@ -34,16 +37,17 @@ class AccessPolicy
       if ScihistDigicoll::Env.lookup("feature_ai_for_basic_internal")
         can :read, OralHistory::AiConversation
         can :create, OralHistory::AiConversation
+      end
 
-        # We have to look at associated work/oh, can bebit expensive in bulk, beware
-        # basic_internal read published AND automatic-approval requestable.
-        can :read, Asset do |asset, user|
-          asset.published? ||
-            (
-              asset.oh_available_by_request? &&
-              asset.work.oral_history_content.available_by_request_automatic?
-            )
-        end
+      # We have to look at associated work/oh, can bebit expensive in bulk, beware
+      # basic_internal read published AND automatic-approval requestable.
+      can :read, Asset do |asset, user|
+        # basic_internal can read "automatic request" oral history PDFs too even if unpublished.
+        asset.published? ||
+          (
+            asset.oh_available_by_request? &&
+            asset.parent.oral_history_content.available_by_request_automatic?
+          )
       end
     end
 
