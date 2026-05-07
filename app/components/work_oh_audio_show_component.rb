@@ -39,6 +39,13 @@ class WorkOhAudioShowComponent < ApplicationComponent
     @representative_member = all_members.find { |m| m.id == work.representative_id }
   end
 
+  # could be OHMS transcript, or could be a PdfText extracted transcript
+  def has_transcript?
+    has_ohms_transcript? || (
+      ScihistDigicoll::Env.lookup(:feature_display_pdf_paragraph_transcripts) &&
+      work&.oral_history_content&.extracted_pdf_paragraphs.present?
+    )
+  end
 
   def has_ohms_transcript?
     work&.oral_history_content&.has_ohms_transcript?
