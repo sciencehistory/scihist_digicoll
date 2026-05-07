@@ -6,128 +6,128 @@
 //
 // Uses JQuery.
 
-jQuery( document ).ready(function( $ ) {
+// jQuery( document ).ready(function( $ ) {
 
-  // SINGLE work cart checkbox:
-  $(document).on("change", ".cart-checkbox", function(event) {
-    var checkbox = $(this);
-    var form = checkbox.closest("form");
+//   // SINGLE work cart checkbox:
+//   $(document).on("change", ".cart-checkbox", function(event) {
+//     var checkbox = $(this);
+//     var form = checkbox.closest("form");
 
-    $.ajax({
-        url: form.attr('action'),
-        dataType: 'json',
-        type: form.attr('method').toUpperCase(), 
-        data: form.serialize(), 
-        beforeSend: function() {
-          formDisable(form);
-        },
-        error: function(xhr, ajaxOptions, error) {
-          console.error("cart item toggle error\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-          // Revert the checkbox change
-          checkbox.prop("checked", !checkbox.prop("checked"));
-          alert("Error in cart item modify");
-          formEnable(form);
-        },
-        success: function(data, status, xhr) {
-          //if app isn't running at all, xhr annoyingly
-          //reports success with status 0, so non-0 we consider success.
-          if (xhr.status != 0) {
-            // update cart count
-            updateCount(data["cart_count"]);
-            formEnable(form);
-          } else {
-            console.error("cart item toggle error\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-            // Revert the checkbox change
-            checkbox.prop("checked", !checkbox.prop("checked"));
-            alert("Error in cart item modify");
-            formEnable(form);
-          }
-        }
-    });
-  });
+//     $.ajax({
+//         url: form.attr('action'),
+//         dataType: 'json',
+//         type: form.attr('method').toUpperCase(), 
+//         data: form.serialize(), 
+//         beforeSend: function() {
+//           formDisable(form);
+//         },
+//         error: function(xhr, ajaxOptions, error) {
+//           console.error("cart item toggle error\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+//           // Revert the checkbox change
+//           checkbox.prop("checked", !checkbox.prop("checked"));
+//           alert("Error in cart item modify");
+//           formEnable(form);
+//         },
+//         success: function(data, status, xhr) {
+//           //if app isn't running at all, xhr annoyingly
+//           //reports success with status 0, so non-0 we consider success.
+//           if (xhr.status != 0) {
+//             // update cart count
+//             updateCount(data["cart_count"]);
+//             formEnable(form);
+//           } else {
+//             console.error("cart item toggle error\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+//             // Revert the checkbox change
+//             checkbox.prop("checked", !checkbox.prop("checked"));
+//             alert("Error in cart item modify");
+//             formEnable(form);
+//           }
+//         }
+//     });
+//   });
 
-  // MULTIPLE work cart checkbox:
-  $(document).on("change", ".cart-multiple-checkbox", function(event) {
-    var multipleCheckbox = $(this);
+//   // MULTIPLE work cart checkbox:
+//   $(document).on("change", ".cart-multiple-checkbox", function(event) {
+//     var multipleCheckbox = $(this);
 
-    $.ajax({
-        // URL is admin_update_multiple_cart_items_path
-        url:        multipleCheckbox.data('url'), 
-        // comma-separated list of friendlier_ids
-        data:       {
-          "list_of_ids": multipleCheckbox.data('list-of-ids'),
-           "toggle": ( multipleCheckbox.prop("checked") ? 1 : 0 )
-        },
+//     $.ajax({
+//         // URL is admin_update_multiple_cart_items_path
+//         url:        multipleCheckbox.data('url'), 
+//         // comma-separated list of friendlier_ids
+//         data:       {
+//           "list_of_ids": multipleCheckbox.data('list-of-ids'),
+//            "toggle": ( multipleCheckbox.prop("checked") ? 1 : 0 )
+//         },
 
-        dataType:   'json',
-        type:       'POST',
+//         dataType:   'json',
+//         type:       'POST',
         
-        beforeSend: function() {
-          // Disable the checkbox until server confirms the change went through.
-          multipleFormDisable();
-        },
+//         beforeSend: function() {
+//           // Disable the checkbox until server confirms the change went through.
+//           multipleFormDisable();
+//         },
         
-        error: function(xhr, ajaxOptions, error) {
-          console.error("Multiple cart item toggle error\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-          // Revert the checkbox change
-          multipleCheckbox.prop("checked", !multipleCheckbox.prop("checked"));
-          alert("Unable to add or remove multiple works from your cart.");
-          multipleFormEnable();
-        },
+//         error: function(xhr, ajaxOptions, error) {
+//           console.error("Multiple cart item toggle error\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+//           // Revert the checkbox change
+//           multipleCheckbox.prop("checked", !multipleCheckbox.prop("checked"));
+//           alert("Unable to add or remove multiple works from your cart.");
+//           multipleFormEnable();
+//         },
 
-        success: function(data, status, xhr) {
-          if (xhr.status != 0) {
-            // SUCCESS
+//         success: function(data, status, xhr) {
+//           if (xhr.status != 0) {
+//             // SUCCESS
 
-            // Set all the "cart" checkboxes to the same status as this one.
-            // This does *not* trigger a 'change' event, because we're using JS to change the value.
-            //     "Note: Changing the value of an input element using JavaScript, using .val() for example, won't fire the [change] event"
-            //     https://api.jquery.com/change/
-            $('.cart-checkbox').each(function() {$(this).prop("checked", multipleCheckbox.prop("checked"))})
+//             // Set all the "cart" checkboxes to the same status as this one.
+//             // This does *not* trigger a 'change' event, because we're using JS to change the value.
+//             //     "Note: Changing the value of an input element using JavaScript, using .val() for example, won't fire the [change] event"
+//             //     https://api.jquery.com/change/
+//             $('.cart-checkbox').each(function() {$(this).prop("checked", multipleCheckbox.prop("checked"))})
 
-            updateCount(data["cart_count"]);
-            multipleFormEnable();
+//             updateCount(data["cart_count"]);
+//             multipleFormEnable();
 
-          } else {
-            // FAILURE
-            console.error("Error adding or removing multiple works from the user's cart. Details:\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
-            // Revert the checkbox change
-            multipleCheckbox.prop("checked", !multipleCheckbox.prop("checked"));
-            alert("Unable to add or remove multiple works from your cart.");
-            multipleFormEnable();
-          }
-        }
-    });
-  });
+//           } else {
+//             // FAILURE
+//             console.error("Error adding or removing multiple works from the user's cart. Details:\r\n" + error + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+//             // Revert the checkbox change
+//             multipleCheckbox.prop("checked", !multipleCheckbox.prop("checked"));
+//             alert("Unable to add or remove multiple works from your cart.");
+//             multipleFormEnable();
+//           }
+//         }
+//     });
+//   });
 
 
-  // Prevent user from clicking the checkboxes while we wait for the server:
-  function formDisable(form, multiple=false) {
-    form.find(".cart-checkbox, label").attr("disabled", "disabled");
-  }
+//   // Prevent user from clicking the checkboxes while we wait for the server:
+//   function formDisable(form, multiple=false) {
+//     form.find(".cart-checkbox, label").attr("disabled", "disabled");
+//   }
 
-  function formEnable(form, multiple=false) {
-    form.find(".cart-checkbox, label").removeAttr("disabled");
-  }
+//   function formEnable(form, multiple=false) {
+//     form.find(".cart-checkbox, label").removeAttr("disabled");
+//   }
 
-  function multipleFormDisable() {
-    document.querySelector('.cart-multiple-checkbox').setAttribute("disabled", "disabled");
-    var other_checkboxes = document.querySelectorAll('.cart-checkbox');
-    for (var i=0; i < other_checkboxes.length; i++) {
-        other_checkboxes[i].setAttribute("disabled", "disabled");
-    }
-  }
+//   function multipleFormDisable() {
+//     document.querySelector('.cart-multiple-checkbox').setAttribute("disabled", "disabled");
+//     var other_checkboxes = document.querySelectorAll('.cart-checkbox');
+//     for (var i=0; i < other_checkboxes.length; i++) {
+//         other_checkboxes[i].setAttribute("disabled", "disabled");
+//     }
+//   }
 
-  function multipleFormEnable() {
-    document.querySelector('.cart-multiple-checkbox').removeAttribute("disabled");
-    var other_checkboxes = document.querySelectorAll('.cart-checkbox');
-    for (var i=0; i < other_checkboxes.length; i++) {
-        other_checkboxes[i].removeAttribute("disabled");
-    }
-  }
+//   function multipleFormEnable() {
+//     document.querySelector('.cart-multiple-checkbox').removeAttribute("disabled");
+//     var other_checkboxes = document.querySelectorAll('.cart-checkbox');
+//     for (var i=0; i < other_checkboxes.length; i++) {
+//         other_checkboxes[i].removeAttribute("disabled");
+//     }
+//   }
 
-  function updateCount(number) {
-    $("span[data-role=cart-counter]").text(number);
-  }
+//   function updateCount(number) {
+//     $("span[data-role=cart-counter]").text(number);
+//   }
 
-});
+// });

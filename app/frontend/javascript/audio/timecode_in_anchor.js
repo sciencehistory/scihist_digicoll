@@ -11,31 +11,46 @@
 // Note this is similar to but different from the play_at_timecode JS that has an on-screen element that
 // can be clicked to advance to timecode, without changing the #fragmentIdentifier.
 
+
 import domready from 'domready';
 import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode, scrollToElement} from './helpers/ohms_player_helpers.js';
 import * as bootstrap from 'bootstrap';
 
+
+
 domready(function() {
+
   var hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   var timeCodeSeconds = window.location.hash.includes("=") && hashParams.get("t");
   var paragraphNumber = window.location.hash.includes("=") && hashParams.get("p");
 
   if (timeCodeSeconds) {
+
     if (history.scrollRestoration) {
+
       history.scrollRestoration = 'manual';
     }
 
     var player = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
     if (player) {
 
+
       // player might not be in state where it can seek yet, if not then wait
       // and seek when we can.
       if (player.readyState >=  player.HAVE_METADATA) {
+
         setupTimeSeek(player, timeCodeSeconds);
       } else {
+        console.log ("No player yet...");
+        // setupTimeSeek(player, timeCodeSeconds);
+        
+
         player.addEventListener("loadedmetadata", function(event) {
+          console.log ("Metadata is loaded!");
+
           setupTimeSeek(player, timeCodeSeconds);
-        });
+        }
+        );
       }
 
       // For OH
@@ -46,11 +61,17 @@ domready(function() {
       //
       // Otherwise, we need to switch to transcript tab and jump to relevant timecode.
       if (hasOhTabs()) {
+        console.log ("hasOhTabs is true");
         if (hashParams.get("tab") == "ohToc") {
+          console.log ("Tab is ohTOC");
           execWhenOhTabActive("ohToc", function() {
+
             gotoTocSegmentAtTimecode(timeCodeSeconds);
           });
         } else if (hashParams.get("tab") != "ohTranscript") {
+
+          console.log ("Tab is ohTOC");
+
           bootstrap.Tab.getOrCreateInstance(
             document.querySelector('*[data-bs-toggle="tab"][href="#ohTranscript"]')
           ).show();
@@ -62,6 +83,8 @@ domready(function() {
       }
     }
   } else if (paragraphNumber && hasOhTabs()) {
+        console.log ("paragraphNumber && hasOhTabs");
+
       // OH transcript paragraph number, need to make sure we've switched to transcript tab,
       // then scroll to element leaving room for navbar
       if (hashParams.get("tab") != "ohTranscript") {
@@ -71,6 +94,7 @@ domready(function() {
       }
 
       execWhenOhTabActive("ohTranscript", function() {
+        console.log ("execWhenOhTabActive ohTranscript");
         const element = document.querySelector(`#oh-t-p${paragraphNumber}`);
         if (element) {
           scrollToElement(element);
@@ -83,14 +107,18 @@ domready(function() {
 // it's finished it's transition, maybe it hasn't. We want to execute procArg
 // only once/if transition to tab is complete.
 function execWhenOhTabActive(targetTabId, procArg) {
+
+  console.log ("Starting execWhenOhTabActive");
   var activeTabContentId = document.querySelector("#ohmsScrollable .tab-pane.active")?.id;
 
   if (activeTabContentId == targetTabId) {
+    console.log ("Goat 1");
     procArg();
   } else {
     // not shown yet, other code will async make it shown, we have
     // to say once it's shown, open and scroll  to toc segment.
     jQuery(`*[data-bs-toggle="tab"][href="#${targetTabId}"]`).one('shown.bs.tab', function(event) {
+      console.log ("Goat 2");
       procArg();
     });
   }
@@ -103,14 +131,31 @@ function hasOhTabs() {
 // Must be called when player is in a readyState where we can seek,
 // at least HAVE_METADATA. https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
 function setupTimeSeek(player, timeCodeSeconds) {
-  player.currentTime = timeCodeSeconds;
+  console.log( "Made it to setupTimeSeek");
 
-  var playPromise  = player.play();
+  var html5Media = $("*[data-role=now-playing-container] audio, .show-video video").get(0);
 
-  if (playPromise !== undefined) {
-    playPromise.catch(error => {
-      console.log(`could not autoplay: ${error}`);
-    });
-  }
+  console.log( "Player is:");
+  console.log( html5Media);
+
+
+  html5Media.currentTime = timeCodeSeconds;
+
+  console.log( "Time code seconds is:");
+  console.log( html5Media.currentTime);
+
+  console.log( "Ready state is:");
+  console.log(html5Media.readyState)
+
+  // html5Media.play();
+
+  //player.currentTime = timeCodeSeconds;
+  // var playPromise  = player.play();
+
+  // if (playPromise !== undefined) {
+  //   playPromise.catch(error => {
+  //     console.log(`could not autoplay: ${error}`);
+  //   });
+  // }
 }
 
