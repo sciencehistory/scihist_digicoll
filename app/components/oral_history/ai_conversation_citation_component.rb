@@ -20,8 +20,10 @@ module OralHistory
         #
         # If we have a page number, we can try linking to page, which some
         # browsers can handle. (mobile usually cannot)
-        anchor = "page=#{citation_item.page_number}" if citation_item.page_number
-        view_transcript_pdf_path(citation_item.work, anchor: anchor)
+        #  oops, this doens't work yet, we need to take account offset to do this, although
+        #  we do have offset now and could do that...
+        #anchor = "page=#{citation_item.page_number}" if citation_item.page_number
+        view_transcript_pdf_path(citation_item.work)
       end
     end
 
