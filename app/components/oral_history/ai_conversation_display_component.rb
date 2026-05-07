@@ -151,6 +151,14 @@ module OralHistory
         "ref-#{anchor}"
       end
 
+      def can_link_to_html_transcript?
+        # has OHMS, or has PDF Text AND is really free access.
+        oral_history_content.has_ohms_transcript? || (
+          oral_history_content.available_by_request_off? &&
+          oral_history_content.extracted_pdf_paragraphs.present?
+        )
+      end
+
       def nearest_timecode_formatted
         # we could have more complicated algorithm to find best timestamp, but good enough
         # for now.

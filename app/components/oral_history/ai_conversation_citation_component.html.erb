@@ -11,7 +11,7 @@
 
 
     <span data-shi-slot="footnote-badges">
-      <% unless citation_item.oral_history_content.has_ohms_transcript? %>
+      <% unless citation_item.can_link_to_html_transcript? %>
         <span class="badge text-body bg-warning border border-warning-subtle ms-2">PDF-only</span>
       <% end %>
 

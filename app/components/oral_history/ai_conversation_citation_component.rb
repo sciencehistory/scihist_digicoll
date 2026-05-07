@@ -9,7 +9,7 @@ module OralHistory
 
     def link_to_source
       # If OHMS, we link directly to work page with anchor to take to specific paragraph
-      if citation_item.work.oral_history_content.has_ohms_transcript?
+      if citation_item.can_link_to_html_transcript?
         work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}")
       elsif citation_item.work.oral_history_content.available_by_request_manual_review?
         # they will need to request, just go to Work page, and trigger open request form
