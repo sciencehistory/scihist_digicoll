@@ -246,6 +246,14 @@ describe OralHistory::TranscriptChunker do
           expect(chunks).to be_present
           expect(chunks.first.start_paragraph_number).to eq 1
           expect(chunks.last.end_paragraph_number).to eq oral_history_content.extracted_pdf_paragraphs.paragraphs.count
+
+          # and they should all have page numbers too, becuase for PDF ones we've got em!
+          expect(chunks).to all(satisfy { |c| c.other_metadata["page_numbers"].present? })
+          chunks.each do |chunk|
+            chunk.start_paragraph_number.upto(chunk.end_paragraph_number).each do |paragraph_number|
+              expect(chunk.other_metadata["page_numbers"][paragraph_number.to_s]).to be_present
+            end
+          end
         end
       end
     end
