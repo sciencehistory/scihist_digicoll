@@ -30,19 +30,13 @@ domready(function() {
 
       // player might not be in state where it can seek yet, if not then wait
       // and seek when we can.
-
-
-      // EDDIE DISABLING THIS:
-      // We're going to need to use the rails view for this.
-
-
-      // if (player.readyState >=  player.HAVE_METADATA) {
-      //   setupTimeSeek(player, timeCodeSeconds);
-      // } else {
-      //   player.addEventListener("loadedmetadata", function(event) {
-      //     setupTimeSeek(player, timeCodeSeconds);
-      //   });
-      // }
+      if (player.readyState >=  player.HAVE_METADATA) {
+        setupTimeSeek(player, timeCodeSeconds);
+      } else {
+        player.addEventListener("loadedmetadata", function(event) {
+          setupTimeSeek(player, timeCodeSeconds);
+        });
+      }
 
       // For OH
       //
