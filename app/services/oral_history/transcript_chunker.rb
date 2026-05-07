@@ -104,7 +104,9 @@ module OralHistory
 
         # little bit easier on the DB to save em in batches in a transaction
         OralHistoryChunk.transaction do
-          records.each { |r| r.save! }
+          records.each { |r|
+            r.save!
+          }
         end
       end
 

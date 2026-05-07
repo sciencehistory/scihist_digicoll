@@ -22,7 +22,7 @@ module OralHistory
     def compute_paragraphs_from_pdf(pdf_file_path:, file_start_times:)
       extracted_pdf_text = OralHistory::ExtractPdfText.new(pdf_file_path: pdf_file_path).extract_pdf_text
 
-      splitter = OralHistory::ExtractedPdfTextParagraphSplitter.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times)
+      splitter = OralHistory::PdfParagraphSplitter.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times)
 
       splitter.paragraphs
     end

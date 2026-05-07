@@ -57,12 +57,19 @@ class OralHistoryContent < ApplicationRecord
   include GenericActiveRecordUploader::Attachment.new(:input_docx_transcript)
   include GenericActiveRecordUploader::Attachment.new(:output_sequenced_docx_transcript)
 
+  # an array of OralHistoryCotent::Paragraphs extracted from PDF, with source.provenance
+  # metadata to tell freshness.
+  attr_json :extracted_pdf_paragraphs, OralHistoryContent::ParagraphContainer.to_type
+
   enum :combined_audio_derivatives_job_status,  {
     queued:    'queued',
     started:   'started',
     failed:    'failed',
     succeeded: 'succeeded'
   }
+
+  # omit really long ones from inspect
+  self.filter_attributes = [:json_attributes, :extracted_pdf_paragraphs]
 
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned

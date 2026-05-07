@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe OralHistory::ExtractedPdfTextParagraphSplitter do
+describe OralHistory::PdfParagraphSplitter do
   let(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
   let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text) }
@@ -180,7 +180,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       it "raises if it does not have file_start_times sequencing info" do
         expect {
           splitter.paragraphs
-        }.to raise_error( OralHistory::ExtractedPdfTextParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
+        }.to raise_error( OralHistory::PdfParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
       end
 
       describe "with file_start_times offsets" do
@@ -199,6 +199,19 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
           ).to all(satisfy { |a, b|  a.included_timestamps.first <= b.included_timestamps.first })
 
           expect(with_timestamps.collect(&:included_timestamps).collect(&:first)).to eq [150 * 60, 5*60 + 152*60, 10*60 +  152*60]
+        end
+      end
+
+      describe "with insufficient file_start_times and allow_failure_to_sync" do
+        let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text, allow_failure_to_sync: true) }
+
+        it "syncs what it can, with warning" do
+          paragraphs = splitter.paragraphs
+
+          marker_index = paragraphs.index { |p| p.text =~ described_class::END_OF_AUDIO_FILE_RE }
+          expect(paragraphs.slice(marker_index..-1)).to all(satisfy { |p| p.included_timestamps.blank? })
+
+          expect(splitter.warnings).to include "Failed to sync some timestamps, with 2 audio segments, but file_start_times nil"
         end
       end
     end
@@ -261,7 +274,7 @@ describe OralHistory::ExtractedPdfTextParagraphSplitter do
       it "raises if it does not have file_start_times sequencing info" do
         expect {
           splitter.paragraphs
-        }.to raise_error( OralHistory::ExtractedPdfTextParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
+        }.to raise_error( OralHistory::PdfParagraphSplitter::Error, "Could not find file start time offset for index 1 in offsets nil")
       end
 
       describe "with file_start_times offsets" do

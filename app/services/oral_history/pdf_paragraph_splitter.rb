@@ -18,7 +18,7 @@ module OralHistory
   # * handles timestamps taht reset after `[END OF AUDIO` markers, re-seqencing
   #  full-transcript timestamps.
   #
-  class ExtractedPdfTextParagraphSplitter
+  class PdfParagraphSplitter
     class Error < StandardError; end
 
     # any page beginning with one of these is deemed post-transcript material. Normalized
@@ -47,13 +47,18 @@ module OralHistory
     # we make it legal html5 custom tag cause seems better. With placeholder for % interpolation.
     PAGE_BREAK_MARKER = "<PAGE-BREAK next='%s'></PAGE-BREAK>"
 
-    attr_reader :extracted_pdf_text, :file_start_times
+    attr_reader :extracted_pdf_text, :file_start_times, :allow_failure_to_sync
 
 
     # @param extracted_pdf_text [Hash] jsonable Hash of text and structural metadata from PDF
     #        as returned by OralHistory::ExtractPdftext
     #
     # @param validate [Boolean] default true, will validate extracted_pdf_text to a JSON schema.
+    #
+    # @param allow_failure_to_sync [Boolean] default falst. When default, if we have timestamps that
+    # need to be sync'd with audio segment start times, but we don't have file_start_times to
+    # support, we'll raise. If this is true, we'll just ignore timestamp info in this case,
+    # and include a message in #warnings.
     #
     # @param file_start_times [Hash] as if might come from metadata 'start_times' in an
     #   oral_history_content&.combined_audio_component_metadata. Eg
@@ -68,7 +73,7 @@ module OralHistory
     #    actual order of files. While optional, if it is needed for accurate timestamps,
     #    it's required and you'll get an error.
     #
-    def initialize(extracted_pdf_text:, validate: false, file_start_times: nil)
+    def initialize(extracted_pdf_text:, validate: false, file_start_times: nil, allow_failure_to_sync: false)
       unless extracted_pdf_text.kind_of?(Hash) && extracted_pdf_text["pages"].kind_of?(Array)
         raise ArgumentError.new("extracted_pdf_text: needs to be a hash matching ExtractPdfText::JSON_SCHEMER")
       end
@@ -80,14 +85,30 @@ module OralHistory
 
       @extracted_pdf_text = extracted_pdf_text
       @file_start_times = file_start_times
+      @allow_failure_to_sync = allow_failure_to_sync
+      @has_failure_to_sync = false
+      @max_timestamp_file_offset_index = nil # basically for warnings
     end
 
     def paragraphs
-      @paragraphs ||= create_paragraphs(extracted_pdf_text["pages"])
+      @paragraphs ||= create_paragraphs
+    end
+
+    # Anything that was odd or missed in paragraph construction
+    def warnings
+      warnings = []
+
+      if @has_failure_to_sync
+        warnings << "Failed to sync some timestamps, with #{@max_timestamp_file_offset_index + 1} audio segments, but file_start_times #{file_start_times.inspect}"
+      end
+
+      warnings
     end
 
     # @return [OralHistory::Paragraph]
-    def create_paragraphs(extracted_pdf_text_pages)
+    def create_paragraphs
+      extracted_pdf_text_pages = extracted_pdf_text["pages"]
+
       all_paragraphs = []
 
       first_index = find_first_transcript_page(extracted_pdf_text_pages)
@@ -166,6 +187,8 @@ module OralHistory
           p2.assumed_speaker_name = p1.speaker_name || p1.assumed_speaker_name
         end
       end
+
+      @max_timestamp_file_offset_index = timestamp_file_offset_index
 
       return all_paragraphs
     end
@@ -294,11 +317,17 @@ module OralHistory
         # we need to add on the start time of current non-0 segment
         offset = file_start_times&.values&.dig(current_index)
 
-        unless offset.present?
-          raise Error.new("Could not find file start time offset for index #{current_index.inspect} in offsets #{file_start_times.inspect}")
-        end
+        if offset.present?
+          timestamp += offset
+        else
+          unless allow_failure_to_sync
+            raise Error.new("Could not find file start time offset for index #{current_index.inspect} in offsets #{file_start_times.inspect}")
+          end
 
-        timestamp += offset
+          # can't do it without offset
+          timestamp = nil
+          @has_failure_to_sync = true
+        end
       end
 
       # Do we have a speaker name? Remove it from text but record it as speaker name.

@@ -135,7 +135,6 @@ describe OralHistoryContent do
     end
   end
 
-
   describe "scopes" do
     let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH")}
     let!(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH") }
