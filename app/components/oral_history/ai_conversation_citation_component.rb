@@ -17,7 +17,11 @@ module OralHistory
       else
         # otherwise, for now wit only staff viewers,  if it's not approval required, we
         # we let them see it, and go right , to PDF. May need to rethink if ever for other audience.
-        view_transcript_pdf_path(citation_item.work)
+        #
+        # If we have a page number, we can try linking to page, which some
+        # browsers can handle. (mobile usually cannot)
+        anchor = "page=#{citation_item.page_number}" if citation_item.page_number
+        view_transcript_pdf_path(citation_item.work, anchor: anchor)
       end
     end
 
