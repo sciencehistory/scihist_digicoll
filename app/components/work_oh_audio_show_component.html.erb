@@ -27,8 +27,12 @@
       <div class="now-playing-container" data-role="now-playing-container">
         <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
           <div class="audio-controls-line">
+            <%
+            # temporary, as I have some problem playing these in my dev instance.
+            combined_m4a_audio_url = 'https://d3gym4p7s8trm8.cloudfront.net/combined_audio_derivatives/a9c632c2-07e5-46d4-b6d1-ecfd5bda092a/combined_1cd8154b6742d1de95be68d230f41a2d.m4a'
+            %>
             <%= render AudioPlayerComponent.new do %>
-                <source src="https://d3gym4p7s8trm8.cloudfront.net/combined_audio_derivatives/6f8e3f37-04c4-4737-92bf-4d1fbcb38b79/combined_221dd2f10ee335d3791d16035a0ab2d4.m4a#t=500" type="audio/mp4">
+              <source src="<%= combined_m4a_audio_url %><%= "#t=#{start_time}" unless start_time.nil? %>" type="audio/mp4">
             <% end %>
 
             <% if has_ohms_index? || has_ohms_transcript? %>
