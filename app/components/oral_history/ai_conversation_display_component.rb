@@ -139,6 +139,10 @@ module OralHistory
         response_hash["paragraph_end"]
       end
 
+      def page_number
+        response_hash["page_number"]
+      end
+
       def anchor
         "footnote-#{number}"
       end

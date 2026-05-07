@@ -2,6 +2,7 @@ module OralHistory
   class AiConversationCitationComponent < ApplicationComponent
     attr_reader :citation_item
 
+    # @param citation_item [OralHistory::AiConversation::CitationItem]
     def initialize(citation_item)
       @citation_item = citation_item
     end
