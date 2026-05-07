@@ -3,7 +3,7 @@ require 'rails_helper'
 describe "access policies:" do
   let!(:published_asset) { create(:asset_with_faked_file) }
   let!(:unpublished_asset) { create(:asset_with_faked_file, published: false) }
-  
+
   let!(:collection) { create(:collection) }
 
   let(:comment_you_can_delete) { Admin::QueueItemComment.new(user: user)}
@@ -103,7 +103,7 @@ describe "access policies:" do
   end
 
   describe 'staff_viewer' do
-    let(:user) { FactoryBot.create(:staff_viewer_user, email: "staff_viewer@b.c") }
+    let(:user) { FactoryBot.create(:staff_viewer_user) }
     let(:policy) { AccessPolicy.new(user) }
 
     it "is a staff_viewer user" do
@@ -144,6 +144,37 @@ describe "access policies:" do
     end
     it "can't delete a QueueItemComment by someone else" do
       expect(policy.can?(:destroy, coment_you_can_t_delete)).to be false
+    end
+  end
+
+  describe "basic_internal user" do
+    let(:user) { FactoryBot.create(:basic_internal_user) }
+    let(:policy) { AccessPolicy.new(user) }
+
+    describe "oral histories" do
+      describe "automatically requestable" do
+        let(:asset) {
+          build(:asset, published: false, oh_available_by_request: true,
+            parent: build(:oral_history_work,  :available_by_request, available_by_request_mode: :automatic)
+          )
+        }
+
+        it "can be read" do
+          expect(policy.can?(:read, asset)).to be true
+        end
+      end
+
+      describe "manually requestable" do
+        let(:asset) {
+          build(:asset, published: false, oh_available_by_request: true,
+            parent: build(:oral_history_work,  :available_by_request, available_by_request_mode: :manual_review)
+          )
+        }
+
+        it "cannot be read" do
+          expect(policy.can?(:read, asset)).to be false
+        end
+      end
     end
   end
 
