@@ -1,5 +1,6 @@
 # Note the active_encode_id is also exactly the MediaConvert job ID in AWS,
 # if we're using MediaConvert, as we are.
+
 class ActiveEncodeStatus < ApplicationRecord
   belongs_to :asset, optional: true
 
@@ -16,9 +17,12 @@ class ActiveEncodeStatus < ApplicationRecord
   end
 
   # Refreshes status from AWS MediaConvert. Will raise Aws::MediaConvert::Errors::NotFoundException
-  # if it's more than 90 days past job creation! AWS holds em for 90 days.
+  # if it's more than 90 days past job creation! AWS holds on to HLS creation data for 90 days.
   #
   # Will raise ActiveEncodeStatus::EncodeFailedError on failed status
+  #
+  # Also note that ActiveEncodeStatus objects are cleared from the database after 7 days
+  # by a scheduled rake task called from Heroku ( lib/tasks/active_encode_status.rake )
   def refresh_from_aws
     active_encode_result = ActiveEncode::Base.find(self.active_encode_id)
 
