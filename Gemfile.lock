@@ -220,7 +220,7 @@ GEM
       set (~> 1.1)
       singleton (< 1.0)
       time (< 1.0)
-    css_parser (1.21.1)
+    css_parser (1.22.0)
       addressable
     csv (3.3.5)
     database_cleaner (2.1.0)
