@@ -808,7 +808,7 @@ GEM
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
-    view_component (4.5.0)
+    view_component (4.9.0)
       actionview (>= 7.1.0)
       activesupport (>= 7.1.0)
       concurrent-ruby (~> 1)
@@ -942,7 +942,7 @@ DEPENDENCIES
   solr_wrapper (~> 4.0)
   traject (>= 3.5)
   uppy-s3_multipart
-  view_component (~> 4.0)
+  view_component (~> 4.9)
   vite_rails (~> 3.0)
   warning (~> 1.2)
   web-console (>= 4.1.0)
