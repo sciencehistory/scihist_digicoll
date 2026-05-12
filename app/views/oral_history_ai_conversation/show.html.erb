@@ -34,14 +34,7 @@
     </span>
   </div>
 
-  <%# legacy display for old formats, only on complete, can't be JS updated %>
-  <% if @conversation.complete? &&
-        @conversation.answer_json&.has_key?("narrative") &&
-        @conversation.answer_json&.has_key?("footnotes") %>
-      <%= render OralHistory::AiConversationDisplayJan2026.new(@conversation)%>
-  <% else %>
-    <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
-  <% end %>
+  <%= render OralHistory::AiConversationDisplayComponent.new(@conversation)%>
 
   <details class="ai-conversation-help mt-5">
     <summary class="text-link">Some technical details about how this tool works</summary>
