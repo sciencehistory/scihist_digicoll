@@ -51,7 +51,9 @@ module OralHistory
       # we can't do it for now.
       return nil unless words.count > 4
 
-      # now get first six words
+      # now get first six words -- because highlighting more than that can be
+      # distracting AND cause more words, more chance we'll run into something
+      # that is un-highlightable such as split between legacy OHMS lines.
       words.first(6).join(" ")
     end
   end
