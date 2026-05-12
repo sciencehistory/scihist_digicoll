@@ -8,9 +8,9 @@ class WorkOhAudioShowComponent < ApplicationComponent
 
   attr_reader :work, :combined_audio_derivatives
 
-  def initialize(work, params: nil)
+  def initialize(work, start_time: nil)
     @work = work
-    @params = params
+    @start_time = start_time
     # some helper methods for working with our derived combined audio file(s)
     @combined_audio_derivatives = CombinedAudioDerivatives.new(work)
   end
@@ -64,7 +64,7 @@ class WorkOhAudioShowComponent < ApplicationComponent
   end
 
   def start_time
-    @params&.dig(:t)
+    @start_time
   end
 
   def interviewee_biographies

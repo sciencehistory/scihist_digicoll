@@ -11,8 +11,17 @@ class CombinedAudioDerivatives
     @work = work
   end
 
-  def m4a_audio_url
-    work&.oral_history_content&.combined_audio_m4a&.url(public:true)
+  def m4a_audio_url(start_time: nil)
+    if start_time.nil?
+      m4a_audio_url_without_start_time
+    else
+      "#{m4a_audio_url_without_start_time}#t=#{start_time}"
+    end
+  end
+
+  def m4a_audio_url_without_start_time
+    "https://d3gym4p7s8trm8.cloudfront.net/combined_audio_derivatives/a9c632c2-07e5-46d4-b6d1-ecfd5bda092a/combined_1cd8154b6742d1de95be68d230f41a2d.m4a"
+    #@m4a_audio_url_without_start_time ||= work&.oral_history_content&.combined_audio_m4a&.url(public:true)
   end
 
   def audio_fingerprint

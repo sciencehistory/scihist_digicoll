@@ -103,7 +103,7 @@ class WorksController < ApplicationController
     @view_component ||= if @work.is_oral_history? && @work.oral_history_content&.available_by_request_off? && has_oh_audio_member?
 
       # special OH audio player template
-      WorkOhAudioShowComponent.new(@work, params: params)
+      WorkOhAudioShowComponent.new(@work, start_time: params&.dig(:t))
     elsif @work.is_oral_history?
       # OH with no playable audio, either becuae it's by-request or it's not there at all.
       WorkFileListShowComponent.new(@work)
