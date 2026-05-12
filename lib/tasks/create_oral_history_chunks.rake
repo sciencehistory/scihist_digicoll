@@ -36,7 +36,7 @@ namespace :scihist do
     enqueued_count = 0
 
 
-    scope.find_each(batch_size: 200) do |oh_content|
+    scope.find_each(batch_size: 50) do |oh_content|
       progress_bar.increment
 
       overwrite_chunks = ENV['OVERWRITE_CHUNKS'] == "true"

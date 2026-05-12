@@ -32,7 +32,7 @@ describe OralHistory::ClaudeInteractor do
        SPEAKERS: SMITH
        PARAGRAPH NUMBERS: 12
        TEXT:
-       [OH0012|P12] SMITH: If you think back to your time together at school, what kind of a student was Gordon?
+       [OH0012|¶12] SMITH: If you think back to your time together at school, what kind of a student was Gordon?
 
        ------------------------------
        ORAL HISTORY TITLE: Oral history interview with William John Bailey
@@ -41,12 +41,45 @@ describe OralHistory::ClaudeInteractor do
        SPEAKERS: SMITH, JONES
        PARAGRAPH NUMBERS: 12, 13
        TEXT:
-       [OH0012|P12] SMITH: If you think back to your time together at school, what kind of a student was Gordon?
+       [OH0012|¶12] SMITH: If you think back to your time together at school, what kind of a student was Gordon?
 
-       [OH0012|P13] JONES: He was a good student. He has always been a tremendous student. Even in grammar school. But, he was a year ahead of me. I wasn't in his class.
+       [OH0012|¶13] JONES: He was a good student. He has always been a tremendous student. Even in grammar school. But, he was a year ahead of me. I wasn't in his class.
 
        ------------------------------
       EOS
+    end
+
+    describe "with page numbers" do
+      let(:chunk1) {
+        create(:oral_history_chunk,
+          oral_history_content: work.oral_history_content,
+          speakers: ["SMITH"],
+          start_paragraph_number: 12,
+          end_paragraph_number: 12,
+          text: "SMITH: If you think back to your time together at school, what kind of a student was Gordon?",
+          other_metadata: {
+            "page_numbers" => {
+              "12" => 9
+            }
+          }
+        )
+      }
+
+      it "includes page numbers in output" do
+        expect(interaction.render_user_prompt([chunk1])).to include <<~EOS.strip
+         ## RETRIEVED CONTEXT CHUNKS
+         ------------------------------
+         ORAL HISTORY TITLE: Oral history interview with William John Bailey
+         ORAL HISTORY ID: OH#{chunk1.oral_history_content.work.oral_history_number}
+         CHUNK ID: #{chunk1.id}
+         SPEAKERS: SMITH
+         PARAGRAPH NUMBERS: 12
+         TEXT:
+         [OH0012|pg9|¶12] SMITH: If you think back to your time together at school, what kind of a student was Gordon?
+
+         ------------------------------
+        EOS
+      end
     end
   end
 
