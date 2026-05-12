@@ -460,7 +460,7 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
   }
 });
 
-// Anchor in query #tqh=escaped&2Fsearch => results in highlighting that in transcript tab,
+// Anchor in query #th=escaped&2Fsearch => results in highlighting that in transcript tab,
 // does not scroll to query at present, but we could add another param to control that?
 // At present used for links from AI that already scroll to paragraph.
 $(document).ready(function() {
@@ -468,9 +468,9 @@ $(document).ready(function() {
   if ($("#ohTranscript").length) {
     const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
 
-    const transcriptSearchQ = hashParams.get("tqh"); // transcript query for highlight
-    if (transcriptSearchQ) {
-      Search.searchTranscript(transcriptSearchQ);
+    const transcriptHighlightQ = hashParams.get("th"); // (t)ranscript (h)ighlighting
+    if (transcriptHighlightQ) {
+      Search.searchTranscript(transcriptHighlightQ);
     }
   }
 });
