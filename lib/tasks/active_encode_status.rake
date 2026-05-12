@@ -1,4 +1,4 @@
-/namespace :scihist do
+namespace :scihist do
   namespace :active_encode_status do
 
 
