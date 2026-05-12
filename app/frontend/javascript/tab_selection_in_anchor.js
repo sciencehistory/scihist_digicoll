@@ -14,6 +14,11 @@ domready(function() {
   // if there's an #anchor in the URL referencing a bootstrap tab, make that tab selected.
   // should we limit to only certain data tags instead of all bootstrap tab links?
   var anchor = new URLSearchParams(window.location.hash.replace(/^#/, '')).get("tab");
+  if (anchor) {
+    bootstrap.Tab.getOrCreateInstance(
+      document.querySelector(`*[data-bs-toggle="tab"][href="#${anchor}"]`)
+    ).show();
+  }
 
   // when showing on a bootstrap tab, put the relevant ID in anchor,
   // without adding to browser history

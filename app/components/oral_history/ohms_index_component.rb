@@ -45,7 +45,7 @@ module OralHistory
     end
 
     def direct_to_segment_link(index_point)
-      work && work_url(work, anchor: "t=#{index_point.timestamp}&tab=ohToc".html_safe)
+      work && work_url(work, t: index_point.timestamp, anchor: "tab=ohToc".html_safe)
     end
 
 
