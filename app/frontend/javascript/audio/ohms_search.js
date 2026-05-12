@@ -139,7 +139,7 @@ Search.searchTranscript = function(query) {
   // 1: before match
   // 2: match
   // 3: after match
-  var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + query + ")((?:\\s*\\S+\\s*){0,4})", "gi")
+  var find_re = new RegExp("((?:\\S*\\s+\\S*){0,1})(" + Search.escapeRegExp(query) + ")((?:\\s*\\S+\\s*){0,4})", "gi")
 
   return $("*[data-searchable-transcript-line]").map(function() {
     var line = $(this);
@@ -148,6 +148,7 @@ Search.searchTranscript = function(query) {
     var match = line.text().match(find_re);
 
     if (match) {
+
       var highlightedMatch = match[1] + _self.wrapInHighlight(match[2]) + match[3];
 
       // Actually highlight in source HTML, using HTML-safe regexp.
