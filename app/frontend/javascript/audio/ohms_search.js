@@ -124,6 +124,8 @@ Search.regexpStrForSearch = function(query) {
 // that works for our DOM. Should we add a data- hook?
 //
 // Highlights every hit, results a list of result objects.
+//
+// WARNING: Can not search phrases that go across 'line' markup, will miss them!
 Search.searchTranscript = function(query) {
   var _self = this;
 
@@ -454,6 +456,21 @@ $(document).on("shown.bs.tab", ".work-show-audio", function(event) {
     Search.resultsModeVal = "transcript";
     if (Search.currentResults()) {
       Search.currentResults().draw();
+    }
+  }
+});
+
+// Anchor in query #tqh=escaped&2Fsearch => results in highlighting that in transcript tab,
+// does not scroll to query at present, but we could add another param to control that?
+// At present used for links from AI that already scroll to paragraph.
+$(document).ready(function() {
+  // Only if we have a #ohTranscript, otherwise we can't highlight in it!
+  if ($("#ohTranscript").length) {
+    const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+
+    const transcriptSearchQ = hashParams.get("tqh"); // transcript query for highlight
+    if (transcriptSearchQ) {
+      Search.searchTranscript(transcriptSearchQ);
     }
   }
 });
