@@ -69,6 +69,8 @@ describe OralHistoryContent::ParagraphContainer do
       expect(oral_history_content.extracted_pdf_paragraphs.paragraphs).to all(be_kind_of(OralHistoryContent::Paragraph))
       expect(oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)).to be true
 
+      expect(oral_history_content.extracted_pdf_paragraphs.logical_page_number_offset).to eq 0
+
       # changing pdf md5 makes not fresh anymore. LOTS of saves to DB and reloads here, very
       # bad performance, but good semantics for now.
       old_pdf_md5 = pdf_asset.file_metadata["md5"]
