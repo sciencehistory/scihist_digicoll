@@ -11,7 +11,10 @@ module OralHistory
       @link_to_source ||= begin
         # If OHMS, we link directly to work page with anchor to take to specific paragraph
         if citation_item.can_link_to_html_transcript?
-          work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}")
+          # and also try to trigger some search term highlighting on the page.
+          # Get first six words. Warning, highlighting is imperfect it might miss it.
+          highlight_query = citation_item.quote.split.first(6).join(" ")
+          work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}&tqh=#{highlight_query}")
         elsif citation_item.work.oral_history_content.available_by_request_manual_review?
           # they will need to request, just go to Work page, and trigger open request form
           work_path(citation_item.work.friendlier_id, anchor: "modal-auto-open=oh-request-trigger")
