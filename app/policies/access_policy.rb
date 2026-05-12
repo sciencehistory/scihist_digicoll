@@ -28,8 +28,31 @@ class AccessPolicy
       end
       can :access_staff_functions
 
-      # Can be removed once #3326 is merged, covering it.
+      # Better than basic_internal, these guys can read all assets unpublished too.
+      can :read, Asset
+
+      # redundant once feature-flag is removed in basic_internal
+      can :read, OralHistory::AiConversation
       can :create, OralHistory::AiConversation
+    end
+
+    role :basic_internal, proc { |user| has_basic_internal_permissions?(user) } do
+      # right now we let them read all conversations, we aren't yet restricting to only see own
+      if ScihistDigicoll::Env.lookup("feature_ai_for_basic_internal")
+        can :read, OralHistory::AiConversation
+        can :create, OralHistory::AiConversation
+      end
+
+      # We have to look at associated work/oh, can bebit expensive in bulk, beware
+      # basic_internal read published AND automatic-approval requestable.
+      can :read, Asset do |asset, user|
+        # basic_internal can read "automatic request" oral history PDFs too even if unpublished.
+        asset.published? ||
+          (
+            asset.oh_available_by_request? &&
+            asset.parent.oral_history_content.available_by_request_automatic?
+          )
+      end
     end
 
     role :public do
@@ -55,16 +78,22 @@ class AccessPolicy
 
   private
 
+  # They are all hieararchical, admin has ALL permissions, editor has all but admin, etc.
+
   def has_admin_permissions?(user)
     user&.admin_user?
   end
 
   def has_editor_permissions?(user)
-    user&.admin_user? || user&.editor_user?
+    user&.editor_user? || has_admin_permissions?(user)
   end
 
   def has_staff_viewer_permissions?(user)
-    user&.admin_user? || user&.editor_user? || user&.staff_viewer_user?
+    user&.staff_viewer_user? || has_editor_permissions?(user)
   end
 
+  # Anyone with a @sciencehistory.org login!
+  def has_basic_internal_permissions?(user)
+    user&.basic_internal_user? || has_staff_viewer_permissions?(user)
+  end
 end

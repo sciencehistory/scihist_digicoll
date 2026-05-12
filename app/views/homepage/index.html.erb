@@ -9,6 +9,15 @@ we want the full width of the screen, no margins or padding. %>
 
 
 <%= render 'homepage/hero_image_and_search_form' %>
+
+<% if can? :create, OralHistory::AiConversation %>
+  <div class="homepage-ai-link">
+    <i class="fa fa-flask" aria-hidden="true"></i>
+    BETA:
+    <%= link_to "Oral History AI-assisted search", new_oral_history_ai_conversation_path %>
+  </div>
+<% end %>
+
 <%= render 'homepage/recent_items' %>
 <%= render 'homepage/featured_topics' %>
 <%= render 'homepage/collections' %>

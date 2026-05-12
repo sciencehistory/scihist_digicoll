@@ -11,5 +11,8 @@ FactoryBot.define do
     factory :staff_viewer_user do
       user_type { "staff_viewer" }
     end
+    factory :basic_internal_user do
+      user_type { "basic_internal" }
+    end
   end
 end

@@ -11,9 +11,23 @@ namespace :scihist do
 
     `USE_DUMMY_EMBEDDING=true` for a test run where you want to create chunk records
     (usually in staging) without actually getting an embedding vector from remote API.
+
+    `ONLY_EXTRACTED_PDF_PARAGRAPHS=true` limit to only those with extracted_pdf_paragraphs present
+
+    `ONLY_AVAILABLE_IMMEDATE=true` limit to only those available immediate ('really free access')
+
   """
   task :create_oral_history_chunks => [:environment] do
     scope = OralHistoryContent.includes(:work => :members).joins(:work).where(work: { published: true})
+
+    if ENV['ONLY_EXTRACTED_PDF_PARAGRAPHS'] == "true"
+      scope = scope.where("oral_history_content.json_attributes -> 'extracted_pdf_paragraphs' is not NULL")
+    end
+
+    if ENV['ONLY_AVAILABLE_IMMEDATE'] == "true"
+      scope = scope.available_immediate
+    end
+
     total_count = scope.count
 
     progress_bar = ProgressBar.create(total: total_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
@@ -22,7 +36,7 @@ namespace :scihist do
     enqueued_count = 0
 
 
-    scope.find_each(batch_size: 200) do |oh_content|
+    scope.find_each(batch_size: 50) do |oh_content|
       progress_bar.increment
 
       overwrite_chunks = ENV['OVERWRITE_CHUNKS'] == "true"

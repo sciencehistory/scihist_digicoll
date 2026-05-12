@@ -46,6 +46,9 @@ module OralHistory
       elsif oral_history_content.ohms_xml&.vtt_transcript.present?
         oral_history_content.ohms_xml.vtt_transcript.paragraphs
 
+      elsif oral_history_content.extracted_pdf_paragraphs.present?
+        oral_history_content.extracted_pdf_paragraphs.paragraphs
+
       elsif oral_history_content.searchable_transcript_source.present?
         OralHistory::PlainTextParagraphSplitter.new(
           plain_text: oral_history_content.searchable_transcript_source
@@ -231,6 +234,12 @@ module OralHistory
         ]
       end.to_h
 
+      # Record starting page number for each paragraph, if we have them (for PDF extracted),
+      # so we can cite it! Page may change in mid-paragraph, but we don't handle that for now.
+      paragraph_page_numbers = list_of_paragraphs.collect do |paragraph|
+        [paragraph.paragraph_index.to_s, paragraph.pdf_logical_page_number ]
+      end.to_h.compact
+
       # All speakers -- if the first paragraph isn't labelled, use assumed_speaker_name
       # recorded from previous paragraphs.
       speakers = [list_of_paragraphs.first.speaker_name || list_of_paragraphs.first.assumed_speaker_name] +
@@ -245,8 +254,9 @@ module OralHistory
         end_paragraph_number: list_of_paragraphs.last.paragraph_index,
         speakers: speakers,
         other_metadata: {
-          "timestamps" => paragraph_timestamps
-        }
+          "timestamps" => paragraph_timestamps,
+          "page_numbers" => paragraph_page_numbers
+        }.compact
       )
     end
 

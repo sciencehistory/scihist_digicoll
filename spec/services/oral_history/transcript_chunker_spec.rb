@@ -188,6 +188,77 @@ describe OralHistory::TranscriptChunker do
     end
   end
 
+  describe "extracted_pdf_paragraphs" do
+    let(:paragraphs_json_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_extracted_paragraphs.json"}
+
+    let(:work) {
+      build(:oral_history_work,
+        creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
+                  { category: "interviewer", value: "Bohning, James J."}]
+      ).tap do |work|
+        work.oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
+          paragraphs: JSON.parse(File.read(paragraphs_json_path))
+        )
+      end
+    }
+
+    describe "#split_chunks" do
+      let(:chunks) { chunker.split_chunks }
+
+      it "creates chunks as arrays of Paragraphs" do
+        expect(chunks).to be_kind_of(Array)
+        expect(chunks).to be_present
+
+        expect(chunks).to all satisfy { |chunk| chunk.kind_of?(Array) }
+        expect(chunks).to all satisfy { |chunk| chunk.present? }
+        expect(chunks).to all satisfy { |chunk| chunk.all? {|item| item.kind_of?(OralHistoryContent::Paragraph) } }
+      end
+
+      it "begins with first paragraph" do
+        expect(chunks.first.first.text).to eq oral_history_content.extracted_pdf_paragraphs.paragraphs.first.text
+      end
+
+      it "ends with last paragraph" do
+        expect(chunks.last.last.text).to eq oral_history_content.extracted_pdf_paragraphs.paragraphs.last.text
+      end
+
+      it "has two paragraphs of overlap in each chunk" do
+        0.upto(chunks.length - 2).each do |index|
+          first_chunk = chunks[index]
+          second_chunk = chunks[index + 1]
+
+          expect(second_chunk.first(1)).to eq (first_chunk.last(1))
+        end
+      end
+    end
+
+    describe "#create_db_records" do
+      describe "with mocked OpenAI embeddings" do
+        before do
+          allow(OralHistoryChunk).to receive(:get_openai_embeddings) { |*args| [OralHistoryChunk::FAKE_EMBEDDING] * args.count }
+        end
+
+        it "saves multiple records" do
+          chunker.create_db_records
+
+          chunks =  oral_history_content.reload.oral_history_chunks
+
+          expect(chunks).to be_present
+          expect(chunks.first.start_paragraph_number).to eq 1
+          expect(chunks.last.end_paragraph_number).to eq oral_history_content.extracted_pdf_paragraphs.paragraphs.count
+
+          # and they should all have page numbers too, becuase for PDF ones we've got em!
+          expect(chunks).to all(satisfy { |c| c.other_metadata["page_numbers"].present? })
+          chunks.each do |chunk|
+            chunk.start_paragraph_number.upto(chunk.end_paragraph_number).each do |paragraph_number|
+              expect(chunk.other_metadata["page_numbers"][paragraph_number.to_s]).to be_present
+            end
+          end
+        end
+      end
+    end
+  end
+
   describe "searchable_transcript_source plain text" do
     let(:raw_transcript_text) { File.read( Rails.root + "spec/test_support/plain_text_transcript/baltimore_sample.txt")}
 
