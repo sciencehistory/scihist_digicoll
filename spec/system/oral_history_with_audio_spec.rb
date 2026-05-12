@@ -446,7 +446,7 @@ describe "Oral history with audio display", type: :system, js: true do
       let(:segment_direct_url) do
         # don't know why we need to specify capybara port to get the port that is actually
         # being used and succesfully displayed in app.
-        work_url(parent_work.friendlier_id, anchor: "t=#{segment.timestamp}&tab=ohToc",
+        work_url(parent_work.friendlier_id, t: segment.timestamp, anchor: "tab=ohToc",
           port: Capybara.current_session.server.port)
       end
 
