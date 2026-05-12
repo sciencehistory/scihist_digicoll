@@ -227,6 +227,13 @@ describe DownloadsController do
         }.to raise_error(ActionController::RoutingError)
       end
     end
+
+    describe "with anchor_page param" do
+      it "redirects to url with page anchor" do
+        get :transcript_pdf, params: { work_id: work.friendlier_id, anchor_page: "9" }
+        expect(response).to redirect_to %r{#page=9\Z}
+      end
+    end
   end
 
   describe "#transcript_html" do
