@@ -139,12 +139,24 @@ module OralHistory
         response_hash["paragraph_end"]
       end
 
+      def page_number
+        response_hash["page_number"]
+      end
+
       def anchor
         "footnote-#{number}"
       end
 
       def ref_anchor
         "ref-#{anchor}"
+      end
+
+      def can_link_to_html_transcript?
+        # has OHMS, or has PDF Text AND is really free access.
+        oral_history_content.has_ohms_transcript? || (
+          oral_history_content.available_by_request_off? &&
+          oral_history_content.extracted_pdf_paragraphs.present?
+        )
       end
 
       def nearest_timecode_formatted

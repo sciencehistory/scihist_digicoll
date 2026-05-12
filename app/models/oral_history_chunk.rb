@@ -44,6 +44,24 @@ class OralHistoryChunk < ApplicationRecord
   )
 
 
+  def paragraphs_formatted_for_provision
+    self.text.split("\n\n").collect.with_index do |paragraph_text, index|
+      str = "[OH#{ self.oral_history_content.work.oral_history_number }"
+
+      # do we have a page number?
+      paragraph_index = self.start_paragraph_number + index
+      page_number = self.other_metadata&.dig("page_numbers", paragraph_index.to_s)
+
+      if page_number.present?
+        str += "|pg#{page_number}"
+      end
+
+      str += "|¶#{ self.start_paragraph_number + index }]"
+
+      str += " #{paragraph_text}"
+    end
+  end
+
   # One or more texts, do one request to OpenAI to get one or more embedding
   # vectors back. Can include multiple texts to do a bulk request for all of them.
   def self.get_openai_embeddings(*texts)
