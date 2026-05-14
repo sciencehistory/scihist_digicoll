@@ -14,7 +14,6 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
   let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
   let(:ohms_transcript_display_with_footnotes) { OralHistory::LegacyTranscriptComponent.new(work: work_woth_footnotes) }
 
-
   let(:transcript_text) { ohms_xml.parsed.at_xpath("//ohms:transcript", ohms: OralHistoryContent::OhmsXml::OHMS_NS).text }
 
   it "produces good html" do
@@ -38,7 +37,6 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
   end
 
   it "properly renders footnotes and references to them" do
-
     parsed = render_inline(ohms_transcript_display_with_footnotes)
     line_with_first_footnote = parsed.css("#ohms_line_503").to_s
 

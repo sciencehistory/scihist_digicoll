@@ -6,7 +6,7 @@ class WorkOhAudioShowComponent < ApplicationComponent
 
   delegate  :m4a_audio_url, :derivatives_up_to_date?, to: :combined_audio_derivatives, prefix: "combined"
 
-  attr_reader :work, :combined_audio_derivatives
+  attr_reader :work, :combined_audio_derivatives, :start_time
 
   def initialize(work, start_time: nil)
     @work = work
@@ -61,10 +61,6 @@ class WorkOhAudioShowComponent < ApplicationComponent
     end
 
     @portrait_asset
-  end
-
-  def start_time
-    @start_time
   end
 
   def interviewee_biographies
