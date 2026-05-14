@@ -48,7 +48,7 @@ describe OralHistory::AiConversationCitationComponent, type: :component do
   end
 
   it "renders link to paragraph" do
-    expect(component.link_to_source).to eq work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}")
+    expect(component.link_to_source).to eq work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}&th=This is a long enough quote")
   end
 
   describe "automatic requestable" do
