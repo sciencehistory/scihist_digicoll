@@ -5,9 +5,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
 
   let(:work) { create(:oral_history_work).tap { |w| w.oral_history_content.ohms_xml_text = File.read(ohms_xml_path) } }
-
   let(:ohms_transcript_display) { OralHistory::LegacyTranscriptComponent.new(work: work) }
-  
 
   let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
   let(:work_woth_footnotes) { create(:oral_history_work).tap { |w| w.oral_history_content.ohms_xml_text = File.read(ohms_xml_path_with_footnotes) } }
@@ -19,11 +17,15 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
   it "produces good html" do
     # we're just gonna spot check, while by the by ensuring that display does not raise.
     parsed = render_inline(ohms_transcript_display)
+
     expect(parsed.css("span.ohms-transcript-line").count).to eq(transcript_text.split("\n").count)
     expect(parsed.css("p.ohms-transcript-paragraph").count).to eq(transcript_text.split("\n\n").count)
+
     # plus one because we have added one for the 0 timestamp
     expect(parsed.css("a.ohms-transcript-timestamp").count).to eq(ohms_xml.legacy_transcript.sync_timecodes.count + 1)
+
     first_line = parsed.css("div.ohms-transcript-container p.ohms-transcript-paragraph > span.ohms-transcript-line").first
+
     expect(first_line.to_html).to match(
       %Q{<span class="ohms-transcript-line" id="ohms_line_1" data-searchable-transcript-line="true"><a href="http://.*/works/.*?t=0#tab=ohTranscript\" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="transcript-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}
     )
@@ -31,6 +33,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
   it "includes unique paragraph ids" do
     parsed = render_inline(ohms_transcript_display)
+
     ids = parsed.css("p.ohms-transcript-paragraph/@id").collect(&:text)
     expect(ids).to all(be_present)
     expect(ids.uniq).to eq ids # no duplicates
