@@ -35,6 +35,12 @@ describe OralHistory::PdfParagraphSplitter do
       expect(paragraphs.last.text).to eq "I think I'll close the taping for now. Thank you for the interview, Dr. Rice."
     end
 
+    it "calculates logical_page_number_offset" do
+      splitter.paragraphs
+
+      expect(splitter.logical_page_number_offset).to eq 6
+    end
+
     it "joins paragraphs split across pages, with marker" do
       paragraphs = splitter.paragraphs
 

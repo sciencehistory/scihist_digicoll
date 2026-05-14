@@ -16,6 +16,9 @@ class OralHistoryContent
 
     attr_json :created_at, :datetime, default: -> { Time.current.utc }
 
+    # Add this offset to logical page number to get physical page number
+    attr_json :logical_page_number_offset, :integer
+
     # start times that go with fingerprint to calculate offsets from transcript
     # Array of arrays.
     attr_json :file_start_times, ActiveModel::Type::Value.new
@@ -68,6 +71,7 @@ class OralHistoryContent
 
       container = OralHistoryContent::ParagraphContainer.new(
         paragraphs: paragraphs,
+        logical_page_number_offset: splitter.logical_page_number_offset,
         source_version: ENV['SOURCE_VERSION'],
         pdf_md5: pdf_md5,
         file_start_times: file_start_times,
