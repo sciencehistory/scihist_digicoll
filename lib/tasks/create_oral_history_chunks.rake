@@ -16,6 +16,9 @@ namespace :scihist do
 
     `ONLY_AVAILABLE_IMMEDATE=true` limit to only those available immediate ('really free access')
 
+    `ONLY_INVALID=true` validate including source_fingerprint and only create for ones that are
+        invalid/stale , implies OVERWRITE_CHUNKS.
+
   """
   task :create_oral_history_chunks => [:environment] do
     scope = OralHistoryContent.includes(:work => :members).joins(:work).where(work: { published: true})
@@ -30,6 +33,12 @@ namespace :scihist do
 
     total_count = scope.count
 
+    # have to do after we take 'count' cause it will mess up the count
+    only_invalid = (ENV['ONLY_INVALID'] == "true")
+    if only_invalid
+      scope = OralHistory::ChunkValidator.with_uniq_source_fingerprints(scope)
+    end
+
     progress_bar = ProgressBar.create(total: total_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
     skipped_count = 0
@@ -39,7 +48,7 @@ namespace :scihist do
     scope.find_each(batch_size: 50) do |oh_content|
       progress_bar.increment
 
-      overwrite_chunks = ENV['OVERWRITE_CHUNKS'] == "true"
+      overwrite_chunks = (ENV['OVERWRITE_CHUNKS'] == "true") || only_invalid
       use_dummy_embedding = ENV['USE_DUMMY_EMBEDDING'] == "true"
 
       # Make sure we skip truly embargoed/non-public stuff, which is
@@ -50,6 +59,17 @@ namespace :scihist do
         unless oh_content.work.members.to_a.find {|asset| asset.role == "transcript" && asset.published?}
           skipped_count += 1
           next
+        end
+      end
+
+      if only_invalid
+        begin
+          OralHistory::ChunkValidator.new(oh_content, check_source_fingerprints: true).validate!
+          # if we didn't raise, it's valid, so
+          skipped_count +=1
+          next
+        rescue OralHistory::ChunkValidator::Failure => e
+          # invalid, we're just proceeding!
         end
       end
 
