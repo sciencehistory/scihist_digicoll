@@ -271,9 +271,14 @@ module OralHistory
         other_metadata: {
           "timestamps" => paragraph_timestamps,
           "page_numbers" => paragraph_page_numbers,
-          "source_fingerprint" => paragraph_source.source_fingerprint.merge("paragraph_source_class" => paragraph_source.class.name)
+          "source_fingerprint" => computed_source_fingerprint
         }.compact
       )
+    end
+
+    # add a paragraph_source_class name to the paragraph source's own source_fingerprint please.
+    def computed_source_fingerprint
+      paragraph_source.source_fingerprint.merge("paragraph_source_class" => paragraph_source.class.name)
     end
 
     private
