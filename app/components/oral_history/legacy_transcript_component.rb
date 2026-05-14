@@ -15,13 +15,19 @@ module OralHistory
 
     attr_reader :legacy_transcript, :references_already_output, :transcript_log_id
 
-    # @param legacy_transcript [OralHistoryContent::OhmsXml::LegacyTranscript]
-    # @param ohms_transcript_id [String] just for identification in error messages
-    def initialize(legacy_transcript, transcript_log_id:, work:)
-      @legacy_transcript = legacy_transcript
-      @references_already_output = Set.new()
-      @transcript_log_id = transcript_log_id
+    # @param  
+    def initialize(work:)
       @work = work
+
+      ohms_xml = work.oral_history_content.ohms_xml
+
+      # OralHistoryContent::OhmsXml::LegacyTranscript
+      @legacy_transcript = ohms_xml.legacy_transcript
+
+      # just for identification in error messages
+      @transcript_log_id = ohms_xml.accession
+
+      @references_already_output = Set.new()
     end
 
     # Trying to display somewhat like OHMS does. We need to track lines separated by individual "\n", that

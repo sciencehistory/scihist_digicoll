@@ -3,8 +3,11 @@ require 'rails_helper'
 describe OralHistory::LegacyTranscriptComponent, type: :component do
   let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
-  let(:ohms_transcript_display) { OralHistory::LegacyTranscriptComponent.new(ohms_xml.legacy_transcript, transcript_log_id: ohms_xml.accession) }
 
+  let(:work) { build(:oral_history_work).tap { |w| w.oral_history_content.ohms_xml_text = ohms_xml } }
+
+  let(:ohms_transcript_display) { OralHistory::LegacyTranscriptComponent.new(work: work) }
+  
 
   let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
   let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
@@ -14,7 +17,10 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
 
   it "produces good html" do
     # we're just gonna spot check, while by the by ensuring that display does not raise.
+    puts "goat"
+
     parsed = render_inline(ohms_transcript_display)
+
 
     expect(parsed.css("span.ohms-transcript-line").count).to eq(transcript_text.split("\n").count)
     expect(parsed.css("p.ohms-transcript-paragraph").count).to eq(transcript_text.split("\n\n").count)
