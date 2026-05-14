@@ -141,8 +141,11 @@ module OralHistory
       content_tag(
         "a",
         format_ohms_timestamp(tc[:seconds]),
-        #href: "#t=#{tc[:seconds]}",
+
+        # link to this point in the transcript; works on mobile.
         href: work_url(@work, t: tc[:seconds], anchor: "tab=ohTranscript".html_safe),
+
+        # allows the javascript to cue the audio on click.
         class: "ohms-transcript-timestamp",
         data: { "ohms_timestamp_s" => tc[:seconds]}
       )
