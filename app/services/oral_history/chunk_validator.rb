@@ -74,15 +74,22 @@ module OralHistory
       end
 
       if check_source_fingerprints
-        unless oral_history_content.respond_to?(:uniq_source_fingerprints)
-          raise ArgumentError.new("Cannot check_source_fingerprints without `uniq_source_fingerprints` attribute, either set check_source_fingerprints: false or use .with_uniq_source_fingerprints to prepare scope for fetch")
+        uniq_source_fingerprints = if oral_history_content.oral_history_chunks.loaded?
+          oral_history_content.oral_history_chunks.collect { |c| c.other_metadata["source_fingerprint"] }.uniq
+        elsif oral_history_content.respond_to?(:uniq_source_fingerprints)
+          oral_history_content.uniq_source_fingerprints
+        else
+          raise ArgumentError.new(<<~EOS)
+            Cannot check_source_fingerprints. Need one of:
+            * `uniq_source_fingerprints` attribute, see .with_uniq_source_fingerprints to prepare scope for fetch
+            * pre-fetch/load oral_history_chunks
+            * set check_source_fingerprints: false to skip
+          EOS
         end
 
         fresh_fingerprint = OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content).computed_source_fingerprint
 
-        passed, failed = oral_history_content.uniq_source_fingerprints.partition do |source_fingerprint_json|
-          source_fingerprint = source_fingerprint_json && JSON.parse(source_fingerprint_json)
-
+        passed, failed = uniq_source_fingerprints.partition do |source_fingerprint|
           # is it fresh with one we compute now?
           fresh_fingerprint == source_fingerprint
         end
@@ -91,7 +98,7 @@ module OralHistory
           raise_error("Chunks do not have fresh source_fingerprint. Expected: #{fresh_fingerprint.inspect} ; Actual: #{failed.inspect}")
         end
         if failed.present?
-          raise_error("Some chunks do not have fresh source_fingerprint. Expected: #{fresh_fingerprint.inspect} ; Actual: #{source_fingerprint_json.inspect}")
+          raise_error("Some chunks do not have fresh source_fingerprint. Expected: #{fresh_fingerprint.inspect} ; Actual: #{failed.inspect}")
         end
       end
 
