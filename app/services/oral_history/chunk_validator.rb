@@ -71,34 +71,9 @@ module OralHistory
         end
 
         validate_chunk_sequence
-      end
 
-      if check_source_fingerprints
-        uniq_source_fingerprints = if oral_history_content.oral_history_chunks.loaded?
-          oral_history_content.oral_history_chunks.collect { |c| c.other_metadata["source_fingerprint"] }.uniq
-        elsif oral_history_content.respond_to?(:uniq_source_fingerprints)
-          oral_history_content.uniq_source_fingerprints
-        else
-          raise ArgumentError.new(<<~EOS)
-            Cannot check_source_fingerprints. Need one of:
-            * `uniq_source_fingerprints` attribute, see .with_uniq_source_fingerprints to prepare scope for fetch
-            * pre-fetch/load oral_history_chunks
-            * set check_source_fingerprints: false to skip
-          EOS
-        end
-
-        fresh_fingerprint = OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content).computed_source_fingerprint
-
-        passed, failed = uniq_source_fingerprints.partition do |source_fingerprint|
-          # is it fresh with one we compute now?
-          fresh_fingerprint == source_fingerprint
-        end
-
-        unless passed.present?
-          raise_error("Chunks do not have fresh source_fingerprint. Expected: #{fresh_fingerprint.inspect} ; Actual: #{failed.inspect}")
-        end
-        if failed.present?
-          raise_error("Some chunks do not have fresh source_fingerprint. Expected: #{fresh_fingerprint.inspect} ; Actual: #{failed.inspect}")
+        if check_source_fingerprints
+          validate_source_fingerprints
         end
       end
 
@@ -130,6 +105,37 @@ module OralHistory
         unless firstc.text.present?
           raise_error("chunk #{chunk.id} has no text")
         end
+      end
+    end
+
+    def validate_source_fingerprints
+      # get uniq list of existing fingerprints from either loaded into memory chunks,
+      # or efficient SQL fetched attribute.
+      uniq_source_fingerprints = if oral_history_content.oral_history_chunks.loaded?
+        oral_history_content.oral_history_chunks.collect { |c| c.other_metadata["source_fingerprint"] }.uniq
+      elsif oral_history_content.respond_to?(:uniq_source_fingerprints)
+        oral_history_content.uniq_source_fingerprints
+      else
+        raise ArgumentError.new(<<~EOS)
+          Cannot check_source_fingerprints. Need one of:
+          * `uniq_source_fingerprints` attribute, see .with_uniq_source_fingerprints to prepare scope for fetch
+          * pre-fetch/load oral_history_chunks
+          * set check_source_fingerprints: false to skip
+        EOS
+      end
+
+      fresh_fingerprint = OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content).computed_source_fingerprint
+
+      passed, failed = uniq_source_fingerprints.partition do |source_fingerprint|
+        # is it fresh with one we compute now?
+        fresh_fingerprint == source_fingerprint
+      end
+
+      unless passed.present?
+        raise_error("Chunks do not have fresh source_fingerprint. Expected: #{fresh_fingerprint.inspect} ; Actual: #{failed.inspect}")
+      end
+      if failed.present?
+        raise_error("Some chunks do not have fresh source_fingerprint. Expected: #{fresh_fingerprint.inspect} ; Actual: #{failed.inspect}")
       end
     end
 
