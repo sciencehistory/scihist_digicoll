@@ -56,11 +56,9 @@ module OralHistory
     # * #paragraphs method that returns array of OralHistoryContent::Paragraph,
     #
     # * #source_fingerprint that returns a jsonable hash of info that can be used
-    # to determine freshness of source material.
+    # to determine that chunks are still fresh, were created based on still-fresh
+    # sources, by comparing hash equality to one created later.
     #
-    # * #fresh_source_fingerprint?(source_fingerprint) that returns Boolean, if
-    #   jsonable-hash source fingerprint passed in is fresh with current
-    #   oral_history_content or not.
     #
     # @return [#paragraphs, #source_fingerprint]
     def paragraph_source
@@ -272,7 +270,8 @@ module OralHistory
         speakers: speakers,
         other_metadata: {
           "timestamps" => paragraph_timestamps,
-          "page_numbers" => paragraph_page_numbers
+          "page_numbers" => paragraph_page_numbers,
+          "source_fingerprint" => paragraph_source.source_fingerprint.merge("paragraph_source_class" => paragraph_source.class.name)
         }.compact
       )
     end

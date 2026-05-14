@@ -95,6 +95,9 @@ describe OralHistory::TranscriptChunker do
 
         expect(record.speakers).to eq ["HANFORD", "BOHNING"]
 
+        # includes source_fingerprint
+        expect(record.other_metadata["source_fingerprint"]).to be_present
+
         # json standard says hash keys must be string, pg will insist
         list_of_paragraphs.each do |paragraph|
           timestamp_data = record.other_metadata["timestamps"][paragraph.paragraph_index.to_s]
@@ -139,6 +142,8 @@ describe OralHistory::TranscriptChunker do
           expect(chunks).to be_present
           expect(chunks.first.start_paragraph_number).to eq 1
           expect(chunks.last.end_paragraph_number).to eq legacy_transcript.paragraphs.count
+
+          expect(chunks).to all(satisfy { |c| c.other_metadata["source_fingerprint"].present? })
         end
       end
     end
@@ -184,6 +189,22 @@ describe OralHistory::TranscriptChunker do
 
           expect(second_chunk.first(1)).to eq (first_chunk.last(1))
         end
+      end
+    end
+
+    describe "create_db_records" do
+      before do
+        allow(OralHistoryChunk).to receive(:get_openai_embeddings) { |*args| [OralHistoryChunk::FAKE_EMBEDDING] * args.count }
+      end
+
+      it "saves source_fingerprint" do
+        chunker.create_db_records
+
+        chunks =  oral_history_content.reload.oral_history_chunks
+
+        expect(chunks).to be_present
+
+        expect(chunks).to all(satisfy { |c| c.other_metadata["source_fingerprint"].present? })
       end
     end
   end
@@ -254,6 +275,9 @@ describe OralHistory::TranscriptChunker do
               expect(chunk.other_metadata["page_numbers"][paragraph_number.to_s]).to be_present
             end
           end
+
+          # source metadata
+          expect(chunks).to all(satisfy { |c| c.other_metadata["source_fingerprint"].present? })
         end
       end
     end
@@ -319,6 +343,8 @@ describe OralHistory::TranscriptChunker do
           expect(chunks).to be_present
           expect(chunks.first.start_paragraph_number).to eq 1
           expect(chunks.last.end_paragraph_number).to eq splitter.paragraphs.count
+
+          expect(chunks).to all(satisfy { |c| c.other_metadata["source_fingerprint"].present? })
         end
       end
     end
