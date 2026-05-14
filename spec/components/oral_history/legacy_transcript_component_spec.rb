@@ -4,46 +4,41 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
   let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
   let(:ohms_xml) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path))}
 
-  let(:work) { build(:oral_history_work).tap { |w| w.oral_history_content.ohms_xml_text = ohms_xml } }
+  let(:work) { create(:oral_history_work).tap { |w| w.oral_history_content.ohms_xml_text = File.read(ohms_xml_path) } }
 
   let(:ohms_transcript_display) { OralHistory::LegacyTranscriptComponent.new(work: work) }
   
 
   let(:ohms_xml_path_with_footnotes) { Rails.root + "spec/test_support/ohms_xml/legacy/hanford_OH0139.xml"}
+  let(:work_woth_footnotes) { create(:oral_history_work).tap { |w| w.oral_history_content.ohms_xml_text = File.read(ohms_xml_path_with_footnotes) } }
   let(:ohms_xml_with_footnotes) { OralHistoryContent::OhmsXml.new(File.read(ohms_xml_path_with_footnotes))}
-  let(:ohms_transcript_display_with_footnotes) { OralHistory::LegacyTranscriptComponent.new(ohms_xml_with_footnotes.legacy_transcript, transcript_log_id: ohms_xml_with_footnotes.accession) }
+  let(:ohms_transcript_display_with_footnotes) { OralHistory::LegacyTranscriptComponent.new(work: work_woth_footnotes) }
+
 
   let(:transcript_text) { ohms_xml.parsed.at_xpath("//ohms:transcript", ohms: OralHistoryContent::OhmsXml::OHMS_NS).text }
 
   it "produces good html" do
     # we're just gonna spot check, while by the by ensuring that display does not raise.
-    puts "goat"
-
     parsed = render_inline(ohms_transcript_display)
-
-
     expect(parsed.css("span.ohms-transcript-line").count).to eq(transcript_text.split("\n").count)
     expect(parsed.css("p.ohms-transcript-paragraph").count).to eq(transcript_text.split("\n\n").count)
-
     # plus one because we have added one for the 0 timestamp
     expect(parsed.css("a.ohms-transcript-timestamp").count).to eq(ohms_xml.legacy_transcript.sync_timecodes.count + 1)
-
     first_line = parsed.css("div.ohms-transcript-container p.ohms-transcript-paragraph > span.ohms-transcript-line").first
-
-    expect(first_line.to_html).to eq(
-      %Q{<span class="ohms-transcript-line" id="ohms_line_1" data-searchable-transcript-line="true"><a href="#t=0" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="transcript-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}
+    expect(first_line.to_html).to match(
+      %Q{<span class="ohms-transcript-line" id="ohms_line_1" data-searchable-transcript-line="true"><a href="http://.*/works/.*?t=0#tab=ohTranscript\" class="ohms-transcript-timestamp" data-ohms-timestamp-s="0">00:00:00</a><span class="transcript-speaker">BROCK:</span> This is an oral history interview with Ron Duarte taking place on 13 June \n</span>}
     )
   end
 
   it "includes unique paragraph ids" do
     parsed = render_inline(ohms_transcript_display)
-
     ids = parsed.css("p.ohms-transcript-paragraph/@id").collect(&:text)
     expect(ids).to all(be_present)
     expect(ids.uniq).to eq ids # no duplicates
   end
 
   it "properly renders footnotes and references to them" do
+
     parsed = render_inline(ohms_transcript_display_with_footnotes)
     line_with_first_footnote = parsed.css("#ohms_line_503").to_s
 
@@ -146,7 +141,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
           ohms_transcript_display.format_ohms_line(
             OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: "some text", line_num: 1)
           )
-        ).to eq("<a href=\"#t=0\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
+        ).to match("<a href=\"http://.*/works/.*?t=0#tab=ohTranscript\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"0\">00:00:00</a>some text \n")
 
         expect(shown_timecodes).to eq(["00:00:00", "", ""])
       end
@@ -180,7 +175,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
           ohms_transcript_display.format_ohms_line(
             OralHistoryContent::OhmsXml::LegacyTranscript::Line.new(text: "some text", line_num: 1)
           )
-        ).to eq("<a href=\"#t=120\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
+        ).to match("<a href=\"http://.*/works/.*?t=120#tab=ohTranscript\" class=\"ohms-transcript-timestamp\" data-ohms-timestamp-s=\"120\">00:02:00</a>some text \n")
       end
     end
 
