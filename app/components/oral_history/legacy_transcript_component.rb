@@ -17,10 +17,11 @@ module OralHistory
 
     # @param legacy_transcript [OralHistoryContent::OhmsXml::LegacyTranscript]
     # @param ohms_transcript_id [String] just for identification in error messages
-    def initialize(legacy_transcript, transcript_log_id:)
+    def initialize(legacy_transcript, transcript_log_id:, work:)
       @legacy_transcript = legacy_transcript
       @references_already_output = Set.new()
       @transcript_log_id = transcript_log_id
+      @work = work
     end
 
     # Trying to display somewhat like OHMS does. We need to track lines separated by individual "\n", that
@@ -134,7 +135,8 @@ module OralHistory
       content_tag(
         "a",
         format_ohms_timestamp(tc[:seconds]),
-        href: "#t=#{tc[:seconds]}",
+        #href: "#t=#{tc[:seconds]}",
+        href: work_url(@work, t: tc[:seconds], anchor: "tab=ohTranscript".html_safe),
         class: "ohms-transcript-timestamp",
         data: { "ohms_timestamp_s" => tc[:seconds]}
       )
