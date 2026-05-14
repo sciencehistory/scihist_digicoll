@@ -108,9 +108,12 @@ class DownloadsController < ApplicationController
       raise ActionController::RoutingError.new("No PDF transcript found")
     end
 
-    redirect_to download_path("pdf", asset, disposition: :inline)
-  end
+    if params[:anchor_page]
+      anchor = "page=#{params[:anchor_page]}"
+    end
 
+    redirect_to download_path("pdf", asset, disposition: :inline, anchor: anchor)
+  end
 
   private
 

@@ -49,6 +49,8 @@ module OralHistory
 
     attr_reader :extracted_pdf_text, :file_start_times, :allow_failure_to_sync
 
+    attr_reader :logical_page_number_offset
+
 
     # @param extracted_pdf_text [Hash] jsonable Hash of text and structural metadata from PDF
     #        as returned by OralHistory::ExtractPdftext
@@ -107,6 +109,9 @@ module OralHistory
 
     # @return [OralHistory::Paragraph]
     def create_paragraphs
+      # will be set on first page
+      @logical_page_number_offset = nil
+
       extracted_pdf_text_pages = extracted_pdf_text["pages"]
 
       all_paragraphs = []
@@ -133,6 +138,12 @@ module OralHistory
 
         # usually on bottom, sometimes on top
         logical_page_number = extract_and_remove_logical_page_number(page_paragraphs_json)
+
+        # set offset if not set yet and available. The first numbered page
+        # we find may not be 1, so we have to do some math.
+        if @logical_page_number_offset.nil? && logical_page_number
+          @logical_page_number_offset = first_index + (1 - logical_page_number) # could go negative
+        end
 
         last_paragraph = all_paragraphs.last
 
