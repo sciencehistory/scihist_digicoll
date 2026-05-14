@@ -3,10 +3,13 @@ namespace :scihist do
 
 
     desc """
-    Updates ActiveEncode status for all non-complete jobs registered. Serially,
+    Updates ActiveEncode status for all incomplete jobs registered. Serially,
     so can take a while if there are many in progress ActiveEncode jobs.
 
     Also deletes old no longer needed status records.
+
+    Note that refresh_from_aws also calls clean_up_leftover_files, which deletes HLS derivatives
+    associated with deleted assets.
 
     You want a scheduled job to run this periodically, maybe once an hour.
     """

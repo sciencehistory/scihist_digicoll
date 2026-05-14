@@ -293,6 +293,12 @@ describe "Oral history with audio display", type: :system, js: true do
       expect(page).to have_text("00:04:16") # nearest ToC section
       expect(page).to have_text("Many family members are scientists.") # open synopsis for 04:16
     end
+
+    it "can highlight chosen text on page from url anchor" do
+      visit work_path(parent_work.friendlier_id, anchor: "tab=ohTranscript&th=his interests lay along")
+
+      expect(page).to have_selector("span.ohms-highlight", text: "his interests lay along")
+    end
   end
 
   describe "when you are logged-in staff", :logged_in_user, type: :system, js: true do
