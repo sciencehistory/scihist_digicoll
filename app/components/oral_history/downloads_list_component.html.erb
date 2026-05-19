@@ -69,7 +69,7 @@
             class="play-link"
             title="Listen to '<%= track.title%>'"
             aria-label="Listen to '<%= track.title%>'"
-            href="<% work_url(work, t: start_time_for(track), anchor: "tab=ohDownloads".html_safe) %>"
+            href="<%= work_url(work, t: start_time_for(track), anchor: "tab=ohDownloads".html_safe) %>"
             data-role="play-link"
             data-ohms-timestamp-s="<%= start_time_for(track) %>"
             data-analytics-category='Work'
@@ -88,7 +88,7 @@
             class="title play-link"
             title="Listen to '<%= track.title%>'"
             aria-label="Listen to '<%= track.title%>'"
-            href="<% work_url(work, t: start_time_for(track), anchor: "tab=ohDownloads".html_safe) %>"
+            href="<%= work_url(work, t: start_time_for(track), anchor: "tab=ohDownloads".html_safe) %>"
             data-role="play-link"
             data-ohms-timestamp-s="<%= start_time_for(track) %>"
             data-analytics-category='Work'
