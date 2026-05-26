@@ -33,6 +33,7 @@ namespace :scihist do
 
     total_count = scope.count
 
+    # include fingerprints with performant SELECT,
     # have to do after we take 'count' cause it will mess up the count
     only_invalid = (ENV['ONLY_INVALID'] == "true")
     if only_invalid
