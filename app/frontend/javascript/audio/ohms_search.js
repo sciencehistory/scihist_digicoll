@@ -56,8 +56,16 @@ var Search = {};
 // any regexp special chars.
 //
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+//
+// Also turns any straight or curly/angled apostrophes in string into regex that can match either one.
+// Helpful for AI quote highlighting.
 Search.escapeRegExp = function(string) {
-  return string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+  var escaped = string.replace(/[.*+\-?^${}()|[\]\\]/g, '\\$&'); // $& means the whole matched string
+  // confusingly match either a ' or ’ (curly/angled) and replace it with
+  // regex string that will match either one
+  escaped = escaped.replace(/['’]/, "['’]");
+
+  return escaped;
 };
 
 // Just wraps text in span.ohms-highlight. No escaping is done, input
