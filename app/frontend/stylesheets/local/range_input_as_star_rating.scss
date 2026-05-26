@@ -12,7 +12,6 @@ input[type=range].star-rating {
   --stars: 5;
   --starsize: 3rem;
   --symbol: var(--star);
-  --value: 1;
   --w: calc(var(--stars) * var(--starsize));
   --x: calc(100% * (var(--value) / var(--stars)));
   block-size: var(--starsize);
