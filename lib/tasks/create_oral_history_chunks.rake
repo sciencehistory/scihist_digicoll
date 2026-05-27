@@ -21,7 +21,7 @@ namespace :scihist do
 
   """
   task :create_oral_history_chunks => [:environment] do
-    scope = OralHistoryContent.includes(:work => :members).joins(:work).where(work: { published: true})
+    scope = OralHistoryContent.includes(:work => :members).joins(:work).where(work: { published: true}).strict_loading
 
     if ENV['ONLY_EXTRACTED_PDF_PARAGRAPHS'] == "true"
       scope = scope.where("oral_history_content.json_attributes -> 'extracted_pdf_paragraphs' is not NULL")
@@ -46,7 +46,7 @@ namespace :scihist do
     enqueued_count = 0
 
 
-    scope.find_each(batch_size: 50) do |oh_content|
+    scope.find_each(batch_size: 10) do |oh_content|
       progress_bar.increment
 
       overwrite_chunks = (ENV['OVERWRITE_CHUNKS'] == "true") || only_invalid
@@ -83,6 +83,9 @@ namespace :scihist do
 
       # enqueue to special_jobs so we can control concurrency to avoid rate limit
       OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oh_content, delete_existing: overwrite_chunks, use_dummy_embedding: use_dummy_embedding)
+
+      # try to keep from blowing up our memory with so much pre-fetching
+      GC.start
     end
 
     puts "skipped #{skipped_count} and enqueued #{enqueued_count} of #{total_count}"
