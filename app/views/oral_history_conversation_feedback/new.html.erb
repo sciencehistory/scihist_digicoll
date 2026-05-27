@@ -18,15 +18,15 @@
 
       <%= f.input "rating", as: :range, required: false,
           label: "How useful was the answer to you?",
-          default: 1,
+          default: 3,
           input_html: {
             class: 'star-rating',
             min: 1,
             max: 5,
+            value: 3,
             step: 1,
-            style: "--value:0",
-            value: 0,
-            oninput:"this.style.setProperty('--value', `${this.valueAsNumber}`)" } %>
+            style: "--value:3",
+            oninput:"if (this.value == 0) this.value = 1; this.style.setProperty('--value', `${this.valueAsNumber}`)" } %>
 
       <%= f.input "comment", as: :text,
           label: "Any other comments or feedback?",
