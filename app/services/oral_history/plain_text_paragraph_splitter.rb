@@ -22,6 +22,12 @@ module OralHistory
       @paragraphs ||= split_paragraphs
     end
 
+    def source_fingerprint
+      @source_fingerprint ||= {
+        "text_md5" => Digest::MD5.hexdigest(plain_text)
+      }
+    end
+
     private
 
     def split_paragraphs

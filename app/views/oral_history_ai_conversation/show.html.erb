@@ -19,8 +19,7 @@
   </div>
 
 
-
-  <% if label = t(@conversation.search_params&.dig("access_limit"), scope: "oral_history.access_limit_feedback", default: nil) %>
+  <% if label = @conversation.search_params&.dig("access_limit").presence && t(@conversation.search_params&.dig("access_limit"), scope: "oral_history.access_limit_feedback", default: nil) %>
     <div class="d-flex justify-content-end">
       <div class="pt-1 pb-1 ps-2 pe-2 bg-light border border-top-0 rounded-bottom d-inline-block">
         <%= label %>

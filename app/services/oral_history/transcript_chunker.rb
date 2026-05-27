@@ -39,24 +39,7 @@ module OralHistory
 
       @oral_history_content = oral_history_content
 
-      # different ways of extracting paragraphs, they all should return array of OralHistoryContent::Paragraph
-      @paragraphs = if oral_history_content.ohms_xml&.legacy_transcript.present?
-        oral_history_content.ohms_xml.legacy_transcript.paragraphs
-
-      elsif oral_history_content.ohms_xml&.vtt_transcript.present?
-        oral_history_content.ohms_xml.vtt_transcript.paragraphs
-
-      elsif oral_history_content.extracted_pdf_paragraphs.present?
-        oral_history_content.extracted_pdf_paragraphs.paragraphs
-
-      elsif oral_history_content.searchable_transcript_source.present?
-        OralHistory::PlainTextParagraphSplitter.new(
-          plain_text: oral_history_content.searchable_transcript_source
-        ).paragraphs
-
-      else
-        raise ArgumentError.new("#{self.class.name} can't find paragraph source content for: #{oral_history_content.inspect}")
-      end
+      @paragraphs = self.paragraph_source.paragraphs
 
       # For matching to speaker names, assume it's "lastname, first dates" type heading,
       # take last name and upcase
@@ -65,6 +48,38 @@ module OralHistory
         collect { |c| c.value.split(",").first.upcase }
 
       @allow_embedding_wait_seconds = allow_embedding_wait_seconds
+    end
+
+    # different ways of extracting paragraphs for different types of source content,
+    # all the objects we return should have:
+    #
+    # * #paragraphs method that returns array of OralHistoryContent::Paragraph,
+    #
+    # * #source_fingerprint that returns a jsonable hash of info that can be used
+    # to determine that chunks are still fresh, were created based on still-fresh
+    # sources, by comparing hash equality to one created later.
+    #
+    #
+    # @return [#paragraphs, #source_fingerprint]
+    def paragraph_source
+      @paragraph_source ||= begin
+        if oral_history_content.ohms_xml&.legacy_transcript.present?
+          oral_history_content.ohms_xml.legacy_transcript
+
+        elsif oral_history_content.ohms_xml&.vtt_transcript.present?
+          oral_history_content.ohms_xml.vtt_transcript
+
+        elsif oral_history_content.extracted_pdf_paragraphs.present?
+          oral_history_content.extracted_pdf_paragraphs
+
+        elsif oral_history_content.searchable_transcript_source.present?
+          OralHistory::PlainTextParagraphSplitter.new(
+            plain_text: oral_history_content.searchable_transcript_source
+          )
+        else
+          raise ArgumentError.new("#{self.class.name} can't find paragraph source content for: #{oral_history_content.inspect}")
+        end
+      end
     end
 
     def num_paragraphs
@@ -255,9 +270,15 @@ module OralHistory
         speakers: speakers,
         other_metadata: {
           "timestamps" => paragraph_timestamps,
-          "page_numbers" => paragraph_page_numbers
+          "page_numbers" => paragraph_page_numbers,
+          "source_fingerprint" => computed_source_fingerprint
         }.compact
       )
+    end
+
+    # add a paragraph_source_class name to the paragraph source's own source_fingerprint please.
+    def computed_source_fingerprint
+      paragraph_source.source_fingerprint.merge("paragraph_source_class" => paragraph_source.class.name)
     end
 
     private

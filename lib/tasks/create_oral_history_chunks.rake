@@ -16,9 +16,12 @@ namespace :scihist do
 
     `ONLY_AVAILABLE_IMMEDATE=true` limit to only those available immediate ('really free access')
 
+    `ONLY_INVALID=true` validate including source_fingerprint and only create for ones that are
+        invalid/stale , implies OVERWRITE_CHUNKS.
+
   """
   task :create_oral_history_chunks => [:environment] do
-    scope = OralHistoryContent.includes(:work => :members).joins(:work).where(work: { published: true})
+    scope = OralHistoryContent.preload(:work => :members).joins(:work).where(work: { published: true}).strict_loading
 
     if ENV['ONLY_EXTRACTED_PDF_PARAGRAPHS'] == "true"
       scope = scope.where("oral_history_content.json_attributes -> 'extracted_pdf_paragraphs' is not NULL")
@@ -30,16 +33,25 @@ namespace :scihist do
 
     total_count = scope.count
 
+    # include fingerprints with performant SELECT,
+    # have to do after we take 'count' cause it will mess up the count
+    only_invalid = (ENV['ONLY_INVALID'] == "true")
+    if only_invalid
+      scope = OralHistory::ChunkValidator.with_uniq_source_fingerprints(scope)
+      # merge in new includes for additional stuff we'll need to check
+      scope = scope.preload(:oral_history_chunks)
+    end
+
     progress_bar = ProgressBar.create(total: total_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
     skipped_count = 0
     enqueued_count = 0
 
 
-    scope.find_each(batch_size: 50) do |oh_content|
+    scope.find_each(batch_size: 10) do |oh_content|
       progress_bar.increment
 
-      overwrite_chunks = ENV['OVERWRITE_CHUNKS'] == "true"
+      overwrite_chunks = (ENV['OVERWRITE_CHUNKS'] == "true") || only_invalid
       use_dummy_embedding = ENV['USE_DUMMY_EMBEDDING'] == "true"
 
       # Make sure we skip truly embargoed/non-public stuff, which is
@@ -53,6 +65,17 @@ namespace :scihist do
         end
       end
 
+      if only_invalid
+        begin
+          OralHistory::ChunkValidator.new(oh_content, check_source_fingerprints: true).validate!
+          # if we didn't raise, it's valid, so
+          skipped_count +=1
+          next
+        rescue OralHistory::ChunkValidator::Failure => e
+          # invalid, we're just proceeding!
+        end
+      end
+
       if oh_content.oral_history_chunks.exists? && !overwrite_chunks
         skipped_count += 1
         next
@@ -62,6 +85,9 @@ namespace :scihist do
 
       # enqueue to special_jobs so we can control concurrency to avoid rate limit
       OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oh_content, delete_existing: overwrite_chunks, use_dummy_embedding: use_dummy_embedding)
+
+      # try to keep from blowing up our memory with so much pre-fetching
+      GC.start
     end
 
     puts "skipped #{skipped_count} and enqueued #{enqueued_count} of #{total_count}"
