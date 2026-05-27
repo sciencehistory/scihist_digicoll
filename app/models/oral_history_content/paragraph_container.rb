@@ -86,6 +86,15 @@ class OralHistoryContent
       return container
     end
 
+    # our sources are the PDF itself and the audio file start times, so
+    # use those as fingerprint.
+    def source_fingerprint
+      @source_fingerprint ||= {
+        "pdf_md5" => self.pdf_md5,
+        "combined_audio_fingerprint" => self.combined_audio_fingerprint
+      }
+    end
+
     # Will fetch the work#members if not already fetched. Fingerprinting includes
     # audio files as well as PDF becuase the audio file lengths are used to calculate
     # offsets for some internal timestamps.
@@ -93,8 +102,10 @@ class OralHistoryContent
       combined_audio = CombinedAudioDerivativeCreator.new(oral_history_content.work)
       pdf_asset = oral_history_content.work.members.find { |a| a.respond_to?(:role) && a.role == "transcript" }
 
-      (self.pdf_md5 == pdf_asset.file_metadata&.dig("md5")) &&
-        (combined_audio.fingerprint == self.combined_audio_fingerprint)
+      self.source_fingerprint == {
+        "pdf_md5" => pdf_asset.file_metadata&.dig("md5"),
+        "combined_audio_fingerprint" => combined_audio.fingerprint
+      }
     end
   end
 end

@@ -104,6 +104,12 @@ class OralHistoryContent
         @transcript_text ||= paragraphs.collect(&:text_with_forced_speaker_label).join("\n\n")
       end
 
+      def source_fingerprint
+        @source_fingerprint ||= {
+          "webvtt_md5" => Digest::MD5.hexdigest(raw_webvtt_text)
+        }
+      end
+
       # our cue wraps webvtt cue with further parsed escaped content
       #
       # Each queue has an array of 0 or more 'paragraphs', each paragraph

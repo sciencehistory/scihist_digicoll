@@ -29,7 +29,7 @@ describe OralHistory::ChunkValidator do
 
   let(:oral_history_content) { work.oral_history_content }
 
-  let(:validator) { described_class.new(oral_history_content)}
+  let(:validator) { described_class.new(oral_history_content, check_source_fingerprints: false)}
 
 
   describe "good chunks" do
@@ -132,6 +132,60 @@ describe OralHistory::ChunkValidator do
       expect {
         validator.validate!
       }.to raise_error(OralHistory::ChunkValidator::Failure, /Embargoed OH has 3 chunks/)
+    end
+  end
+
+  describe "with check_source_fingerprints" do
+    let(:validator) do
+      oral_history_content.save!
+      oc_with_fingerprints = OralHistory::ChunkValidator.with_uniq_source_fingerprints(
+        OralHistoryContent.where(id: oral_history_content.id)
+      ).first
+
+      described_class.new(oc_with_fingerprints, check_source_fingerprints: true)
+    end
+
+    let(:chunks) do
+      [
+        build(:oral_history_chunk, start_paragraph_number: 1, end_paragraph_number: 4),
+        build(:oral_history_chunk, start_paragraph_number: 4, end_paragraph_number: 6),
+        build(:oral_history_chunk, start_paragraph_number: 5, end_paragraph_number: 6)
+      ]
+    end
+
+    it "fails without good source fingerprints" do
+      expect {
+        validator.validate!
+      }.to raise_error(OralHistory::ChunkValidator::Failure, /Chunks do not have fresh source_fingerprint/)
+    end
+
+    describe "with good source fingerprint and good chunks" do
+      let(:good_source_fingerprint) do
+        OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content).computed_source_fingerprint
+      end
+
+      let(:good_chunks) do
+        [
+          build(:oral_history_chunk, start_paragraph_number: 1, end_paragraph_number: 4, other_metadata: { "source_fingerprint": good_source_fingerprint}),
+          build(:oral_history_chunk, start_paragraph_number: 4, end_paragraph_number: 6, other_metadata: { "source_fingerprint": good_source_fingerprint}),
+          build(:oral_history_chunk, start_paragraph_number: 5, end_paragraph_number: 6,other_metadata: { "source_fingerprint": good_source_fingerprint})
+        ]
+      end
+
+      let(:validator) do
+        oral_history_content.oral_history_chunks = good_chunks
+        oral_history_content.save!
+
+        oc_with_fingerprints = OralHistory::ChunkValidator.with_uniq_source_fingerprints(
+          OralHistoryContent.where(id: oral_history_content.id)
+        ).first
+
+        described_class.new(oc_with_fingerprints, check_source_fingerprints: true)
+      end
+
+      it "passes" do
+        expect(validator.validate!).to eq true
+      end
     end
   end
 end

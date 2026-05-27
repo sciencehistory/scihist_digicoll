@@ -94,6 +94,13 @@ class OralHistoryContent
         @transcript_paragraphs
       end
 
+      # fingerprint our source data, so we can say if a fingerprint isn't fresh cause source data has changed
+      def source_fingerprint
+        @source_fingerprint ||= {
+          "xml_md5" => Digest::MD5.hexdigest(@nokogiri_xml.to_xml)
+        }
+      end
+
       private
 
       # @return [Array<Integer>] array timecodes included in line number ranges, as numbers of seconds
