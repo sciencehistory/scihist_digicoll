@@ -21,7 +21,7 @@ namespace :scihist do
 
   """
   task :create_oral_history_chunks => [:environment] do
-    scope = OralHistoryContent.includes(:work => :members).joins(:work).where(work: { published: true}).strict_loading
+    scope = OralHistoryContent.preload(:work => :members).joins(:work).where(work: { published: true}).strict_loading
 
     if ENV['ONLY_EXTRACTED_PDF_PARAGRAPHS'] == "true"
       scope = scope.where("oral_history_content.json_attributes -> 'extracted_pdf_paragraphs' is not NULL")
@@ -38,6 +38,8 @@ namespace :scihist do
     only_invalid = (ENV['ONLY_INVALID'] == "true")
     if only_invalid
       scope = OralHistory::ChunkValidator.with_uniq_source_fingerprints(scope)
+      # merge in new includes for additional stuff we'll need to check
+      scope = scope.preload(:oral_history_chunks)
     end
 
     progress_bar = ProgressBar.create(total: total_count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
