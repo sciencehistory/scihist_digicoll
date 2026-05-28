@@ -66,13 +66,9 @@ namespace :scihist do
       end
 
       if only_invalid
-        begin
-          OralHistory::ChunkValidator.new(oh_content, check_source_fingerprints: true).validate!
-          # if we didn't raise, it's valid, so
+        unless OralHistory::ChunkValidator.new(oh_content, check_source_fingerprints: true).validate
           skipped_count +=1
           next
-        rescue OralHistory::ChunkValidator::Failure => e
-          # invalid, we're just proceeding!
         end
       end
 
@@ -81,10 +77,10 @@ namespace :scihist do
         next
       end
 
-      enqueued_count += 1
-
       # enqueue to special_jobs so we can control concurrency to avoid rate limit
       OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oh_content, delete_existing: overwrite_chunks, use_dummy_embedding: use_dummy_embedding)
+
+      enqueued_count += 1
 
       # try to keep from blowing up our memory with so much pre-fetching
       GC.start

@@ -46,6 +46,17 @@ module OralHistory
       end
     end
 
+    # @returns [Boolean] for if valid. Won't raise. Doesn't provide access to message on why not,
+    #   use validate! with error raised for that.
+    def validate
+      # kind of cheesey implementaion relying on internally catching exception which is sometimes
+      # bad performance, but no big deal it works.
+      validate!
+      return true
+    rescue Failure
+      return false
+    end
+
     # Returns true, or raises a OralHistory::ChunkValidator::Failure
     def validate!
       if embargoed?
