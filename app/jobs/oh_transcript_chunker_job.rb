@@ -4,7 +4,18 @@
 #
 # Refuses to run if there are already chunks, cause that would create a real mess!
 class OhTranscriptChunkerJob < ApplicationJob
-  def perform(oral_history_content, delete_existing: false, use_dummy_embedding: false)
+  # In a local constnat only so we can stub to something different in tests
+  CHUNKER_CLASS = OralHistory::TranscriptChunker
+
+  def perform(oral_history_content, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false)
+
+    if only_if_invalid
+      if OralHistory::ChunkValidator.new(oral_history_content, check_source_fingerprints: true).validate
+        Rails.logger.info("#{self.class.name}: called with only_if_invalid, and oral history #{oral_history_content.id} is valid, so not creating chunks.")
+        return
+      end
+    end
+
     if oral_history_content.oral_history_chunks.exists?
       if delete_existing
         oral_history_content.oral_history_chunks.delete_all
@@ -14,7 +25,7 @@ class OhTranscriptChunkerJob < ApplicationJob
       end
     end
 
-    OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records(use_dummy_embedding: use_dummy_embedding)
+    CHUNKER_CLASS.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records(use_dummy_embedding: use_dummy_embedding)
   end
 
 end

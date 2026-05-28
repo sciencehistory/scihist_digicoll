@@ -32,6 +32,7 @@ module OralHistory
     # @param allow_embedding_wait_seconds [Integer] if we exceed open ai rate limit for getting
     #    embedding, can we wait and try again? With maximum wait being this many seconds.
     #    Default 0, so, no.
+    #
     def initialize(oral_history_content:, allow_embedding_wait_seconds: 0)
       unless oral_history_content.kind_of?(OralHistoryContent)
         raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
