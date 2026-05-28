@@ -88,6 +88,12 @@ module OralHistory
 
 
     def create_db_records(use_dummy_embedding: false)
+      # If we want to override this for some reason we can add a param, but
+      # I don't think we ever want to do this, and we were accidentally, causing problems.
+      if oral_history_content.oral_history_chunks.exists?
+        raise ArgumentError.new("Can't create_db_records when oral_history_chunks already exist, will lead to inconsistent confusion.")
+      end
+
       # array of arrays of paragraphs
       chunk_arrays = split_chunks
 
