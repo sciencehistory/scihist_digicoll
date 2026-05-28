@@ -28,6 +28,20 @@
         <% if combined_m4a_audio_url.present? && combined_derivatives_up_to_date? %>
           <div class="audio-controls-line">
             <%= render AudioPlayerComponent.new do %>
+              <%#
+              If a start_time parameter is passed to this component, this src tag here may contain a #t= media fragment (link to media fragment spec).
+
+              The URL is generated in CombinedAudioDerivatives#m4a_audio_url.
+
+              More on media fragments:
+
+              https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Media_fragments.
+              
+              We're counting on the user agent on the front end to advance to this point based on the media fragment in url.
+
+              More context at https://github.com/sciencehistory/scihist_digicoll/issues/3290 .
+
+              %>
               <source src="<%= combined_m4a_audio_url(start_time: start_time) %>" type="audio/mp4">
             <% end %>
 

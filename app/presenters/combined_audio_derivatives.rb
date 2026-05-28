@@ -11,6 +11,16 @@ class CombinedAudioDerivatives
     @work = work
   end
 
+
+  # This generates a public URL to the combined audio derivative file on S3.
+  #
+  # If you pass in optional start_time, we append #t=#{start_time} to the URL.
+  # This creates a media fragment.
+  # (see https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Fragment/Media_fragments ).
+  #
+  # On certain mobile browsers (iOS in particular) this allows the link to play from the start point.
+  # Note that the user still has to interact with the audio by clicking "play" before the audio will start playing.
+  # More context at https://github.com/sciencehistory/scihist_digicoll/issues/3290 .
   def m4a_audio_url(start_time: nil)
     if start_time.nil?
       m4a_audio_url_without_start_time
