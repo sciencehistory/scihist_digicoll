@@ -78,4 +78,73 @@ describe OhTranscriptChunkerJob, type: :job do
       end
     end
   end
+
+  describe "refresh_extracted_pdf_paragraphs" do
+    # give it proper PDF set up that we can create paragraphs from
+
+    let(:transcript_asset) do
+      build(:asset_with_faked_file, :pdf,
+        published: true, role: "transcript",
+        faked_file: File.open(Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"),
+        faked_derivatives: {
+          "extracted_pdf_text_json" => build(:stored_uploaded_file, file: Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_extracted_paragraphs.json")
+        }
+      )
+    end
+
+    let(:work) { build(:oral_history_work, :published, members: [transcript_asset] ) }
+
+    describe "missing extracted_pdf_paragraphs" do
+      it "will create extracted_pdf_paragraphs" do
+        expect(OralHistoryContent::ParagraphContainer).to receive(:create).with(
+          oral_history_content: oral_history_content,
+          allow_failure_to_sync: true
+        )
+
+        expect(Rails.logger).to receive(:info).with(/needs paragraphs, so creating/)
+
+        described_class.perform_now(oral_history_content, refresh_extracted_pdf_paragraphs: true)
+      end
+    end
+
+    describe "fresh and valid extracted_pdf_paragraphs" do
+      before do
+        oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
+          pdf_md5: transcript_asset.file_metadata["md5"],
+          combined_audio_fingerprint: CombinedAudioDerivativeCreator.new(work).fingerprint
+        )
+      end
+
+      it "does not replace extracted_pdf_paragraphs" do
+        expect(OralHistoryContent::ParagraphContainer).not_to receive(:create).with(
+          oral_history_content: oral_history_content,
+          allow_failure_to_sync: true
+        )
+
+        expect(Rails.logger).not_to receive(:info).with(/needs paragraphs, so creating/)
+
+        described_class.perform_now(oral_history_content, refresh_extracted_pdf_paragraphs: true)
+      end
+    end
+
+    describe "existing not-fresh extracted_pdf_paragraphs" do
+      before do
+        oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
+          pdf_md5: "bad md5",
+          combined_audio_fingerprint: "bad fingerprint",
+        )
+      end
+
+      it "will create new extracted_pdf_paragraphs" do
+        expect(OralHistoryContent::ParagraphContainer).to receive(:create).with(
+          oral_history_content: oral_history_content,
+          allow_failure_to_sync: true
+        )
+
+        expect(Rails.logger).to receive(:info).with(/needs paragraphs, so creating/)
+
+        described_class.perform_now(oral_history_content, refresh_extracted_pdf_paragraphs: true)
+      end
+    end
+  end
 end

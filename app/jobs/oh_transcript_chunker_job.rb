@@ -7,7 +7,40 @@ class OhTranscriptChunkerJob < ApplicationJob
   # In a local constnat only so we can stub to something different in tests
   CHUNKER_CLASS = OralHistory::TranscriptChunker
 
-  def perform(oral_history_content, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false)
+  # @param delete_existing [Boolean] default false. if true, existing chunks will be deleted before creating new ones. If false,
+  #     will raise and refuse to create new if existing!
+  #
+  # @param use_dummy_embedding [Boolean] default false, if treu will not calculate real embedding vector
+  #    ($ expensive, slow), but will use a fake dummy 0 vector. Mostly used for testing, makes
+  #    chunks pretty useless.
+  #
+  # @param only_if_invalid [Boolean] default false. If true, we will do nothing if valid chunks already exist.
+  #
+  # @param refresh_extracted_pdf_paragraphs [Boolean]. default false. If true, will first
+  #    create fresh extracted_pdf_paragraphs if it is possible and paragraphs are missing
+  #    or not fresh.
+  def perform(oral_history_content, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false)
+
+    if refresh_extracted_pdf_paragraphs
+      members = oral_history_content.work.members
+      transcript_asset = members.loaded? ? members.find {|a| a.role == "transcript" } : members.where(role: "transcript").first
+
+      # if we have extracted_pdf_text_json and don't have fresh paragraphs stored, we must refresh
+      if transcript_asset && transcript_asset.file_derivatives[:extracted_pdf_text_json].present? && (
+            oral_history_content.extracted_pdf_paragraphs.nil? || !oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)
+         )
+        Rails.logger.info("#{self.class.name}: refresh_extracted_pdf_paragraphs:true and needs paragraphs, so creating.")
+
+        begin
+          OralHistoryContent::ParagraphContainer.create(
+            oral_history_content: oral_history_content,
+            allow_failure_to_sync: true
+          )
+        rescue PdfParagraphSplitter::Error => e
+          Rails.logger.error("#{self.class.name}: Could not create extracted_pdf_paragraphs: #{e}")
+        end
+      end
+    end
 
     if only_if_invalid
       if OralHistory::ChunkValidator.new(oral_history_content, check_source_fingerprints: true).validate
