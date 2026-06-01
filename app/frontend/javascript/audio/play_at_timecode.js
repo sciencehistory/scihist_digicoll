@@ -1,22 +1,45 @@
-// Very simple, click on a link like:
-//
-//     <a data-ohms-timestamp-s="43"></a>
-//
-// And it will advance the audio player to that number of seconds. Used in ohms player,
-// also used on 'downloads' tab in OH audio.
-//
-// Audio player is found by finding a HTML5 audio element in a
-// container `data-role="now-playing-container"`
+async function playFromOffset(player, seconds) {
+  player.preload = "metadata";
 
-$(document).on("click", "*[data-ohms-timestamp-s]", function(event) {
-  var seconds = this.dataset.ohmsTimestampS;
+  if (player.readyState < HTMLMediaElement.HAVE_METADATA) {
+    player.load();
 
-  // OH audio player, or our video player
-  var html5Media = $("*[data-role=now-playing-container] audio, .show-video video").get(0);
+    await new Promise((resolve, reject) => {
+      const cleanup = () => {
+        player.removeEventListener("loadedmetadata", onMeta);
+        player.removeEventListener("error", onError);
+      };
+      const onMeta = () => { cleanup(); resolve(); };
+      const onError = () => { cleanup(); reject(player.error); };
 
-  if (seconds && html5Media) {
-    event.preventDefault();
-    html5Media.currentTime = seconds;
-    html5Media.play();
+      player.addEventListener("loadedmetadata", onMeta, { once: true });
+      player.addEventListener("error", onError, { once: true });
+    });
   }
+
+  player.currentTime = seconds;
+
+  await new Promise(resolve => {
+    if (!player.seeking) return resolve();
+    player.addEventListener("seeked", resolve, { once: true });
+  });
+
+  return player.play();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const timestampLinks = document.querySelectorAll('*[data-ohms-timestamp-s]');
+  const player = document.querySelector("*[data-role=now-playing-container] audio, .show-video video");
+
+  timestampLinks.forEach(element => {
+    element.addEventListener('click', async (event) => {
+      var seconds = event.target.dataset.ohmsTimestampS;      
+      try {
+        await playFromOffset(player, seconds);
+      } catch (err) {
+        console.log("Could not play from offset:", err);
+      }
+
+    });
+  });
 });
