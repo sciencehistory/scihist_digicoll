@@ -706,6 +706,13 @@ module ScihistDigicoll
 
     define_key :openai_api_key
 
+    # We have a hook to auto create embeddings on OH publish. Because so $expensive,
+    # we guard to not do by default in non-production, even if API keys are set (which they
+    # often won't be), to avoid accidental $$.
+    define_key :use_dummy_embedding_on_oh_publish, default: -> {
+      ! self.production?
+    }
+
     # nil means use default, but we can define if we want to put all OCR work on, say, `special_jobs`.
     define_key :active_job_ocr_queue
 

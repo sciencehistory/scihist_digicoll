@@ -7,6 +7,21 @@ class OhTranscriptChunkerJob < ApplicationJob
   # In a local constnat only so we can stub to something different in tests
   CHUNKER_CLASS = OralHistory::TranscriptChunker
 
+
+  # Just some default params, including by default not doing $$ API calls on staging.
+  def self.perform_later_on_publish(oral_history_content)
+    # because it's so expensive, we don't normally do real embedding API calls if not
+    # in production -- even if someone has left API keys set!
+    use_dummy_embedding = ScihistDigicoll::Env.lookup(:use_dummy_embedding_on_oh_publish)
+
+    self.perform_later(oral_history_content,
+      only_if_invalid: true,
+      refresh_extracted_pdf_paragraphs: false,
+      delete_existing: true,
+      use_dummy_embedding: use_dummy_embedding
+    )
+  end
+
   # @param delete_existing [Boolean] default false. if true, existing chunks will be deleted before creating new ones. If false,
   #     will raise and refuse to create new if existing!
   #
