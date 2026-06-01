@@ -78,7 +78,7 @@ namespace :scihist do
       end
 
       # enqueue to special_jobs so we can control concurrency to avoid rate limit
-      OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oh_content, delete_existing: overwrite_chunks, use_dummy_embedding: use_dummy_embedding)
+      OhTranscriptChunkerJob.set(queue: "special_jobs").perform_later(oral_history_content: oh_content, delete_existing: overwrite_chunks, use_dummy_embedding: use_dummy_embedding)
 
       enqueued_count += 1
 

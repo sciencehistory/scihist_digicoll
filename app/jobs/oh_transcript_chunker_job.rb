@@ -14,7 +14,7 @@ class OhTranscriptChunkerJob < ApplicationJob
     # in production -- even if someone has left API keys set!
     use_dummy_embedding = ScihistDigicoll::Env.lookup(:use_dummy_embedding_on_oh_publish)
 
-    self.perform_later(oral_history_content,
+    self.perform_later(oral_history_content: oral_history_content,
       only_if_invalid: true,
       refresh_extracted_pdf_paragraphs: false,
       delete_existing: true,
@@ -22,6 +22,14 @@ class OhTranscriptChunkerJob < ApplicationJob
     )
   end
 
+  # @param oral_history_content [OralHistoryContent] model to perform chunk creation on. optional
+  #   this param or work, from which we'll look it up.
+  #
+  # @param work [Work] optional provide this instead of oral_history_content, we'll look it up
+  #   in the job. Can be a convenience if you're doing for a lot of works and you don't want
+  #   to look up all their oral histories, although you should check work.association(:oral_history_content).scope.exist?
+  #   first to avoid unnecessary jobs and an exception here.
+  #
   # @param delete_existing [Boolean] default false. if true, existing chunks will be deleted before creating new ones. If false,
   #     will raise and refuse to create new if existing!
   #
@@ -34,7 +42,12 @@ class OhTranscriptChunkerJob < ApplicationJob
   # @param refresh_extracted_pdf_paragraphs [Boolean]. default false. If true, will first
   #    create fresh extracted_pdf_paragraphs if it is possible and paragraphs are missing
   #    or not fresh.
-  def perform(oral_history_content, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false)
+  def perform(oral_history_content:nil, work:nil, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false)
+    unless work ^ oral_history_content
+      raise ArgumentError.new("Exactly one of work:#{work} and oral_history_content#{oral_history_content} must be provided")
+    end
+    # look it up from work if needed
+    (oral_history_content ||= work.oral_history_content) or raise ArgumentError.new("work #{work.friendlier_id} has no oral_history_content")
 
     if refresh_extracted_pdf_paragraphs
       members = oral_history_content.work.members

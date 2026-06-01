@@ -27,7 +27,7 @@ describe OhTranscriptChunkerJob, type: :job do
     expect(mock_chunker_class).to receive(:new).and_return(mock_chunker)
     expect(mock_chunker).to receive(:create_db_records)
 
-    described_class.perform_now(oral_history_content)
+    described_class.perform_now(oral_history_content: oral_history_content)
   end
 
   describe "only_if_invalid" do
@@ -36,7 +36,7 @@ describe OhTranscriptChunkerJob, type: :job do
         expect(mock_chunker_class).to receive(:new).and_return(mock_chunker)
         expect(mock_chunker).to receive(:create_db_records)
 
-        described_class.perform_now(oral_history_content, only_if_invalid: true)
+        described_class.perform_now(oral_history_content: oral_history_content, only_if_invalid: true)
       end
     end
 
@@ -49,7 +49,7 @@ describe OhTranscriptChunkerJob, type: :job do
         expect(mock_chunker_class).to receive(:new).and_return(mock_chunker)
         expect(mock_chunker).to receive(:create_db_records)
 
-        described_class.perform_now(oral_history_content, only_if_invalid: true)
+        described_class.perform_now(oral_history_content: oral_history_content, only_if_invalid: true)
       end
     end
 
@@ -74,7 +74,7 @@ describe OhTranscriptChunkerJob, type: :job do
 
         expect(Rails.logger).to receive(:info).with(/is valid, so not creating chunks/)
 
-        described_class.perform_now(oral_history_content, only_if_invalid: true)
+        described_class.perform_now(oral_history_content: oral_history_content, only_if_invalid: true)
       end
     end
   end
@@ -103,7 +103,7 @@ describe OhTranscriptChunkerJob, type: :job do
 
         expect(Rails.logger).to receive(:info).with(/needs paragraphs, so creating/)
 
-        described_class.perform_now(oral_history_content, refresh_extracted_pdf_paragraphs: true)
+        described_class.perform_now(oral_history_content: oral_history_content, refresh_extracted_pdf_paragraphs: true)
       end
     end
 
@@ -123,7 +123,7 @@ describe OhTranscriptChunkerJob, type: :job do
 
         expect(Rails.logger).not_to receive(:info).with(/needs paragraphs, so creating/)
 
-        described_class.perform_now(oral_history_content, refresh_extracted_pdf_paragraphs: true)
+        described_class.perform_now(oral_history_content: oral_history_content, refresh_extracted_pdf_paragraphs: true)
       end
     end
 
@@ -143,7 +143,7 @@ describe OhTranscriptChunkerJob, type: :job do
 
         expect(Rails.logger).to receive(:info).with(/needs paragraphs, so creating/)
 
-        described_class.perform_now(oral_history_content, refresh_extracted_pdf_paragraphs: true)
+        described_class.perform_now(oral_history_content: oral_history_content, refresh_extracted_pdf_paragraphs: true)
       end
     end
   end
