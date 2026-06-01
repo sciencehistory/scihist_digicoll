@@ -710,7 +710,7 @@ module ScihistDigicoll
     # we guard to not do by default in non-production, even if API keys are set (which they
     # often won't be), to avoid accidental $$.
     define_key :use_dummy_embedding_on_oh_publish, default: -> {
-      ! self.production?
+      ! ScihistDigicoll::Env.production?
     }
 
     # nil means use default, but we can define if we want to put all OCR work on, say, `special_jobs`.

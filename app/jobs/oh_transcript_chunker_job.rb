@@ -8,15 +8,22 @@ class OhTranscriptChunkerJob < ApplicationJob
   CHUNKER_CLASS = OralHistory::TranscriptChunker
 
 
-  # Just some default params, including by default not doing $$ API calls on staging.
-  def self.perform_later_on_publish(oral_history_content)
+  # For using after a work is published, will no op if the work does not have an
+  # oral_history_content
+  def self.on_publish_perform_later_if_needed(work)
+    # unless it's already in-memory or a quick exist db check shows it exists,
+    # then this is not needed.
+    unless work.association(:oral_history_content).loaded? || work.association(:oral_history_content).scope.exists?
+      return
+    end
+
     # because it's so expensive, we don't normally do real embedding API calls if not
     # in production -- even if someone has left API keys set!
     use_dummy_embedding = ScihistDigicoll::Env.lookup(:use_dummy_embedding_on_oh_publish)
 
-    self.perform_later(oral_history_content: oral_history_content,
+    self.perform_later(work: work,
       only_if_invalid: true,
-      refresh_extracted_pdf_paragraphs: false,
+      refresh_extracted_pdf_paragraphs: true,
       delete_existing: true,
       use_dummy_embedding: use_dummy_embedding
     )

@@ -285,6 +285,9 @@ RSpec.describe Admin::WorksController, type: :controller, queue_adapter: :test d
           expect(work.members.first.content_type).to eq "image/tiff"
           put :publish, params: { id: work.friendlier_id, cascade: 'true' }
           expect(response.status).to redirect_to(admin_work_path(work))
+
+          expect(OhTranscriptChunkerJob).not_to have_been_enqueued
+
           work.reload
           expect(work.published?).to be true
           expect(work.published_at).to eq Time.now
@@ -297,6 +300,24 @@ RSpec.describe Admin::WorksController, type: :controller, queue_adapter: :test d
           work.reload
           expect(work.published?).to be true
           expect(work.members.all? {|m| m.published?}).to be false
+        end
+
+        describe "oral history work" do
+          let(:work) do
+            create(:oral_history_work, :published, published: false)
+          end
+
+          it "enqueues chunk creating job" do
+            put :publish, params: { id: work.friendlier_id }
+
+            expect(OhTranscriptChunkerJob).to have_been_enqueued.with(
+              work: work,
+              only_if_invalid: true,
+              refresh_extracted_pdf_paragraphs: true,
+              delete_existing: true,
+              use_dummy_embedding: true # cause testing env
+            )
+          end
         end
       end
 

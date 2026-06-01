@@ -362,6 +362,10 @@ class Admin::WorksController < AdminController
 
     @work.class.transaction do
       @work.update!(published: true)
+
+      # TODO, should we have a "on publish" service class to batch more of these? If we add another.
+      OhTranscriptChunkerJob.on_publish_perform_later_if_needed(@work)
+
       if params[:cascade] == 'true'
         @work.all_descendent_members.find_each do |member|
           member.update!(published: true)
@@ -563,6 +567,12 @@ class Admin::WorksController < AdminController
     Work.transaction do
       current_user.works_in_cart.find_each do |work|
         work.update!(published: publish_value)
+
+        # TODO, should we have a "on publish" service class to batch more of these? If we add another.
+        if publish_value
+          OhTranscriptChunkerJob.on_publish_perform_later_if_needed(work)
+        end
+
         if params[:cascade] == 'true'
           work.all_descendent_members.find_each do |member|
             member.update!(published: true)
