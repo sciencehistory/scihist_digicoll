@@ -6,8 +6,8 @@ namespace :scihist do
     """
     task :backfill_pdf_page_offset => :environment do
       scope = OralHistoryContent.includes(:work => :members).
-        where("json_attributes -> 'extracted_pdf_paragraphs' is not null").
-        where("json_attributes -> 'extracted_pdf_paragraphs' -> 'logical_page_number_offset' is null")
+        where("json_attributes -> 'extracted_paragraph_container' is not null").
+        where("json_attributes -> 'extracted_paragraph_container' -> 'logical_page_number_offset' is null")
 
       progress_bar = ProgressBar.create(total: scope.count, format: Kithe::STANDARD_PROGRESS_BAR_FORMAT)
 
@@ -41,7 +41,7 @@ namespace :scihist do
           next
         end
 
-        oral_history_content.extracted_pdf_paragraphs.logical_page_number_offset = splitter.logical_page_number_offset
+        oral_history_content.extracted_paragraph_container.logical_page_number_offset = splitter.logical_page_number_offset
         oral_history_content.save!
 
         progress_bar.increment

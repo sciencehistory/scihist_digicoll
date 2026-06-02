@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe OralHistoryContent::ParagraphContainer do
-  describe "#extracted_pdf_paragraphs" do
+  describe "#extracted_paragraph_container" do
     # has two embedded inteviews, three audio files total, requires timestamp arithmatic
     let(:pdf_file_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf" }
 
@@ -62,14 +62,14 @@ describe OralHistoryContent::ParagraphContainer do
       container = OralHistoryContent::ParagraphContainer.create(
         oral_history_content: oral_history_content,
       )
-      expect(oral_history_content.extracted_pdf_paragraphs).to be_present
+      expect(oral_history_content.extracted_paragraph_container).to be_present
 
       oral_history_content.reload
 
-      expect(oral_history_content.extracted_pdf_paragraphs.paragraphs).to all(be_kind_of(OralHistoryContent::Paragraph))
-      expect(oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)).to be true
+      expect(oral_history_content.extracted_paragraph_container.paragraphs).to all(be_kind_of(OralHistoryContent::Paragraph))
+      expect(oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)).to be true
 
-      expect(oral_history_content.extracted_pdf_paragraphs.logical_page_number_offset).to eq 0
+      expect(oral_history_content.extracted_paragraph_container.logical_page_number_offset).to eq 0
 
       # changing pdf md5 makes not fresh anymore. LOTS of saves to DB and reloads here, very
       # bad performance, but good semantics for now.
@@ -78,7 +78,7 @@ describe OralHistoryContent::ParagraphContainer do
       pdf_asset.file_attacher.write
       pdf_asset.save!
       oral_history_content.reload
-      expect(oral_history_content.extracted_pdf_paragraphs.fresh?(
+      expect(oral_history_content.extracted_paragraph_container.fresh?(
         oral_history_content: oral_history_content
       )).to be false
 
@@ -87,7 +87,7 @@ describe OralHistoryContent::ParagraphContainer do
       pdf_asset.save!
       oral_history_content.reload
 
-      expect(oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)).to be true
+      expect(oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)).to be true
 
       # changing an audio file fingerprint makes it not fresh anymore, as
       # start time offsets might be different.
@@ -96,7 +96,7 @@ describe OralHistoryContent::ParagraphContainer do
       mp3_asset.save!
       oral_history_content.reload
 
-      expect(oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)).to be false
+      expect(oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)).to be false
     end
 
     describe "with warnings" do

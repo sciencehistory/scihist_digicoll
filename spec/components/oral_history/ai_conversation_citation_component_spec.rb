@@ -55,7 +55,7 @@ describe OralHistory::AiConversationCitationComponent, type: :component do
     let(:available_by_request_mode) { "automatic" }
 
     it "generates link to PDF with page number" do
-      expect(component.link_to_source).to eq view_transcript_pdf_path(work, anchor_page: (work.oral_history_content.extracted_pdf_paragraphs.logical_page_number_offset + 4).to_s)
+      expect(component.link_to_source).to eq view_transcript_pdf_path(work, anchor_page: (work.oral_history_content.extracted_paragraph_container.logical_page_number_offset + 4).to_s)
     end
   end
 end

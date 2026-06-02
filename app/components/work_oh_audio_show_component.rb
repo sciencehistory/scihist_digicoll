@@ -43,7 +43,7 @@ class WorkOhAudioShowComponent < ApplicationComponent
   def has_transcript?
     has_ohms_transcript? || (
       ScihistDigicoll::Env.lookup(:feature_display_pdf_paragraph_transcripts) &&
-      work&.oral_history_content&.extracted_pdf_paragraphs.present?
+      work&.oral_history_content&.extracted_paragraph_container.present?
     )
   end
 

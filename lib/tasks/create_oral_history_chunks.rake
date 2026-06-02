@@ -12,7 +12,7 @@ namespace :scihist do
     `USE_DUMMY_EMBEDDING=true` for a test run where you want to create chunk records
     (usually in staging) without actually getting an embedding vector from remote API.
 
-    `ONLY_EXTRACTED_PDF_PARAGRAPHS=true` limit to only those with extracted_pdf_paragraphs present
+    `ONLY_EXTRACTED_PDF_PARAGRAPHS=true` limit to only those with extracted_paragraph_container present
 
     `ONLY_AVAILABLE_IMMEDATE=true` limit to only those available immediate ('really free access')
 
@@ -24,7 +24,7 @@ namespace :scihist do
     scope = OralHistoryContent.preload(:work => :members).joins(:work).where(work: { published: true}).strict_loading
 
     if ENV['ONLY_EXTRACTED_PDF_PARAGRAPHS'] == "true"
-      scope = scope.where("oral_history_content.json_attributes -> 'extracted_pdf_paragraphs' is not NULL")
+      scope = scope.where("oral_history_content.json_attributes -> 'extracted_paragraph_container' is not NULL")
     end
 
     if ENV['ONLY_AVAILABLE_IMMEDATE'] == "true"

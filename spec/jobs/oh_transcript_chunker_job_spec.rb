@@ -88,8 +88,8 @@ describe OhTranscriptChunkerJob, type: :job do
 
     let(:work) { build(:oral_history_work, :published, :public_files ) }
 
-    describe "missing extracted_pdf_paragraphs" do
-      it "will create extracted_pdf_paragraphs" do
+    describe "missing extracted_paragraph_container" do
+      it "will create extracted_paragraph_container" do
         expect(OralHistoryContent::ParagraphContainer).to receive(:create).with(
           oral_history_content: oral_history_content,
           allow_failure_to_sync: true
@@ -101,15 +101,15 @@ describe OhTranscriptChunkerJob, type: :job do
       end
     end
 
-    describe "fresh and valid extracted_pdf_paragraphs" do
+    describe "fresh and valid extracted_paragraph_container" do
       before do
-        oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
+        oral_history_content.extracted_paragraph_container = OralHistoryContent::ParagraphContainer.new(
           pdf_md5: transcript_asset.file_metadata["md5"],
           combined_audio_fingerprint: CombinedAudioDerivativeCreator.new(work).fingerprint
         )
       end
 
-      it "does not replace extracted_pdf_paragraphs" do
+      it "does not replace extracted_paragraph_container" do
         expect(OralHistoryContent::ParagraphContainer).not_to receive(:create).with(
           oral_history_content: oral_history_content,
           allow_failure_to_sync: true
@@ -121,15 +121,15 @@ describe OhTranscriptChunkerJob, type: :job do
       end
     end
 
-    describe "existing not-fresh extracted_pdf_paragraphs" do
+    describe "existing not-fresh extracted_paragraph_container" do
       before do
-        oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
+        oral_history_content.extracted_paragraph_container = OralHistoryContent::ParagraphContainer.new(
           pdf_md5: "bad md5",
           combined_audio_fingerprint: "bad fingerprint",
         )
       end
 
-      it "will create new extracted_pdf_paragraphs" do
+      it "will create new extracted_paragraph_container" do
         expect(OralHistoryContent::ParagraphContainer).to receive(:create).with(
           oral_history_content: oral_history_content,
           allow_failure_to_sync: true

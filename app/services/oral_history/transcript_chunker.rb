@@ -70,8 +70,8 @@ module OralHistory
         elsif oral_history_content.ohms_xml&.vtt_transcript.present?
           oral_history_content.ohms_xml.vtt_transcript
 
-        elsif oral_history_content.extracted_pdf_paragraphs.present?
-          oral_history_content.extracted_pdf_paragraphs
+        elsif oral_history_content.extracted_paragraph_container.present?
+          oral_history_content.extracted_paragraph_container
 
         elsif oral_history_content.searchable_transcript_source.present?
           OralHistory::PlainTextParagraphSplitter.new(

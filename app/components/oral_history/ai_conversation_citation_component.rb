@@ -24,7 +24,7 @@ module OralHistory
           # browsers can handle. (mobile usually cannot)
           if citation_item.page_number
             anchor_page_number = citation_item.page_number.to_i
-            offset = citation_item.oral_history_content&.extracted_pdf_paragraphs&.logical_page_number_offset
+            offset = citation_item.oral_history_content&.extracted_paragraph_container&.logical_page_number_offset
 
             anchor_page_number += offset.to_i if offset
           end
