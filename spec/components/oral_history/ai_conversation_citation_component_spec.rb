@@ -1,22 +1,22 @@
 require 'rails_helper'
 
 describe OralHistory::AiConversationCitationComponent, type: :component do
-  let(:paragraphs_json_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_extracted_paragraphs.json"}
-
   let(:work) {
     build(:oral_history_work,
+      :with_extracted_paragraph_container,
       friendlier_id: "12ab12ab12",
       date_of_work: { start: "2012" },
       creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
                 { category: "interviewer", value: "Bohning, James J."}]
-    ).tap do |work|
-      work.oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
-        paragraphs: JSON.parse(File.read(paragraphs_json_path))
-      )
-    end
+    )
   }
 
   let(:oral_history_content) { work.oral_history_content }
+
+  let(:available_by_request_mode) { nil }
+  before do
+    oral_history_content.available_by_request_mode = available_by_request_mode if available_by_request_mode
+  end
 
   let(:oral_history_chunk) { build(:oral_history_chunk, oral_history_content: oral_history_content) }
 
@@ -52,23 +52,10 @@ describe OralHistory::AiConversationCitationComponent, type: :component do
   end
 
   describe "automatic requestable" do
-    let(:work) do
-      build(:oral_history_work,
-        friendlier_id: "12ab12ab12",
-        date_of_work: { start: "2012" },
-        creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
-                  { category: "interviewer", value: "Bohning, James J."}]
-      ).tap do |work|
-        work.oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
-          paragraphs: JSON.parse(File.read(paragraphs_json_path)),
-          logical_page_number_offset: 5
-        )
-        work.oral_history_content.available_by_request_mode = "automatic"
-      end
-    end
+    let(:available_by_request_mode) { "automatic" }
 
     it "generates link to PDF with page number" do
-      expect(component.link_to_source).to eq view_transcript_pdf_path(work, anchor_page: "9")
+      expect(component.link_to_source).to eq view_transcript_pdf_path(work, anchor_page: (work.oral_history_content.extracted_pdf_paragraphs.logical_page_number_offset + 4).to_s)
     end
   end
 end

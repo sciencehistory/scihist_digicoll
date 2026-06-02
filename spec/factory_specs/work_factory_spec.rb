@@ -52,6 +52,17 @@ describe "work factory" do
         expect(start_times.count).to eq work.members.find_all {|m| m.content_type.start_with?("audio/")}.count
       end
     end
+
+    describe "with_extracted_paragraph_container" do
+      let(:work) { build(:oral_history_work, :with_extracted_paragraph_container)}
+
+      it "has fresh paragraph data" do
+        expect(work.oral_history_content.extracted_pdf_paragraphs).to be_present
+        expect(work.oral_history_content.extracted_pdf_paragraphs.fresh?(
+          oral_history_content: work.oral_history_content)
+        ).to eq true
+      end
+    end
   end
 
   describe "video work" do

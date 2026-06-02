@@ -245,9 +245,18 @@ FactoryBot.define do
         genre { ["Oral histories"] }
       end
 
+      # includes a good PDF with an accurate extracted_pdf_text_json, and one audio file
       trait :public_files do
         members {[
-          build(:asset_with_faked_file, :pdf, published: true, title: 'transcript', role: "transcript"),
+          build(:asset_with_faked_file, :pdf,
+            published: true, role: "transcript",
+            faked_file: File.open(Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"),
+            # give it the real md5 for the PDF
+            faked_md5: "a949438afbf2d1dbe3a2008e82a23287",
+            faked_derivatives: {
+              "extracted_pdf_text_json" => build(:stored_uploaded_file, file: Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_extracted_pdf_text.json")
+            },
+          ),
           build(:asset_with_faked_file, :mp3,
                   title: "audio_recording.mp3",
                   published: true,
@@ -255,6 +264,18 @@ FactoryBot.define do
                   faked_size: 21.2.megabytes,
                   faked_derivatives: {} ),
         ]}
+      end
+
+      trait :with_extracted_paragraph_container do
+        public_files
+
+        oral_history_content {
+          OralHistoryContent.new(
+            interviewee_biographies: [build(:interviewee_biography)],
+            interviewer_profiles:    [build(:interviewer_profile)],
+            extracted_pdf_paragraphs: JSON.parse(File.read(Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_paragraph_container.json"))
+          )
+        }
       end
 
       trait :combined_derivative do

@@ -83,16 +83,10 @@ describe OhTranscriptChunkerJob, type: :job do
     # give it proper PDF set up that we can create paragraphs from
 
     let(:transcript_asset) do
-      build(:asset_with_faked_file, :pdf,
-        published: true, role: "transcript",
-        faked_file: File.open(Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"),
-        faked_derivatives: {
-          "extracted_pdf_text_json" => build(:stored_uploaded_file, file: Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_extracted_paragraphs.json")
-        }
-      )
+      work.members.find {|a| a.role == "transcript" }
     end
 
-    let(:work) { build(:oral_history_work, :published, members: [transcript_asset] ) }
+    let(:work) { build(:oral_history_work, :published, :public_files ) }
 
     describe "missing extracted_pdf_paragraphs" do
       it "will create extracted_pdf_paragraphs" do
