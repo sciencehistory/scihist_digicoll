@@ -4,7 +4,86 @@
 #
 # Refuses to run if there are already chunks, cause that would create a real mess!
 class OhTranscriptChunkerJob < ApplicationJob
-  def perform(oral_history_content, delete_existing: false, use_dummy_embedding: false)
+  # In a local constnat only so we can stub to something different in tests
+  CHUNKER_CLASS = OralHistory::TranscriptChunker
+
+
+  # For using after a work is published, will no op if the work does not have an
+  # oral_history_content
+  def self.on_publish_perform_later_if_needed(work)
+    # unless it's already in-memory or a quick exist db check shows it exists,
+    # then this is not needed.
+    unless work.association(:oral_history_content).loaded? || work.association(:oral_history_content).scope.exists?
+      return
+    end
+
+    # because it's so expensive, we don't normally do real embedding API calls if not
+    # in production -- even if someone has left API keys set!
+    use_dummy_embedding = ScihistDigicoll::Env.lookup(:use_dummy_embedding_on_oh_publish)
+
+    self.perform_later(work: work,
+      only_if_invalid: true,
+      refresh_extracted_pdf_paragraphs: true,
+      delete_existing: true,
+      use_dummy_embedding: use_dummy_embedding
+    )
+  end
+
+  # @param oral_history_content [OralHistoryContent] model to perform chunk creation on. optional
+  #   this param or work, from which we'll look it up.
+  #
+  # @param work [Work] optional provide this instead of oral_history_content, we'll look it up
+  #   in the job. Can be a convenience if you're doing for a lot of works and you don't want
+  #   to look up all their oral histories, although you should check work.association(:oral_history_content).scope.exist?
+  #   first to avoid unnecessary jobs and an exception here.
+  #
+  # @param delete_existing [Boolean] default false. if true, existing chunks will be deleted before creating new ones. If false,
+  #     will raise and refuse to create new if existing!
+  #
+  # @param use_dummy_embedding [Boolean] default false, if treu will not calculate real embedding vector
+  #    ($ expensive, slow), but will use a fake dummy 0 vector. Mostly used for testing, makes
+  #    chunks pretty useless.
+  #
+  # @param only_if_invalid [Boolean] default false. If true, we will do nothing if valid chunks already exist.
+  #
+  # @param refresh_extracted_pdf_paragraphs [Boolean]. default false. If true, will first
+  #    create fresh extracted_pdf_paragraphs if it is possible and paragraphs are missing
+  #    or not fresh.
+  def perform(oral_history_content:nil, work:nil, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false)
+    unless work ^ oral_history_content
+      raise ArgumentError.new("Exactly one of work:#{work} and oral_history_content#{oral_history_content} must be provided")
+    end
+    # look it up from work if needed
+    (oral_history_content ||= work.oral_history_content) or raise ArgumentError.new("work #{work.friendlier_id} has no oral_history_content")
+
+    if refresh_extracted_pdf_paragraphs
+      members = oral_history_content.work.members
+      transcript_asset = members.loaded? ? members.find {|a| a.role == "transcript" } : members.where(role: "transcript").first
+
+      # if we have extracted_pdf_text_json and don't have fresh paragraphs stored, we must refresh
+      if transcript_asset && transcript_asset.file_derivatives[:extracted_pdf_text_json].present? && (
+            oral_history_content.extracted_pdf_paragraphs.nil? || !oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)
+         )
+        Rails.logger.info("#{self.class.name}: refresh_extracted_pdf_paragraphs:true and needs paragraphs, so creating.")
+
+        begin
+          OralHistoryContent::ParagraphContainer.create(
+            oral_history_content: oral_history_content,
+            allow_failure_to_sync: true
+          )
+        rescue PdfParagraphSplitter::Error => e
+          Rails.logger.error("#{self.class.name}: Could not create extracted_pdf_paragraphs: #{e}")
+        end
+      end
+    end
+
+    if only_if_invalid
+      if OralHistory::ChunkValidator.new(oral_history_content, check_source_fingerprints: true).validate
+        Rails.logger.info("#{self.class.name}: called with only_if_invalid, and oral history #{oral_history_content.id} is valid, so not creating chunks.")
+        return
+      end
+    end
+
     if oral_history_content.oral_history_chunks.exists?
       if delete_existing
         oral_history_content.oral_history_chunks.delete_all
@@ -14,7 +93,7 @@ class OhTranscriptChunkerJob < ApplicationJob
       end
     end
 
-    OralHistory::TranscriptChunker.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records(use_dummy_embedding: use_dummy_embedding)
+    CHUNKER_CLASS.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records(use_dummy_embedding: use_dummy_embedding)
   end
 
 end

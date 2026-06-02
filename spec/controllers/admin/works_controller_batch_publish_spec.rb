@@ -221,6 +221,27 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
         expect(publishable_work.reload).to be_published
         expect(publishable_work.published_at).to eq Time.now
+
+        expect(OhTranscriptChunkerJob).not_to have_been_enqueued
+      end
+
+      describe "oral history work" do
+        let(:oh_work) { create(:oral_history_work, :published, published: false) }
+        before do
+          controller.current_user.works_in_cart << oh_work
+        end
+
+        it "enqueues chunk creating job" do
+          put :batch_publish_toggle, params: { publish: "on" }
+
+          expect(OhTranscriptChunkerJob).to have_been_enqueued.with(
+            work: oh_work,
+            only_if_invalid: true,
+            refresh_extracted_pdf_paragraphs: true,
+            delete_existing: true,
+            use_dummy_embedding: true # cause testing env
+          )
+        end
       end
     end
   end

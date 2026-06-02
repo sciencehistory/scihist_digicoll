@@ -99,7 +99,7 @@ FactoryBot.define do
         # other arbitrary metadata
         faked_metadata { {} }
 
-        # An array of Kithe::Derivative objects that we will add to the faked Asset.
+        # A Hash of derivative names/Shrine::UploadedFile objects that we will add to the faked Asset.
         # By default, we take every derivative defined in Kithe::Asset, if they
         # apply to this Asset, and just fake the original asset as the derivative.
         #
@@ -108,7 +108,7 @@ FactoryBot.define do
         #
         #   { one: create(:stored_uploaded_file, content_type: "image/jpeg") }
         #
-        # Nil means we'll create some by default in after(:build)
+        # nil means we'll create some by default in after(:build)
         faked_derivatives { nil }
       end
 

@@ -32,6 +32,7 @@ module OralHistory
     # @param allow_embedding_wait_seconds [Integer] if we exceed open ai rate limit for getting
     #    embedding, can we wait and try again? With maximum wait being this many seconds.
     #    Default 0, so, no.
+    #
     def initialize(oral_history_content:, allow_embedding_wait_seconds: 0)
       unless oral_history_content.kind_of?(OralHistoryContent)
         raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
@@ -88,6 +89,12 @@ module OralHistory
 
 
     def create_db_records(use_dummy_embedding: false)
+      # If we want to override this for some reason we can add a param, but
+      # I don't think we ever want to do this, and we were accidentally, causing problems.
+      if oral_history_content.oral_history_chunks.exists?
+        raise ArgumentError.new("Can't create_db_records when oral_history_chunks already exist, will lead to inconsistent confusion.")
+      end
+
       # array of arrays of paragraphs
       chunk_arrays = split_chunks
 
