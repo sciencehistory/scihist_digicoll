@@ -80,7 +80,7 @@ class OralHistoryContent
       container.warnings = warnings if warnings
 
       # And save it in the model passed in
-      oral_history_content.extracted_pdf_paragraphs = container
+      oral_history_content.extracted_paragraph_container = container
       oral_history_content.save!
 
       return container

@@ -209,7 +209,7 @@ describe OralHistory::TranscriptChunker do
     end
   end
 
-  describe "extracted_pdf_paragraphs" do
+  describe "extracted_paragraph_container" do
     let(:work) {
       build(:oral_history_work, :with_extracted_paragraph_container,
         creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
@@ -230,11 +230,11 @@ describe OralHistory::TranscriptChunker do
       end
 
       it "begins with first paragraph" do
-        expect(chunks.first.first.text).to eq oral_history_content.extracted_pdf_paragraphs.paragraphs.first.text
+        expect(chunks.first.first.text).to eq oral_history_content.extracted_paragraph_container.paragraphs.first.text
       end
 
       it "ends with last paragraph" do
-        expect(chunks.last.last.text).to eq oral_history_content.extracted_pdf_paragraphs.paragraphs.last.text
+        expect(chunks.last.last.text).to eq oral_history_content.extracted_paragraph_container.paragraphs.last.text
       end
 
       it "has two paragraphs of overlap in each chunk" do
@@ -260,7 +260,7 @@ describe OralHistory::TranscriptChunker do
 
           expect(chunks).to be_present
           expect(chunks.first.start_paragraph_number).to eq 1
-          expect(chunks.last.end_paragraph_number).to eq oral_history_content.extracted_pdf_paragraphs.paragraphs.count
+          expect(chunks.last.end_paragraph_number).to eq oral_history_content.extracted_paragraph_container.paragraphs.count
 
           # and they should all have page numbers too, becuase for PDF ones we've got em!
           expect(chunks).to all(satisfy { |c| c.other_metadata["page_numbers"].present? })

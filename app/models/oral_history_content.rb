@@ -59,7 +59,7 @@ class OralHistoryContent < ApplicationRecord
 
   # an array of OralHistoryCotent::Paragraphs extracted from PDF, with source.provenance
   # metadata to tell freshness.
-  attr_json :extracted_pdf_paragraphs, OralHistoryContent::ParagraphContainer.to_type
+  attr_json :extracted_paragraph_container, OralHistoryContent::ParagraphContainer.to_type
 
   enum :combined_audio_derivatives_job_status,  {
     queued:    'queued',
@@ -69,7 +69,7 @@ class OralHistoryContent < ApplicationRecord
   }
 
   # omit really long ones from inspect
-  self.filter_attributes = [:json_attributes, :extracted_pdf_paragraphs]
+  self.filter_attributes = [:json_attributes, :extracted_paragraph_container]
 
 
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned

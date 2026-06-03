@@ -273,7 +273,7 @@ FactoryBot.define do
           OralHistoryContent.new(
             interviewee_biographies: [build(:interviewee_biography)],
             interviewer_profiles:    [build(:interviewer_profile)],
-            extracted_pdf_paragraphs: JSON.parse(File.read(Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_paragraph_container.json"))
+            extracted_paragraph_container: JSON.parse(File.read(Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_paragraph_container.json"))
           )
         }
       end

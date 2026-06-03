@@ -155,7 +155,7 @@ module OralHistory
         # has OHMS, or has PDF Text AND is really free access.
         oral_history_content.has_ohms_transcript? || (
           oral_history_content.available_by_request_off? &&
-          oral_history_content.extracted_pdf_paragraphs.present?
+          oral_history_content.extracted_paragraph_container.present?
         )
       end
 

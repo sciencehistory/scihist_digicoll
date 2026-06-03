@@ -57,8 +57,8 @@ describe "work factory" do
       let(:work) { build(:oral_history_work, :with_extracted_paragraph_container)}
 
       it "has fresh paragraph data" do
-        expect(work.oral_history_content.extracted_pdf_paragraphs).to be_present
-        expect(work.oral_history_content.extracted_pdf_paragraphs.fresh?(
+        expect(work.oral_history_content.extracted_paragraph_container).to be_present
+        expect(work.oral_history_content.extracted_paragraph_container.fresh?(
           oral_history_content: work.oral_history_content)
         ).to eq true
       end

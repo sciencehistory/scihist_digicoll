@@ -47,7 +47,7 @@ class OhTranscriptChunkerJob < ApplicationJob
   # @param only_if_invalid [Boolean] default false. If true, we will do nothing if valid chunks already exist.
   #
   # @param refresh_extracted_pdf_paragraphs [Boolean]. default false. If true, will first
-  #    create fresh extracted_pdf_paragraphs if it is possible and paragraphs are missing
+  #    create fresh extracted_paragraph_container if it is possible and paragraphs are missing
   #    or not fresh.
   def perform(oral_history_content:nil, work:nil, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false)
     unless work ^ oral_history_content
@@ -62,7 +62,7 @@ class OhTranscriptChunkerJob < ApplicationJob
 
       # if we have extracted_pdf_text_json and don't have fresh paragraphs stored, we must refresh
       if transcript_asset && transcript_asset.file_derivatives[:extracted_pdf_text_json].present? && (
-            oral_history_content.extracted_pdf_paragraphs.nil? || !oral_history_content.extracted_pdf_paragraphs.fresh?(oral_history_content: oral_history_content)
+            oral_history_content.extracted_paragraph_container.nil? || !oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)
          )
         Rails.logger.info("#{self.class.name}: refresh_extracted_pdf_paragraphs:true and needs paragraphs, so creating.")
 
@@ -72,7 +72,7 @@ class OhTranscriptChunkerJob < ApplicationJob
             allow_failure_to_sync: true
           )
         rescue PdfParagraphSplitter::Error => e
-          Rails.logger.error("#{self.class.name}: Could not create extracted_pdf_paragraphs: #{e}")
+          Rails.logger.error("#{self.class.name}: Could not create extracted_paragraph_container: #{e}")
         end
       end
     end
