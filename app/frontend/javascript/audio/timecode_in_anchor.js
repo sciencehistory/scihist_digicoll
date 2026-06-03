@@ -28,11 +28,9 @@ domready(function() {
     }
 
     var playerDomEl = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
-    const videoJsPlayer = videojs(playerDomEl);
 
-    if (playerDomEl) {
-
-
+    // Another file should actually be creating the videoJSPlayer obj we need, wait for it if needed.
+    onVideoJSSetupFor(playerDomEl, function(videoJsPlayer) {
       // Try to seek and then auto-play. player might not be in state where it can
       // seek yet, if it is not then try to wait and seek when we can.
       if (playerDomEl.readyState >=  playerDomEl.HAVE_METADATA) {
@@ -76,7 +74,7 @@ domready(function() {
           });
         }
       }
-    }
+    });
   } else if (paragraphNumber && hasOhTabs()) {
       // OH transcript paragraph number, need to make sure we've switched to transcript tab,
       // then scroll to element leaving room for navbar
@@ -129,6 +127,31 @@ function seekAndAutoPlay(player, timeCodeSeconds) {
   if (playPromise !== undefined) {
     playPromise.catch(error => {
       console.log(`could not autoplay: ${error}`);
+    });
+  }
+}
+
+ // Another file is creating the videoJS object, asyncrornous to this file.
+ //
+ // It may or may not have already been created; we want to execute the callback
+ // only when it has, and not execute the callback if it never does!
+function onVideoJSSetupFor(htmlMediaElement, callback) {
+  if (! htmlMediaElement) {
+    // wasn't even on page, we need do nothing.
+    return;
+  }
+
+  const existingPlayer = videojs.getPlayer(htmlMediaElement);
+
+  if (existingPlayer) {
+    // already exists
+    callback(existingPlayer);
+  } else {
+    videojs.hook('setup', function(createdPlayer) {
+      // if multiple on a page, make sure it's the one we want
+      if (createdPlayer.el().contains(htmlMediaElement)) {
+        callback(createdPlayer);
+      }
     });
   }
 }
