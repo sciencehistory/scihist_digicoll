@@ -27,19 +27,19 @@ domready(function() {
       history.scrollRestoration = 'manual';
     }
 
-    var player = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
-    const videoJsPlayer = videojs(player);
+    var playerDomEl = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
+    const videoJsPlayer = videojs(playerDomEl);
 
-    if (player) {
+    if (playerDomEl) {
 
 
       // Try to seek and then auto-play. player might not be in state where it can
       // seek yet, if it is not then try to wait and seek when we can.
-      if (player.readyState >=  player.HAVE_METADATA) {
-        setupTimeSeek(player, timeCodeSeconds);
+      if (playerDomEl.readyState >=  playerDomEl.HAVE_METADATA) {
+        setupTimeSeek(playerDomEl, timeCodeSeconds);
       } else {
-        player.addEventListener("loadedmetadata", function(event) {
-          setupTimeSeek(player, timeCodeSeconds);
+        playerDomEl.addEventListener("loadedmetadata", function(event) {
+          setupTimeSeek(playerDomEl, timeCodeSeconds);
         });
       }
 
@@ -49,9 +49,9 @@ domready(function() {
       //
       // If it runs when not needed cause earlier seek DID work -- it should just be
       // seeking to where we already are anyway!
-      videoJsPlayer.one('play', function() {
+      videoJsPlayer.one('play', function() { // 'one' will only hook once then de-register
         videoJsPlayer.currentTime(timeCodeSeconds);
-        // it's already playing, it will not help to play again!
+        // it's already playing, it will not help to play again, no need we're good.
       });
 
       // For OH
