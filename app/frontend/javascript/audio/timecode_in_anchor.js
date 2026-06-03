@@ -36,10 +36,10 @@ domready(function() {
       // Try to seek and then auto-play. player might not be in state where it can
       // seek yet, if it is not then try to wait and seek when we can.
       if (playerDomEl.readyState >=  playerDomEl.HAVE_METADATA) {
-        setupTimeSeek(playerDomEl, timeCodeSeconds);
+        seekAndAutoPlay(playerDomEl, timeCodeSeconds);
       } else {
         playerDomEl.addEventListener("loadedmetadata", function(event) {
-          setupTimeSeek(playerDomEl, timeCodeSeconds);
+          seekAndAutoPlay(playerDomEl, timeCodeSeconds);
         });
       }
 
@@ -116,9 +116,12 @@ function hasOhTabs() {
   return !!document.querySelector("#ohmsScrollable .tab-pane.active")
 }
 
+// Seek to selected time, and TRY to auto-play the audio. Either or both might
+// not work in some browsers trying to prevent spammy playing.
+//
 // Must be called when player is in a readyState where we can seek,
 // at least HAVE_METADATA. https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
-function setupTimeSeek(player, timeCodeSeconds) {
+function seekAndAutoPlay(player, timeCodeSeconds) {
   player.currentTime = timeCodeSeconds;
 
   var playPromise  = player.play();
