@@ -31,13 +31,14 @@ domready(function() {
 
     // Another file should actually be creating the videoJSPlayer obj we need, wait for it if needed.
     onVideoJSSetupFor(playerDomEl, function(videoJsPlayer) {
+
       // Try to seek and then auto-play. player might not be in state where it can
       // seek yet, if it is not then try to wait and seek when we can.
       if (playerDomEl.readyState >=  playerDomEl.HAVE_METADATA) {
-        seekAndAutoPlay(playerDomEl, timeCodeSeconds);
+        seekAndAutoPlay(videoJsPlayer, timeCodeSeconds);
       } else {
         playerDomEl.addEventListener("loadedmetadata", function(event) {
-          seekAndAutoPlay(playerDomEl, timeCodeSeconds);
+          seekAndAutoPlay(videoJsPlayer, timeCodeSeconds);
         });
       }
 
@@ -119,10 +120,10 @@ function hasOhTabs() {
 //
 // Must be called when player is in a readyState where we can seek,
 // at least HAVE_METADATA. https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
-function seekAndAutoPlay(player, timeCodeSeconds) {
-  player.currentTime = timeCodeSeconds;
+function seekAndAutoPlay(videoJsPlayer, timeCodeSeconds) {
+  videoJsPlayer.currentTime(timeCodeSeconds);
 
-  var playPromise  = player.play();
+  var playPromise  = videoJsPlayer.play();
 
   if (playPromise !== undefined) {
     playPromise.catch(error => {
