@@ -14,29 +14,44 @@
 import domready from 'domready';
 import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode, scrollToElement} from './helpers/ohms_player_helpers.js';
 import * as bootstrap from 'bootstrap';
+import videojs from 'video.js';
 
 domready(function() {
   var hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   var timeCodeSeconds = window.location.hash.includes("=") && hashParams.get("t");
   var paragraphNumber = window.location.hash.includes("=") && hashParams.get("p");
 
+
   if (timeCodeSeconds) {
     if (history.scrollRestoration) {
       history.scrollRestoration = 'manual';
     }
 
-    var player = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
-    if (player) {
+    var playerDomEl = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
 
-      // player might not be in state where it can seek yet, if not then wait
-      // and seek when we can.
-      if (player.readyState >=  player.HAVE_METADATA) {
-        setupTimeSeek(player, timeCodeSeconds);
+    // Another file should actually be creating the videoJSPlayer obj we need, wait for it if needed.
+    onVideoJSSetupFor(playerDomEl, function(videoJsPlayer) {
+
+      // Try to seek and then auto-play. player might not be in state where it can
+      // seek yet, if it is not then try to wait and seek when we can.
+      if (playerDomEl.readyState >=  playerDomEl.HAVE_METADATA) {
+        seekAndAutoPlay(videoJsPlayer, timeCodeSeconds);
       } else {
-        player.addEventListener("loadedmetadata", function(event) {
-          setupTimeSeek(player, timeCodeSeconds);
+        playerDomEl.addEventListener("loadedmetadata", function(event) {
+          seekAndAutoPlay(videoJsPlayer, timeCodeSeconds);
         });
       }
+
+      // If all else fails, on some very persnickety user-agents (iOS), there's no
+      // way to seek UNTIL user presses play. Using video.js event and seek API is also important,
+      // as it seems to work around some iOS issues with doing both those operations too!
+      //
+      // If it runs when not needed cause earlier seek DID work -- it should just be
+      // seeking to where we already are anyway!
+      videoJsPlayer.one('play', function() { // 'one' will only hook once then de-register
+        videoJsPlayer.currentTime(timeCodeSeconds);
+        // it's already playing, it will not help to play again, no need we're good.
+      });
 
       // For OH
       //
@@ -60,7 +75,7 @@ domready(function() {
           });
         }
       }
-    }
+    });
   } else if (paragraphNumber && hasOhTabs()) {
       // OH transcript paragraph number, need to make sure we've switched to transcript tab,
       // then scroll to element leaving room for navbar
@@ -100,16 +115,44 @@ function hasOhTabs() {
   return !!document.querySelector("#ohmsScrollable .tab-pane.active")
 }
 
+// Seek to selected time, and TRY to auto-play the audio. Either or both might
+// not work in some browsers trying to prevent spammy playing.
+//
 // Must be called when player is in a readyState where we can seek,
 // at least HAVE_METADATA. https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
-function setupTimeSeek(player, timeCodeSeconds) {
-  player.currentTime = timeCodeSeconds;
+function seekAndAutoPlay(videoJsPlayer, timeCodeSeconds) {
+  videoJsPlayer.currentTime(timeCodeSeconds);
 
-  var playPromise  = player.play();
+  var playPromise  = videoJsPlayer.play();
 
   if (playPromise !== undefined) {
     playPromise.catch(error => {
       console.log(`could not autoplay: ${error}`);
+    });
+  }
+}
+
+ // Another file is creating the videoJS object, asyncrornous to this file.
+ //
+ // It may or may not have already been created; we want to execute the callback
+ // only when it has, and not execute the callback if it never does!
+function onVideoJSSetupFor(htmlMediaElement, callback) {
+  if (! htmlMediaElement) {
+    // wasn't even on page, we need do nothing.
+    return;
+  }
+
+  const existingPlayer = videojs.getPlayer(htmlMediaElement);
+
+  if (existingPlayer) {
+    // already exists
+    callback(existingPlayer);
+  } else {
+    videojs.hook('setup', function(createdPlayer) {
+      // if multiple on a page, make sure it's the one we want
+      if (createdPlayer.el().contains(htmlMediaElement)) {
+        callback(createdPlayer);
+      }
     });
   }
 }
