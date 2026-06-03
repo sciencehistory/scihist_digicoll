@@ -210,17 +210,11 @@ describe OralHistory::TranscriptChunker do
   end
 
   describe "extracted_pdf_paragraphs" do
-    let(:paragraphs_json_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_extracted_paragraphs.json"}
-
     let(:work) {
-      build(:oral_history_work,
+      build(:oral_history_work, :with_extracted_paragraph_container,
         creator: [{ category: "interviewee", value: "Hanford, William E., 1908-1996"},
                   { category: "interviewer", value: "Bohning, James J."}]
-      ).tap do |work|
-        work.oral_history_content.extracted_pdf_paragraphs = OralHistoryContent::ParagraphContainer.new(
-          paragraphs: JSON.parse(File.read(paragraphs_json_path))
-        )
-      end
+      )
     }
 
     describe "#split_chunks" do
