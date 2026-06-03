@@ -14,11 +14,13 @@
 import domready from 'domready';
 import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode, scrollToElement} from './helpers/ohms_player_helpers.js';
 import * as bootstrap from 'bootstrap';
+import videojs from 'video.js';
 
 domready(function() {
   var hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
   var timeCodeSeconds = window.location.hash.includes("=") && hashParams.get("t");
   var paragraphNumber = window.location.hash.includes("=") && hashParams.get("p");
+
 
   if (timeCodeSeconds) {
     if (history.scrollRestoration) {
@@ -26,10 +28,13 @@ domready(function() {
     }
 
     var player = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
+    const videoJsPlayer = videojs(player);
+
     if (player) {
 
-      // player might not be in state where it can seek yet, if not then wait
-      // and seek when we can.
+
+      // Try to seek and then auto-play. player might not be in state where it can
+      // seek yet, if it is not then try to wait and seek when we can.
       if (player.readyState >=  player.HAVE_METADATA) {
         setupTimeSeek(player, timeCodeSeconds);
       } else {
@@ -37,6 +42,17 @@ domready(function() {
           setupTimeSeek(player, timeCodeSeconds);
         });
       }
+
+      // If all else fails, on some very persnickety user-agents (iOS), there's no
+      // way to seek UNTIL user presses play. Using video.js event and seek API is also important,
+      // as it seems to work around some iOS issues with doing both those operations too!
+      //
+      // If it runs when not needed cause earlier seek DID work -- it should just be
+      // seeking to where we already are anyway!
+      videoJsPlayer.one('play', function() {
+        videoJsPlayer.currentTime(timeCodeSeconds);
+        // it's already playing, it will not help to play again!
+      });
 
       // For OH
       //
