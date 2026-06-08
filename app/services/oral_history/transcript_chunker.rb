@@ -133,6 +133,8 @@ module OralHistory
             r.save!
           }
         end
+
+        Rails.logger.info("#{self.class.name}: Created chunks for work #{oral_history_content.work.friendlier_id} with fingerprint #{computed_source_fingerprint.inspect}")
       end
 
       nil
@@ -285,7 +287,7 @@ module OralHistory
 
     # add a paragraph_source_class name to the paragraph source's own source_fingerprint please.
     def computed_source_fingerprint
-      paragraph_source.source_fingerprint.merge("paragraph_source_class" => paragraph_source.class.name)
+      @computed_source_fingerprint ||= paragraph_source.source_fingerprint.merge("paragraph_source_class" => paragraph_source.class.name)
     end
 
     private
