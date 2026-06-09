@@ -9,7 +9,7 @@
                 <li><%= link_to "Contact", contact_url, class: "btn btn-brand-main" %></li>
                 <% if ScihistDigicoll::Env.lookup(:log_in_using_microsoft_sso) %>
                     <li>
-                        <% if helpers.can? :access_staff_functions %>
+                        <% if logged_in_user? %>
                             <%= link_to "Log out", logout_path, class: 'btn btn-brand-main' %>
                         <% else %>
                             <%= link_to "Log in",
