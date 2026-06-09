@@ -72,6 +72,8 @@ class OralHistoryContent < ApplicationRecord
   self.filter_attributes = [:json_attributes, :extracted_paragraph_container]
 
 
+  # DEPRECATED, working to replace with availability_mode
+  #
   # Some assets marked non-published in this work are still available by request. That feature needs to be turned
   # on here at the work level, in one of two modes:
   #
@@ -86,6 +88,32 @@ class OralHistoryContent < ApplicationRecord
   # along with scopes like `OralHistoryContent.available_by_request_automatic`
   enum :available_by_request_mode, {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, prefix: :available_by_request
 
+
+  # Different availability modes for OH, including some where non-published assets are
+  # still requestable.
+  #
+  #   * direct: "Normal" mode, published assets are directly available to the public with
+  #     a click, non-published assets are simply not.
+  #
+  #   * automatic_request: after filling out request form, user gets access to designated non-public
+  #     assets without human intervention
+  #
+  #   * reviewed_request: after filling out request form, request needs to be approved by human
+  #
+  #   * embargoed: Signal that non-published assets should be strictly controlled and not available
+  #     for AI features etc. We need this at Work level for performance and clarity reasons,
+  #     not to have to examine individual assets and guess intent.
+  #     Assets should still be non-published for safety.
+  #
+  # For request modes enabled at the work level, individual assets also need their oh_available_by_request flag
+  # set, to be extra sure this non-published asset is meant to be available by request.
+  #
+  # backed by a pg enum. methods such as `availability_direct?` or `availabiltiy_reviewed_request?`
+  # are available, along with scopes like `OralHistoryContent.availability_embargoed`
+  #
+  enum :availability_mode,
+    {direct: 'direct', automatic_request: 'automatic_request', reviewed_request: 'reviewed_request', embargoed: 'embargoed'},
+    prefix: "availability"
 
   # scopes for finding certain kinds of OH's. We add ".distinct" to them all to make them all composable,
   # even though really only needed for available_immediate, does not hurt.

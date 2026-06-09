@@ -10,13 +10,14 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_16_175054) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_09_143410) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
+  create_enum "oh_availability_mode_type", ["direct", "automatic_request", "reviewed_request", "embargoed"]
   create_enum "available_by_request_mode_type", ["off", "automatic", "manual_review"]
 
   create_function :kithe_models_friendlier_id_gen, sql_definition: <<-'SQL'
@@ -288,6 +289,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_16_175054) do
   end
 
   create_table "oral_history_content", force: :cascade do |t|
+    t.enum "availability_mode", default: "direct", null: false, enum_type: "oh_availability_mode_type"
     t.uuid "work_id", null: false
     t.string "combined_audio_fingerprint"
     t.jsonb "combined_audio_component_metadata"
