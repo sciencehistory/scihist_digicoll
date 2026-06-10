@@ -116,7 +116,7 @@ class OralHistoryRequestsController < ApplicationController
       return
     end
 
-    if @work.oral_history_content.available_by_request_automatic?
+    if @work.oral_history_content.availability_automatic_request?
       @oral_history_request.update!(delivery_status: "automatic")
 
       # If they are already logged in, they can just be directed to see this

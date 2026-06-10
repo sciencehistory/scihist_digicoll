@@ -117,8 +117,8 @@ describe OralHistory::ChunkFetcher do
   describe "access limits" do
     let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH", published: true) }
     let!(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH", published: true) }
-    let!(:needs_approval_oh) { create(:oral_history_work, :available_by_request, title: "Needs approval OH", available_by_request_mode: "manual_review", published: true)}
-    let!(:upon_request_oh) { create(:oral_history_work, :available_by_request, title: "Automatic Approval OH", available_by_request_mode: "automatic", published: true) }
+    let!(:needs_approval_oh) { create(:oral_history_work, :available_by_request, title: "Needs approval OH", availability_mode: "reviewed_request", published: true)}
+    let!(:upon_request_oh) { create(:oral_history_work, :available_by_request, title: "Automatic Approval OH", availability_mode: "automatic_request", published: true) }
     let!(:private_oh) {
       create(:oral_history_work,
         title: "NOT available OH",

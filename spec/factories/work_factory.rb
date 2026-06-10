@@ -311,7 +311,7 @@ FactoryBot.define do
 
       trait :available_by_request do
         transient do
-          available_by_request_mode { :manual_review }
+          availability_mode { :reviewed_request }
         end
 
         members {[
@@ -327,7 +327,7 @@ FactoryBot.define do
         ]}
         after(:build) do |work, evaluator|
           work.representative = work.members.to_a.find {|w| w.published? } if work.representative.nil?
-          work.oral_history_content!.available_by_request_mode = evaluator.available_by_request_mode
+          work.oral_history_content!.availability_mode = evaluator.availability_mode
         end
       end
 

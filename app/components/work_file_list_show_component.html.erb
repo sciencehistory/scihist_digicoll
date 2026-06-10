@@ -20,7 +20,6 @@
         </figure>
       <% end %>
 
-
       <%= DescriptionDisplayFormatter.new(@work.description).format  %>
     </div>
   </div>
@@ -33,7 +32,7 @@
 
           <p><span class="by-request-items-label">By request</span> <%= available_by_request_sentence %></p>
 
-          <% if @work.oral_history_content.available_by_request_automatic? %>
+          <% if @work.oral_history_content.availability_automatic_request? %>
             <p>
               Fill out a brief form to <span class="text-danger">receive immediate access</span> to these files.
             </p>
@@ -43,7 +42,7 @@
             </p>
           <% end %>
 
-          <% unless @work.oral_history_content.available_by_request_automatic? %>
+          <% unless @work.oral_history_content.availability_automatic_request? %>
             <p>Usage is subject to restrictions set by the interviewee.</p>
           <% end %>
 

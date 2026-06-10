@@ -50,7 +50,7 @@ class AccessPolicy
         asset.published? ||
           (
             asset.oh_available_by_request? &&
-            asset.parent.oral_history_content.available_by_request_automatic?
+            asset.parent.oral_history_content.availability_automatic_request?
           )
       end
     end

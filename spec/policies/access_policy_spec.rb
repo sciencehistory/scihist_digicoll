@@ -155,7 +155,7 @@ describe "access policies:" do
       describe "automatically requestable" do
         let(:asset) {
           build(:asset, published: false, oh_available_by_request: true,
-            parent: build(:oral_history_work,  :available_by_request, available_by_request_mode: :automatic)
+            parent: build(:oral_history_work,  :available_by_request, availability_mode: :automatic_request)
           )
         }
 
@@ -167,7 +167,7 @@ describe "access policies:" do
       describe "manually requestable" do
         let(:asset) {
           build(:asset, published: false, oh_available_by_request: true,
-            parent: build(:oral_history_work,  :available_by_request, available_by_request_mode: :manual_review)
+            parent: build(:oral_history_work,  :available_by_request, availability_mode: :reviewed_request)
           )
         }
 

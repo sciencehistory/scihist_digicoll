@@ -145,7 +145,7 @@ describe OralHistoryRequestsController, type: :controller do
     describe "email functionality" do
       let(:work) { create(:oral_history_work, :available_by_request)}
       describe "automatic delivery" do
-        let(:work) { create(:oral_history_work, :available_by_request, available_by_request_mode: :automatic)}
+        let(:work) { create(:oral_history_work, :available_by_request, availability_mode: :automatic_request)}
 
         describe "already logged in" do
           let(:requester_email) { OralHistoryRequester.new(email: full_create_params[:patron_email]) }
@@ -187,7 +187,7 @@ describe OralHistoryRequestsController, type: :controller do
 
       describe "manual review" do
         # same as old style, we just let them know that they'll get an email.
-        let(:work) { create(:oral_history_work, :available_by_request, available_by_request_mode: :manual_review)}
+        let(:work) { create(:oral_history_work, :available_by_request, availability_mode: :reviewed_request)}
 
         it "emails admin, and lets user know" do
           expect {

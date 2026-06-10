@@ -80,7 +80,7 @@ class WorkFileListShowComponent < ApplicationComponent
   end
 
   def request_button_name
-    if @work.oral_history_content.available_by_request_automatic?
+    if @work.oral_history_content.availability_automatic_request?
       "Get Access"
     else
       "Request Access"
@@ -91,7 +91,7 @@ class WorkFileListShowComponent < ApplicationComponent
     @available_by_request_assets ||= begin
       unless work.is_oral_history? &&
             work.oral_history_content &&
-            (! work.oral_history_content.available_by_request_off?)
+            work.oral_history_content.available_by_request?
         []
       else
         all_members.find_all { |member| member.kind_of?(Asset) && !member.published? && member.oh_available_by_request? }
