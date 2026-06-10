@@ -1,51 +1,54 @@
-form-select<div class="card bg-light mb-3">
-  <h2 class="card-header h3">Un-Published Assets Available By Request</h2>
+<div class="card bg-light mb-3">
+  <h2 class="card-header h3">Availability/Request Mode</h2>
   <div class="card-body">
     <div class="text-muted text-small mb-2">
-      <p>Make <b>marked non-published</b> assets be available anyway by request, after the patron fills out a form?</p>
+      <p>Set <b>marked non-published</b> assets to be available anyway by request, <b>or</b> mark this oral history as embargoed.</p>
     </div>
 
-    <% if allow_change_by_request? %>
-      <%= form_with(model: work.oral_history_content!, url: update_oh_available_by_request_admin_work_path(work), method: :put, local: true) do |f|  %>
+    <%= form_with(model: work.oral_history_content!, url: update_oh_available_by_request_admin_work_path(work), method: :put, local: true) do |f|  %>
 
-        <table class="table table-sm">
-          <tr>
-            <td style="width: 2rem">
-              <%= f.radio_button :available_by_request_mode, "off" %>
-            </td>
-            <td>
-              <label for="oral_history_content_available_by_request_mode_off">No</label>
-              <div class="text-muted">Disabled / Off</div>
-              <div class="text-muted">NOT using 'Available by Request' feature</div>
+      <table class="table table-sm">
+        <tr>
+          <td style="width: 2rem">
+            <%= f.radio_button :availability_mode, "direct" %>
+          </td>
+          <td>
+            <label for="oral_history_content_availability_direct">Direct</label>
+            <div class="text-muted">NOT using 'Available by Request' feature</div>
+            <div class="text-muted">Published items are available to public, non-published items are not.</div>
+          </td>
+        </tr>
+        <tr>
+          <td><%= f.radio_button :availability_mode, "automatic_request" %></td>
+          <td>
+            <label for="oral_history_content_availability_automatic_request">Automatic Request</label>
+            <div class="text-muted">Automatic delivery of selected assets after filling out a form</div>
+            <div class="text-muted">Used with <code>free access, without internet release</code></div>
+          </td>
+        </tr>
+        <tr>
+          <td><%= f.radio_button :availability_mode, "reviewed_request" %></td>
+          <td>
+            <label for="oral_history_content_available_by_request_mode_manual_review">Reviewed Request</label>
+            <div class="text-muted">Delivery of selected assets after filling out a form and an administrator approves</div>
+            <div class="text-muted">Used with <code>restricted</code>, <code>permissions required</code>, and others</div>
+          </td>
+        </tr>
+        <tr>
+          <td><%= f.radio_button :availability_mode, "embargoed" %></td>
+          <td>
+            <label for="oral_history_content_available_by_request_mode_manual_review">Embargoed</label>
+            <div class="text-muted">Not available to any users, not using 'Available by Request' feature.</div>
+            <div class="text-muted">Assets should still be set to non-published for full safety</div>
+            <div class="text-muted">Used with <code>restricted</code>, <code>embargoed</code></div>
+          </td>
+        </tr>
+      </table>
 
-            </td>
-          </tr>
-          <tr>
-            <td><%= f.radio_button :available_by_request_mode, "automatic" %></td>
-            <td>
-              <label for="oral_history_content_available_by_request_mode_automatic">Automatic</label>
-              <div class="text-muted">Yes, after filling out a form</div>
-              <div class="text-muted">Used with <code>free access, without internet release</code></div>
-            </td>
-          </tr>
-          <tr>
-            <td><%= f.radio_button :available_by_request_mode, "manual_review" %></td>
-            <td>
-              <label for="oral_history_content_available_by_request_mode_manual_review">Manual Review</label>
-              <div class="text-muted">Yes, after filling out a form and an administrator approves</div>
-              <div class="text-muted">Used with <code>restricted</code>, <code>permissions required</code>, and others</div>
-            </td>
-          </tr>
-        </table>
+      <%= submit_tag "Save Changes", class: "btn btn-primary mb-3" %>
 
-            <%# f.select :available_by_request_mode,
-                    OralHistoryContent::AVAILABLE_BY_REQUEST_INPUT_PROMPT,
-                    {},
-                    class: "form-select" %>
-
-        <%= submit_tag "Save Changes", class: "btn btn-primary mb-3" %>
-
-
+      <% if private_asset_members.present? %>
+        <h3 class="h4">Selected assets can be available by request</h3>
         <table class="table table-sm">
           <% private_asset_members.each do |asset| %>
             <tr>
@@ -65,10 +68,10 @@ form-select<div class="card bg-light mb-3">
             </tr>
           <% end %>
         </table>
+      <% else %>
+        <hr>
+        <p>There are no unpublished assets.</p>
       <% end %>
-    <% else %>
-      <hr>
-      <p>There are no unpublished assets.</p>
     <% end %>
   </div>
 </div>
