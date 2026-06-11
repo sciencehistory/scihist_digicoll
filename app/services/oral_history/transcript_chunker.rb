@@ -38,6 +38,11 @@ module OralHistory
         raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
       end
 
+      # for now refuse to do this for safety
+      if oral_history_content.availability_embargoed?
+        raise ArgumentError.new("Will not chunk an embargoed OralHistoryContent, work friendlier_id: #{oral_history_content.work.friendlier_id}")
+      end
+
       @oral_history_content = oral_history_content
 
       @paragraphs = self.paragraph_source.paragraphs
