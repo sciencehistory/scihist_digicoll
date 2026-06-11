@@ -72,21 +72,8 @@ class OralHistoryContent < ApplicationRecord
   self.filter_attributes = [:json_attributes, :extracted_paragraph_container]
 
 
-  # DEPRECATED, working to replace with availability_mode
-  #
-  # Some assets marked non-published in this work are still available by request. That feature needs to be turned
-  # on here at the work level, in one of two modes:
-  #
-  #   * automatic: after filling out request form, user gets access without human intervention
-  #   * manual_review: after filling out request form, request needs to be approved by human
-  #   * off: by request form feature not enabled
-  #
-  # Once enabled at the work level, individual assets also need their oh_available_by_request flag
-  # set, for extra sure this non-published asset is meant to be available by request.
-  #
-  # backed by a pg enum. methods such as `available_by_request_off?` are available,
-  # along with scopes like `OralHistoryContent.available_by_request_automatic`
-  #enum :available_by_request_mode, {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, prefix: :available_by_request
+  # These can be removed after we migrate to remove the old available_by_request_mode column
+  self.ignored_columns += [:available_by_request_mode]
   def available_by_request_mode
     raise TypeError.new("No longer supported, use #availability_mode")
   end

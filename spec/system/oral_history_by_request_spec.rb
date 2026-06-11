@@ -148,7 +148,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
   describe "when you visit an OH with nothing available at all period", js: false do
     let!(:work) do
       build(:oral_history_work, :published, members: [build(:asset_with_faked_file, :pdf, role: :transcript, published: false)]).tap do |work|
-        work.oral_history_content!.update(available_by_request_mode: :off)
+        work.oral_history_content!.update(availability_mode: :direct)
       end
     end
 
