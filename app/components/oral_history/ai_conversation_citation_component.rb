@@ -13,7 +13,7 @@ module OralHistory
         # with some search-term highlighting triggered.
         if citation_item.can_link_to_html_transcript?
           work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}&th=#{transcript_highlight_value}")
-        elsif citation_item.oral_history_content.available_by_request_manual_review?
+        elsif citation_item.oral_history_content.availability_reviewed_request?
           # they will need to request, just go to Work page, and trigger open request form
           work_path(citation_item.work.friendlier_id, anchor: "modal-auto-open=oh-request-trigger")
         else

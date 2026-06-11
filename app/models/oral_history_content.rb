@@ -134,6 +134,10 @@ class OralHistoryContent < ApplicationRecord
     where(availability_mode: ["direct", "automatic_request", "reviewed_request"])
   }
 
+  scope :direct_or_automatic, -> {
+    where(availability_mode: ["direct", "automatic_request"])
+  }
+
   after_commit :after_commit_update_work_index_if_needed
 
   # Sets IO to be combined_audio_m4a, writing directly to "store" storage,

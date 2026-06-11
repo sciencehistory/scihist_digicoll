@@ -46,22 +46,16 @@ module OralHistory
         OralHistoryContent.joins(:work).where(work: { published: true }).where.associated(:oral_history_chunks).distinct
     end
 
-    # DANGER: Note we are counting on having no "embargoed" OH's in valid_chunks_scope --
-    #         they should not have chunks created. See #3253
-    #
-    #         That danger pplies to all chunks but ohms, as if they have chunks embargoed
-    #         OHs would be included in available_by_request_mode off
-    #
     def scope_for_category
       case category
       when :immediate_ohms_only
-        valid_chunks_scope.where.not( ohms_xml_text: [nil, ""])
+        valid_chunks_scope.with_ohms
       when :immediate_only
-        valid_chunks_scope.where(available_by_request_mode: ["off", nil])
+        valid_chunks_scope.availability_direct
       when :immediate_or_automatic
-        valid_chunks_scope.where(available_by_request_mode: ["off", nil, "automatic"])
+        valid_chunks_scope.direct_or_automatic
       when :all
-        valid_chunks_scope
+        valid_chunks_scope.all_except_fully_embargoed
       else
         raise TypeError, "how did we get here, unrecognized category #{category}"
       end

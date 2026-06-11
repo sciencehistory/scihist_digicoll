@@ -149,14 +149,16 @@ class WorkIndexer < Kithe::Indexer
 
     to_field "oh_availability_facet" do |rec, acc|
       if rec.is_oral_history? && rec.oral_history_content
-        request_mode = rec.oral_history_content.available_by_request_mode
+        availability_mode = rec.oral_history_content.availability_mode
 
-        value = if request_mode == "automatic"
+        value = if availability_mode == "automatic_request"
           "Upon request"
-        elsif request_mode == "manual_review"
+        elsif availability_mode == "reviewed_request"
           "Permission required"
-        elsif request_mode == "off" && rec.members.any? { |m| m.published? && !m.role_portrait? }
+        elsif availability_mode == "direct"
           "Immediate"
+        elsif availability_mode == "embargoed"
+          "Embargoed"
         end
 
         acc << value if value

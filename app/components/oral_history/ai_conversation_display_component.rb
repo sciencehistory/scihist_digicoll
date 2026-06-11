@@ -154,7 +154,7 @@ module OralHistory
       def can_link_to_html_transcript?
         # has OHMS, or has PDF Text AND is really free access.
         oral_history_content.has_ohms_transcript? || (
-          oral_history_content.available_by_request_off? &&
+          oral_history_content.availability_direct? &&
           oral_history_content.extracted_paragraph_container.present?
         )
       end
