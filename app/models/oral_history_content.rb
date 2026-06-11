@@ -86,7 +86,10 @@ class OralHistoryContent < ApplicationRecord
   #
   # backed by a pg enum. methods such as `available_by_request_off?` are available,
   # along with scopes like `OralHistoryContent.available_by_request_automatic`
-  enum :available_by_request_mode, {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, prefix: :available_by_request
+  #enum :available_by_request_mode, {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, prefix: :available_by_request
+  def available_by_request_mode
+    raise TypeError.new("No longer supported, use #availability_mode")
+  end
 
 
   # Different availability modes for OH, including some where non-published assets are

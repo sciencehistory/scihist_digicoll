@@ -18,15 +18,15 @@ namespace :scihist do
 
 
       OralHistoryContent.includes(:work => :members).select("oral_history_content.*").find_each(batch_size: 10) do |oc|
-        if oc.available_by_request_mode == 'automatic'
+        if oc.attributes["available_by_request_mode"] == 'automatic'
           oc.availability_mode = "automatic_request"
           counts["automatic_request"] += 1
 
-        elsif oc.available_by_request_mode == "manual_review"
+        elsif oc.attributes["available_by_request_mode"] == "manual_review"
           oc.availability_mode = "reviewed_request"
           counts["reviewed_request"] += 1
 
-        elsif oc.available_by_request_mode == "off" && oc.work.published? && !oc.work.members.find { |a| a.published? }
+        elsif oc.attributes["available_by_request_mode"] == "off" && oc.work.published? && !oc.work.members.find { |a| a.published? }
           oc.availability_mode = "embargoed"
           counts["embargoed"] += 1
 

@@ -54,15 +54,10 @@ namespace :scihist do
       overwrite_chunks = (ENV['OVERWRITE_CHUNKS'] == "true") || only_invalid
       use_dummy_embedding = ENV['USE_DUMMY_EMBEDDING'] == "true"
 
-      # Make sure we skip truly embargoed/non-public stuff, which is
-      # currently a bit tricky in the metadata.
-      # See https://github.com/sciencehistory/scihist_digicoll/issues/3253
-      if oh_content.available_by_request_off?
-        # Not requestable, but does it have a published transcript? If not, no go
-        unless oh_content.work.members.to_a.find {|asset| asset.role == "transcript" && asset.published?}
-          skipped_count += 1
-          next
-        end
+      # Not creating chunks for embargoed items, safest to make sure they are not used.
+      if oh_content.availability_embargoed?
+        skipped_count += 1
+        next
       end
 
       if only_invalid
