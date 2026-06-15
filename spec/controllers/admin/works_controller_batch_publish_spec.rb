@@ -377,7 +377,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         put :update_oh_available_by_request, params: {
           id: work.friendlier_id,
           oral_history_content: {
-            available_by_request_mode: "automatic"
+            availability_mode: "automatic_request"
           },
           available_by_request: {
             was_true_asset.id => "false",
@@ -387,7 +387,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         }
         expect(response).to redirect_to(admin_work_path(work, anchor: "tab=nav-oral-histories"))
 
-        expect(work.reload.oral_history_content.available_by_request_mode).to eq("automatic")
+        expect(work.reload.oral_history_content.availability_mode).to eq("automatic_request")
         expect(was_false_asset.reload.oh_available_by_request).to be true
         expect(was_true_asset.reload.oh_available_by_request).to be false
       end

@@ -13,9 +13,9 @@ describe OralHistory::AiConversationCitationComponent, type: :component do
 
   let(:oral_history_content) { work.oral_history_content }
 
-  let(:available_by_request_mode) { nil }
+  let(:availability_mode) { nil }
   before do
-    oral_history_content.available_by_request_mode = available_by_request_mode if available_by_request_mode
+    oral_history_content.availability_mode = availability_mode if availability_mode
   end
 
   let(:oral_history_chunk) { build(:oral_history_chunk, oral_history_content: oral_history_content) }
@@ -52,7 +52,7 @@ describe OralHistory::AiConversationCitationComponent, type: :component do
   end
 
   describe "automatic requestable" do
-    let(:available_by_request_mode) { "automatic" }
+    let(:availability_mode) { "automatic_request" }
 
     it "generates link to PDF with page number" do
       expect(component.link_to_source).to eq view_transcript_pdf_path(work, anchor_page: (work.oral_history_content.extracted_paragraph_container.logical_page_number_offset + 4).to_s)

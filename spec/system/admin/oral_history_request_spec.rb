@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe "Oral History Access Request Administration", :logged_in_user, type: :system, queue_adapter: :test  do
   let!(:work) do
-    create(:oral_history_work, :available_by_request, available_by_request_mode: :manual_review, published: true)
+    create(:oral_history_work, :available_by_request, availability_mode: :reviewed_request, published: true)
   end
 
   context "A request exists for a manual_review work" do

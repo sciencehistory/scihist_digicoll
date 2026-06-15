@@ -13,7 +13,7 @@ class OralHistoryRequest < ApplicationRecord
   validates :oral_history_requester, presence: true
 
   validates :intended_use, presence: true, if: -> {
-    work&.oral_history_content&.available_by_request_manual_review?
+    work&.oral_history_content&.availability_reviewed_request?
   }
 
   enum :delivery_status, %w{pending automatic approved rejected dismissed}.map {|v| [v, v]}.to_h, prefix: :delivery_status

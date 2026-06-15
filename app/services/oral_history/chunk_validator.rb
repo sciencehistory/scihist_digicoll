@@ -91,15 +91,8 @@ module OralHistory
       return true
     end
 
-    # Have to check for presence of unpublished transcript , bad data model, see
-    # https://github.com/sciencehistory/scihist_digicoll/issues/3253
     def embargoed?
-      unless defined?(@embargoed)
-        @embargoed = oral_history_content.available_by_request_off? &&
-          (transcript = oral_history_content.work.members.find {|a| a.role == "transcript"}) &&
-          (transcript.nil? || !transcript.published?)
-      end
-      @embargoed
+      oral_history_content.availability_embargoed?
     end
 
     def validate_chunk_sequence

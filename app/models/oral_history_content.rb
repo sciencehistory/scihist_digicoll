@@ -72,20 +72,42 @@ class OralHistoryContent < ApplicationRecord
   self.filter_attributes = [:json_attributes, :extracted_paragraph_container]
 
 
-  # Some assets marked non-published in this work are still available by request. That feature needs to be turned
-  # on here at the work level, in one of two modes:
-  #
-  #   * automatic: after filling out request form, user gets access without human intervention
-  #   * manual_review: after filling out request form, request needs to be approved by human
-  #   * off: by request form feature not enabled
-  #
-  # Once enabled at the work level, individual assets also need their oh_available_by_request flag
-  # set, for extra sure this non-published asset is meant to be available by request.
-  #
-  # backed by a pg enum. methods such as `available_by_request_off?` are available,
-  # along with scopes like `OralHistoryContent.available_by_request_automatic`
-  enum :available_by_request_mode, {off: 'off', automatic: 'automatic', manual_review: 'manual_review'}, prefix: :available_by_request
+  # These can be removed after we migrate to remove the old available_by_request_mode column
+  self.ignored_columns += [:available_by_request_mode]
+  def available_by_request_mode
+    raise TypeError.new("No longer supported, use #availability_mode")
+  end
 
+
+  # Different availability modes for OH, including some where non-published assets are
+  # still requestable.
+  #
+  #   * direct: "Normal" mode, published assets are directly available to the public with
+  #     a click, non-published assets are simply not.
+  #
+  #   * automatic_request: after filling out request form, user gets access to designated non-public
+  #     assets without human intervention
+  #
+  #   * reviewed_request: after filling out request form, request needs to be approved by human
+  #
+  #   * embargoed: Signal that non-published assets should be strictly controlled and not available
+  #     for AI features etc. We need this at Work level for performance and clarity reasons,
+  #     not to have to examine individual assets and guess intent.
+  #     Assets should still be non-published for safety.
+  #
+  # For request modes enabled at the work level, individual assets also need their oh_available_by_request flag
+  # set, to be extra sure this non-published asset is meant to be available by request.
+  #
+  # backed by a pg enum. methods such as `availability_direct?` or `availabiltiy_reviewed_request?`
+  # are available, along with scopes like `OralHistoryContent.availability_embargoed`
+  #
+  enum :availability_mode,
+    {direct: 'direct', automatic_request: 'automatic_request', reviewed_request: 'reviewed_request', embargoed: 'embargoed'},
+    prefix: "availability"
+
+  def available_by_request?
+    availability_automatic_request? || availability_reviewed_request?
+  end
 
   # scopes for finding certain kinds of OH's. We add ".distinct" to them all to make them all composable,
   # even though really only needed for available_immediate, does not hurt.
@@ -93,47 +115,17 @@ class OralHistoryContent < ApplicationRecord
   # has ohms, non-empty ohms text. Could be legacy or new
   scope :with_ohms, -> { where.not(ohms_xml_text: [nil, ""]).distinct }
 
-  # Immediate availability, fully public. Has no request mode turned on -- currently
-  # this is a mess TECHNICAL DEBT we need to amke sure it ALSO has at least one
-  # non-portrait member that is public, to distinguish from totally secret non-published
-  # non-requestable OH.
-  #
-  # WARNING:  THESE MAY NOT WORK WITHOUT PERFORMANCE ISSUES, SEE
-  # https://github.com/sciencehistory/scihist_digicoll/issues/3253
+  # note that rails enum for `availability_mode` above gives us scopes for
+  # availability_direct availability_automatic_request, availability_reviewed_request
+  # availability_embargoed
 
-  scope :available_immediate, -> {
-    # empty available_by_request_mode is assumed off
-    where(available_by_request_mode: ["off", nil]).
-    joins(work: :members).
-    where(members: { published: true})
-    .where.not(members: { role: 'portrait' } ).
-    distinct # needed cause of the join to avoid dups
-  }
-
-  # IMMEDIATE after request, no approval needed, unlike needs_approval.
-  scope :upon_request, -> { where(available_by_request_mode: "automatic").distinct  }
-
-  scope :needs_approval, -> { where(available_by_request_mode: "manual_review").distinct  }
-
-  # available_by_request_mode off and no public PDFs is totally embargoed private
-  scope :fully_embargoed,  -> {
-    where(available_by_request_mode: ["off", nil]).
-    joins(work: :members).
-    where.not(members: { published: true}).
-    distinct
-  }
-
-  # Have to write the confusing opposite of above
-  # Everything that either doesn't have request mode OFF, OR has a published non-portrait
-  # member. GAH.
+  # We'll provide this for convenience?
   scope :all_except_fully_embargoed, -> {
-    where.not(available_by_request_mode: ["off", nil]).
-      joins(work: :members).
-      or(
-        OralHistoryContent.joins(work: :members).
-        where(members: {  published: true } ).
-        where.not(members: { role: "portrait" })
-      ).distinct
+    where(availability_mode: ["direct", "automatic_request", "reviewed_request"])
+  }
+
+  scope :direct_or_automatic, -> {
+    where(availability_mode: ["direct", "automatic_request"])
   }
 
   after_commit :after_commit_update_work_index_if_needed

@@ -314,7 +314,7 @@ class Admin::WorksController < AdminController
   def update_oh_available_by_request
     authorize! :update, @work
     @work.transaction do
-      @work.oral_history_content!.update( params.require(:oral_history_content).permit(:available_by_request_mode))
+      @work.oral_history_content!.update( params.require(:oral_history_content).permit(:availability_mode))
 
       params[:available_by_request]&.each_pair do |asset_pk, value|
         @work.members.find{ |m| m.id == asset_pk}&.update(oh_available_by_request: value)

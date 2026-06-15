@@ -114,6 +114,7 @@ describe OralHistory::ChunkValidator do
         ],
         published: true,
         oral_history_content: OralHistoryContent.new(
+          availability_mode: "embargoed",
           searchable_transcript_source: transcript_txt,
           oral_history_chunks: chunks
         )

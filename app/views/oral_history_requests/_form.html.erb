@@ -6,7 +6,7 @@
     <p>
       To receive files for "<%= @work.title %>" by email, please fill out the form below.
 
-      <% if @work.oral_history_content.available_by_request_automatic? %>
+      <% if @work.oral_history_content.availability_automatic_request? %>
         <span class="text-danger">You will receive these files immediately after submitting this form.</span>
       <% else %>
         <span class="text-danger">After your request is received, you will receive an email response, usually within
@@ -68,9 +68,9 @@
         <%= f.input :intended_use,
           as: :text,
           label: "Intended use",
-          hint: (@work.oral_history_content.available_by_request_automatic? ? "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." : "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions."),
+          hint: (@work.oral_history_content.availability_automatic_request? ? "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." : "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions."),
           input_html: { value: remembered_form_values["intended_use"] },
-          required: @oral_history_request.work&.oral_history_content&.available_by_request_manual_review?
+          required: @oral_history_request.work&.oral_history_content&.availability_reviewed_request?
         %>
       </div>
     </div>

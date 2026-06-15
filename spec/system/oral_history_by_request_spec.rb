@@ -13,7 +13,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
   context "When you visit an OH with protected by request, automatic delivery assets" do
     let!(:work) do
       build(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3, portrait], representative: preview_pdf).tap do |work|
-        work.oral_history_content!.update(available_by_request_mode: :automatic)
+        work.oral_history_content!.update(availability_mode: :automatic_request)
       end
     end
 
@@ -95,9 +95,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
   context "When you visit an OH with protected by request, approved delivery assets" do
     let!(:work) do
-      build(:oral_history_work, :published, members: [preview_pdf, protected_pdf, protected_mp3], representative: preview_pdf).tap do |work|
-        work.oral_history_content!.update(available_by_request_mode: :manual_review)
-      end
+      create(:oral_history_work, :published, :available_by_request, members: [preview_pdf, protected_pdf, protected_mp3])
     end
 
     it "shows the page without error" do
@@ -147,10 +145,10 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
     end
   end
 
-  describe "when you visit an OH with nothing available at all period", js: false do
+  describe "when you visit an OH that is embargoed", js: false do
     let!(:work) do
       build(:oral_history_work, :published, members: [build(:asset_with_faked_file, :pdf, role: :transcript, published: false)]).tap do |work|
-        work.oral_history_content!.update(available_by_request_mode: :off)
+        work.oral_history_content!.update(availability_mode: :embargoed)
       end
     end
 

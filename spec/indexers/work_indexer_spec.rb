@@ -116,20 +116,20 @@ describe WorkIndexer do
       expect(output_hash["oh_availability_facet"]).to eq ["Immediate"]
     end
 
-    describe "with no published or requestable files" do
+    describe "with embargoed files" do
       let(:work) do
         work = build(:oral_history_work, :published, format: ['text'])
         work.members.each { |m| m.published = false }
         work.members.concat build(:asset_with_faked_file, published: true, role: "portrait")
-        work.oral_history_content!.available_by_request_mode = "off"
+        work.oral_history_content!.availability_mode = "embargoed"
 
         work
       end
 
-      it "does not have an availability value at all" do
+      it "indexes as embargoed" do
         output_hash = WorkIndexer.new.map_record(work)
 
-        expect(output_hash["oh_availability_facet"]).to be_blank
+        expect(output_hash["oh_availability_facet"]).to eq ["Embargoed"]
       end
     end
 
