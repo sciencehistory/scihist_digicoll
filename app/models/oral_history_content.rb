@@ -71,14 +71,6 @@ class OralHistoryContent < ApplicationRecord
   # omit really long ones from inspect
   self.filter_attributes = [:json_attributes, :extracted_paragraph_container]
 
-
-  # These can be removed after we migrate to remove the old available_by_request_mode column
-  self.ignored_columns += [:available_by_request_mode]
-  def available_by_request_mode
-    raise TypeError.new("No longer supported, use #availability_mode")
-  end
-
-
   # Different availability modes for OH, including some where non-published assets are
   # still requestable.
   #

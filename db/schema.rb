@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_143410) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_173658) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "vector"
@@ -18,7 +18,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_143410) do
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
   create_enum "oh_availability_mode_type", ["direct", "automatic_request", "reviewed_request", "embargoed"]
-  create_enum "available_by_request_mode_type", ["off", "automatic", "manual_review"]
+
 
   create_function :kithe_models_friendlier_id_gen, sql_definition: <<-'SQL'
       CREATE OR REPLACE FUNCTION public.kithe_models_friendlier_id_gen(min_value bigint, max_value bigint)
@@ -299,7 +299,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_143410) do
     t.string "combined_audio_derivatives_job_status"
     t.datetime "combined_audio_derivatives_job_status_changed_at", precision: nil
     t.text "searchable_transcript_source"
-    t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
     t.jsonb "json_attributes", default: {}
     t.jsonb "combined_audio_m4a_data"
     t.jsonb "input_docx_transcript_data"
