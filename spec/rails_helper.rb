@@ -265,6 +265,17 @@ RSpec.configure do |config|
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
 
+  # set default type from WHATEVER sub-directory spec is in, even non-standard
+  # ones, if not already set. useful for test-prof profiling that summaries by type
+  config.define_derived_metadata do |metadata|
+    next if metadata[:type]
+
+    relative = metadata[:file_path].sub(%r{^.*/spec/}, "")
+    first_dir = relative.split("/").first
+
+    metadata[:type] = first_dir.to_sym if first_dir.present?
+  end
+
   # Filter lines from Rails gems in backtraces.
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
