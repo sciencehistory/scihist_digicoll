@@ -213,6 +213,7 @@ group :test do
   gem "db-query-matchers", "< 2.0"
   gem 'rails-controller-testing'
   gem 'axe-core-rspec', "~> 4.3" # accessibilty testing
+  gem "test-prof", "~> 1.0" # profiling tests but ALSO some tools we use to improve test performance
 end
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
