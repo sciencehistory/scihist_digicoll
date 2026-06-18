@@ -13,7 +13,7 @@ describe Asset do
   end
 
   describe "initial checksum creation", queue_adapter: :inline do
-    let!(:asset) { create(:asset_with_inline_promoted_file, :no_derivatives_creation) }
+    let!(:asset) { create(:asset_with_inline_promoted_file) }
     it "checks the asset after storing it" do
       expect(asset.fixity_checks.count).to eq 1
     end

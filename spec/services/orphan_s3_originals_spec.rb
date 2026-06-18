@@ -38,7 +38,7 @@ describe OrphanS3Originals do
     }
     let(:asset_v)  {
       # Video derivatives creation has problems in test due to HLS....
-      create(:asset_with_inline_promoted_file, :no_derivatives_creation,
+      create(:asset_with_inline_promoted_file,
         file: File.open((Rails.root + "spec/test_support/video/sample_video.mp4"))
       )
     }

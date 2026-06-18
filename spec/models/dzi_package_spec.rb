@@ -42,7 +42,7 @@ describe DziPackage do
         expect(CreateDziJob).to have_been_enqueued.with(asset)
       end
       describe "with derivatives off" do
-        let(:asset) { create(:asset_with_inline_promoted_file, :no_derivatives_creation)}
+        let(:asset) { create(:asset_with_inline_promoted_file)}
         it "does not create dzi" do
           asset
           expect(CreateDziJob).not_to have_been_enqueued.with(asset)

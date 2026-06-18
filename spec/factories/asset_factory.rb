@@ -21,10 +21,18 @@ FactoryBot.define do
     #
     # Will use a default small png, but you can pass `file:` with whatever file you want,
     # of any media type.
+    #
+    # Skips derivatives by default, but add :with_derivatives if desired.
     factory :asset_with_inline_promoted_file do
       file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
       after(:build) do |asset|
-        asset.file_attacher.set_promotion_directives(promote: :inline, create_derivatives: :inline)
+        asset.file_attacher.set_promotion_directives(promote: :inline, create_derivatives: :false)
+      end
+
+      trait :with_derivatives do
+        after(:build) do |asset|
+          asset.file_attacher.set_promotion_directives(create_derivatives: :inline)
+        end
       end
     end
 
