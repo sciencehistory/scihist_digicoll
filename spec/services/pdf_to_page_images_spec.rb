@@ -109,7 +109,7 @@ describe PdfToPageImages do
     end
 
     describe "on_existing_dup" do
-      let!(:duplicate) { create(:asset, :fake_dzi, :inline_promoted_file, file: File.open(pdf_path), parent: work, extracted_pdf_source_info: { page_index: 1 }) }
+      let!(:duplicate) { create(:asset_with_faked_file, :pdf, :fake_dzi, parent: work, extracted_pdf_source_info: { page_index: 1 }) }
       let!(:original_file_id) { duplicate.file.id }
       let!(:original_dzi_id) { duplicate.dzi_manifest_file.id }
       let!(:original_derivatives_json) { duplicate.file_derivatives.as_json }
