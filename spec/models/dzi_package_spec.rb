@@ -35,14 +35,14 @@ describe DziPackage do
 
   describe "Asset life-cycle automatic actions", queue_adapter: :test do
     describe "asset creation" do
-      let(:asset) { create(:asset, :inline_promoted_file, :bg_derivatives)}
+      let(:asset) { create(:asset_with_inline_promoted_file, :bg_derivatives)}
 
       it "queues dzi creation" do
         asset
         expect(CreateDziJob).to have_been_enqueued.with(asset)
       end
       describe "with derivatives off" do
-        let(:asset) { create(:asset, :inline_promoted_file, :no_derivatives_creation)}
+        let(:asset) { create(:asset_with_inline_promoted_file, :no_derivatives_creation)}
         it "does not create dzi" do
           asset
           expect(CreateDziJob).not_to have_been_enqueued.with(asset)

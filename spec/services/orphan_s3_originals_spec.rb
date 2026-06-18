@@ -32,13 +32,13 @@ describe OrphanS3Originals do
   describe "two legit assets, one video and one image, plus two orphans" do
     # Two legitimate, non-orphan assets:
     let(:asset_n)  {
-      create(:asset, :inline_promoted_file,
+      create(:asset_with_inline_promoted_file,
         file: File.open((Rails.root + "spec/test_support/images/20x20.png"))
       )
     }
     let(:asset_v)  {
       # Video derivatives creation has problems in test due to HLS....
-      create(:asset, :inline_promoted_file, :no_derivatives_creation,
+      create(:asset_with_inline_promoted_file, :no_derivatives_creation,
         file: File.open((Rails.root + "spec/test_support/video/sample_video.mp4"))
       )
     }

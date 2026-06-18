@@ -255,7 +255,7 @@ RSpec.describe Admin::WorksController, type: :controller, queue_adapter: :test d
 
         context "work has assets with invalid files" do
           let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
-          let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
+          let(:bad_asset) {create(:asset_with_inline_promoted_file, file: File.open(corrupt_tiff_path))}
           let(:good_asset) {create(:asset_with_faked_file) }
           let(:parent_work) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
           before do

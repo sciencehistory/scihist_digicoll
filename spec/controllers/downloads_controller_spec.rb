@@ -73,7 +73,7 @@ describe DownloadsController do
     end
 
     describe "non-promoted file" do
-      let(:asset) { create(:asset, :inline_promoted_file, :non_promoted_file) }
+      let(:asset) { create(:asset_with_inline_promoted_file, :non_promoted_file) }
 
       it "does not give access" do
         expect {
