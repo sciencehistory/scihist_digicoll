@@ -3,10 +3,10 @@ require 'rails_helper'
 describe ViewerMemberInfoSerializer, type: :model, queue_adapter: :inline do
   include Rails.application.routes.url_helpers
 
-  let(:grandchild) { create(:asset, :inline_promoted_file).tap { |g| g.reload } }
+  let(:grandchild) { create(:asset_with_faked_file, :fake_dzi).tap { |g| g.reload } }
   let(:child) { create(:public_work, members: [grandchild], representative: grandchild, position: 2)}
-  let(:asset) { create(:asset, :inline_promoted_file, position: 1).tap { |g| g.reload } }
-  let(:non_published_asset) { create(:asset, :inline_promoted_file, published: false) }
+  let(:asset) { create(:asset_with_faked_file, :fake_dzi, position: 1).tap { |g| g.reload } }
+  let(:non_published_asset) { create(:asset_with_faked_file, published: false) }
   let(:work)  { create(:public_work, members: [child, asset, non_published_asset]) }
 
   let(:serializer) { ViewerMemberInfoSerializer.new(work) }

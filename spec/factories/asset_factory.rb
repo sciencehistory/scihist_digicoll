@@ -141,6 +141,13 @@ FactoryBot.define do
         }
       end
 
+      trait :png do
+        faked_file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
+        faked_content_type { "image/png" }
+        faked_height { 30 }
+        faked_width { 30 }
+      end
+
       trait :pdf do
         faked_file { File.open((Rails.root + "spec/test_support/pdf/sample.pdf")) }
         faked_content_type { "application/pdf" }
