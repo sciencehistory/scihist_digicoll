@@ -1,5 +1,5 @@
 require 'rails_helper'
-RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :system, queue_adapter: :test  do
+RSpec.describe "Oral History Access Interviewee bio", :logged_in_user, type: :system, js: false, queue_adapter: :test  do
   let!(:normal_asset) { create(:asset, title: "normal asset", parent: create(:work, title: "Parent work")) }
   let!(:orphaned_asset) { create(:asset, title: "orphaned asset", parent: nil) }
 

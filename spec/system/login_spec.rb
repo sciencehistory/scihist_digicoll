@@ -1,5 +1,5 @@
 require 'rails_helper'
-RSpec.describe "Logins", type: :system do
+RSpec.describe "Logins", type: :system, js: false do
   
   # NOTE:
   # System tests are slow and tend to be flaky, so please try
