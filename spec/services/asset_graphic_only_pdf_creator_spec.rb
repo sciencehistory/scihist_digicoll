@@ -28,7 +28,7 @@ describe AssetGraphicOnlyPdfCreator, type: :model do
     }
   }
 
-  let(:asset) { create(:asset, :inline_promoted_file, file: File.open(tiff_path)) }
+  let(:asset) { create(:asset_with_inline_promoted_file, file: File.open(tiff_path)) }
 
   it "creates a PDF" do
     pdf_file = creator.create

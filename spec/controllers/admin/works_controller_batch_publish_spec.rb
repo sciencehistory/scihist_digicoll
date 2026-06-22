@@ -139,8 +139,8 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
     context "work with corrupt file" do
       let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
-      let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
-      let(:good_asset) {create(:asset, :inline_promoted_file) }
+      let(:bad_asset) {create(:asset_with_inline_promoted_file, file: File.open(corrupt_tiff_path))}
+      let(:good_asset) {create(:asset_with_faked_file) }
       let(:work_with_bad_asset) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
       before do
         controller.current_user.works_in_cart << unpublishable_work
@@ -155,7 +155,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
 
     context "work with a png instead of a tiff" do
-      let(:png) { create(:asset, :inline_promoted_file) }
+      let(:png) { create(:asset_with_faked_file, :png) }
       let(:work_with_png) { create(:work, :with_complete_metadata, published: false, members: [png]) }
 
       before do
@@ -187,7 +187,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
     end
 
     context "work with a legitimate portrait png" do
-      let(:portrait_png) { create(:asset, :inline_promoted_file, role: "portrait") }
+      let(:portrait_png) { create(:asset_with_faked_file, :png, role: "portrait") }
       let(:work) { create(:work, :with_complete_metadata, published: false, members: [portrait_png]) }
       before do
         controller.current_user.works_in_cart << work
@@ -341,16 +341,14 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
     context "create audio derivatives",  logged_in_user: :admin do
 
-      let!(:audio_asset_1)  { create(:asset, :inline_promoted_file,
+      let!(:audio_asset_1)  { create(:asset_with_faked_file, :mp3,
           position: 1,
-          title: "Audio asset 1",
-          file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
+          title: "Audio asset 1"
         )
       }
-      let!(:audio_asset_2)  { create(:asset, :inline_promoted_file,
+      let!(:audio_asset_2)  { create(:asset_with_faked_file, :mp3,
           position: 2,
-          title: "Audio asset 2",
-          file: File.open((Rails.root + "spec/test_support/audio/10-seconds-of-silence.mp3"))
+          title: "Audio asset 2"
         )
       }
       let!(:oral_history) { FactoryBot.create(
@@ -558,8 +556,8 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
 
         context "work has assets with invalid files" do
           let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
-          let(:bad_asset) {create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
-          let(:good_asset) {create(:asset, :inline_promoted_file) }
+          let(:bad_asset) {create(:asset_with_inline_promoted_file, file: File.open(corrupt_tiff_path))}
+          let(:good_asset) {create(:asset_with_faked_file) }
           let(:parent_work) { create(:work, :with_complete_metadata, published: false, members: [bad_asset, good_asset]) }
           before do
             allow(Rails.logger).to receive(:warn)

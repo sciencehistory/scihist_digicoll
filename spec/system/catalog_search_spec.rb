@@ -13,7 +13,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
         description: 'priceless work',
         date_of_work: { start: "2019" },
         subject: ["one", "two", "three", "four", "five", "six"],
-        representative: create(:asset, :inline_promoted_file, published: true),
+        representative: create(:asset_with_faked_file, published: true),
         members: [
           create(:public_work, date_of_work: { start: "2020" }),
           create(:public_work, date_of_work: { start: "2021" })
@@ -23,7 +23,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     let!(:collection) do
       create(:collection,
         description: 'priceless collection',
-        representative: create(:asset, :inline_promoted_file, published: true),
+        representative: create(:asset_with_faked_file, published: true),
         contains: [work1] )
     end
 

@@ -4,9 +4,7 @@ RSpec.describe "Edit Collection form", logged_in_user: :editor, type: :system, q
   let(:collection) {
     FactoryBot.create(
         :collection,
-        representative: FactoryBot.create(:asset,
-                                          :inline_promoted_file,
-                                          file: File.open((Rails.root + "spec/test_support/images/30x30.png"))) )
+        representative: FactoryBot.create(:asset_with_faked_file))
   }
 
   scenario "edits collection and changes thumbnail" do

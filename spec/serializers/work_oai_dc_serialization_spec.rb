@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 describe WorkOaiDcSerialization do
-  let(:member_asset1) { create(:asset, :inline_promoted_file)}
-  let(:member_asset2) { create(:asset, :inline_promoted_file)}
+  let(:member_asset1) { create(:asset_with_faked_file)}
+  let(:member_asset2) { create(:asset_with_faked_file)}
   let(:collection) { create(:collection, title: "My Local Collection") }
   let(:work) { create(:work, :with_complete_metadata,
     description: "This starts out with <b>tags</b>\n\nAnother paragraph",

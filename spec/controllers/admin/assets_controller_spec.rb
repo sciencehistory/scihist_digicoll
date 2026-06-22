@@ -146,7 +146,7 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
   # almost more of an integration test, we're going to do real stuff, it will be slow
   context "#setup_work_from_pdf_source", queue_adapter: :inline do
     let(:asset) do
-      create(:asset, :inline_promoted_file,
+      create(:asset_with_inline_promoted_file,
               file: File.open(Rails.root + "spec/test_support/pdf/sample-text-and-image-small.pdf"),
               parent: create(:work))
     end

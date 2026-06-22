@@ -36,16 +36,8 @@ describe S3PathIterator do
   end
 
   describe "Using actual files" do
-    let!(:asset_1)  { create(:asset, :inline_promoted_file,
-        position: 1,
-        file: File.open((Rails.root + "spec/test_support/images/20x20.png"))
-      )
-    }
-    let!(:asset_2)  { create(:asset, :inline_promoted_file,
-        position: 2,
-        file: File.open((Rails.root + "spec/test_support/images/20x20.png"))
-      )
-    }
+    let!(:asset_1)  { create(:asset_with_faked_file, position: 1) }
+    let!(:asset_2)  { create(:asset_with_faked_file, position: 2) }
     let!(:work) { FactoryBot.create( :public_work, members: [asset_1, asset_2]) }
     let(:file_paths_1) { [work.members.first.file_data["id"], work.members.second.file_data["id"]] }
     let(:file_paths_2) { [] }
