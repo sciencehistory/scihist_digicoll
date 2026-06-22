@@ -83,15 +83,12 @@ function addAutocomplete(element) {
       showNoSuggestionNotice: true,
       serviceUrl: qa_search_url,
 
-      onSearchError: function (query, jqXHR, textStatus, errorThrown) {
-        console.log("autocomplete error fetching results: " + textStatus + ": " + errorThrown);
 
-        // Pretty hacky way to show error message in dropdown, reaching into
-        // autocomplete internals. Based on how autocomplete shows no-results message.
-        var container = $($(this).autocomplete().suggestionsContainer)
-        container.empty();
-        container.append(errorContainer);
-        container.show();
+      // The hacky error reporting code we used was not working;
+      // in this case it seems fine to just use a JS alert to tell staff immediately
+      // about problems with QA.
+      onSearchError: function (query, jqXHR, textStatus, errorThrown) {
+        alert("Problem fetching results from " + qa_search_url + ":\n" + textStatus + ": " + errorThrown);
       },
 
       transformResult: function(response) {
