@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe "Collection show page", solr: true, indexable_callbacks: true do
+describe "Collection show page", solr: true, indexable_callbacks: true, js: false do
   describe "smoke test" do
     let(:collection) do
       create(:collection,
