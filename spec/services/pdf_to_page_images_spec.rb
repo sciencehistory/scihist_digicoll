@@ -189,21 +189,27 @@ describe PdfToPageImages do
     end
   end
 
-  describe "#create_assets_for_pages" do
+  # This one is super slow if we don't mock create_asset_for_page individually, test that
+  # itself please.
+  describe "#create_assets_for_pages, mocked" do
     let(:pdf_path) { Rails.root + "spec/test_support/pdf/3-page-text-and-image.pdf"}
     let(:work) { create(:work) }
 
-    it "creates all assets" do
-      stub_extract_jpeg_for_page(service)
-      stub_extract_hocr_for_page(service)
+    it "creates asset for each page" do
+      allow(service).to receive(:create_asset_for_page)
+
       service.create_assets_for_pages(work: work, source_pdf_sha512: nil, source_pdf_asset_pk: nil)
 
-      extracted_assets = work.members.where(role: PdfToPageImages::EXTRACTED_PAGE_ROLE).order(:position).to_a
-
-      expect(extracted_assets.count).to eq 3
-      expect(extracted_assets.collect(&:position)).to eq [1,2,3]
-      expect(extracted_assets.all? { |a| a.hocr.present? }).to be true
-      expect(extracted_assets.all? { |a| a.file.present? }).to be true
+      (1..service.num_pdf_pages).each do |page_num|
+        expect(service).to have_received(:create_asset_for_page).ordered.
+          with(
+            page_num,
+            work: work,
+            on_existing_dup: :insert_dup,
+            source_pdf_sha512: nil,
+            source_pdf_asset_pk: nil
+          )
+      end
     end
   end
 end
