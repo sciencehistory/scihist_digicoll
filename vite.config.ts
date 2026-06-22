@@ -44,8 +44,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          "video.js": ['video.js']
+        manualChunks: (id) => {
+          if (id.includes('node_modules/video.js')) return 'video.js';
         }
       }
     },
