@@ -5,28 +5,36 @@ require 'rails_helper'
 #    "&mlt.fl=more_like_this_keywords_tsimv&mlt.mintf=0&mlt.mindf=0&rows=7"
 #
 describe MoreLikeThisGetter,  solr: true, indexable_callbacks: true, queue_adapter: :inline do
-  let(:shared_subject)  { "aaa" }
-  let(:shared_description) { "aaa" }
+  # before_all creates all these works ONCE rather than once-per example. Works since we aren't
+  # editing htem at all, saves lots of test setup time. From test-prof, still in a transaction
+  # with auto-cleanup.
+  before_all do
+    @subject_val     = "aaa"
+    @description_val = "aaa"
+    @more_like_this_works = {
+      work_to_match:     create(:public_work,  subject: @subject_val, description: @description_val),
+      five_public_works: 5.times.map { create(:public_work,  subject: @subject_val, description: @description_val) },
+      private_works:     2.times.map { create(:private_work, subject: @subject_val, description: @description_val) }
+    }
+  end
+
+  let(:more_like_this_works)    { @more_like_this_works }
+  let(:work_to_match)           { more_like_this_works[:work_to_match] }
+  let(:five_public_works)       { more_like_this_works[:five_public_works] }
+  let(:private_works)           { more_like_this_works[:private_works] }
+  let(:indexed_works)           { [work_to_match] + five_public_works + private_works }
 
   let(:limit) { nil }
-  let(:getter) {MoreLikeThisGetter.new(work_to_match, limit: limit)}
-  let(:work_to_match)   { create(:public_work, subject: shared_subject, description: shared_description)  }
-  let(:work_to_match_cache_key) {"scihist:more_like_this:#{work_to_match.friendlier_id}:#{limit || MoreLikeThisGetter::DEFAULT_LIMIT}"}
+  let(:getter) { MoreLikeThisGetter.new(work_to_match, limit: limit) }
+  let(:work_to_match_cache_key) { "scihist:more_like_this:#{work_to_match.friendlier_id}:#{limit || MoreLikeThisGetter::DEFAULT_LIMIT}" }
 
-  let(:five_public_works) { [
-      create(:public_work, subject: shared_subject, description: shared_description),
-      create(:public_work, subject: shared_subject, description: shared_description),
-      create(:public_work, subject: shared_subject, description: shared_description),
-      create(:public_work, subject: shared_subject, description: shared_description),
-      create(:public_work, subject: shared_subject, description: shared_description)
-    ]
-  }
-  let(:private_works) { [
-      create(:private_work, subject: shared_subject, description: shared_description),
-      create(:private_work, subject: shared_subject, description: shared_description),
-    ]
-  }
-  let! (:indexed_works) { [work_to_match] + five_public_works + private_works }
+  # Solr is wiped after every example, so re-index before each.
+  # DB records persist via AnyFixture; only the Solr documents need refreshing.
+  before(:each) do
+    Kithe::Indexable.index_with(batching: true) do
+      indexed_works.each(&:update_index)
+    end
+  end
 
   context "calls to test solr" do
     context "with smaller limit" do
