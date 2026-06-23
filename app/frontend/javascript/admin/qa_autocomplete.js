@@ -83,15 +83,15 @@ function addAutocomplete(element) {
       showNoSuggestionNotice: true,
       serviceUrl: qa_search_url,
 
-
-
       onSearchError: function (query, jqXHR, textStatus, errorThrown) {
         var errorText = "Error fetching results from " + $(this).data("scihist-qa-autocomplete") + ":<br/>" + textStatus + ": " + errorThrown;
         var container = $($(this).autocomplete().suggestionsContainer);
 
         console.error(errorText);
-
         $(errorContainer).html("<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> " + errorText)
+
+        // Pretty hacky way to show error message in dropdown, reaching into
+        // autocomplete internals. Based on how autocomplete shows no-results message.
         container.empty();
         container.append(errorContainer);
         container.css("top",   $(this).position()['top'] + 50);
