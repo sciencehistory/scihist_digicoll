@@ -1,6 +1,6 @@
 require 'webmock/rspec'
 require 'axe-rspec'
-
+require 'test_prof/recipes/rspec/before_all'
 
 
 SCIHIST_WEBMOCK_USED = true
