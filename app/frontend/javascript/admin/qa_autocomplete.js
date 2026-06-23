@@ -84,11 +84,19 @@ function addAutocomplete(element) {
       serviceUrl: qa_search_url,
 
 
-      // The hacky error reporting code we used was not working;
-      // in this case it seems fine to just use a JS alert to tell staff immediately
-      // about problems with QA.
+
       onSearchError: function (query, jqXHR, textStatus, errorThrown) {
-        alert("Problem fetching results from " + qa_search_url + ":\n" + textStatus + ": " + errorThrown);
+        var errorText = "Error fetching results from " + $(this).data("scihist-qa-autocomplete") + ":<br/>" + textStatus + ": " + errorThrown;
+        var container = $($(this).autocomplete().suggestionsContainer);
+
+        console.error(errorText);
+
+        $(errorContainer).html("<i class='fa fa-exclamation-triangle' aria-hidden='true'></i> " + errorText)
+        container.empty();
+        container.append(errorContainer);
+        container.css("top",   $(this).position()['top'] + 50);
+        container.css("left",  $(this).position()['left']);
+        container.show();
       },
 
       transformResult: function(response) {
