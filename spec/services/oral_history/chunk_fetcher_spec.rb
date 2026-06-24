@@ -20,29 +20,26 @@ describe OralHistory::ChunkFetcher do
   let(:fake_question_embedding) { fake_vector(0.03263719,-0.021255592,-0.018256947,0.012259656,0.008308401)}
 
 
-  let(:work1) { create(:oral_history_work, :public_files, published: true) }
+  let_it_be(:work1) { create(:oral_history_work, :public_files, published: true) }
 
-
-  let!(:chunk1) { create(:oral_history_chunk,
+  let_it_be(:chunk1) { create(:oral_history_chunk,
                   oral_history_content: work1.oral_history_content,
                   embedding: fake_vector(0.01759516,-0.0453438, -0.029577527, -0.032289326, 0.012045433),
                   speakers: ["SMITH"])}
 
-  let!(:chunk2) { create(:oral_history_chunk,
+  let_it_be(:chunk2) { create(:oral_history_chunk,
                         oral_history_content: work1.oral_history_content,
                         embedding: fake_vector(0.059072047,-0.021131188,-0.013840758,-0.0077753244,-0.02725617),
                         speakers: ["SMITH", "JONES"], text: "Chunk 2")}
 
+  let_it_be(:work2) { create(:oral_history_work, :public_files, published: true) }
 
-  let(:work2) { create(:oral_history_work, :public_files, published: true) }
-
-
-  let!(:chunk3) { create(:oral_history_chunk,
+  let_it_be(:chunk3) { create(:oral_history_chunk,
                         oral_history_content: work2.oral_history_content,
                         embedding: fake_vector(0.015151533,-0.01646033,-0.021422518,-0.024602171,0.009659404),
                         speakers: ["SMITH", "JONES"], text: "Chunk 3")}
 
-  let!(:chunk4) { create(:oral_history_chunk,
+  let_it_be(:chunk4) { create(:oral_history_chunk,
                         oral_history_content: work2.oral_history_content,
                         embedding: fake_vector(0.013049184,-0.019433592,-0.024848722,-0.010990473,0.024592385),
                         speakers: ["SMITH", "JONES"], text: "Chunk 3")}
