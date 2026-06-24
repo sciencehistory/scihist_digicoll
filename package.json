@@ -19,10 +19,10 @@
     "video.js": "^8.23.0"
   },
   "devDependencies": {
-    "rollup-plugin-gzip": "^4.1.1",
+    "vite-plugin-compression2": "^1.0.0",
     "sass": "1.77.6",
-    "vite": "^7.3.5",
-    "vite-plugin-ruby": "^5.1.1",
+    "vite": "^8.0.0",
+    "vite-plugin-ruby": "^5.2.0",
     "vite-plugin-sass-glob-import": "^6.0.0"
   },
   "browserslist": [

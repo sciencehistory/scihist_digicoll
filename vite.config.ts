@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite'
 import RubyPlugin from 'vite-plugin-ruby'
-import { brotliCompressSync } from "zlib";
-import gzipPlugin from "rollup-plugin-gzip";
+import { compression } from 'vite-plugin-compression2';
 import sassGlobImports from 'vite-plugin-sass-glob-import';
 import { resolve } from 'path'
 
@@ -22,13 +21,8 @@ let vitePlugins = [
 // But in development autoBuild mode, it slows things down, and doesn't help, so not there.
 if (! (process.env.VITE_RUBY_AUTO_BUILD == "true")) {
   vitePlugins = vitePlugins.concat([
-    // Create gzip copies of relevant assets
-    gzipPlugin(),
-    // Create brotli copies of relevant assets
-    gzipPlugin({
-      customCompression: (content) => brotliCompressSync(Buffer.from(content)),
-      fileName: ".br",
-    })
+    compression(),
+    compression({ algorithm: 'brotliCompress' })
   ])
 }
 
@@ -44,8 +38,8 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
-        manualChunks: {
-          "video.js": ['video.js']
+        manualChunks: (id) => {
+          if (id.includes('node_modules/video.js')) return 'video.js';
         }
       }
     },
