@@ -115,11 +115,11 @@ describe OralHistory::ChunkFetcher do
   # Duplicates what's in OralHistoryCotent scope checks and is slow, but important
   # enough to ensure coverage here too sorry.
   describe "access limits" do
-    let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH", published: true) }
-    let!(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH", published: true) }
-    let!(:needs_approval_oh) { create(:oral_history_work, :available_by_request, title: "Needs approval OH", availability_mode: "reviewed_request", published: true)}
-    let!(:upon_request_oh) { create(:oral_history_work, :available_by_request, title: "Automatic Approval OH", availability_mode: "automatic_request", published: true) }
-    let!(:private_oh) {
+    let_it_be(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH", published: true) }
+    let_it_be(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH", published: true) }
+    let_it_be(:needs_approval_oh) { create(:oral_history_work, :available_by_request, title: "Needs approval OH", availability_mode: "reviewed_request", published: true)}
+    let_it_be(:upon_request_oh) { create(:oral_history_work, :available_by_request, title: "Automatic Approval OH", availability_mode: "automatic_request", published: true) }
+    let_it_be(:private_oh) {
       create(:oral_history_work,
         title: "NOT available OH",
         members: [
@@ -129,11 +129,11 @@ describe OralHistory::ChunkFetcher do
       )
     }
 
-    let!(:chunk_ohms_oh) { create(:oral_history_chunk, oral_history_content: ohms_oh.oral_history_content) }
-    let!(:chunk_immediate_oh) { create(:oral_history_chunk, oral_history_content: immediate_oh.oral_history_content) }
-    let!(:chunk_needs_approval_oh) { create(:oral_history_chunk, oral_history_content: needs_approval_oh.oral_history_content) }
-    let!(:chunk_upon_request_oh) { create(:oral_history_chunk, oral_history_content: upon_request_oh.oral_history_content) }
-    let!(:chunk_private_oh) { create(:oral_history_chunk, oral_history_content: private_oh.oral_history_content) }
+    let_it_be(:chunk_ohms_oh) { create(:oral_history_chunk, oral_history_content: ohms_oh.oral_history_content) }
+    let_it_be(:chunk_immediate_oh) { create(:oral_history_chunk, oral_history_content: immediate_oh.oral_history_content) }
+    let_it_be(:chunk_needs_approval_oh) { create(:oral_history_chunk, oral_history_content: needs_approval_oh.oral_history_content) }
+    let_it_be(:chunk_upon_request_oh) { create(:oral_history_chunk, oral_history_content: upon_request_oh.oral_history_content) }
+    let_it_be(:chunk_private_oh) { create(:oral_history_chunk, oral_history_content: private_oh.oral_history_content) }
 
     it "enforces ohms_only" do
       results = OralHistory::ChunkFetcher.new(top_k: 10, question_embedding: fake_vector, access_limit: :immediate_ohms_only).fetch_chunks

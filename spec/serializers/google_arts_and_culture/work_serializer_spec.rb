@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe GoogleArtsAndCulture::WorkSerializer do
-  let!(:work) do
+  let_it_be(:work) do
     create(
       :public_work,
       members: [
@@ -50,7 +50,7 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
       allow(serializer).to receive(:test_mode).and_return(true)
     end
 
-    let!(:work) do
+    let_it_be(:work) do
       create(:work, :with_complete_metadata,
         creator_attributes: {
           "0"=>{"category"=> "author",     "value"=>"author_1" },
@@ -97,7 +97,7 @@ RSpec.describe GoogleArtsAndCulture::WorkSerializer do
     end
 
     context "creator; contributor; publisher" do
-      let!(:work) do
+      let_it_be(:work) do
         create(:work, :extra_creator_metadata)
       end
 

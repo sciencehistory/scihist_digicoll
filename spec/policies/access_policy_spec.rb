@@ -1,10 +1,10 @@
 require 'rails_helper'
 
 describe "access policies:" do
-  let!(:published_asset) { create(:asset_with_faked_file) }
-  let!(:unpublished_asset) { create(:asset_with_faked_file, published: false) }
+  let_it_be(:published_asset) { create(:asset_with_faked_file) }
+  let_it_be(:unpublished_asset) { create(:asset_with_faked_file, published: false) }
 
-  let!(:collection) { create(:collection) }
+  let_it_be(:collection) { create(:collection) }
 
   let(:comment_you_can_delete) { Admin::QueueItemComment.new(user: user)}
   let(:coment_you_can_t_delete) { Admin::QueueItemComment.new(user: nil)}
