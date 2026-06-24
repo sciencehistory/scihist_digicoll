@@ -778,6 +778,6 @@ module ScihistDigicoll
 
     define_key "disable_downloads", default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
 
-    define_key "feature_ai_for_basic_internal", default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
+    define_key "feature_ai_for_basic_internal", default: true, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
   end
 end
