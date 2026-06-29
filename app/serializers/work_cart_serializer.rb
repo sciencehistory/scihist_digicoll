@@ -68,6 +68,7 @@ class WorkCartSerializer
       format:                   'Format',
       genre:                    'Genre',
       description:              'Description',
+      provenance:               'Provenance',
       subject:                  'Subject/s',
       series_arrangement:       'Series Arrangement',
       physical_container:       'Physical Container',
@@ -93,7 +94,7 @@ class WorkCartSerializer
   # { :title => method(work), :additional_title => method(work), ... }
   def column_methods
     @column_methods ||= @column_keys.map do |column_label|
-    
+
       # create the proc
       new_proc = if self.respond_to? column_label
         # If k is defined in this class, use that (e.g. :created)
@@ -104,7 +105,7 @@ class WorkCartSerializer
       else
         raise "Unknown column: #{column_label}"
       end
-    
+
       [column_label, new_proc]
     end.to_h
   end
