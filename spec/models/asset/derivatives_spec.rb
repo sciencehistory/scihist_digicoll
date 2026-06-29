@@ -4,11 +4,11 @@ describe "derivative creation" do
 
   let(:flac_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.flac")}
   let(:flac_file_sha512) { Digest::SHA512.hexdigest(File.read(flac_file_path)) }
-  let!(:flac_asset) { FactoryBot.create(:asset, file: File.open(flac_file_path)) }
+  let(:flac_asset) { FactoryBot.create(:asset, file: File.open(flac_file_path)) }
 
   let(:mp3_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
   let(:mp3_file_sha512) { Digest::SHA512.hexdigest(File.read(mp3_file_path)) }
-  let!(:mp3_asset) { FactoryBot.create(:asset, file: File.open(mp3_file_path)) }
+  let(:mp3_asset) { FactoryBot.create(:asset, file: File.open(mp3_file_path)) }
 
 
   describe 'pdf asset' do

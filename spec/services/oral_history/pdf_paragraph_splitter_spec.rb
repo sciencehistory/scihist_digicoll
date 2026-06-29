@@ -1,12 +1,11 @@
 require 'rails_helper'
 
 describe OralHistory::PdfParagraphSplitter do
-  let(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
-
   let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text) }
 
   describe "very old transcript" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/rice_1984_sample_pages_fhb2l9q.pdf"}
+    let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/rice_1984_sample_pages_fhb2l9q.pdf"}
+    let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
     it "extracts good paragraphs" do
       paragraphs = splitter.paragraphs
@@ -50,7 +49,8 @@ describe OralHistory::PdfParagraphSplitter do
   end
 
   describe "old transcript with upper page numbers, and asterisk footnotes" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q.pdf"}
+    let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q.pdf"}
+    let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
     it "can still get page numbers" do
       paragraphs = splitter.paragraphs
@@ -90,7 +90,8 @@ describe OralHistory::PdfParagraphSplitter do
   end
 
   describe "with page with figure and no assigned page number" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/boyer-skipped-page-example.pdf" }
+    let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/boyer-skipped-page-example.pdf" }
+    let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
     it "can process and properly number pages" do
       paragraphs = splitter.paragraphs
@@ -107,7 +108,8 @@ describe OralHistory::PdfParagraphSplitter do
   end
 
   describe "with two interviews in one pdf" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf" }
+    let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf" }
+    let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
     let(:file_start_times) { { "random1" => 60*60*2, "random2" => 60*60*4, "random3" => 60*60*6 } }
     let(:splitter) { described_class.new(extracted_pdf_text: extracted_pdf_text, file_start_times: file_start_times) }
 
@@ -122,7 +124,8 @@ describe OralHistory::PdfParagraphSplitter do
   end
 
   describe "mid-era transcript, with minute timestamp style" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"}
+    let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/Macfarlane_1982_sample_pages_subbr8.pdf"}
+    let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
     it "extracts timestamps" do
       paragraphs = splitter.paragraphs
@@ -181,7 +184,9 @@ describe OralHistory::PdfParagraphSplitter do
     end
 
     describe "that need re-sequencing for starting over at new audio files" do
-      let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/macfarlane_1982_sequence_timestamps_example.pdf"}
+      let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/macfarlane_1982_sequence_timestamps_example.pdf"}
+      let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
+
 
       it "raises if it does not have file_start_times sequencing info" do
         expect {
@@ -225,7 +230,8 @@ describe OralHistory::PdfParagraphSplitter do
 
 
   describe "newer transcript, with new style per-paragraph timestamps" do
-    let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sample_pages_ebnw2l9.pdf"}
+    let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sample_pages_ebnw2l9.pdf"}
+    let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
 
     it "extracts timestamps" do
       paragraphs = splitter.paragraphs
@@ -275,7 +281,9 @@ describe OralHistory::PdfParagraphSplitter do
 
 
     describe "that need re-sequencing for starting over at new audio files" do
-      let(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf"}
+      let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/glusker_2022_sequence_timestamps_example.pdf"}
+      let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
+
 
       it "raises if it does not have file_start_times sequencing info" do
         expect {

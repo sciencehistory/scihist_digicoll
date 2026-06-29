@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'zip'
 
 RSpec.describe GoogleArtsAndCulture::Exporter do
-  let!(:work_1) do
+  let_it_be(:work_1) do
     create(
       :public_work,
       members: [
@@ -11,7 +11,7 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
     )
   end
 
-  let!(:work_2) do
+  let_it_be(:work_2) do
     create(
       :public_work,
       members: [
@@ -20,7 +20,7 @@ RSpec.describe GoogleArtsAndCulture::Exporter do
     )
   end
 
-  let!(:work_3) do
+  let_it_be(:work_3) do
     create(
       :private_work,
       members: [

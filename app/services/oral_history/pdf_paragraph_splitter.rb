@@ -132,9 +132,10 @@ module OralHistory
       (first_index..(extracted_pdf_text_pages.count - 1)).each do |page_index|
         page_json = extracted_pdf_text_pages[page_index]
 
-        # dup em so we can modify the list to remove page numbers paragraphs. We don't
-        # care about blocks for processing at the moment.
-        page_paragraphs_json = page_json["blocks"].collect {|h| h["paragraphs"]}.flatten
+        # dup the list so we can modify the list to remove page numbers paragraphs. We don't
+        # care about blocks for processing at the moment. Dup the elements so we can mutate
+        # them in procesing too.
+        page_paragraphs_json = page_json["blocks"].collect {|h| h["paragraphs"].deep_dup}.flatten
 
         # usually on bottom, sometimes on top
         logical_page_number = extract_and_remove_logical_page_number(page_paragraphs_json)
@@ -281,8 +282,8 @@ module OralHistory
       #     ____________________________________ *Footnote
       if paragraphs_json.present? && (note_index = (paragraphs_json.last['text'] =~ /_{15,} ?\*/))
 
-        # we need to cut that last paragraph to stop there
-        paragraphs_json.last['text'].slice!(note_index..-1)
+        # we need to cut that last paragraph to stop there; replace element with new hash
+        paragraphs_json.last['text'] = paragraphs_json.last['text'][0...note_index]
       end
     end
 

@@ -240,6 +240,12 @@ set up, and you can run against dev_s3 mode:
 
 In dev_s3, all files are put in our shared dev bucket. The above command manually sets an S3_DEV_PREFIX, so it won't mess with or accidentally delete your ordinary dev files.
 
+#### We use recipes from test-prof for our specs
+
+Particularly [let_it_be](https://github.com/test-prof/test-prof/blob/master/docs/recipes/let_it_be.md) and [before_all](https://github.com/test-prof/test-prof/blob/master/docs/recipes/before_all.md) from [test-prof](https://github.com/test-prof/test-prof) can be used to re-use data between examples in a file without re-creating it. This gives us significant test suite speed-ups, consider it.
+
+We don't yet use [AnyFixture](https://github.com/test-prof/test-prof/blob/master/docs/recipes/any_fixture.md), but have considered it.
+
 ## Production deployment
 
 We deploy to AWS, the deployment is done _mostly_ automatically by some ansible playbooks:

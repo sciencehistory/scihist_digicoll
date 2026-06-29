@@ -2,9 +2,9 @@ require 'rails_helper'
 
 # Testing the view that has an audio player, sometimes with OHMS.
 describe "Oral history with audio display", type: :system, js: true do
-  let(:portrait) { create(:asset_with_faked_file, role: "portrait")}
+  let_it_be(:portrait) { create(:asset_with_faked_file, role: "portrait")}
 
-  let!(:parent_work) do
+  let_it_be(:parent_work, reload: true) do
     create(:oral_history_work, :published, :ohms_xml, members: [portrait])
   end
 
@@ -16,7 +16,7 @@ describe "Oral history with audio display", type: :system, js: true do
     Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")
   }
 
-  let!(:audio_assets) {
+  let_it_be(:audio_assets) {
     (1..4).to_a.map do |i|
       create(:asset_with_faked_file, :mp3,
         title: "Track #{i}",
@@ -30,11 +30,11 @@ describe "Oral history with audio display", type: :system, js: true do
     end
   }
 
-  let!(:published_audio_assets) {
+  let_it_be(:published_audio_assets) {
     audio_assets.select {|a| a.published }
   }
 
-  let!(:image_assets) {
+  let_it_be(:image_assets) {
     (5..8).to_a.map do |i|
       create(:asset_with_faked_file,
         title: "Regular file #{i}",
@@ -303,44 +303,6 @@ describe "Oral history with audio display", type: :system, js: true do
 
   describe "when you are logged-in staff", :logged_in_user, type: :system, js: true do
 
-    let!(:parent_work) do
-      build(:oral_history_work, rights: "http://creativecommons.org/publicdomain/mark/1.0/")
-    end
-    let(:audio_file_path) { Rails.root.join("spec/test_support/audio/5-seconds-of-silence.mp3")}
-    let(:audio_file_sha512) { Digest::SHA512.hexdigest(File.read(audio_file_path)) }
-
-    let!(:audio_assets) {
-      (1..4).to_a.map do |i|
-        create(:asset_with_faked_file, :mp3,
-          title: "Track #{i}",
-          position: i - 1,
-          parent: parent_work,
-
-          # All of these are published except for the second one.
-          published: i != 2
-        )
-      end
-    }
-
-    let!(:published_audio_assets) {
-      audio_assets.select {|a| a.published }
-    }
-
-    let!(:image_assets) {
-      (5..8).to_a.map do |i|
-        create(:asset_with_faked_file,
-          title: "Regular file #{i}",
-          faked_derivatives: {},
-          position: i - 1,
-
-          #5, #7 and #8 are published, but not #6:
-          published: i != 6,
-
-          parent: parent_work
-        )
-      end
-    }
-
     before do
       parent_work.representative = image_assets[0]
       parent_work.save!
@@ -394,11 +356,9 @@ describe "Oral history with audio display", type: :system, js: true do
     let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml" }
     let(:interviewer_profile) { InterviewerProfile.create(name: "Smith, John", profile: "This has some <i>html</i>")}
 
-    let(:parent_work) {
-      create(:oral_history_work, :published, rights: "http://creativecommons.org/publicdomain/mark/1.0/").tap do |work|
-        work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path), interviewer_profiles: [interviewer_profile])
-      end
-    }
+    before do
+      parent_work.oral_history_content!.update(ohms_xml_text: File.read(ohms_xml_path), interviewer_profiles: [interviewer_profile])
+    end
 
     it "can display, and search, without errors" do
       visit work_path(audio_assets.first.parent.friendlier_id)
