@@ -64,5 +64,6 @@ node_modules
 # Brew bundle creates this pretty useless file, it's not a useful lock file like you think
 Brewfile.lock.json
 
+.claude/settings.local.json
 
 
