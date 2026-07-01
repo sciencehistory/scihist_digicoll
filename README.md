@@ -38,7 +38,7 @@ To ensure expected command-line utilities are present after install, you can run
 $ git clone git@github.com:sciencehistory/scihist_digicoll.git
 $ cd scihist_digicoll
 $ bundle install
-$ yarn install
+$ pnpm install
 $ rake db:setup
 ```
 
@@ -144,7 +144,7 @@ last-mile asset delivery and static images and fonts.
 
 #### Individual asset dependency special handling notes
 
-* blacklight JS and CSS now comes from the [blacklight-frontend npm package](https://www.npmjs.com/package/blacklight-frontend). If you update the blacklight rubygem, you will have to manually make sure to remember to check if a new `blacklight_frontend` npm package is available and update with yarn too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.
+* blacklight JS and CSS now comes from the [blacklight-frontend npm package](https://www.npmjs.com/package/blacklight-frontend). If you update the blacklight rubygem, you will have to manually make sure to remember to check if a new `blacklight_frontend` npm package is available and update with pnpm too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.
   * note we also import selected blacklight.js files, instead of the whole package! This could require maintenance on upgrades. See `./frontend/javascript/blacklight_setup.js`
 
 * browse_everything is handled weirdly, with local copy and fork of browse everything assets, and a separte frontend loaded only on admin layout. See ./app/frontend/browse_everything/README.md
