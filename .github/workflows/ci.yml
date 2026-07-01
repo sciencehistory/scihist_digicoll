@@ -38,7 +38,7 @@ jobs:
             # have a checked in Gemfile.lock
 
         - name: Install uv for python dependencies
-          uses: astral-sh/setup-uv@v3
+          uses: astral-sh/setup-uv@v8.1.0
           with:
             enable-cache: true
 
