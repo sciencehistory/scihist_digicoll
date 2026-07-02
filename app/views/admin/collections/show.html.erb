@@ -1,0 +1,24 @@
+<div>
+  <div>Managing a collection</div>
+  <h1><%= @collection.title %> <%= publication_badge(@collection) %>   <%= link_to "Public view", collection_path(@collection), class: "btn btn-sm btn-outline-secondary" %></h1>
+</div>
+
+<hr>
+
+<h2>Asset Count</h2>
+<ul class="text-muted small">
+<li>An <code>Asset</code> in the Digital Collections is an ingested file -- image, audio, or video.</li>
+<li>Note: A Work can be in more than one collection, so it's attached assets can be multiply counted in simultaneous collections</li>
+</ul>
+
+<dl class="d-flex flex-wrap gap-4">
+  <div class="bg-light border px-3 pt-1">
+    <dt>All assets</dt>
+    <dd><%= number_with_delimiter(@collection.contained_asset_count) %></dd>
+  </div>
+
+  <div class="bg-light border px-3 pt-1">
+    <dt>Published assets</dt>
+    <dd><%= number_with_delimiter(@collection.contained_asset_count(only_published: true)) %></dd>
+  </div>
+</dl>
