@@ -52,7 +52,7 @@
       <tr>
         <td><%= thumb_image_tag(collection.leaf_representative, size: :mini, image_missing_text: true) %>
         <td><%= collection.friendlier_id %>
-        <td><%= link_to(collection.title, collection_path(collection)) %><%= publication_badge(collection) %></td>
+        <td><%= link_to(collection.title, admin_collection_path(collection)) %><%= publication_badge(collection) %></td>
         <td><%= collection.department %></td>
         <td class="datestamp"><%=  l collection.created_at.to_date, format: :admin %> </td>
         <td class="datestamp"><%=  l collection.updated_at.to_date, format: :admin %> </td>

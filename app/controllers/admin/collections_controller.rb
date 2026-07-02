@@ -44,10 +44,11 @@ class Admin::CollectionsController < AdminController
   end
   helper_method :sort_link_maker
 
+  # ADMIN dashboard show
   # GET /collections/1
   # GET /collections/1.json
   def show
-    authorize! :read, @collection
+    authorize! :update, @collection
   end
 
   # GET /collections/new
