@@ -390,7 +390,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    kithe (2.18.0)
+    kithe (2.19.0)
       attr_json (~> 2.0)
       fastimage (~> 2.0)
       fx (>= 0.6.0, < 1)
@@ -895,7 +895,7 @@ DEPENDENCIES
   jbuilder (~> 2.5)
   json_schemer (~> 2.5.0)
   kaminari (~> 1.2)
-  kithe (~> 2.17)
+  kithe (~> 2.19)
   listen (~> 3.3)
   lockbox
   lograge (< 2)

@@ -23,13 +23,9 @@ class ApplicationController < ActionController::Base
     redirect_to root_path, alert: "You don't have permission to access that page."
   end
 
-  around_action :batch_kithe_indexable
-
-  def batch_kithe_indexable
-    Kithe::Indexable.index_with(batching: true) do
-      yield
-    end
-  end
+  # Batch multiple kithe solr index updates taking place in a Rails action
+  # into fewer http requests to solr
+  include Kithe::BatchIndexableAroundAction
 
   before_action do
     timecode = Time.now.gmtime.to_i
