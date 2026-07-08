@@ -716,14 +716,17 @@ class CatalogController < ApplicationController
   def swap_range_limit_params_if_needed
     return if params.empty?
 
-    start_date = params.dig(:range).try(:dig, :year_facet_isim).try(:dig , :begin)
-    end_date   = params.dig(:range).try(:dig, :year_facet_isim).try(:dig, :end)
+    year_range = params.dig(:range).try { |r| r[:year_facet_isim] if r.is_a?(ActionController::Parameters) }
+    return unless year_range.is_a?(ActionController::Parameters)
+
+    start_date = year_range[:begin]
+    end_date   = year_range[:end]
 
     return unless start_date.present? && end_date.present?
     return unless start_date.to_i > end_date.to_i
 
-    params['range']['year_facet_isim']['begin'] = end_date
-    params['range']['year_facet_isim']['end']   = start_date
+    year_range[:begin] = end_date
+    year_range[:end]   = start_date
   end
 
 
