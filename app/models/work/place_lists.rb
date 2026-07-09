@@ -13,7 +13,7 @@ class Work
       ["California", "CA"],
       ["Colorado", "CO"],
       ["Connecticut", "CT"],
-      ["Washington DC", "DC"],
+      ["Washington, D.C.", "DC"],
       ["Delaware", "DE"],
       ["Florida", "FL"],
       ["Georgia", "GA"],
