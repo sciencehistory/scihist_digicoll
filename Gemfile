@@ -42,7 +42,7 @@ gem "mail", ">= 2.8.0.rc1", "< 3"
 #
 gem "net-protocol", "!= 0.2.0"
 
-gem "view_component", "~> 4.9"
+gem "view_component", "~> 4.12"
 gem "alba", "~> 3.1" # for JSON serialization of models
 #  Scout is a monitoring tool we are experimenting with
 gem 'scout_apm'
