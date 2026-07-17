@@ -45,8 +45,8 @@ importers:
         specifier: ^4.0.0
         version: 4.1.0
       tom-select:
-        specifier: ^2.3.1
-        version: 2.4.0
+        specifier: ^2.6.1
+        version: 2.6.1
       video.js:
         specifier: ^8.23.0
         version: 8.23.3
@@ -539,8 +539,8 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
-  tom-select@2.4.0:
-    resolution: {integrity: sha512-FZnWpU3jDFW5AslsSpZcCeyMWl9x5o0cdXdPibhIPDw4acbmYFtAeje70ADxXdFnPWPZrcAB4YJ+f8mtkKr94g==}
+  tom-select@2.6.1:
+    resolution: {integrity: sha512-d/1kngVOQTGcI/2pVDfDLYjtjUgSSd3fSgkYUpi0y+yRtQQu2kzljj3aUdqMfqc45cjPvDEpfDt/hSX4awDFTg==}
 
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
@@ -1023,7 +1023,7 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  tom-select@2.4.0:
+  tom-select@2.6.1:
     dependencies:
       '@orchidjs/sifter': 1.1.0
       '@orchidjs/unicode-variants': 1.1.2
