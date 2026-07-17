@@ -20,10 +20,7 @@ namespace :scihist do
 
     errors = []
 
-    # for now fetch all members, because we need to see if we have a PDF transcript published
-    # to validate, as a result of https://github.com/sciencehistory/scihist_digicoll/issues/3253.
-    # There are various wyas we could optimize this.
-    OralHistoryContent.includes(:oral_history_chunks, work: :members).strict_loading.find_each(batch_size: 10) do |oral_history_content|
+    OralHistoryContent.includes(:oral_history_chunks, :work).strict_loading.find_each(batch_size: 10) do |oral_history_content|
       begin
         OralHistory::ChunkValidator.new(oral_history_content).validate!
       rescue OralHistory::ChunkValidator::Failure => e
@@ -31,6 +28,9 @@ namespace :scihist do
       ensure
         progress_bar&.increment
       end
+
+      # Try to keep from using too much heroku memory, at cost of more GC than we need
+      GC.start
     end
 
     if errors.present?
