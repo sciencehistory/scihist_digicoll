@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_09_143410) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_15_173658) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -18,7 +18,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_143410) do
 
   # Custom types defined in this database.
   # Note that some types may not work with other database engines. Be careful if changing database.
-  create_enum "available_by_request_mode_type", ["off", "automatic", "manual_review"]
   create_enum "oh_availability_mode_type", ["direct", "automatic_request", "reviewed_request", "embargoed"]
 
 
@@ -285,14 +284,12 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_09_143410) do
     t.integer "start_paragraph_number", null: false
     t.text "text", null: false
     t.datetime "updated_at", null: false
-    t.index ["embedding"], name: "idx_on_embedding_halfvec_3072_halfvec_cosine_ops_4742ee9fb6", opclass: :halfvec_cosine_ops, using: :hnsw
     t.index ["embedding"], name: "index_oral_history_chunks_on_embedding", opclass: :halfvec_cosine_ops, using: :hnsw
     t.index ["oral_history_content_id"], name: "index_oral_history_chunks_on_oral_history_content_id"
   end
 
   create_table "oral_history_content", force: :cascade do |t|
     t.enum "availability_mode", default: "direct", null: false, enum_type: "oh_availability_mode_type"
-    t.enum "available_by_request_mode", default: "off", null: false, enum_type: "available_by_request_mode_type"
     t.jsonb "combined_audio_component_metadata"
     t.string "combined_audio_derivatives_job_status"
     t.datetime "combined_audio_derivatives_job_status_changed_at", precision: nil
