@@ -5,7 +5,7 @@ require 'rails_helper'
 # (that is a rails 'functional' test)?
 RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :controller do
   describe "unpublished collection" do
-    let(:collection) { create(:collection, published: false) }
+    let_it_be(:collection) { create(:collection, published: false) }
 
     describe "non-logged-in user", logged_in_user: false do
       it "has permission denied" do
@@ -38,7 +38,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
   end
 
   describe "Bad params" do
-    let(:collection) { create(:collection, friendlier_id: "faked") }
+    let_it_be(:collection) { create(:collection, friendlier_id: "faked") }
     it "doesn't throw an error when facet.page is a hash" do
       get :facet, params: {
         id:              "subject_facet",
@@ -253,7 +253,7 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
 
   describe "display box and folder", indexable_callbacks: true do
     render_views
-    let!(:collection) { create(:collection, title: "The Collection") }
+    let_it_be(:collection) { create(:collection, title: "The Collection") }
     let(:parsed){ parsed = Nokogiri::HTML(response.body) }
     let(:containers_as_displayed) { parsed.css('.scihist-results-list-item-box-and-folder').map {|x| x.text} }
     let(:titles_as_displayed) { parsed.css('.scihist-results-list-item-head a').map {|x| x.text} }
@@ -329,24 +329,18 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
   describe "search form with box and folder", indexable_callbacks: true do
     render_views
     describe "smoke test" do
-      let(:b1f1) {
-        Work::PhysicalContainer.new({ box:1, folder:1 })
-      }
-      let(:b1f2) {
-        Work::PhysicalContainer.new({ box:1, folder:2 })
-      }
-      let(:b12f1) {
-        Work::PhysicalContainer.new({ box:12, folder:1 })
-      }
-      let!(:works) {
-        [
-          create(:work, :published, physical_container: b1f1, title: "b1_f1_1", contained_by:   [collection]),
-          create(:work, :published, physical_container: b1f1, title: "b1_f1_2", contained_by:   [collection]),
-          create(:work, :published, physical_container: b1f2, title: "b1_f1_3", contained_by:   [collection]),
-          create(:work, :published, physical_container: b1f2, title: "b12_f1",  contained_by:   [collection]),
+      before_all do
+        @collection = create(:collection, friendlier_id: "faked", department: "Archives")
+        @works = [
+          create(:work, :published, physical_container: Work::PhysicalContainer.new({ box:1, folder:1 }), title: "b1_f1_1", contained_by: [@collection]),
+          create(:work, :published, physical_container: Work::PhysicalContainer.new({ box:1, folder:1 }), title: "b1_f1_2", contained_by: [@collection]),
+          create(:work, :published, physical_container: Work::PhysicalContainer.new({ box:1, folder:2 }), title: "b1_f1_3", contained_by: [@collection]),
+          create(:work, :published, physical_container: Work::PhysicalContainer.new({ box:12, folder:1 }), title: "b12_f1",  contained_by: [@collection]),
         ]
-      }
-      let!(:collection) { create(:collection, friendlier_id: "faked", department: "Archives") }
+      end
+      before(:each) { @works.each(&:update_index) }
+      let(:collection) { @collection }
+      let(:works) { @works }
       let(:box_and_folder_params) do
         {"q"=>"", "box_id"=>"1", "folder_id"=>"1", "sort"=>"", "collection_id"=> collection.friendlier_id }
       end
@@ -367,17 +361,22 @@ RSpec.describe CollectionShowController, :logged_in_user, solr: true, type: :con
       end
     end
    describe "edge cases" do
+      before_all do
+        @collection = create(:collection, friendlier_id: "faked", department: "Archives")
+        @work = create(:work, :published,
+          title: "archival_work",
+          physical_container: Work::PhysicalContainer.new({
+            "box"=>"apples, pears and mangos 1234",
+            "folder"=> "lions and tigers and bears oh my 5678"
+          }),
+          contained_by: [@collection]
+        )
+      end
+      before(:each) { @work.update_index }
+      let(:collection) { @collection }
+      let(:work) { @work }
       let(:parsed){ parsed = Nokogiri::HTML(response.body) }
       let(:titles_as_displayed) { parsed.css('.scihist-results-list-item-head a').map {|x| x.text} }
-      let!(:work) { create(:work, :published,
-        title: "archival_work",
-        physical_container: Work::PhysicalContainer.new({
-          "box"=>"apples, pears and mangos 1234",
-          "folder"=> "lions and tigers and bears oh my 5678"
-        }),
-        contained_by:   [collection])
-      }
-      let!(:collection) { create(:collection, friendlier_id: "faked", department: "Archives") }
       it "does not return works that don't match" do
         get :index, params: {
           "q"=>"",

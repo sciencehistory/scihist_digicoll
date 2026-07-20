@@ -2,7 +2,6 @@ require 'webmock/rspec'
 require 'axe-rspec'
 
 
-
 SCIHIST_WEBMOCK_USED = true
 
 # Have WebMock disable outgoing http connections, except for some locally configured

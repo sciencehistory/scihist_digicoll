@@ -70,6 +70,43 @@ class Collection < Kithe::Collection
     self.representative = CollectionThumbAsset.new(title: "collection-thumbnail-placeholder", parent: self)
   end
 
+
+  # Finds count of assets contained in works that are in collection. Will also
+  # include ONE level of child works.
+  #
+  # @param only_published [Boolean] default false, if true count is only of assets
+  #     which are published and in published Works. If you want both numbers, you do
+  #     have to call this twice, two queries -- the one query combined version
+  #     was complicated enough SQL that it did not seem worth it to try to do all in one.
+  #
+  def contained_asset_count(only_published: false)
+    # this is just a relation, will not result in a query yet
+    direct_ids = self.contains.select(:id)
+
+    # This too is just a relation, not resuling in a query yet
+    # Assets in Works that are members collection
+    qualifying = Work.where(id: direct_ids)
+
+    if only_published
+      qualifying = qualifying.where(published: true)
+    end
+
+    # OR in works whose
+    # parents are members of collection -- only ONE level of child work
+    # included, which should be fine. Ideally we'd need none, see https://github.com/sciencehistory/scihist_digicoll/issues/3511
+    qualifying = qualifying
+                   .or(Work.where(parent_id: direct_ids))
+                   .select(:id)
+
+    final_query = Asset.where(parent_id: qualifying)
+
+    if only_published
+      final_query = final_query.where(published: true)
+    end
+
+    final_query.count
+  end
+
   # Some collections define an arbitrary default sort field.
   # We use this for the inital presentation when you first visit the collection page,
   # before the user searches inside the collection or alter the sort order.

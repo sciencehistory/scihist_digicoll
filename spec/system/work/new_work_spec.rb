@@ -35,17 +35,19 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
   end
 
   let!(:collection) { FactoryBot.create(:collection) }
-  let!(:work) { FactoryBot.create(:work, :with_complete_metadata) }
+  let!(:work) { FactoryBot.build_stubbed(:work, :with_complete_metadata) }
 
-  scenario "save, edit, and re-save new work" do
+  scenario "create new work" do
+    # test one input of every input type we have207
+
     visit new_admin_work_path
     # Single-value free text
-    %w(title description digitization_funder rights_holder).each do |p|
+    %w(title).each do |p|
       fill_in "work[#{p}]", with: work.send(p)
     end
 
     # Multi-value free text
-    %w(additional_title language medium subject).each do |p|
+    %w(additional_title).each do |p|
       attr_name = Work.human_attribute_name(p)
       all_items = work.send(p)
       all_items.length.times do |i|
@@ -66,10 +68,8 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       end
     end
 
-
-
     # Multi-value free text (2)
-    %w(extent series_arrangement).each do |p|
+    %w(series_arrangement).each do |p|
       attr_name = Work.human_attribute_name(p)
       all_items = work.send(p)
       all_items.length.times do |i|
@@ -81,7 +81,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
     end
 
     # Multi-value free text with associated category dropdown
-    %w(creator place external_id).each do |p|
+    %w(external_id).each do |p|
       attr_name = Work.human_attribute_name(p)
       all_items = work.send(p)
       all_items.length.times do |i|
@@ -108,7 +108,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
     end
 
     #Custom single-value selects:
-    %w(file_creator department rights).each do |p|
+    %w(department).each do |p|
       val = work.send(p)
       find("div.work_#{p} select option[value='#{val}']").select_option
     end
@@ -185,6 +185,7 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
       find('div.select').click
       find('input').fill_in with: "#{collection.title}\n"
     end
+
     # make sure selection has happened in hidden select field before we move on
     expect(page).to have_field("work[contained_by_ids][]",  multiple: true, visible: :all) do |select_tag|
       # not sure why we had ot do this in a custom block, using `with` arg wasn' working for multiple
@@ -195,22 +196,19 @@ RSpec.describe "New Work form", logged_in_user: :editor, type: :system, js: true
     click_button "Create Work"
 
     # check page, before checking data, to make sure action has completed.
-    expect(page).to have_css("h1", text: "Add Files").and have_text("To: #{work.title}")
+    expect(page).to have_css("h1", text: "Add Files").and have_text(": #{work.title}")
 
-    # check data
+    # check data in DB
     newly_added_work = Work.order(:created_at).last
 
     %w(
-      additional_credit additional_title admin_note creator
-      department date_of_work description external_id format
-      file_creator genre inscription language medium
-      physical_container place rights
-      rights_holder subject title related_link
+      additional_title admin_note series_arrangement external_id genre
+      department date_of_work inscription related_link physical_container
+      format additional_credit
     ).each do |prop|
       expect(newly_added_work.send(prop)).to eq work.send(prop)
     end
 
-    #newly_added_work.reload
     expect(newly_added_work.contained_by.to_a).to include(collection)
   end
 

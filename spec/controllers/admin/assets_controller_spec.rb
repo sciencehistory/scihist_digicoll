@@ -143,35 +143,21 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
     end
   end
 
-  # almost more of an integration test, we're going to do real stuff, it will be slow
-  context "#setup_work_from_pdf_source", queue_adapter: :inline do
+  # Doesn't do full integration test, PdfToPageImages is very expensive and we test it separately
+  context "#setup_work_from_pdf_source", queue_adapter: :test do
     let(:asset) do
-      create(:asset, :inline_promoted_file,
+      create(:asset_with_inline_promoted_file,
               file: File.open(Rails.root + "spec/test_support/pdf/sample-text-and-image-small.pdf"),
               parent: create(:work))
     end
 
-    it "properly sets up" do
-      allow(PdfToPageImages).to receive(:new).and_call_original
-
+    it "enqueues creation jobs" do
       put :setup_work_from_pdf_source, params: {
         id: asset.friendlier_id
       }
 
-      expect(PdfToPageImages).to have_received(:new)
-
-      asset.reload
-
-      expect(asset.role).to eq "work_source_pdf"
-      expect(asset.parent.text_extraction_mode).to eq "pdf_extraction"
-
-      # 1 pdf page extracted
-      expect(asset.parent.members.where(role: PdfToPageImages::EXTRACTED_PAGE_ROLE).count).to eq 1
-
-      # scaled down derivative created
-      expect(asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY]).to be_present
-      expect(asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY].content_type).to eq "application/pdf"
-      expect(asset.file_derivatives[AssetUploader::SCALED_PDF_DERIV_KEY].size).to be > 0
+      expect(CreatePdfPageImageAssetJob).to have_been_enqueued
+      expect(CreateScaledDownPdfDerivativeJob).to have_been_enqueued
     end
   end
 
@@ -234,6 +220,6 @@ RSpec.describe Admin::AssetsController, :logged_in_user, type: :controller do
       expect { get :calculate_fixity_report }.to have_enqueued_job(CalculateFixityReportJob)
       expect(response).to have_http_status(302)
     end
-  end 
+  end
 
 end

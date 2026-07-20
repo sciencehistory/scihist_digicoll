@@ -336,7 +336,7 @@ Rails.application.routes.draw do
 
     put "/asset_files/:id/submit_hocr_and_textonly_pdf",            to: "assets#submit_hocr_and_textonly_pdf"
 
-    resources :collections, except: [:show]
+    resources :collections
 
     # Note "assets" is Rails reserved word for routing, oops. So we use
     # asset_files.

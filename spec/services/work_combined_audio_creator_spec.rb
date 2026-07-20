@@ -5,7 +5,7 @@ describe "Combined Audio" do
   let(:cmd) { cmd = TTY::Command.new(printer: :null)}
 
   context "one viable mp3, characterized during the test" do
-    let!(:mp3)  { create(:asset, :inline_promoted_file,
+    let!(:mp3)  { create(:asset_with_inline_promoted_file,
         position: 1,
         parent_id: work.id,
         file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
@@ -38,13 +38,13 @@ describe "Combined Audio" do
   end
 
   context "two viable originals - an mp3 and a flac" do
-    let!(:mp3_1)  { create(:asset, :inline_promoted_file,
+    let!(:mp3_1)  { create(:asset_with_inline_promoted_file,
         position: 1,
         parent_id: work.id,
         file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.mp3"))
       )
     }
-    let!(:flac_2)  { create(:asset, :inline_promoted_file,
+    let!(:flac_2)  { create(:asset_with_inline_promoted_file,
         position: 2,
         parent_id: work.id,
         file: File.open((Rails.root + "spec/test_support/audio/5-seconds-of-silence.flac"))

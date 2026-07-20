@@ -8,7 +8,7 @@
 
 # for managing JS dependencies, with `vite` or other tools
 brew "node"
-brew "yarn"
+brew "pnpm"
 
 # `mediainfo` installed for fallback contnet type detection
 brew 'mediainfo'

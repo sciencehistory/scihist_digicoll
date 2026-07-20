@@ -38,7 +38,7 @@ To ensure expected command-line utilities are present after install, you can run
 $ git clone git@github.com:sciencehistory/scihist_digicoll.git
 $ cd scihist_digicoll
 $ bundle install
-$ yarn install
+$ pnpm install
 $ rake db:setup
 ```
 
@@ -144,7 +144,7 @@ last-mile asset delivery and static images and fonts.
 
 #### Individual asset dependency special handling notes
 
-* blacklight JS and CSS now comes from the [blacklight-frontend npm package](https://www.npmjs.com/package/blacklight-frontend). If you update the blacklight rubygem, you will have to manually make sure to remember to check if a new `blacklight_frontend` npm package is available and update with yarn too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.
+* blacklight JS and CSS now comes from the [blacklight-frontend npm package](https://www.npmjs.com/package/blacklight-frontend). If you update the blacklight rubygem, you will have to manually make sure to remember to check if a new `blacklight_frontend` npm package is available and update with pnpm too! Letting these get out of sync could be disastrous, and is a somewhat confusing manual process.
   * note we also import selected blacklight.js files, instead of the whole package! This could require maintenance on upgrades. See `./frontend/javascript/blacklight_setup.js`
 
 * browse_everything is handled weirdly, with local copy and fork of browse everything assets, and a separte frontend loaded only on admin layout. See ./app/frontend/browse_everything/README.md
@@ -239,6 +239,12 @@ set up, and you can run against dev_s3 mode:
     WEBMOCK_ALLOW_CONNECT=true STORAGE_MODE=dev_s3 S3_DEV_PREFIX="jrochkind-tests" ./bin/rspec whatever
 
 In dev_s3, all files are put in our shared dev bucket. The above command manually sets an S3_DEV_PREFIX, so it won't mess with or accidentally delete your ordinary dev files.
+
+#### We use recipes from test-prof for our specs
+
+Particularly [let_it_be](https://github.com/test-prof/test-prof/blob/master/docs/recipes/let_it_be.md) and [before_all](https://github.com/test-prof/test-prof/blob/master/docs/recipes/before_all.md) from [test-prof](https://github.com/test-prof/test-prof) can be used to re-use data between examples in a file without re-creating it. This gives us significant test suite speed-ups, consider it.
+
+We don't yet use [AnyFixture](https://github.com/test-prof/test-prof/blob/master/docs/recipes/any_fixture.md), but have considered it.
 
 ## Production deployment
 

@@ -10,7 +10,7 @@ describe "Asset ingest validation" do
 
     describe "inline promotion" do
       it "does not ingest" do
-        asset = create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))
+        asset = create(:asset_with_inline_promoted_file, file: File.open(corrupt_tiff_path))
 
         expect(asset.promotion_failed?).to be true
 
@@ -61,7 +61,7 @@ describe "Asset ingest validation" do
   describe ".promotion_failed scope" do
     let(:corrupt_tiff_path) { Rails.root + "spec/test_support/images/corrupt_bad.tiff" }
     let!(:good_asset) { create(:asset_with_faked_file)}
-    let!(:bad_asset) { create(:asset, :inline_promoted_file, file: File.open(corrupt_tiff_path))}
+    let!(:bad_asset) { create(:asset_with_inline_promoted_file, file: File.open(corrupt_tiff_path))}
 
     it "includes only failed assets" do
       failed = Asset.promotion_failed.to_a
@@ -74,7 +74,7 @@ describe "Asset ingest validation" do
 
   describe "Unknown file type" do
     it "does not ingest" do
-      asset = create(:asset, :inline_promoted_file, file: StringIO.new("not a recognized file type with binary data \xF0\xA4\xAD"))
+      asset = create(:asset_with_inline_promoted_file, file: StringIO.new("not a recognized file type with binary data \xF0\xA4\xAD"))
 
       expect(asset.promotion_failed?).to be true
       expect(asset.file_attacher.cached?).to be true

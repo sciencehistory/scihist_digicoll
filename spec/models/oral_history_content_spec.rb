@@ -136,9 +136,9 @@ describe OralHistoryContent do
   end
 
   describe "scopes" do
-    let!(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH") }
-    let!(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH") }
-    let!(:embargoed_oh) { create(:oral_history_work, :available_by_request, title: "Embargoed OH", availability_mode: "embargoed") }
+    let_it_be(:ohms_oh) { create(:oral_history_work, :ohms_xml, :public_files, title: "OHMS OH") }
+    let_it_be(:immediate_oh) { create(:oral_history_work, :public_files, title: "Public OH") }
+    let_it_be(:embargoed_oh) { create(:oral_history_work, :available_by_request, title: "Embargoed OH", availability_mode: "embargoed") }
 
     it "fetches ohms" do
       results = OralHistoryContent.with_ohms.to_a

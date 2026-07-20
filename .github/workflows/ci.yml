@@ -38,7 +38,7 @@ jobs:
             # have a checked in Gemfile.lock
 
         - name: Install uv for python dependencies
-          uses: astral-sh/setup-uv@v3
+          uses: astral-sh/setup-uv@v8.1.0
           with:
             enable-cache: true
 
@@ -50,12 +50,17 @@ jobs:
             sudo apt-get update
             sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool poppler-utils ghostscript
 
+        - name: Setup pnpm for JS dependencies
+          uses: pnpm/action-setup@v4
+          with:
+            version: 11
+
         # GitHub Actions VMs come with a pre-installed version of node.js - as of early 2024, 18.19.1.
-        # See package.json under key "engines", which lists allowed versions of node and yarn.
+        # See package.json under key "engines", which lists allowed versions of node and pnpm.
         - name: Set up app
           run: |
             RAILS_ENV=test bundle exec rails db:test:prepare
-            yarn install
+            pnpm install
 
 
 

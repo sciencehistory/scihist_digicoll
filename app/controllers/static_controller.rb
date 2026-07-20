@@ -15,7 +15,7 @@ class StaticController < ApplicationController
   end
 
   def oh_legacy_url_not_found
-    Rails.logger.warn("Unknown legacy oral histories url: #{request.url}; referer: #{request.referer} ")
+    Rails.logger.debug("Unknown legacy oral histories url: #{request.url}; referer: #{request.referer} ") if request.referer
 
     @original_url = request.url
     @original_referer = request.referer

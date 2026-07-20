@@ -7,6 +7,9 @@ FactoryBot.define do
     title { 'Test title' }
     published { true }
 
+
+    # ** DO NOT USE THIS UNLESS YOU REALLY NEED IT, IT IS SLOW! **
+    #
     # This will take a real file and send it through the real logic
     # for extracting metadata and creating derivatives -- but make sure to do it
     # inline instead of in bg ActiveJobs.
@@ -18,10 +21,18 @@ FactoryBot.define do
     #
     # Will use a default small png, but you can pass `file:` with whatever file you want,
     # of any media type.
-    trait :inline_promoted_file do
+    #
+    # Skips derivatives by default, but add :with_derivatives if desired.
+    factory :asset_with_inline_promoted_file do
       file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
       after(:build) do |asset|
-        asset.file_attacher.set_promotion_directives(promote: :inline, create_derivatives: :inline)
+        asset.file_attacher.set_promotion_directives(promote: :inline, create_derivatives: :false)
+      end
+
+      trait :with_derivatives do
+        after(:build) do |asset|
+          asset.file_attacher.set_promotion_directives(create_derivatives: :inline)
+        end
       end
     end
 
@@ -139,6 +150,13 @@ FactoryBot.define do
               content_type: "image/png"),
           }
         }
+      end
+
+      trait :png do
+        faked_file { File.open((Rails.root + "spec/test_support/images/30x30.png")) }
+        faked_content_type { "image/png" }
+        faked_height { 30 }
+        faked_width { 30 }
       end
 
       trait :pdf do

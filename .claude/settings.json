@@ -1,0 +1,25 @@
+{
+  "sandbox": {
+    "enabled": true,
+    "excludedCommands": [
+      "./bin/chruby-exec-rspec *"
+    ],
+    "autoAllowBashIfSandboxed": true,
+    "allowUnsandboxedCommands": false,
+    "network": {
+      "allowUnixSockets": ["/tmp/.s.PGSQL.5432", "/private/tmp/.s.PGSQL.5432"],
+      "allowLocalBinding": true
+    },
+    "filesystem": {
+      "allowWrite": ["/tmp", "/Users/jrochkind/.gem"]
+    }
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./bin/chruby-exec-rspec *)"
+    ]
+  },
+  "env": {
+    "SE_AVOID_STATS": "true"
+  }
+}

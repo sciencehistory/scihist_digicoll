@@ -174,8 +174,7 @@ class OralHistoryContent < ApplicationRecord
   # or turning off auto-updating.
   def after_commit_update_work_index_if_needed
     return unless (
-      self.saved_change_to_attribute?(:ohms_xml_text) ||
-      self.saved_change_to_attribute?(:searchable_transcript_source)
+      (self.saved_changes.keys & ["ohms_xml_text", "searchable_transcript_source", "extracted_paragraph_container", "availability_mode"]).present?
     )
     return unless work && Kithe::Indexable.auto_callbacks?(work)
 
