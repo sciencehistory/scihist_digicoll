@@ -110,6 +110,11 @@ gem "attr_json", "~> 2.3"
 
 gem 'kithe', "~> 2.19"
 
+# QR code generation (see QrCodeCreator service). chunky_png is already
+# a dependency of rqrcode, but we also use it directly ourselves.
+gem "rqrcode", "~> 3.0"
+gem "chunky_png"
+
 gem "traject", ">= 3.5" # to include support for HTTP basic auth in Solr url
 
 gem 'simple_form', "~> 5.0"
