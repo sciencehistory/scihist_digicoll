@@ -22,3 +22,22 @@
     <dd><%= number_with_delimiter(@collection.contained_asset_count(only_published: true)) %></dd>
   </div>
 </dl>
+
+<hr>
+
+<h2>QR Code link to Collection</h2>
+
+<%= form_tag generate_qr_code_admin_collection_path(@collection), method: :get, target: "_blank", class: "row gx-2 gy-2 align-items-end" do %>
+  <div class="col-auto">
+    <%= label_tag :box, "Box (optional)", class: "form-label mb-0" %>
+    <%= text_field_tag :box, nil, class: "form-control" %>
+  </div>
+  <div class="col-auto">
+    <%= label_tag :folder, "Folder (optional)", class: "form-label mb-0" %>
+    <%= text_field_tag :folder, nil, class: "form-control" %>
+  </div>
+  <div class="col-auto">
+    <%= button_tag "Generate", type: "submit", class: "btn btn-primary" %>
+  </div>
+<% end %>
+
