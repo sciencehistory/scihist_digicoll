@@ -50,12 +50,15 @@ namespace :scihist do
         cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{STAGING_APP_NAME}")
       end
 
+      tries = 1
       begin
-        tries ||= 1
         puts "\nUpdating Solr index."
         # heroku --no-tty makes ruby-progressbar somewhat less spammy to our console,although not perfect, tolerable.
         cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME, "--no-tty")
-      rescue Traject::SolrJsonWriter::MaxSkippedRecordsExceeded => e
+      rescue TTY::Command::ExitError => e
+        # The reindex runs in a remote heroku dyno, so all we see locally is a non-zero
+        # exit status -- we can't catch the traject writer exception itself.
+        #
         # For whatever reason a bulk index on SearchStax staging often fails with timeouts
         # the first time, but then succeeds if done again. SearchStax needs to be "warmed up" somehow?
         if tries < 2
@@ -63,6 +66,7 @@ namespace :scihist do
           tries += 1
           retry
         end
+        puts "\nWARNING: Solr reindex failed twice, continuing with the rest of the sync anyway."
       end
 
       puts "\nSyncing S3 non-video originals (with --delete)."
