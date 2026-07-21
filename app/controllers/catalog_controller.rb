@@ -48,6 +48,11 @@ class CatalogController < ApplicationController
 
   rescue_from ActionController::UnpermittedParameters, with: :handle_unpermitted_params
 
+  rescue_from Blacklight::Exceptions::RepositoryTimeout,
+              Blacklight::Exceptions::ECONNREFUSED,
+              Blacklight::Exceptions::InvalidRequest,
+              with: :group_solr_exceptions_for_honeybadger
+
   # Not totally sure why we need this, instead of Rails loading all helpers automatically
   helper LocalBlacklightHelpers
 
@@ -736,4 +741,36 @@ class CatalogController < ApplicationController
     return render plain: "Error: unpermitted parameters.", status: :unprocessable_content
   end
 
+  # We don't want honeybadger splitting the same error in differnet CatalogController
+  # sub-classes, as it was doing by default. But DO want it splitting by solr, if we
+  # ever in the future use more than one solr. So rescue Blacklight connection errors,
+  # and group them by solr instead of by controller, for all CatalogController
+  # sub-classes.
+  #
+  # We re-raise, so behavior is otherwise unchanged -- still a 500, still reported.
+  def group_solr_exceptions_for_honeybadger(exception)
+    # Make sure we don't trigger another error that would mask the current one
+    begin
+      # digest in case solr url has passwords in it we don't want in payloads.
+      repository_digest = Digest::SHA1.hexdigest(blacklight_config.connection_config[:url].to_s)
+
+      # Blacklight is really bad at grouping all solr exceptions together as InvalidRequest,
+      # we only want to group on detected 502 from InvalidResponse.
+      cause = exception&.cause
+      if cause.respond_to?(:response) && cause.response && cause.response.has_key?(:status)
+        possible_solr_http_status = cause.response[:status].to_i
+      end
+
+      if !(exception.is_a?(Blacklight::Exceptions::InvalidRequest) && possible_solr_http_status != 502)
+        # will be picked up by our custom honeybadger config to set fingreprint
+        Honeybadger.context(
+          honeybadger_fingerprint: "CatalogController-#{exception.class.name}-#{repository_digest}"
+        )
+      end
+    rescue StandardError => e
+      Rails.logger.error("CatalogController: Error trying to customize Honeybadger fingerprint: #{e.class.name}: #{e.message}")
+    end
+
+    raise exception
+  end
 end
