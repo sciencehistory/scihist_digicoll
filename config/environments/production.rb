@@ -98,6 +98,30 @@ Rails.application.configure do
       connect_timeout: ScihistDigicoll::Env.lookup(:ephemeral_redis_connect_timeout),
       read_timeout:    ScihistDigicoll::Env.lookup(:ephemeral_redis_read_timeout   ),
       write_timeout:   ScihistDigicoll::Env.lookup(:ephemeral_redis_write_timeout  ),
+
+      # Customize Rails' RedisCacheStore::DEFAULT_ERROR_HANDLER.
+      #
+      # We add a honeybadger_fingerrpint to context, so our honeybadger config
+      # customization can group all with the same Exception class as ONE error,
+      # instead of splitting them based on stack trace variations as before.
+      # So brief Redis outage should not spam us with multiple HB errors.
+      #
+      # Customized from DEFAULT_ERROR_HANDLER in activesupport 8.1.2.1
+      # https://github.com/rails/rails/blob/v8.1.2.1/activesupport/lib/active_support/cache/redis_cache_store.rb#L44-L53
+      error_handler: -> (method:, returning:, exception:) do
+        Rails.logger.error("RedisCacheStore: #{method} failed, returned #{returning.inspect}: #{exception.class}: #{exception.message}")
+
+        ActiveSupport.error_reporter&.report(
+          exception,
+          severity: :warning,
+          source: "redis_cache_store.active_support",
+          context: {
+            cache_store_method: method,
+            honeybadger_fingerprint: "redis_cache_store_error-#{exception.class.name}",
+            honeybadger_error_message: "(redis_cache_store) #{exception.detailed_message(highlight: false)}"
+          }
+        )
+      end,
     }
   end
 
