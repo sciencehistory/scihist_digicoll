@@ -20,7 +20,7 @@ namespace :scihist do
 
     errors = []
 
-    OralHistoryContent.includes(:oral_history_chunks, :work).strict_loading.find_each(batch_size: 10) do |oral_history_content|
+    OralHistoryContent.includes(:oral_history_chunks, :work).strict_loading.find_each(batch_size: 2) do |oral_history_content|
       begin
         OralHistory::ChunkValidator.new(oral_history_content).validate!
       rescue OralHistory::ChunkValidator::Failure => e
