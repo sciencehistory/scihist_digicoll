@@ -99,6 +99,10 @@ namespace :scihist do
 
     phase = "s3_upload"; mem_report.call("before s3 upload")
     result = aws_object.upload_file(temp_file_2.path,
+        # AWS allocates LOTS of strings and has a big RAM ceiling when uploading
+        # a bit file. Reducing thread count from default 10 is a way to try
+        # to stay under heroku standard-1x limit.
+        thread_count: 4,
         content_type: "application/gzip",
         storage_class: "STANDARD_IA",
         metadata: { "backup_time" => Time.now.utc.to_s, "git_sha_hash" => ENV['SOURCE_VERSION'] }
