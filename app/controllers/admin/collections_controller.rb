@@ -54,11 +54,10 @@ class Admin::CollectionsController < AdminController
 
   # GET /admin/collections/:id/generate_qr_code(?box=B&folder=F)
   #
-  # Generate a QR code (with the SHI logo composited in the center) pointing at
-  # the *public* collection page, optionally scoped to a box and folder. Returns
-  # the PNG inline (disposition "inline") so it opens in a new browser tab.
+  # Generate a QR code pointing at the *public* collection page, optionally
+  # scoped to a box and folder. Returns the PNG inline with a nice filename.
   def generate_qr_code
-    authorize! :update, @collection
+    authorize! :read, @collection
 
     box    = params[:box].presence
     folder = params[:folder].presence
