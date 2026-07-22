@@ -134,6 +134,32 @@
         </p>
       </div>
     <% end %>
+
+    <% if video_assets.length > 1 %>
+      <h2 class="attribute-sub-head">Includes Multiple Segments</h2>
+      <div class="av-transcript-list">
+        <% video_assets.each do |asset| %>
+          <div class="d-flex border-top border-1 av-transcript-line">
+            <div class="p-2 ps-0 mt-1">
+              <%= link_to "#", data: { } do %>
+                <%= render ThumbComponent.new(asset, thumb_size: :mini) %>
+              <% end %>
+            </div>
+            <div class="text-break p-2">
+              <div>
+                <%= link_to "#", data: { } do %>
+                  <%= asset.title %>
+                <% end %>
+              </div>
+              <div class="small text-muted">
+                <%= format_ohms_timestamp(asset.file_metadata["duration_seconds"]) %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
   </div>
 
   <% if has_vtt_transcript? %>

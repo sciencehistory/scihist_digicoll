@@ -9,7 +9,8 @@
 # it a separate class instead of trying to use lots of conditionals in one class, betting
 # that will be simpler overall, and allow them to diverge as more features are added.
 class WorkVideoShowComponent < ApplicationComponent
-  delegate :construct_page_title, :can_see_unpublished_records?, to: :helpers
+  delegate :construct_page_title, :can_see_unpublished_records?, :format_ohms_timestamp,
+    to: :helpers
 
   attr_reader :work
 
@@ -49,12 +50,16 @@ class WorkVideoShowComponent < ApplicationComponent
     end
   end
 
-  # the first video asset we find; otherwise nil.
-  def video_asset
-    @video_asset ||= begin
-      candidate = @work.members.find { |mem| mem.asset? && mem&.content_type&.start_with?("video/") }
-      candidate if (candidate&.published? || can_see_unpublished_records?)
+  def video_assets
+    @video_assets ||= @work.members.find_all do |mem|
+      mem.asset? &&
+      mem&.content_type&.start_with?("video/") &&
+      (mem.published? || can_see_unpublished_records?)
     end
+  end
+
+  def video_asset
+    @video_asset = video_assets.first
   end
 
   def private_label
