@@ -1,3 +1,7 @@
+# opt into new traject writer, that will eventually become default.
+# Uses ruby `httpx` gem instead of unmaintained `httpclient`.
+Kithe.indexable_settings.writer_class_name = "Traject::SolrJsonHttpxWriter"
+
 Kithe.indexable_settings.solr_url = ScihistDigicoll::Env.lookup!(:solr_url)
 
 # index to solr with solr `id` field being our friendlier_id
