@@ -191,6 +191,7 @@ GEM
       launchy
     childprocess (5.1.0)
       logger (~> 1.5)
+    chunky_png (1.4.0)
     citeproc (1.1.0)
       date
       forwardable
@@ -681,6 +682,10 @@ GEM
     rinku (2.0.6)
     roda (3.102.0)
       rack
+    rqrcode (3.2.0)
+      chunky_png (~> 1.0)
+      rqrcode_core (~> 2.0)
+    rqrcode_core (2.1.0)
     rsolr (2.6.0)
       builder (>= 2.1.2)
       faraday (>= 0.9, < 3, != 2.0.0)
@@ -875,6 +880,7 @@ DEPENDENCIES
   browser (~> 6.0)
   capybara (>= 2.15)
   capybara-screenshot
+  chunky_png
   citeproc-ruby (~> 2.0)
   content_disposition (~> 1.0)
   csv (~> 3.3.0)
@@ -926,6 +932,7 @@ DEPENDENCIES
   resque-heroku-signals
   resque-pool
   rinku (~> 2.0)
+  rqrcode (~> 3.0)
   rsolr (~> 2.4)
   rspec-rails (~> 8.0)
   ruby-openai (~> 8.0)

@@ -9,6 +9,36 @@ RSpec.describe Admin::CollectionsController, :logged_in_user, type: :controller 
       expect(newly_created.published?).to be true
     end
 
+    describe "#generate_qr_code" do
+      let(:collection) { create(:collection) }
+
+      it "returns an inline PNG named after the collection" do
+        get :generate_qr_code, params: { id: collection.friendlier_id }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.media_type).to eq "image/png"
+        expect(response.headers["Content-Disposition"]).to include("inline")
+        expect(response.headers["Content-Disposition"]).to include("qr_col_#{collection.friendlier_id}.png")
+        # a valid PNG signature
+        expect(response.body[0, 8].bytes).to eq [137, 80, 78, 71, 13, 10, 26, 10]
+      end
+
+      it "includes box and folder in the url and filename when given" do
+        received_url = nil
+        allow(QrCodeCreator).to receive(:new) do |url, **_opts|
+          received_url = url
+          instance_double(QrCodeCreator, call: ChunkyPNG::Image.new(1, 1))
+        end
+
+        get :generate_qr_code, params: { id: collection.friendlier_id, box: "5", folder: "2" }
+
+        expect(received_url).to include("/collections/#{collection.friendlier_id}")
+        expect(received_url).to include("box_id=5")
+        expect(received_url).to include("folder_id=2")
+        expect(response.headers["Content-Disposition"]).to include("qr_col_#{collection.friendlier_id}_b5f2.png")
+      end
+    end
+
     context "filter collections" do
       render_views
       let!(:collection) {

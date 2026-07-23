@@ -1,5 +1,6 @@
 class Admin::CollectionsController < AdminController
-  before_action :set_collection, only: [:show, :edit, :update, :destroy]
+  before_action :set_collection, only: [:show, :edit, :update, :destroy, :generate_qr_code]
+
   before_action :sort_link_maker, only: [:index]
 
   # GET /collections
@@ -49,6 +50,27 @@ class Admin::CollectionsController < AdminController
   # GET /collections/1.json
   def show
     authorize! :update, @collection
+  end
+
+  # GET /admin/collections/:id/generate_qr_code(?box=B&folder=F)
+  #
+  # Generate a QR code pointing at the *public* collection page, optionally
+  # scoped to a box and folder. Returns the PNG inline with a nice filename.
+  def generate_qr_code
+    authorize! :read, @collection
+
+    box    = params[:box].presence
+    folder = params[:folder].presence
+
+    # nil query params are omitted by the url helper.
+    public_url = collection_url(@collection, box_id: box, folder_id: folder)
+
+    # For now no superimposed icon, we need spec
+    png = QrCodeCreator.new(public_url).call
+
+    send_data png.to_blob,
+      type: "image/png",
+      disposition: ContentDisposition.format(disposition: "inline", filename: qr_code_filename(box, folder))
   end
 
   # GET /collections/new
@@ -128,6 +150,16 @@ class Admin::CollectionsController < AdminController
     # Use callbacks to share common setup or constraints between actions.
     def set_collection
       @collection = Collection.find_by_friendlier_id!(params[:id])
+    end
+
+    # eg "qr_col_abc123.png", or "qr_col_abc123_b5f2.png" when scoped to box 5, folder 2.
+    def qr_code_filename(box, folder, extension: "png")
+      suffix = ""
+      suffix << "b#{box}" if box
+      suffix << "f#{folder}" if folder
+      name = "qr_col_#{@collection.friendlier_id}"
+      name << "_#{suffix}" if suffix.present?
+      "#{name}.#{extension}"
     end
 
     # Params method just for #index.
