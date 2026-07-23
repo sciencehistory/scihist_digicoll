@@ -48,8 +48,16 @@ namespace :scihist do
       $stdout.puts(msg); $stdout.flush
       Rails.logger.info(msg)
     end
+
+    # AWS upload of very large file allocates so many objects that we are
+    # ballooning our memory output. We use a thread to force GC while its happening,
+    # to try to keep our memory peak lower and stay within heroku standard-1x dyno.
     mem_sampler = Thread.new do
-      loop { mem_report.call("sample/#{phase}"); sleep 2 }
+      loop do
+        GC.start if phase == "s3_upload"
+        mem_report.call("sample/#{phase}")
+        sleep 1
+      end
     end
     mem_report.call("startup")
     # ------------------------------------------------------------------------
@@ -99,10 +107,6 @@ namespace :scihist do
 
     phase = "s3_upload"; mem_report.call("before s3 upload")
     result = aws_object.upload_file(temp_file_2.path,
-        # AWS allocates LOTS of strings and has a big RAM ceiling when uploading
-        # a bit file. Reducing thread count from default 10 is a way to try
-        # to stay under heroku standard-1x limit.
-        thread_count: 4,
         content_type: "application/gzip",
         storage_class: "STANDARD_IA",
         metadata: { "backup_time" => Time.now.utc.to_s, "git_sha_hash" => ENV['SOURCE_VERSION'] }
