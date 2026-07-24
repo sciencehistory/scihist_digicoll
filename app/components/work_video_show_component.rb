@@ -51,7 +51,7 @@ class WorkVideoShowComponent < ApplicationComponent
   end
 
   def video_assets
-    @video_assets ||= @work.members.find_all do |mem|
+    @video_assets ||= @work.members.order(:position).find_all do |mem|
       mem.asset? &&
       mem&.content_type&.start_with?("video/") &&
       (mem.published? || can_see_unpublished_records?)
