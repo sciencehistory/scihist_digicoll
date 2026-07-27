@@ -83,7 +83,20 @@ function setupVideoPlayer(player) {
 
     event.preventDefault();
     loadSegmentMedia(player, JSON.parse(segmentData.dataset.avMedia));
+    markSegmentNowPlaying(segmentData);
   });
+}
+
+
+// Move the "now playing" highlight to the segment just loaded. The server marks
+// the initial segment (see WorkVideoShowComponent); this takes over on switch.
+function markSegmentNowPlaying(segmentLink) {
+  const list = segmentLink.closest(".av-transcript-list");
+
+  list.querySelectorAll(".av-now-playing").forEach(function(el) {
+    el.classList.remove("av-now-playing");
+  });
+  segmentLink.closest(".av-transcript-line")?.classList.add("av-now-playing");
 }
 
 

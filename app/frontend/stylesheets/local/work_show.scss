@@ -260,4 +260,11 @@
       }
     }
   }
+
+  // "Now playing" highlight for the current segment in the multi-segment video
+  // list. Same highlight color as the transcript current-line highlight
+  // (.transcript-highlighted).
+  .av-transcript-line.av-now-playing {
+    background-color: $shi-teal-1;
+  }
 }
