@@ -29,7 +29,18 @@ if (! (process.env.VITE_RUBY_AUTO_BUILD == "true")) {
 export default defineConfig({
   // enable sass sourcemaps -- vite supports sass sourcemaps with dev server only
   css: {
-    devSourcemap: true
+    devSourcemap: true,
+    preprocessorOptions: {
+      scss: {
+        // Bootstrap 5.3.x still uses @import and legacy color functions that
+        // modern Dart Sass deprecates; silence the dependency noise until we
+        // move to Bootstrap 6. quietDeps hides warnings from node_modules;
+        // silenceDeprecations covers the ones that fire from our own
+        // `@import "bootstrap"` entry points.
+        quietDeps: true,
+        silenceDeprecations: ['import', 'global-builtin', 'color-functions']
+      }
+    }
   },
   plugins: vitePlugins,
   // video.js is REALLY BIG, telling vite/rollup to chunk it as it's own

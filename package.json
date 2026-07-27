@@ -9,7 +9,7 @@
     "@shopify/draggable": "^1.0.0-beta.8",
     "blacklight-frontend": "9.0.0",
     "blacklight-range-limit": "9.2.0",
-    "bootstrap": "^ 5.0.0",
+    "bootstrap": "^5.0.0",
     "domready": "^1.0.8",
     "font-awesome": "^4.7.0",
     "jquery": "^ 3.6.0",
@@ -19,9 +19,9 @@
     "video.js": "^8.23.0"
   },
   "devDependencies": {
-    "vite-plugin-compression2": "^1.0.0",
-    "sass": "1.77.6",
+    "sass": "^1.101.3",
     "vite": "^8.0.0",
+    "vite-plugin-compression2": "^1.0.0",
     "vite-plugin-ruby": "^5.2.0",
     "vite-plugin-sass-glob-import": "^6.0.0"
   },
@@ -30,7 +30,7 @@
   ],
   "science_history_institute_comment_about_engines": "Heroku installs the latest version of node and yarn that conform to the requirements below. (As of early 2024, Heroku installs node 20.9, and GitHub Actions VMs come with node 18.19. Hence the range of versions below.)",
   "engines": {
-    "node": ">=18.19.0 <26.0.0",
+    "node": ">=18.19.0 <27.0.0",
     "pnpm": "^11.9.0"
   }
 }
