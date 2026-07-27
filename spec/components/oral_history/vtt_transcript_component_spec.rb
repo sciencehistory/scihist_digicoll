@@ -100,4 +100,29 @@ describe OralHistory::VttTranscriptComponent, type: :component do
       ).to be_present
     end
   end
+
+  describe "with asset_friendlier_id" do
+    let(:vtt_transcript_component) { described_class.new(vtt_transcript, asset_friendlier_id: "abc123") }
+
+    it "includes &a=<id> in every timestamp link anchor" do
+      parsed = render_inline(vtt_transcript_component)
+
+      timestamp_links = parsed.css("a.ohms-transcript-timestamp")
+      expect(timestamp_links).to be_present
+
+      expect(timestamp_links.map { |a| a["href"] }).to all(match(%r{\A#t=[\d.]+&a=abc123\z}))
+    end
+  end
+
+  describe "without asset_friendlier_id" do
+    it "does not add &a= to timestamp links" do
+      parsed = render_inline(vtt_transcript_component)
+
+      hrefs = parsed.css("a.ohms-transcript-timestamp").map { |a| a["href"] }
+      expect(hrefs).to be_present
+
+      expect(hrefs).to all(start_with("#t="))
+      expect(hrefs).to all(satisfy { |href| !href.include?("&a=") })
+    end
+  end
 end

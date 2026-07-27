@@ -4,20 +4,32 @@ module OralHistory
       scrubber.tags = ['i', 'b', 'u', 'a']
     end
 
-    attr_reader :vtt_transcript, :base_link
+    attr_reader :vtt_transcript, :base_link, :asset_friendlier_id
 
     # @param vtt_transcript [OralHistoryContent::OhmsXml::VttTranscript]
     #
     # @param base_link [String] if you want timestamps to link to a separate page, with
     #   anchor on end. If blank, will just have href to same page with anchor, to be
     #   picked up by JS.
-    def initialize(vtt_transcript, base_link: nil)
+    # @param asset_friendlier_id [String] when set, timestamp links include `&a=<id>` in the
+    #   anchor, so JS can switch to the right asset on a multi-segment work before seeking.
+    def initialize(vtt_transcript, base_link: nil, asset_friendlier_id: nil)
       @vtt_transcript = vtt_transcript
       @base_link = base_link
+      @asset_friendlier_id = asset_friendlier_id
     end
 
     def sanitized_footnotes
       @sanitized_footnotes ||= vtt_transcript.footnotes.collect { |ref, text| [ref, scrub_footnote_text(text)] }.to_h
+    end
+
+    # Extends the base `t=<seconds>` anchor with `&a=<friendlier_id>` when we know
+    # the asset, so JS can switch to the right segment of a multi-segment video work
+    # before seeking. Kept short deliberately.
+    def timestamp_anchor(start_seconds)
+      anchor = super
+      anchor += "&a=#{asset_friendlier_id}" if asset_friendlier_id.present?
+      anchor
     end
 
 
