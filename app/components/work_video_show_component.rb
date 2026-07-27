@@ -27,15 +27,22 @@ class WorkVideoShowComponent < ApplicationComponent
   end
 
   def auto_caption_track_url(video_asset)
-    unless defined? @auto_caption_track_url
-      @auto_caption_track_url = if video_asset.corrected_webvtt?
-        download_derivative_path(video_asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
-      elsif video_asset&.audio_asr_enabled? && video_asset.asr_webvtt?
-        download_derivative_path(video_asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
-      end
+    if video_asset.corrected_webvtt?
+      download_derivative_path(video_asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
+    elsif video_asset&.audio_asr_enabled? && video_asset.asr_webvtt?
+      download_derivative_path(video_asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
     end
+  end
 
-    @auto_caption_track_url
+  # will be used in `data-av-media` attribute, necesesary metadata to load
+  # segment into player.
+  def av_media_for(asset)
+    {
+      video_url:    asset.hls_playlist_file&.url || video_src_url(asset),
+      video_type:   asset.hls_playlist_file.present? ? "application/x-mpegURL" : asset.content_type,
+      poster_url:   asset.file_derivatives(:thumb_large)&.url,
+      captions_url: auto_caption_track_url(asset)
+    }
   end
 
   def has_vtt_transcript?

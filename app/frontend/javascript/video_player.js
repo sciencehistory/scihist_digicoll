@@ -63,10 +63,6 @@ function setupVideoPlayer(player) {
   });
 
   // When transcript window opens, scroll to current highlight if needed.
-  //
-  // Page-level DOM that outlives any one media file, so registered once here --
-  // in setupTranscriptHighlighting it would stack up a duplicate listener for
-  // every media file loaded. Not present at all on video without a transcript.
   const transcriptCollapsible = document.getElementById('show-video-transcript-collapse');
   transcriptCollapsible?.addEventListener('shown.bs.collapse', event => {
     let highlighted = document.querySelector(`.${highlightCssClass}`);
@@ -74,6 +70,41 @@ function setupVideoPlayer(player) {
       scrollToTranscriptHighlight(highlighted);
     }
   });
+
+  // Multi-segment works list their video segments below the player. Clicking one
+  // loads that video (and its caption track) into the existing player, from
+  // JSON serialized info on the link.
+  //
+  document.querySelector(".av-transcript-list")?.addEventListener("click", function(event) {
+    const segmentData = event.target.closest("[data-av-media]");
+    if (!segmentData) {
+      return;
+    }
+
+    event.preventDefault();
+    loadSegmentMedia(player, JSON.parse(segmentData.dataset.avMedia));
+  });
+}
+
+
+// Load a segment into the player from serialized data
+// (see WorkVideoShowComponent#av_media_for).
+function loadSegmentMedia(player, mediaData) {
+  const media = {
+    src: { src: mediaData.video_url, type: mediaData.video_type },
+    poster: mediaData.poster_url
+  };
+
+  if (mediaData.captions_url) {
+    media.textTracks = [{
+      id: AUTO_CAPTION_TRACK_ID,
+      src: mediaData.captions_url,
+      kind: "captions",
+      label: "Auto-captions"
+    }];
+  }
+
+  player.loadMedia(media);
 }
 
 
