@@ -34,14 +34,17 @@ class WorkVideoShowComponent < ApplicationComponent
     end
   end
 
-  # will be used in `data-av-media` attribute, necesesary metadata to load
-  # segment into player.
+  # will be used in `data-av-media` attribute: what JS needs to load a segment
+  # into the player
   def av_media_for(asset)
     {
       video_url:    asset.hls_playlist_file&.url || video_src_url(asset),
       video_type:   asset.hls_playlist_file.present? ? "application/x-mpegURL" : asset.content_type,
       poster_url:   asset.file_derivatives(:thumb_large)&.url,
-      captions_url: auto_caption_track_url(asset)
+      captions_url: auto_caption_track_url(asset),
+      title:        asset.title,
+      position:     video_assets.index(asset) + 1,
+      total:        video_assets.length
     }
   end
 

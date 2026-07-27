@@ -82,21 +82,30 @@ function setupVideoPlayer(player) {
     }
 
     event.preventDefault();
-    loadSegmentMedia(player, JSON.parse(segmentData.dataset.avMedia));
-    markSegmentNowPlaying(segmentData);
+    const avMedia = JSON.parse(segmentData.dataset.avMedia);
+    loadSegmentMedia(player, avMedia);
+    markSegmentNowPlaying(segmentData, avMedia);
   });
 }
 
 
-// Move the "now playing" highlight to the segment just loaded. The server marks
-// the initial segment (see WorkVideoShowComponent); this takes over on switch.
-function markSegmentNowPlaying(segmentLink) {
+// Reflect the segment just loaded: move the "now playing" highlight to its row,
+// and update the "now playing" line under the player with its title and position.
+// The server renders the initial state (see WorkVideoShowComponent); this takes
+// over on switch.
+function markSegmentNowPlaying(segmentLink, avMedia) {
   const list = segmentLink.closest(".av-transcript-list");
 
   list.querySelectorAll(".av-now-playing").forEach(function(el) {
     el.classList.remove("av-now-playing");
   });
   segmentLink.closest(".av-transcript-line")?.classList.add("av-now-playing");
+
+  const label = document.querySelector(".av-now-playing-label");
+  if (label) {
+    label.querySelector(".av-now-playing-title").textContent = avMedia.title;
+    label.querySelector(".av-now-playing-position").textContent = `${avMedia.position} / ${avMedia.total}`;
+  }
 }
 
 
