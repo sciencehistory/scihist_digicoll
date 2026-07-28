@@ -25,6 +25,8 @@ describe "FactoryBot Asset factory" do
         expect(asset.file).to be_present
         expect(asset.file.exists?).to be(true)
         expect(asset.file.size > 0).to be(true)
+
+        expect(asset.stored?).to be(true)
       end
     end
 
@@ -75,6 +77,13 @@ describe "FactoryBot Asset factory" do
         expect(asset.file_derivatives.count).to eq(2)
         expect(asset.file_derivatives[:jpeg].content_type).to eq("image/jpeg")
         expect(asset.file_derivatives[:pdf].content_type).to eq("application/pdf")
+      end
+    end
+
+    describe ":video"  do
+      it "is stored" do
+        asset = FactoryBot.create(:asset_with_faked_file, :video)
+        expect(asset.stored?).to be(true)
       end
     end
   end

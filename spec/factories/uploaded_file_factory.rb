@@ -58,7 +58,7 @@ FactoryBot.define do
 
     after(:build) do |uploaded_file, evaluator|
       # actually upload the file to shrine storage
-      Shrine.storages[:store].upload(evaluator.file, uploaded_file.id)
+      Shrine.storages[evaluator.storage.to_sym].upload(evaluator.file, uploaded_file.id)
     end
   end
 end

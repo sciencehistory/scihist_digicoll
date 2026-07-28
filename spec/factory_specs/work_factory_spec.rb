@@ -95,7 +95,8 @@ describe "work factory" do
       end
 
       it "has an attached video with the proper mime type" do
-        expect(work.representative.file_data['storage']).to eq("store")
+        # videos are stored separately from other originals, see asset_uploader.rb
+        expect(work.representative.file_data['storage']).to eq("video_store")
         expect(work.representative.file_data['metadata']['mime_type']).to eq("video/mpeg")
       end
     end
