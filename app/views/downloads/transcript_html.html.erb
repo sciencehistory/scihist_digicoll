@@ -3,11 +3,16 @@
     Transcript: <%= link_to @asset.parent.title, work_path(@asset.parent) %>
   </h1>
   <p><%= DateDisplayFormatter.new(@asset.parent.date_of_work).display_dates.join(",") %></p>
+  <p><code><%= @asset.title %></code></p>
 
   <p class="alert alert-warning mt-3">
     <%= t("transcript.asr_warning_html") %>
   </p>
 
 
-  <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(@asset.webvtt_str), base_link: work_path(@asset.parent)) %>
+  <%= render OralHistory::VttTranscriptComponent.new(
+                OralHistoryContent::OhmsXml::VttTranscript.new(@asset.webvtt_str),
+                base_link: work_path(@asset.parent),
+                asset_friendlier_id: @asset.friendlier_id,
+             ) %>
 </div>
