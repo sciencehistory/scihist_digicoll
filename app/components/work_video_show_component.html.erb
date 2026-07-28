@@ -148,13 +148,13 @@
         <% video_assets.each do |asset| %>
           <div class="d-flex border-top border-1 av-transcript-line <%= "av-now-playing" if asset == initial_video_asset %>">
             <div class="p-2 ps-0 mt-1">
-              <%= link_to "#", data: { av_media: av_media_for(asset) } do %>
+              <%= link_to "#", data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id } do %>
                 <%= render ThumbComponent.new(asset, thumb_size: :mini) %>
               <% end %>
             </div>
             <div class="text-break p-2">
               <div>
-                <%= link_to "#", data: { av_media: av_media_for(asset) } do %>
+                <%= link_to "#", data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id } do %>
                   <%= asset.title %>
                 <% end %>
               </div>
@@ -180,7 +180,7 @@
 
 
         <div class="show-video-transcript-content" data-transcript-content-target itemprop="transcript">
-          <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(initial_vtt_transcript_str)) %>
+          <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(initial_vtt_transcript_str), asset_friendlier_id: initial_video_asset.friendlier_id) %>
         </div>
       </div>
     </div>

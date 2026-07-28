@@ -1,4 +1,5 @@
 import videojs from 'video.js';
+import { seekAndAutoPlayWhenReady } from './media_seek.js';
 
 // css is imported through our CSS pipelines, with custom theming, in video_js.scss
 
@@ -84,6 +85,49 @@ function setupVideoPlayer(player) {
     event.preventDefault();
     loadMediaForLink(player, segmentLink);
   });
+
+  // On initial load, link anchor may include a specific segment to load
+  // (`a=friendlier_id`) and/or a specific timecode to seek to (in that segment)
+  player.ready(function() {
+    loadMediaFromAnchor(player);
+  });
+}
+
+
+// Switch to segment named in anchor if needed and/or seek to timecode named
+function loadMediaFromAnchor(player) {
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const assetId = hashParams.get("a");
+  const timeCodeSeconds = hashParams.get("t");
+
+  let switching = false;
+
+  if (assetId) {
+    // CSS.escape since assetId comes straight from the URL fragment
+    const segmentLink = document.querySelector(`a[data-friendlier-id="${CSS.escape(assetId)}"]`);
+
+    // already the loaded segment, nothing to switch
+    const alreadyLoaded = segmentLink?.closest(".av-transcript-line")?.classList?.contains("av-now-playing");
+
+    if (segmentLink && !alreadyLoaded) {
+      switching = true;
+
+      // If we want to see after, we have to make sure to do it AFTER the new
+      // media is loaded, so we don't seek on old media first!
+      if (timeCodeSeconds) {
+        player.one("loadstart", function() {
+          seekAndAutoPlayWhenReady(player, timeCodeSeconds);
+        });
+      }
+
+      loadMediaForLink(player, segmentLink);
+    }
+  }
+
+  // If we didn't switch media first, now we can seek in a normal way.
+  if (timeCodeSeconds && !switching) {
+    seekAndAutoPlayWhenReady(player, timeCodeSeconds);
+  }
 }
 
 
