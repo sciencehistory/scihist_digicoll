@@ -152,6 +152,12 @@ function loadMediaForLink(player, segmentLink) {
   }
 
   player.loadMedia(media);
+
+  // in case new video has different aspect ratio, update.
+  if (mediaData.width && mediaData.height) {
+    player.aspectRatio(`${mediaData.width}:${mediaData.height}`);
+  }
+
   swapTranscript(mediaData.transcript_fragment_url);
   markSegmentNowPlaying(segmentLink, mediaData);
 }
