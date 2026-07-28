@@ -48,7 +48,7 @@
                   controls: true,
                   preload: "metadata",
                   poster: poster_src,
-                  style: "aspect-ratio: #{initial_video_asset.width }/#{ initial_video_asset.height };",
+                  style: ("aspect-ratio: #{initial_video_asset.width }/#{ initial_video_asset.height };" if initial_video_asset.width && initial_video_asset.height),
                   # the data-setup with serialized json triggers video.js
                   data: {
                     setup: {
@@ -88,7 +88,7 @@
                         },
                         durationDisplay: true
                       },
-                      aspectRatio: "#{initial_video_asset.width}:#{initial_video_asset.height}"
+                      aspectRatio: ("#{initial_video_asset.width}:#{initial_video_asset.height}" if initial_video_asset.width && initial_video_asset.height)
                     }.to_json
                   }
           ) do %>
