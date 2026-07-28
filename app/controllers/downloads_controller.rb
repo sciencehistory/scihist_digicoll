@@ -89,10 +89,19 @@ class DownloadsController < ApplicationController
   # Kind of a mismatch in DownloadsController, but this is all we got for assets,
   # also kind of confusing compare with work transcription and translation PDF downloads.
   # We've added a lot of features, they've gotten a bit scrambled.
+  #
+  # `?fragment=true` gets the transcript with no page chrome (no layout, no title/date/
+  # warning) -- used by JS to `fetch` and inject when switching between segments of a
+  # multi-segment video work. See video_player.js. Default (no param) is the full page,
+  # meant for crawlers and direct navigation.
   def transcript_html
     unless @asset.has_webvtt?
       raise ActiveRecord::RecordNotFound.new("asset has no vtt available")
     end
+
+    @only_fragment = params[:fragment] == "true"
+
+    render layout: !@only_fragment
   end
 
   # For OH, we redirect to transcript PDF if present, looking up from work id

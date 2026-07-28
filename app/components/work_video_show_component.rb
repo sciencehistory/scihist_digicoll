@@ -44,7 +44,9 @@ class WorkVideoShowComponent < ApplicationComponent
       captions_url: auto_caption_track_url(asset),
       title:        asset.title,
       position:     video_assets.index(asset) + 1,
-      total:        video_assets.length
+      total:        video_assets.length,
+      # nil if asset has no transcript, so JS knows not to bother fetching
+      transcript_fragment_url: (asset_transcript_path(asset, fragment: true) if asset.has_webvtt?)
     }
   end
 

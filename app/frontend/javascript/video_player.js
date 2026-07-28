@@ -152,8 +152,57 @@ function loadMediaForLink(player, segmentLink) {
   }
 
   player.loadMedia(media);
-
+  swapTranscript(mediaData.transcript_fragment_url);
   markSegmentNowPlaying(segmentLink, mediaData);
+}
+
+
+// AbortController that let's us abort in-flight transcript fetches if they
+// overlap.
+let transcriptFetchController = null;
+
+// Fetch and inject the transcript for the segment just switched to, replacing
+// anything there before.
+function swapTranscript(transcriptFragmentUrl) {
+  const container = document.querySelector("*[data-transcript-content-target]");
+  if (!container) {
+    return;
+  }
+
+  transcriptFetchController?.abort();
+
+  if (!transcriptFragmentUrl) {
+    setTranscriptContent(container, "");
+    return;
+  }
+
+  transcriptFetchController = new AbortController();
+
+  fetch(transcriptFragmentUrl, { signal: transcriptFetchController.signal })
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error(`transcript_fragment request failed with status ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(function(html) {
+      setTranscriptContent(container, html);
+    })
+    .catch(function(error) {
+      if (error.name === "AbortError") {
+        return; // superseded by a newer switch, not a real failure
+      }
+      console.error("Could not load transcript for switched segment", error);
+      setTranscriptContent(container, "Error, could not load transcript.");
+    });
+}
+
+// Replace the transcript container's content, and scroll it back to top -- a
+// switch's transcript should always open at the beginning, not wherever the
+// previous segment's transcript happened to be scrolled to.
+function setTranscriptContent(container, html) {
+  container.innerHTML = html;
+  container.scrollTop = 0;
 }
 
 // Reflect the segment just loaded: move the "now playing" highlight to its row,
