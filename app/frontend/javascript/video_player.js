@@ -76,42 +76,23 @@ function setupVideoPlayer(player) {
   // JSON serialized info on the link.
   //
   document.querySelector(".av-transcript-list")?.addEventListener("click", function(event) {
-    const segmentData = event.target.closest("[data-av-media]");
-    if (!segmentData) {
+    const segmentLink = event.target.closest("[data-av-media]");
+    if (!segmentLink) {
       return;
     }
 
     event.preventDefault();
-    const avMedia = JSON.parse(segmentData.dataset.avMedia);
-    loadSegmentMedia(player, avMedia);
-    markSegmentNowPlaying(segmentData, avMedia);
+    loadMediaForLink(player, segmentLink);
   });
 }
 
 
-// Reflect the segment just loaded: move the "now playing" highlight to its row,
-// and update the "now playing" line under the player with its title and position.
-// The server renders the initial state (see WorkVideoShowComponent); this takes
-// over on switch.
-function markSegmentNowPlaying(segmentLink, avMedia) {
-  const list = segmentLink.closest(".av-transcript-list");
+// Load the segment a segment link points to into the player, from serialized
+// data on the link (see WorkVideoShowComponent#av_media_for), and reflect it
+// as now playing.
+function loadMediaForLink(player, segmentLink) {
+  const mediaData = JSON.parse(segmentLink.dataset.avMedia);
 
-  list.querySelectorAll(".av-now-playing").forEach(function(el) {
-    el.classList.remove("av-now-playing");
-  });
-  segmentLink.closest(".av-transcript-line")?.classList.add("av-now-playing");
-
-  const label = document.querySelector(".av-now-playing-label");
-  if (label) {
-    label.querySelector(".av-now-playing-title").textContent = avMedia.title;
-    label.querySelector(".av-now-playing-position").textContent = `${avMedia.position} / ${avMedia.total}`;
-  }
-}
-
-
-// Load a segment into the player from serialized data
-// (see WorkVideoShowComponent#av_media_for).
-function loadSegmentMedia(player, mediaData) {
   const media = {
     src: { src: mediaData.video_url, type: mediaData.video_type },
     poster: mediaData.poster_url
@@ -127,6 +108,27 @@ function loadSegmentMedia(player, mediaData) {
   }
 
   player.loadMedia(media);
+
+  markSegmentNowPlaying(segmentLink, mediaData);
+}
+
+// Reflect the segment just loaded: move the "now playing" highlight to its row,
+// and update the "now playing" line under the player with its title and position.
+function markSegmentNowPlaying(segmentLink, avMedia) {
+  const list = segmentLink.closest(".av-transcript-list");
+
+  // highlight correct row
+  list.querySelectorAll(".av-now-playing").forEach(function(el) {
+    el.classList.remove("av-now-playing");
+  });
+  segmentLink.closest(".av-transcript-line")?.classList.add("av-now-playing");
+
+  // Add now playing title and position to bar under player
+  const label = document.querySelector(".av-now-playing-label");
+  if (label) {
+    label.querySelector(".av-now-playing-title").textContent = avMedia.title;
+    label.querySelector(".av-now-playing-position").textContent = `${avMedia.position} / ${avMedia.total}`;
+  }
 }
 
 
