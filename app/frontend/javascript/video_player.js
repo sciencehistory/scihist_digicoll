@@ -112,15 +112,15 @@ function loadMediaFromAnchor(player) {
     if (segmentLink && !alreadyLoaded) {
       switching = true;
 
-      // If we want to see after, we have to make sure to do it AFTER the new
-      // media is loaded, so we don't seek on old media first!
+      loadMediaForLink(player, segmentLink);
+
       if (timeCodeSeconds) {
-        player.one("loadstart", function() {
+        // We need to seek sufficiently after media is really loaded to make it stick,
+        // it was tricky to get this to work, but this does in the end.
+        player.one("canplay", function() {
           seekAndAutoPlayWhenReady(player, timeCodeSeconds);
         });
       }
-
-      loadMediaForLink(player, segmentLink);
     }
   }
 
