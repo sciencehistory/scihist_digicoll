@@ -177,13 +177,20 @@ function loadMediaForLink(player, segmentLink) {
     player.pause();
   }
 
-  player.loadMedia(media);
-
-  // restore once safe to do so, without getting reset again by video.js loading new media
-  player.one("canplay", function() {
+  function applyPersistedOptions() {
     player.playbackRate(persistedPlayerOptions.playbackRate);
     player.volume(persistedPlayerOptions.volume);
     player.muted(persistedPlayerOptions.muted);
+  }
+
+  player.loadMedia(media);
+
+  // apply immediately so there's no visible flash back to defaults, and again
+  // on canplay since video.js resets playbackRate a second time once the new
+  // source is fully attached
+  applyPersistedOptions();
+  player.one("canplay", function() {
+    applyPersistedOptions();
     pendingRestoreOptions = null;
   });
 
