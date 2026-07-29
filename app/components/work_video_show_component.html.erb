@@ -127,6 +127,10 @@
                   <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id }, class: "av-thumb-wrap" do %>
                     <%= render ThumbComponent.new(asset, thumb_size: :mini) %>
                     <span class="av-thumb-play-icon" aria-hidden="true"></span>
+                    <span class="av-thumb-now-playing-icon">
+                      <i class="fa fa-television" aria-hidden="true"></i>
+                      <span class="visually-hidden">Currently loaded</span>
+                    </span>
                   <% end %>
                 </div>
                 <div class="text-break p-2">
