@@ -140,7 +140,8 @@ class AssetOcrCreator
       "thumbnail",
       input_file.path,
       output_tmpfile.path,
-      new_width
+      new_width,
+      env: { "VIPS_BLOCK_UNTRUSTED" => "1" }
     )
 
     Rails.logger.warn("#{self.class.name}: Downsampling asset #{asset.friendlier_id} for tesseract: #{number_to_human_size orig_size} @ #{orig_dpi} dpi, #{orig_width} px wide => #{number_to_human_size output_tmpfile.size} @ #{new_width} px wide")
