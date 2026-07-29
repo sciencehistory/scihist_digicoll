@@ -267,4 +267,34 @@
   .av-transcript-line.av-now-playing {
     background-color: $shi-teal-1;
   }
+
+  .av-thumb-wrap {
+    position: relative;
+    display: block;
+  }
+
+  // small play icon centered on each segment thumbnail, scaled-down copy of the
+  // video player's own big play button (video.js's default colors/border)
+  .av-thumb-play-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 1.6em;
+    height: 1.6em;
+    font-size: 0.85rem;
+    border-radius: 50%;
+    background-color: rgba(43, 51, 63, 0.7);
+
+    &:before {
+      font-family: VideoJS;
+      content: "\f101";
+      color: #fff;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
