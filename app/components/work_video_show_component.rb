@@ -48,8 +48,10 @@ class WorkVideoShowComponent < ApplicationComponent
     }
   end
 
-  def has_vtt_transcript?
-    (initial_video_asset&.audio_asr_enabled? && initial_video_asset&.asr_webvtt?) || initial_video_asset&.corrected_webvtt?
+  def has_any_transcript?
+    !! video_assets.find do |asset|
+      (asset&.audio_asr_enabled? && asset&.asr_webvtt?) || asset&.corrected_webvtt?
+    end
   end
 
   def initial_vtt_transcript_str

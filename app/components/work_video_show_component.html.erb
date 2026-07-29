@@ -152,7 +152,7 @@
 
     <%= render "works/rights_and_social", work: work %>
 
-    <% if has_vtt_transcript? %>
+    <% if has_any_transcript? %>
       <div class="transcript-toggle">
         <%# href leads to separate page with transcript, that we hope google will follow, but don't expect users to,
             although they can with eg "open in new tab". Normally data-bs-target will be used by Bootstrap collapse JS
@@ -168,7 +168,7 @@
     <% end %>
   </div>
 
-  <% if has_vtt_transcript? %>
+  <% if has_any_transcript? %>
     <div class="collapse" id="show-video-transcript-collapse">
       <div class="show-video-transcript mb-4">
         <div class="show-video-transcript-heading">
