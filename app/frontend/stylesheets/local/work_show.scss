@@ -261,6 +261,12 @@
     }
   }
 
+  // scrolls after ~4.5 rows (each row is ~4rem tall) instead of growing the page forever
+  .av-transcript-list-items {
+    max-height: 18rem;
+    overflow-y: auto;
+  }
+
   // "Now playing" highlight for the current segment in the multi-segment video
   // list. Same highlight color as the transcript current-line highlight
   // (.transcript-highlighted).
