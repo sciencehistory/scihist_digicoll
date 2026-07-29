@@ -10,6 +10,12 @@ const AUTO_CAPTION_TRACK_ID = "scihistAutoCaptions";
 // css class marking the transcript line matching current playback position
 const highlightCssClass = "transcript-highlighted";
 
+// track user's captions choice under closure, so we can restore on segment change
+let captionsPreferredShowing = false;
+
+// volume/muted/playbackRate awaiting restore on the next canplay, if a switch is in flight
+let pendingRestoreOptions = null;
+
 const videoPlayerEl = document.querySelector("#work-video-player");
 
 if (videoPlayerEl) {
@@ -57,10 +63,15 @@ function setupVideoPlayer(player) {
   // even when not visible.
   textTracks.addEventListener("change", function() {
     const track = player.textTracks().getTrackById(AUTO_CAPTION_TRACK_ID);
+    if (!track) {
+      return;
+    }
 
-    if (track && track.mode == "disabled") {
+    if (track.mode == "disabled") {
       track.mode = "hidden";
     }
+
+    captionsPreferredShowing = track.mode === "showing";
   });
 
   // When transcript window opens, scroll to current highlight if needed.
@@ -137,6 +148,14 @@ function loadMediaFromAnchor(player) {
 function loadMediaForLink(player, segmentLink) {
   const mediaData = JSON.parse(segmentLink.dataset.avMedia);
 
+  // carry forward if a prior switch's restore is still pending, don't re-read a reset default
+  const persistedPlayerOptions = pendingRestoreOptions || {
+    volume: player.volume(),
+    muted: player.muted(),
+    playbackRate: player.playbackRate(),
+  };
+  pendingRestoreOptions = persistedPlayerOptions;
+
   const media = {
     src: { src: mediaData.video_url, type: mediaData.video_type },
     poster: mediaData.poster_url
@@ -151,7 +170,22 @@ function loadMediaForLink(player, segmentLink) {
     }];
   }
 
+  // switching while actively playing causes obscure race conditions in video.js,
+  // make sure it's not. double pausing also causes mysterious race conditions, only
+  // pause if playing!
+  if (!player.paused()) {
+    player.pause();
+  }
+
   player.loadMedia(media);
+
+  // restore once safe to do so, without getting reset again by video.js loading new media
+  player.one("canplay", function() {
+    player.playbackRate(persistedPlayerOptions.playbackRate);
+    player.volume(persistedPlayerOptions.volume);
+    player.muted(persistedPlayerOptions.muted);
+    pendingRestoreOptions = null;
+  });
 
   // in case new video has different aspect ratio, update.
   if (mediaData.width && mediaData.height) {
@@ -161,7 +195,6 @@ function loadMediaForLink(player, segmentLink) {
   swapTranscript(mediaData.transcript_fragment_url);
   markSegmentNowPlaying(segmentLink, mediaData);
 }
-
 
 // AbortController that let's us abort in-flight transcript fetches if they
 // overlap.
@@ -236,11 +269,8 @@ function setupAutoCaptionTrack(player, track) {
     return;
   }
 
-  // hidden rather than disabled, so we get cuechange events for transcript syncing
-  // even when the user has captions turned off.
-  if (track.mode == "disabled") {
-    track.mode = "hidden";
-  }
+  // showing if user had it on before, else hidden so cue events still fire
+  track.mode = captionsPreferredShowing ? "showing" : "hidden";
 
   setupTranscriptHighlighting(player, track);
 }
