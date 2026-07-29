@@ -94,6 +94,11 @@ function setupVideoPlayer(player) {
     }
 
     event.preventDefault();
+
+    if (segmentLink.closest(".av-transcript-line")?.classList.contains("av-now-playing")) {
+      return;
+    }
+
     loadMediaForLink(player, segmentLink);
   });
 
