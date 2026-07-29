@@ -129,10 +129,14 @@ class PdfToPageImages
 
     TTY::Command.new(printer: :null).run(
       vips_command,
-      "copy",
+      # using pdfload to avoid file being able to disguise itself as pdf but get a
+      # non-pdf loader to exploit. https://www.libvips.org/2022/05/28/What's-new-in-8.13.html
+      "pdfload",
+      pdf_file_path,
+      tempfile.path,
       # this tool uses 0-based page numbers
-      "#{pdf_file_path}[page=#{page_num - 1},dpi=#{dpi}]",
-      tempfile.path
+      "--page", (page_num - 1).to_s,
+      "--dpi", dpi.to_s
     )
 
     return tempfile
