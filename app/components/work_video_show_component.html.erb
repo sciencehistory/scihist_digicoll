@@ -120,9 +120,9 @@
       <% if video_assets.length > 1 %>
         <div class="av-transcript-list mt-2 border border-dark">
           <h2 class="bg-dark text-light fs-5 py-1 px-2 m-0">Multiple Segments</h2>
-          <div class="av-transcript-list-items">
+          <ul class="av-transcript-list-items list-unstyled m-0">
             <% video_assets.each do |asset| %>
-              <div class="d-flex px-2 av-transcript-line <%= "av-now-playing" if asset == initial_video_asset %>">
+              <li class="d-flex px-2 av-transcript-line <%= "av-now-playing" if asset == initial_video_asset %>">
                 <div class="p-2 ps-0 mt-1">
                   <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id }, class: "av-thumb-wrap" do %>
                     <%= render ThumbComponent.new(asset, thumb_size: :mini) %>
@@ -131,7 +131,7 @@
                 </div>
                 <div class="text-break p-2">
                   <div>
-                    <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id } do %>
+                    <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id }, aria: ({ current: true } if asset == initial_video_asset) do %>
                       <%= asset.title %>
                     <% end %>
                   </div>
@@ -139,9 +139,9 @@
                     <%= format_ohms_timestamp(asset.file_metadata["duration_seconds"]) %>
                   </div>
                 </div>
-              </div>
+              </li>
             <% end %>
-          </div>
+          </ul>
         </div>
       <% end %>
     </div>
