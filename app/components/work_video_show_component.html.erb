@@ -116,13 +116,6 @@
       <% else %> <%# no video file available %>
         <%= tag "img", src: asset_path("placeholderbox.svg", alt: "") %>
       <% end %>
-
-      <% if video_assets.length > 1 %>
-        <div class="av-now-playing-label bg-dark text-light d-flex justify-content-between px-2 py-1">
-          <span class="av-now-playing-title"><%= initial_video_asset.title %></span>
-          <span class="av-now-playing-position"><%= video_assets.index(initial_video_asset) + 1 %> / <%= video_assets.length %></span>
-        </div>
-      <% end %>
     </div>
 
     <%= render "works/rights_and_social", work: work %>

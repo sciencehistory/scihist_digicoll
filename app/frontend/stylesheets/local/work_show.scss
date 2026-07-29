@@ -267,22 +267,4 @@
   .av-transcript-line.av-now-playing {
     background-color: $shi-teal-1;
   }
-
-  // "Now playing" line under the player, showing current segment title + "X / Y".
-  .av-now-playing-label {
-    .av-now-playing-title {
-      // allow a long title (e.g. an unbroken filename) to wrap instead of
-      // overflowing the flex row. min-width:0 lets the flex item shrink below
-      // its content size; overflow-wrap breaks the long "word".
-      min-width: 0;
-      overflow-wrap: anywhere;
-    }
-
-    .av-now-playing-position {
-      // keep "X / Y" intact on one line, to the right
-      flex-shrink: 0;
-      margin-left: 0.75rem;
-      white-space: nowrap;
-    }
-  }
 }

@@ -42,9 +42,6 @@ class WorkVideoShowComponent < ApplicationComponent
       video_type:   asset.hls_playlist_file.present? ? "application/x-mpegURL" : asset.content_type,
       poster_url:   asset.file_derivatives(:thumb_large)&.url,
       captions_url: auto_caption_track_url(asset),
-      title:        asset.title,
-      position:     video_assets.index(asset) + 1,
-      total:        video_assets.length,
       width:        asset.width,
       height:       asset.height,
       transcript_fragment_url: (asset_transcript_path(asset, fragment: true) if asset.has_webvtt?)

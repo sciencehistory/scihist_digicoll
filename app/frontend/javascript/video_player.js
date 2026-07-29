@@ -193,7 +193,7 @@ function loadMediaForLink(player, segmentLink) {
   }
 
   swapTranscript(mediaData.transcript_fragment_url);
-  markSegmentNowPlaying(segmentLink, mediaData);
+  markSegmentNowPlaying(segmentLink);
 }
 
 // AbortController that let's us abort in-flight transcript fetches if they
@@ -244,23 +244,14 @@ function setTranscriptContent(container, html) {
   container.scrollTop = 0;
 }
 
-// Reflect the segment just loaded: move the "now playing" highlight to its row,
-// and update the "now playing" line under the player with its title and position.
-function markSegmentNowPlaying(segmentLink, avMedia) {
+// Move the "now playing" highlight to the segment's row.
+function markSegmentNowPlaying(segmentLink) {
   const list = segmentLink.closest(".av-transcript-list");
 
-  // highlight correct row
   list.querySelectorAll(".av-now-playing").forEach(function(el) {
     el.classList.remove("av-now-playing");
   });
   segmentLink.closest(".av-transcript-line")?.classList.add("av-now-playing");
-
-  // Add now playing title and position to bar under player
-  const label = document.querySelector(".av-now-playing-label");
-  if (label) {
-    label.querySelector(".av-now-playing-title").textContent = avMedia.title;
-    label.querySelector(".av-now-playing-position").textContent = `${avMedia.position} / ${avMedia.total}`;
-  }
 }
 
 

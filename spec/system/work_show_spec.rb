@@ -276,7 +276,6 @@ describe "Public work show page", type: :system, js: false do
 
       # First segment loaded initially
       expect(page).to have_selector(".av-transcript-line.av-now-playing", text: "First segment")
-      expect(page).to have_selector(".av-now-playing-title", text: "First segment")
 
       # Open the transcript panel, showing the first segment's transcript
       click_on "Show transcript"
@@ -287,7 +286,6 @@ describe "Public work show page", type: :system, js: false do
 
       # Player switches to the second segment
       expect(page).to have_selector(".av-transcript-line.av-now-playing", text: "Second segment")
-      expect(page).to have_selector(".av-now-playing-title", text: "Second segment")
 
       # Transcript switches too (fetched async, Capybara waits for it)
       expect(page).to have_content("This is the transcript of the second segment.")
