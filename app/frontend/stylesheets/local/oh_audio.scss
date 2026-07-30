@@ -389,6 +389,7 @@
 .transcript-highlighted {
   // shi-teal-1
   background-color: #eaf6f3;
+  box-shadow: inset 4px 0 0 0 $shi-red;
 
   .ohms-transcript-timestamp {
     font-weight: bold;
