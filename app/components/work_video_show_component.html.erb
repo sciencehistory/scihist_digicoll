@@ -118,7 +118,7 @@
       <% end %>
 
       <% if video_assets.length > 1 %>
-        <div class="av-transcript-list mt-2 border border-dark">
+        <div class="av-transcript-list border border-dark">
           <h2 class="bg-dark text-light fs-5 py-1 px-2 m-0">Multiple Segments</h2>
           <ul class="av-transcript-list-items list-unstyled m-0">
             <% video_assets.each do |asset| %>
@@ -150,8 +150,6 @@
       <% end %>
     </div>
 
-    <%= render "works/rights_and_social", work: work %>
-
     <% if has_any_transcript? %>
       <div class="transcript-toggle">
         <%# href leads to separate page with transcript, that we hope google will follow, but don't expect users to,
@@ -160,8 +158,14 @@
         <a href="<%= asset_transcript_path(initial_video_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript" data-show-label="Show transcript" data-hide-label="Hide transcript">
           Show transcript
         </a>
+      </div>
+    <% end %>
 
-        <p class="alert alert-warning mt-3">
+    <%= render "works/rights_and_social", work: work %>
+
+    <% if has_any_transcript? %>
+      <div class="transcript-disclaimer">
+        <p class="alert alert-warning">
           <%= t("transcript.asr_warning_html") %>
         </p>
       </div>
