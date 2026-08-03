@@ -36,7 +36,7 @@ describe "derivative creation" do
         :thumb_mini, :thumb_mini_2X, :thumb_large, :thumb_large_2X, :thumb_standard, :thumb_standard_2X, :audio_16k_opus
       )
 
-      expect(video_asset.file_derivatives[:audio_16k_opus].content_type).to eq "audio/opus"
+      expect(video_asset.file_derivatives[:audio_16k_opus].content_type).to eq "audio/ogg"
       expect(video_asset.file_derivatives[:audio_16k_opus].size).to be > 0
       expect(video_asset.file_derivatives[:audio_16k_opus].metadata["filename"]).to end_with(".oga")
     end
