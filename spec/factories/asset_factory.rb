@@ -203,7 +203,7 @@ FactoryBot.define do
             thumb_large_2x: faked_thumbnail,
             audio_16k_opus:  create(:stored_uploaded_file,
                 file: File.open(Rails.root + "spec/test_support/audio/short_opus.oga"),
-                content_type: "audio/opus"
+                content_type: "audio/ogg"
               )
           }
         end
