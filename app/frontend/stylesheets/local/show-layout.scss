@@ -208,11 +208,12 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
     column-gap: $main_gutter_width;
     grid-template-areas:
       "show-video show-video-transcript"
+      "show-video transcript-toggle"
       "show-video show-title"
       "show-video show-metadata";
 
     .show-video { display: block; }
-    .video-player, .transcript-toggle, .rights-and-social, .transcript-disclaimer { grid-area: unset; }
+    .video-player, .rights-and-social, .transcript-disclaimer { grid-area: unset; }
     .show-title { margin-bottom: unset; }
     .show-video-transcript { margin-top: unset; }
   }

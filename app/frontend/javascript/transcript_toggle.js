@@ -7,16 +7,19 @@ domready(function() {
 
   if (transcriptCollapsible && toggle) {
     transcriptCollapsible.addEventListener('shown.bs.collapse', event => {
-      toggle.textContent = toggle.dataset.hideLabel;
-
       // jump to transcript if needed
       const bounding = transcriptCollapsible.getBoundingClientRect();
       if (bounding && !(bounding.bottom >= 0 && bounding.top <= document.documentElement.clientHeight)) {
         transcriptCollapsible.scrollIntoView();
       }
     });
-    transcriptCollapsible.addEventListener('hidden.bs.collapse', event => {
-      toggle.textContent = toggle.dataset.showLabel;
+
+    transcriptCollapsible.addEventListener('show.bs.collapse', event => {
+      toggle.style.display = "none"; // hide toggle botton
+    });
+
+    transcriptCollapsible.addEventListener('hide.bs.collapse', event => {
+      toggle.style.display = ""; // show toggle botton
     });
   }
 });

@@ -28,6 +28,17 @@
   <%= tag.meta itemprop: "thumbnailUrl", content: WorkSocialShareAttributes.new(work, view_context: view_context).share_media_url %>
 
 
+  <% if has_any_transcript? %>
+    <div class="transcript-toggle">
+      <%# href leads to separate page with transcript, that we hope google will follow, but don't expect users to,
+          although they can with eg "open in new tab". Normally data-bs-target will be used by Bootstrap collapse JS
+          to open box on page with transcript instead %>
+      <a href="<%= asset_transcript_path(initial_video_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main mb-4" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript">
+        Show transcript
+      </a>
+    </div>
+  <% end %>
+
   <div class="show-title">
     <%= render WorkTitleAndDatesComponent.new(work) %>
   </div>
@@ -149,17 +160,6 @@
         </div>
       <% end %>
     </div>
-
-    <% if has_any_transcript? %>
-      <div class="transcript-toggle">
-        <%# href leads to separate page with transcript, that we hope google will follow, but don't expect users to,
-            although they can with eg "open in new tab". Normally data-bs-target will be used by Bootstrap collapse JS
-            to open box on page with transcript instead %>
-        <a href="<%= asset_transcript_path(initial_video_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript" data-show-label="Show transcript" data-hide-label="Hide transcript">
-          Show transcript
-        </a>
-      </div>
-    <% end %>
 
     <%= render "works/rights_and_social", work: work %>
 
