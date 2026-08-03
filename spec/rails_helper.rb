@@ -85,6 +85,12 @@ RSpec.configure do |config|
 
       # This disables non-foreground tabs from getting a lower process priority.
       opts.add_argument '--disable-renderer-backgrounding'
+
+      # Suggested by capybara user that this may make things more reliable and synchronous
+      # for automated tests.
+      # https://github.com/teamcapybara/capybara/issues/2800#issuecomment-5152341389
+      # https://issues.chromium.org/issues/402796660#comment18
+      opts.add_argument "--disable-features=DeferRendererTasksAfterInput"
     end
 
     Capybara::Selenium::Driver.new(app, **{ :browser => :chrome, options_key => browser_options })
