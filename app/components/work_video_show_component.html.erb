@@ -33,7 +33,7 @@
       <%# href leads to separate page with transcript, that we hope google will follow, but don't expect users to,
           although they can with eg "open in new tab". Normally data-bs-target will be used by Bootstrap collapse JS
           to open box on page with transcript instead %>
-      <a href="<%= asset_transcript_path(initial_video_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main mb-4" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript">
+      <a href="<%= asset_transcript_path(initial_video_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main mb-4" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript-collapse">
         Show transcript
       </a>
     </div>
@@ -176,13 +176,13 @@
     <div class="collapse" id="show-video-transcript-collapse">
       <div class="show-video-transcript mb-4">
         <div class="show-video-transcript-heading">
-          <h2 class="h3">Transcript</h2>
+          <h2 class="h3" id="showVideoTranscriptHeading">Transcript</h2>
           <button type="button" class="btn-close" aria-label="Close" data-bs-toggle="collapse" data-bs-target="#show-video-transcript-collapse" aria-expanded="true">
           </button>
         </div>
 
 
-        <div class="show-video-transcript-content" data-transcript-content-target itemprop="transcript">
+        <div class="show-video-transcript-content" data-transcript-content-target itemprop="transcript" tabindex="0" role="region" aria-labelledby="showVideoTranscriptHeading">
           <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(initial_vtt_transcript_str), asset_friendlier_id: initial_video_asset.friendlier_id) %>
         </div>
       </div>
