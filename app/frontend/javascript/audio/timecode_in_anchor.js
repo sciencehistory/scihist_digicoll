@@ -1,18 +1,22 @@
 // If page anchor has a timecode in it like #t=13434 where that's a number of seconds, then
-// on page load, we should jump to that timecode in audio or video player.
-//
-// Used for both Oral History audio, and work show video.
+// on page load, we should jump to that timecode in the Oral History audio player.
 //
 // Confusingly, now also used for #p={paragraph number} anchor linking in oral histories.
 //
 // Using "t" as a key is roughly compatible with WC3 "media fragment" standard, and other
 // common practice.
 //
+// ORAL HISTORY AUDIO ONLY. The work show video page handles its own anchor (in
+// video_player.js), because there a `t` may be accompanied by an `a` naming which
+// segment to switch to first -- switch and seek have to be one ordered sequence.
+// Both use seekAndAutoPlayWhenReady for the seek itself.
+//
 // Note this is similar to but different from the play_at_timecode JS that has an on-screen element that
 // can be clicked to advance to timecode, without changing the #fragmentIdentifier.
 
 import domready from 'domready';
 import {gotoTocSegmentAtTimecode, gotoTranscriptTimecode, scrollToElement} from './helpers/ohms_player_helpers.js';
+import {seekAndAutoPlayWhenReady} from '../media_seek.js';
 import * as bootstrap from 'bootstrap';
 import videojs from 'video.js';
 
@@ -27,31 +31,12 @@ domready(function() {
       history.scrollRestoration = 'manual';
     }
 
-    var playerDomEl = document.querySelector("*[data-role=now-playing-container] audio, .video-player video");
+    var playerDomEl = document.querySelector("*[data-role=now-playing-container] audio");
 
     // Another file should actually be creating the videoJSPlayer obj we need, wait for it if needed.
     onVideoJSSetupFor(playerDomEl, function(videoJsPlayer) {
 
-      // Try to seek and then auto-play. player might not be in state where it can
-      // seek yet, if it is not then try to wait and seek when we can.
-      if (playerDomEl.readyState >=  playerDomEl.HAVE_METADATA) {
-        seekAndAutoPlay(videoJsPlayer, timeCodeSeconds);
-      } else {
-        playerDomEl.addEventListener("loadedmetadata", function(event) {
-          seekAndAutoPlay(videoJsPlayer, timeCodeSeconds);
-        });
-      }
-
-      // If all else fails, on some very persnickety user-agents (iOS), there's no
-      // way to seek UNTIL user presses play. Using video.js event and seek API is also important,
-      // as it seems to work around some iOS issues with doing both those operations too!
-      //
-      // If it runs when not needed cause earlier seek DID work -- it should just be
-      // seeking to where we already are anyway!
-      videoJsPlayer.one('play', function() { // 'one' will only hook once then de-register
-        videoJsPlayer.currentTime(timeCodeSeconds);
-        // it's already playing, it will not help to play again, no need we're good.
-      });
+      seekAndAutoPlayWhenReady(videoJsPlayer, timeCodeSeconds);
 
       // For OH
       //
@@ -113,23 +98,6 @@ function execWhenOhTabActive(targetTabId, procArg) {
 
 function hasOhTabs() {
   return !!document.querySelector("#ohmsScrollable .tab-pane.active")
-}
-
-// Seek to selected time, and TRY to auto-play the audio. Either or both might
-// not work in some browsers trying to prevent spammy playing.
-//
-// Must be called when player is in a readyState where we can seek,
-// at least HAVE_METADATA. https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/readyState
-function seekAndAutoPlay(videoJsPlayer, timeCodeSeconds) {
-  videoJsPlayer.currentTime(timeCodeSeconds);
-
-  var playPromise  = videoJsPlayer.play();
-
-  if (playPromise !== undefined) {
-    playPromise.catch(error => {
-      console.log(`could not autoplay: ${error}`);
-    });
-  }
 }
 
  // Another file is creating the videoJS object, asyncrornous to this file.

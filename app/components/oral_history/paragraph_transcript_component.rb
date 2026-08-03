@@ -60,12 +60,19 @@ module OralHistory
     def render_timestamp_marker(start_seconds)
       content_tag("a",
                   format_ohms_timestamp(start_seconds),
-                  href: "#{base_link}#t=#{start_seconds}",
+                  href: "#{base_link}##{timestamp_anchor(start_seconds)}",
                   class: "ohms-transcript-timestamp default-link-style",
                     # must be formatted exactly the same in JS transcript highlighter
                     # code that searches for it.
                   data: { "ohms_timestamp_s" => "%.3f" % start_seconds.round(3)}
       )
+    end
+
+    # Fragment identifier for a timestamp link. VttTranscriptComponent extends this
+    # to also name the asset (`&a=<id>`), for switching segments of a multi-segment
+    # video work; plain audio oral histories (single combined derivative) don't.
+    def timestamp_anchor(start_seconds)
+      "t=#{start_seconds}"
     end
 
     # usually a new page or timestamp are just indicated by change in metadata between

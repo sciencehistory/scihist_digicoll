@@ -1,11 +1,286 @@
 import videojs from 'video.js';
+import { seekAndAutoPlayWhenReady } from './media_seek.js';
 
 // css is imported through our CSS pipelines, with custom theming, in video_js.scss
 
-const videoPlayerEl = document.querySelector("#work-video-player")
+// id of the <track> element we render for our own ASR/corrected captions. Must
+// match id in initial track rendered in ERB.
+const AUTO_CAPTION_TRACK_ID = "scihistAutoCaptions";
 
-// if we have a video player, look for extra track empty captions safari loads
-// from HLS manifests that do not declare no captions, and remove them.
+// css class marking the transcript line matching current playback position
+const highlightCssClass = "transcript-highlighted";
+
+// track user's captions choice under closure, so we can restore on segment change
+let captionsPreferredShowing = false;
+
+// volume/muted/playbackRate awaiting restore on the next canplay, if a switch is in flight
+let pendingRestoreOptions = null;
+
+const videoPlayerEl = document.querySelector("#work-video-player");
+
+if (videoPlayerEl) {
+  setupVideoPlayer(videojs(videoPlayerEl));
+}
+
+// Wiring registered ONCE for the life of the page. Media loaded in player
+// may change, don't assume it will remain what was there at load.
+//
+function setupVideoPlayer(player) {
+  const textTracks = player.textTracks();
+
+  // Safari adds empty captions that we have to remove
+  if (navigator.vendor?.includes("Apple")) {
+    textTracks.addEventListener("addtrack", function() {
+      removeEmptySafariTextTracks(player);
+    });
+  }
+
+  // For custom skin/theme, we want to underline when captions are showing.
+  //
+  // We listen for tracks coming and going as well as for "change", so the button
+  // is still correct after a change of media -- "change" alone does not fire when
+  // tracks simply go away with the old source.
+  ["change", "addtrack", "removetrack"].forEach(function(eventName) {
+    textTracks.addEventListener(eventName, function() {
+      updateCaptionsButtonState(player);
+    });
+  });
+
+  // When a caption track is loaded -- either initial page load, or when
+  // switching media segments -- we need to set it up for transcript syncing.
+  textTracks.addEventListener("addtrack", function(event) {
+    if (event.track.id === AUTO_CAPTION_TRACK_ID) {
+      setupAutoCaptionTrack(player, event.track);
+    }
+  });
+
+  // Shouldn't be needed, but just in case our listener was added too late somehow,
+  // we've written idempotently.
+  setupAutoCaptionTrack(player, textTracks.getTrackById(AUTO_CAPTION_TRACK_ID));
+
+  // When user disables captions, our caption tracks are set to 'disabled' again--
+  // but we need them as 'hidden' because we use them for transcript syncing
+  // even when not visible.
+  textTracks.addEventListener("change", function() {
+    const track = player.textTracks().getTrackById(AUTO_CAPTION_TRACK_ID);
+    if (!track) {
+      return;
+    }
+
+    if (track.mode == "disabled") {
+      track.mode = "hidden";
+    }
+
+    captionsPreferredShowing = track.mode === "showing";
+  });
+
+  // When transcript window opens, scroll to current highlight if needed.
+  const transcriptCollapsible = document.getElementById('show-video-transcript-collapse');
+  transcriptCollapsible?.addEventListener('shown.bs.collapse', event => {
+    let highlighted = document.querySelector(`.${highlightCssClass}`);
+    if (highlighted && !elementFullyVisibleWithin(highlighted, transcriptCollapsible)) {
+      scrollToTranscriptHighlight(highlighted);
+    }
+  });
+
+  // Multi-segment works list their video segments below the player. Clicking one
+  // loads that video (and its caption track) into the existing player, from
+  // JSON serialized info on the link.
+  //
+  document.querySelector(".av-transcript-list")?.addEventListener("click", function(event) {
+    const segmentLink = event.target.closest("[data-av-media]");
+    if (!segmentLink) {
+      return;
+    }
+
+    event.preventDefault();
+
+    if (segmentLink.closest(".av-transcript-line")?.classList.contains("av-now-playing")) {
+      return;
+    }
+
+    loadMediaForLink(player, segmentLink);
+  });
+
+  // On initial load, link anchor may include a specific segment to load
+  // (`a=friendlier_id`) and/or a specific timecode to seek to (in that segment)
+  player.ready(function() {
+    loadMediaFromAnchor(player);
+  });
+}
+
+
+// Switch to segment named in anchor if needed and/or seek to timecode named
+function loadMediaFromAnchor(player) {
+  const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+  const assetId = hashParams.get("a");
+  const timeCodeSeconds = hashParams.get("t");
+
+  let switching = false;
+
+  if (assetId) {
+    // CSS.escape since assetId comes straight from the URL fragment
+    const segmentLink = document.querySelector(`a[data-friendlier-id="${CSS.escape(assetId)}"]`);
+
+    // already the loaded segment, nothing to switch
+    const alreadyLoaded = segmentLink?.closest(".av-transcript-line")?.classList?.contains("av-now-playing");
+
+    if (segmentLink && !alreadyLoaded) {
+      switching = true;
+
+      loadMediaForLink(player, segmentLink);
+
+      if (timeCodeSeconds) {
+        // We need to seek sufficiently after media is really loaded to make it stick,
+        // it was tricky to get this to work, but this does in the end.
+        player.one("canplay", function() {
+          seekAndAutoPlayWhenReady(player, timeCodeSeconds);
+        });
+      }
+    }
+  }
+
+  // If we didn't switch media first, now we can seek in a normal way.
+  if (timeCodeSeconds && !switching) {
+    seekAndAutoPlayWhenReady(player, timeCodeSeconds);
+  }
+}
+
+
+// Load the segment a segment link points to into the player, from serialized
+// data on the link (see WorkVideoShowComponent#av_media_for), and reflect it
+// as now playing.
+function loadMediaForLink(player, segmentLink) {
+  const mediaData = JSON.parse(segmentLink.dataset.avMedia);
+
+  // carry forward if a prior switch's restore is still pending, don't re-read a reset default
+  const persistedPlayerOptions = pendingRestoreOptions || {
+    volume: player.volume(),
+    muted: player.muted(),
+    playbackRate: player.playbackRate(),
+  };
+  pendingRestoreOptions = persistedPlayerOptions;
+
+  const media = {
+    src: { src: mediaData.video_url, type: mediaData.video_type },
+    poster: mediaData.poster_url
+  };
+
+  if (mediaData.captions_url) {
+    media.textTracks = [{
+      id: AUTO_CAPTION_TRACK_ID,
+      src: mediaData.captions_url,
+      kind: "captions",
+      label: "Auto-captions"
+    }];
+  }
+
+  // switching while actively playing causes obscure race conditions in video.js,
+  // make sure it's not. double pausing also causes mysterious race conditions, only
+  // pause if playing!
+  if (!player.paused()) {
+    player.pause();
+  }
+
+  function applyPersistedOptions() {
+    player.playbackRate(persistedPlayerOptions.playbackRate);
+    player.volume(persistedPlayerOptions.volume);
+    player.muted(persistedPlayerOptions.muted);
+  }
+
+  player.loadMedia(media);
+
+  // apply immediately so there's no visible flash back to defaults, and again
+  // on canplay since video.js resets playbackRate a second time once the new
+  // source is fully attached
+  applyPersistedOptions();
+  player.one("canplay", function() {
+    applyPersistedOptions();
+    pendingRestoreOptions = null;
+  });
+
+  // in case new video has different aspect ratio, update.
+  if (mediaData.width && mediaData.height) {
+    player.aspectRatio(`${mediaData.width}:${mediaData.height}`);
+  }
+
+  swapTranscript(mediaData.transcript_fragment_url);
+  markSegmentNowPlaying(segmentLink);
+}
+
+// AbortController that let's us abort in-flight transcript fetches if they
+// overlap.
+let transcriptFetchController = null;
+
+// Fetch and inject the transcript for the segment just switched to, replacing
+// anything there before.
+function swapTranscript(transcriptFragmentUrl) {
+  const container = document.querySelector("*[data-transcript-content-target]");
+  if (!container) {
+    return;
+  }
+
+  transcriptFetchController?.abort();
+
+  if (!transcriptFragmentUrl) {
+    setTranscriptContent(container, "");
+    return;
+  }
+
+  transcriptFetchController = new AbortController();
+
+  fetch(transcriptFragmentUrl, { signal: transcriptFetchController.signal })
+    .then(function(response) {
+      if (!response.ok) {
+        throw new Error(`transcript_fragment request failed with status ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(function(html) {
+      setTranscriptContent(container, html);
+    })
+    .catch(function(error) {
+      if (error.name === "AbortError") {
+        return; // superseded by a newer switch, not a real failure
+      }
+      console.error("Could not load transcript for switched segment", error);
+      setTranscriptContent(container, "Error, could not load transcript.");
+    });
+}
+
+// Replace the transcript container's content, and scroll it back to top -- a
+// switch's transcript should always open at the beginning, not wherever the
+// previous segment's transcript happened to be scrolled to.
+function setTranscriptContent(container, html) {
+  container.innerHTML = html;
+  container.scrollTop = 0;
+}
+
+// Move the "now playing" highlight to the segment's row.
+function markSegmentNowPlaying(segmentLink) {
+  const list = segmentLink.closest(".av-transcript-list");
+
+  list.querySelectorAll(".av-now-playing").forEach(function(el) {
+    el.classList.remove("av-now-playing");
+  });
+  segmentLink.closest(".av-transcript-line")?.classList.add("av-now-playing");
+}
+
+
+function setupAutoCaptionTrack(player, track) {
+  if (!track) {
+    return;
+  }
+
+  // showing if user had it on before, else hidden so cue events still fire
+  track.mode = captionsPreferredShowing ? "showing" : "hidden";
+
+  setupTranscriptHighlighting(player, track);
+}
+
+
+// Look for extra empty caption tracks safari loads from HLS manifests that do
+// not declare no captions, and remove them.
 //
 // See:
 //   * https://github.com/videojs/video.js/issues/2808
@@ -14,32 +289,30 @@ const videoPlayerEl = document.querySelector("#work-video-player")
 // And in ramp project (not sure why they aren't doing it on desktop Safari, we
 // do need it there):
 //   * https://github.com/samvera-labs/ramp/blob/23aae5c5aa9e7c95d1c94cba5cf870daf76df1aa/src/components/MediaPlayer/VideoJS/VideoJSPlayer.js#L571-L597
-if (videoPlayerEl && navigator.vendor?.includes("Apple")) {
-  const textTracks = videojs(videoPlayerEl).textTracks();
+function removeEmptySafariTextTracks(player) {
+  const textTracks = player.textTracks();
 
-  textTracks.on('addtrack', function() {
-    for (let i = 0; i < textTracks.length; i++) {
-      // empty language and label are ones safari adds for HLS manifest without CLOSED_CAPTION=none,
-      // we don't want em.
-      if (textTracks[i].language === '' && textTracks[i].label === '') {
-        textTracks.removeTrack(textTracks[i]);
-      }
+  for (let i = 0; i < textTracks.length; i++) {
+    // empty language and label are ones safari adds for HLS manifest without
+    // CLOSED_CAPTION=none, we don't want em.
+    if (textTracks[i].language === '' && textTracks[i].label === '') {
+      textTracks.removeTrack(textTracks[i]);
     }
-  });
+  }
 }
 
+// Add a class to the "CC" captions button to add the underline when
+// captions are visible.
+function updateCaptionsButtonState(player) {
+  // Odd JS way to turn it to a standard array so we can iterate
+  const trackArr = Array.prototype.slice.call(player.textTracks(), 0);
+  const button = document.querySelector("button.vjs-subs-caps-button");
 
-// For custom skin/theme, we want to underline when captions are showing
-if (videoPlayerEl) {
-  videojs(videoPlayerEl).textTracks().on("change", function() {
-    // Odd JS way to turn it to a standard array so we can interate
-    let trackArr = Array.prototype.slice.call(this, 0);
-    if (trackArr.find( track => track.mode == "showing")) {
-      document.querySelector("button.vjs-subs-caps-button")?.classList?.add("text-track-visible");
-    } else {
-      document.querySelector("button.vjs-subs-caps-button")?.classList?.remove("text-track-visible");
-    }
-  });
+  if (trackArr.find( track => track.mode == "showing")) {
+    button?.classList?.add("text-track-visible");
+  } else {
+    button?.classList?.remove("text-track-visible");
+  }
 }
 
 
@@ -49,121 +322,91 @@ if (videoPlayerEl) {
 // We count on the fact that we have our VTT loaded in the video as a text track, so
 // we can use HTML5 video API to find "activeCues" at any given time, and then locate those
 // in the transcript. Using HTML5 video API via video.js, which delegates or polyfills as needed.
-if (videoPlayerEl) {
-  const highlightCssClass = "transcript-highlighted"
+//
+function setupTranscriptHighlighting(player, captionsTrack) {
+  // whether captionsTrack is visible or hidden, we'll get cuechange
+  // events we can use to highlight our transcript
+  captionsTrack.addEventListener("cuechange", function() {
+    // remove transcript highlights
+    document.querySelectorAll(`.${highlightCssClass}`).forEach( (el) => el.classList.remove(highlightCssClass));
 
-  videojs(videoPlayerEl).ready(function() {
-    const autoCaptionTrack = this.textTracks().getTrackById("scihistAutoCaptions");
+    // Now highlight in transcript for current cue, if available.
+    const highlightedEl = addTranscriptHighlights(player, captionsTrack.activeCues);
 
-    if (autoCaptionTrack) {
-
-      //We need text track to be hidden instead of disabled, so we can still track
-      //cuechange events for transcript
-      autoCaptionTrack.mode = "hidden";
-      this.textTracks().addEventListener("change", function() {
-        if (autoCaptionTrack.mode == "disabled") {
-          autoCaptionTrack.mode = "hidden";
-        }
-      });
-
-      // whether track is visible or hidden, we'll get cuechange
-      // events we can use to highlight our transcript
-      autoCaptionTrack.addEventListener("cuechange", function() {
-        removeTranscriptHighlights();
-
-        const highlightedEl = addTranscriptHighlights(autoCaptionTrack.activeCues);
-
-        // Scroll to highlighted El if present, the transcript is open, and the
-        // mouse cursor isn't currently over transcript window. UX modelled on Youtube.
-        if (highlightedEl &&
-            document.querySelector("#show-video-transcript-collapse.show") &&
-            !document.querySelector("*[data-transcript-content-target]").matches(':hover')) {
-          scrollToTranscriptHighlight(highlightedEl);
-        }
-      });
-
-      // When transcript window opens, scroll to if needed
-      const transcriptCollapsible = document.getElementById('show-video-transcript-collapse');
-      transcriptCollapsible.addEventListener('shown.bs.collapse', event => {
-        let highlighted = document.querySelector(`.${highlightCssClass}`);
-        if (highlighted && !elementFullyVisibleWithin(highlighted, transcriptCollapsible)) {
-          scrollToTranscriptHighlight(highlighted);
-        }
-      })
-    }
-
-    const vjsPlayer = this;
-
-    function removeTranscriptHighlights() {
-      document.querySelectorAll(`.${highlightCssClass}`).forEach( (el) => el.classList.remove(highlightCssClass))
-    }
-
-    function addTranscriptHighlights(activeCues) {
-      if (!activeCues || activeCues.length == 0) {
-        return;
-      }
-
-      // Odd JS way to turn it to a standard array so we can interate
-      let activeCuesArr = Array.prototype.slice.call(activeCues, 0)
-
-      // Sometimes there's more than one because end time for one cue is start time for the other,
-      // we dont' need to show the one that's about to end.
-      if (activeCuesArr.length > 1) {
-        activeCuesArr = activeCuesArr.filter( cue => {
-          vjsPlayer.currentTime() <= (cue.endTime - 0.25)
-        });
-      }
-
-      let firstHighlightedEl = undefined;
-
-      activeCuesArr.forEach( (cue) => {
-        // when outputting seconds float in vtt_transcript_component.html.erb, it must be output
-        // with exact same number of decimal places including trailing zeroes as here.
-        document.querySelectorAll(`*[data-ohms-timestamp-s="${cue.startTime.toFixed(3)}"]`).forEach( (el) => {
-          firstHighlightedEl = firstHighlightedEl || el;
-
-          el.closest(".ohms-transcript-paragraph-wrapper")?.classList?.add(highlightCssClass);
-        });
-      });
-
-      // Return first one to scroll to
-      return firstHighlightedEl;
-    }
-
-    function scrollToTranscriptHighlight(highlightedEl) {
-      const container = document.querySelector("*[data-transcript-content-target]");
-      const line = highlightedEl.closest('.ohms-transcript-paragraph-wrapper');
-
-      // Do nothing if it's already scrolled *entirely* in container view
-      if (elementFullyVisibleWithin(line, container)) {
-        return false;
-      }
-
-      // otherwise continue, do two lines before if possible, matching youtube UX
-      let scrollToEl = line.previousElementSibling || line;
-      //scrollToEl = scrollToEl.previousElementSibling || scrollToEl;
-
-      container.scrollTo(0, scrollToEl.offsetTop);
-
-      // on small screen with really big lines, maybe it's still not visible,
-      // we need to skip the previous line and just put this on top
-      if (!elementFullyVisibleWithin(line, container)) {
-        container.scrollTo(0, line.offsetTop);
-      }
-    }
-
-    function elementFullyVisibleWithin(element, container) {
-      const elementRect = element.getBoundingClientRect();
-      const containerRect = container.getBoundingClientRect();
-
-      return (elementRect.bottom >= containerRect.top &&
-              elementRect.bottom <= containerRect.bottom &&
-              elementRect.top <= containerRect.bottom &&
-              elementRect.top >= containerRect.top);
-
+    // Scroll to highlighted El if present, the transcript is open, and the
+    // mouse cursor isn't currently over transcript window. UX modelled on Youtube.
+    if (highlightedEl &&
+        document.querySelector("#show-video-transcript-collapse.show") &&
+        !document.querySelector("*[data-transcript-content-target]").matches(':hover')) {
+      scrollToTranscriptHighlight(highlightedEl);
     }
   });
 }
 
 
+// add css class to highlight transcript lines for current active cues from
+// caption track.
+function addTranscriptHighlights(player, activeCues) {
+  if (!activeCues || activeCues.length == 0) {
+    return;
+  }
 
+  // Odd JS way to turn it to a standard array so we can interate
+  let activeCuesArr = Array.prototype.slice.call(activeCues, 0)
+
+  // Sometimes there's more than one because end time for one cue is start time for the other,
+  // we dont' need to show the one that's about to end.
+  if (activeCuesArr.length > 1) {
+    activeCuesArr = activeCuesArr.filter( cue => player.currentTime() <= (cue.endTime - 0.25) );
+  }
+
+  let firstHighlightedEl = undefined;
+
+  activeCuesArr.forEach( (cue) => {
+    // when outputting seconds float in vtt_transcript_component.html.erb, it must be output
+    // with exact same number of decimal places including trailing zeroes as here.
+    document.querySelectorAll(`*[data-ohms-timestamp-s="${cue.startTime.toFixed(3)}"]`).forEach( (el) => {
+      firstHighlightedEl = firstHighlightedEl || el;
+
+      el.closest(".ohms-transcript-paragraph-wrapper")?.classList?.add(highlightCssClass);
+    });
+  });
+
+  // Return first one to scroll to
+  return firstHighlightedEl;
+}
+
+
+function scrollToTranscriptHighlight(highlightedEl) {
+  const container = document.querySelector("*[data-transcript-content-target]");
+  const line = highlightedEl.closest('.ohms-transcript-paragraph-wrapper');
+
+  // Do nothing if it's already scrolled *entirely* in container view
+  if (elementFullyVisibleWithin(line, container)) {
+    return false;
+  }
+
+  // otherwise continue, do two lines before if possible, matching youtube UX
+  let scrollToEl = line.previousElementSibling || line;
+  //scrollToEl = scrollToEl.previousElementSibling || scrollToEl;
+
+  container.scrollTo(0, scrollToEl.offsetTop);
+
+  // on small screen with really big lines, maybe it's still not visible,
+  // we need to skip the previous line and just put this on top
+  if (!elementFullyVisibleWithin(line, container)) {
+    container.scrollTo(0, line.offsetTop);
+  }
+}
+
+
+function elementFullyVisibleWithin(element, container) {
+  const elementRect = element.getBoundingClientRect();
+  const containerRect = container.getBoundingClientRect();
+
+  return (elementRect.bottom >= containerRect.top &&
+          elementRect.bottom <= containerRect.bottom &&
+          elementRect.top <= containerRect.bottom &&
+          elementRect.top >= containerRect.top);
+
+}

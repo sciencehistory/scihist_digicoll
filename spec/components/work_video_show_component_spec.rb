@@ -32,6 +32,24 @@ describe WorkVideoShowComponent, type: :component do
     end
   end
 
+  describe "when video is missing width/height" do
+    # :video factory trait sets faked_width/faked_height nil by default -- unlike an
+    # image, a video asset doesn't always have these -- so the default :video_work
+    # fixture already covers this case.
+    let(:work) { create(:video_work, :published) }
+
+    it "omits aspectRatio and style, instead of emitting an invalid value" do
+      render_inline described_class.new(work)
+
+      video_element = page.first("video")
+      expect(video_element).to be_present
+      expect(video_element["style"]).to be_nil
+
+      setup_json = JSON.parse(video_element["data-setup"])
+      expect(setup_json["aspectRatio"]).to be nil
+    end
+  end
+
   describe "when we have an HLS URL" do
     # Work with an hls url that doesn't actually point anywhere, but fine,
     # we just set it to point to a non-existent thing using shrine
@@ -151,7 +169,7 @@ describe WorkVideoShowComponent, type: :component do
         instance = described_class.new(work)
         render_inline instance
 
-        expect(instance.vtt_transcript_str).to eq asset.corrected_webvtt_str
+        expect(instance.initial_vtt_transcript_str).to eq asset.corrected_webvtt_str
 
         expect(page).to have_selector("video track", count: 1)
         track_element = page.first("video track")
@@ -181,7 +199,7 @@ describe WorkVideoShowComponent, type: :component do
       expect(container).to have_selector("meta[itemprop='duration'][content='#{iso8601_duration}']")
 
       expect(container).to have_selector("*[itemprop='transcript']",
-        text: OralHistoryContent::OhmsXml::VttTranscript.new(instance.vtt_transcript_str).transcript_text)
+        text: OralHistoryContent::OhmsXml::VttTranscript.new(instance.initial_vtt_transcript_str).transcript_text)
     end
   end
 

@@ -184,16 +184,18 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
   grid-template-areas:
     "show-title"
     "video-player"
+    "transcript-toggle"
     "show-video-transcript"
     "rights-and-social"
-    "transcript-toggle"
+    "transcript-disclaimer"
     "show-metadata";
   .video-player { grid-area: video-player; }
   .transcript-toggle { grid-area: transcript-toggle; }
+  .transcript-disclaimer { grid-area: transcript-disclaimer; }
   .rights-and-social { grid-area: rights-and-social; }
 
   .show-title, .video-player {
-    margin-bottom: $paragraph-spacer * 2;
+    margin-bottom: $paragraph-spacer;
   }
 
   .show-video-transcript {
@@ -210,7 +212,7 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
       "show-video show-metadata";
 
     .show-video { display: block; }
-    .video-player, .transcript-toggle, .rights-and-social { grid-area: unset; }
+    .video-player, .transcript-toggle, .rights-and-social, .transcript-disclaimer { grid-area: unset; }
     .show-title { margin-bottom: unset; }
     .show-video-transcript { margin-top: unset; }
   }
@@ -261,6 +263,9 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
       // leaving room for margin and padding for highlighted paragraphs
       padding: ($paragraph-spacer * 0.5) ($paragraph-spacer * 0.75);
     }
+  }
+  .av-transcript-list {
+    margin-top: 2px;
   }
 }
 

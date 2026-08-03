@@ -240,6 +240,58 @@ describe "Public work show page", type: :system, js: false do
       end
     end
   end
+
+  describe "Multi-segment with captions", type: :system, js: true do
+    let(:first_asset) do
+      create(:asset_with_faked_file, :video, :asr_vtt,
+        title: "First segment",
+        position: 0,
+        # :video trait leaves width/height nil, but video.js throws (and our
+        # player setup JS never finishes running) if aspectRatio can't be
+        # computed -- give it realistic values, like a real processed video would have.
+        faked_width: 640,
+        faked_height: 480,
+        vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nThis is the transcript of the first segment.")
+    end
+
+    let(:second_asset) do
+      create(:asset_with_faked_file, :video, :asr_vtt,
+        title: "Second segment",
+        position: 1,
+        faked_width: 640,
+        faked_height: 480,
+        vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nThis is the transcript of the second segment.")
+    end
+
+    let(:work) { create(:video_work, :published, members: [first_asset, second_asset], representative: first_asset) }
+
+    it "lists both segments, and switches media and transcript when the second is clicked" do
+      visit work_path(work)
+
+      # Both segments listed
+      segment_rows = page.find_all(".av-transcript-line")
+      expect(segment_rows.count).to eq 2
+      expect(page).to have_content("First segment")
+      expect(page).to have_content("Second segment")
+
+      # First segment loaded initially
+      expect(page).to have_selector(".av-transcript-line.av-now-playing", text: "First segment")
+
+      # Open the transcript panel, showing the first segment's transcript
+      click_on "Show transcript"
+      expect(page).to have_content("This is the transcript of the first segment.")
+
+      # Click the second segment
+      click_on "Second segment", match: :first
+
+      # Player switches to the second segment
+      expect(page).to have_selector(".av-transcript-line.av-now-playing", text: "Second segment")
+
+      # Transcript switches too (fetched async, Capybara waits for it)
+      expect(page).to have_content("This is the transcript of the second segment.")
+      expect(page).not_to have_content("This is the transcript of the first segment.")
+    end
+  end
 end
 
 describe "Public work show page", :logged_in_user, type: :system, js: false do

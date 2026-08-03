@@ -210,11 +210,15 @@ FactoryBot.define do
       end
 
       trait :asr_vtt do
+        transient do
+          vtt_source { "WEBVTT\n\n00:00.000 --> 00:01.500\nASR WebVTT #{rand 100}" }
+        end
+
         audio_asr_enabled { true }
 
-        after(:build) do |asset|
+        after(:build) do |asset, evaluator|
           asset.file_attacher.merge_derivatives({
-            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new("WEBVTT\n\n00:00.000 --> 00:01.500\nASR WebVTT #{rand 100}"), filename: "vtt.vtt", content_type: "text/vtt")
+            Asset::ASR_WEBVTT_DERIVATIVE_KEY => build(:stored_uploaded_file, file: StringIO.new(evaluator.vtt_source), filename: "vtt.vtt", content_type: "text/vtt")
           })
         end
       end
@@ -284,6 +288,7 @@ FactoryBot.define do
         uploaded_file = create(:stored_uploaded_file,
           file: evaluator.faked_file,
           content_type: evaluator.faked_content_type,
+          storage: (evaluator.faked_content_type&.start_with?("video/") ? "video_store" : "store"),
           width: evaluator.faked_width,
           height: evaluator.faked_height,
           bitrate:           evaluator.faked_bitrate,

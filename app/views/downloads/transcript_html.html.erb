@@ -1,13 +1,28 @@
-<div class="text-page">
-  <h1>
-    Transcript: <%= link_to @asset.parent.title, work_path(@asset.parent) %>
-  </h1>
-  <p><%= DateDisplayFormatter.new(@asset.parent.date_of_work).display_dates.join(",") %></p>
+<%
+  # Fragment version (embedded directly in the work's video page via JS) links
+  # timestamps to the current page (#t=...&a=...). Full page version links back to
+  # the work's own page, since this is a separate, standalone page.
+  transcript_component = OralHistory::VttTranscriptComponent.new(
+    OralHistoryContent::OhmsXml::VttTranscript.new(@asset.webvtt_str),
+    base_link: (work_path(@asset.parent) unless @only_fragment),
+    asset_friendlier_id: @asset.friendlier_id,
+  )
+%>
+<% if @only_fragment %>
+  <%= render transcript_component %>
+<% else %>
+  <div class="text-page">
+    <h1>
+      Transcript: <%= link_to @asset.parent.title, work_path(@asset.parent) %>
+    </h1>
+    <p><%= DateDisplayFormatter.new(@asset.parent.date_of_work).display_dates.join(",") %></p>
+    <p><code><%= @asset.title %></code></p>
 
-  <p class="alert alert-warning mt-3">
-    <%= t("transcript.asr_warning_html") %>
-  </p>
+    <p class="alert alert-warning mt-3">
+      <%= t("transcript.asr_warning_html") %>
+    </p>
 
 
-  <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(@asset.webvtt_str), base_link: work_path(@asset.parent)) %>
-</div>
+    <%= render transcript_component %>
+  </div>
+<% end %>
