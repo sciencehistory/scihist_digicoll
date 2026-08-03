@@ -98,7 +98,8 @@ class AssetGraphicOnlyPdfCreator
       temp_orig.path,
       "--size","#{target_width}x65500",
       "--export-profile", "srgb",
-      "-o", "#{output_jp2_tempfile.path}[Q=#{compression_quality},subsample-mode=off]"
+      "-o", "#{output_jp2_tempfile.path}[Q=#{compression_quality},subsample-mode=off]",
+      env: { "VIPS_BLOCK_UNTRUSTED" => "1" }
     )
 
     # note dpi metadata on output jp2 is always 72. :(

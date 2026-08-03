@@ -110,7 +110,7 @@ class DziPackage
         vips_output_pathname = Pathname.new(tmp_output_dir).join(base_file_path_to_use)
         FileUtils.mkdir_p(vips_output_pathname.dirname)
 
-        out, err = TTY::Command.new(printer: :null).run(*vips_command_args(original_file.path, vips_output_pathname))
+        out, err = TTY::Command.new(printer: :null).run(*vips_command_args(original_file.path, vips_output_pathname), env: { "VIPS_BLOCK_UNTRUSTED" => "1" })
         out =~ /vips[ \-](\d+\.\d+\.\d+.*$)/
 
         if $1

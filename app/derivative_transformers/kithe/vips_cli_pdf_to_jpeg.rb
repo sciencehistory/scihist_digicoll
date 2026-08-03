@@ -29,6 +29,11 @@ module Kithe
     class_attribute :vips_thumbnail_command, default: "vipsthumbnail"
     class_attribute :vips_command, default: "vips"
     class_attribute :vips_header_command, default: "vipsheader"
+    class_attribute :pdfinfo_command, default: "pdfinfo"
+
+    # libvips default render resolution for pdfload, used as a ceiling so we never
+    # try to render at higher-than-native resolution.
+    DEFAULT_PDF_DPI = 72.0
 
     attr_reader :max_width, :jpeg_q
 
@@ -68,28 +73,46 @@ module Kithe
     # Creates a thumbnail of the specified width.
     # If you want to add a border later on, you want to pass in a
     # slightly smaller width to accomodate that.
+    #
+    # Renders the PDF's first page ourselves via the explicit `pdfload` operation,
+    # rather than letting `vipsthumbnail` do its own format-sniffing load, so a
+    # malicious file can't get mis-detected as some other, more dangerous, loader.
+    # https://www.libvips.org/2022/05/28/What's-new-in-8.13.html
+    #
+    # Once we've rendered a raster ourselves, it's safe to use vipsthumbnail on
+    # the file WE produced.
     def thumbnail(width, input, output)
-      profile_normalization_args=["--eprofile", srgb_profile_path, "--delete"]
       vips_jpg_params="[Q=#{@jpeg_q },interlace,optimize_coding,strip]"
-      args = if width
-        # The image will be resized to fit within a box
-        # which is `width` wide and very, very very tall.
-        # See:
-        # https://github.com/libvips/libvips/issues/781
-        # https://github.com/libvips/ruby-vips/issues/150
-        [
-          vips_thumbnail_command, input.path,
-          *profile_normalization_args,
-          "--size", "#{width}x1000000",
-          "-o", "#{output.path}#{vips_jpg_params}"
-        ]
+
+      rendered_image = Tempfile.new(["kithe_vips_pdf_page", ".tif"])
+
+      dpi = estimated_dpi_for_width(input.path, width)
+      @cmd.run(vips_command, "pdfload", input.path, rendered_image.path, "--page", "0", "--dpi", dpi.to_s)
+
+      @cmd.run(
+        vips_thumbnail_command, rendered_image.path,
+        "--eprofile", srgb_profile_path, "--delete", # profile normalization args
+        "--size", "#{width}x1000000",
+        "-o", "#{output.path}#{vips_jpg_params}",
+        env: { "VIPS_BLOCK_UNTRUSTED" => "1" }
+      )
+    ensure
+      rendered_image.close! if rendered_image
+    end
+
+    # Uses `pdfinfo` to estimate dpi of PDF, for more efficiently creating thumbnail.
+    def estimated_dpi_for_width(pdf_path, target_width)
+      out, _err = @cmd.run(pdfinfo_command, pdf_path)
+
+      if out =~ /^Page size:\s*([\d.]+)\s*x\s*[\d.]+\s*pts/ && $1.to_f > 0
+        native_width_points = $1.to_f
+        # native_width_points is exactly the page's pixel width at the default 72 DPI,
+        # so this ratio gives us the DPI to hit target_width. Never render above the
+        # default DPI (i.e. don't try to upscale beyond native resolution).
+        (DEFAULT_PDF_DPI * (target_width.to_f / native_width_points)).clamp(1.0, DEFAULT_PDF_DPI)
       else
-        [ vips_command, "copy", input.path,
-          *profile_normalization_args,
-          "#{output.path}#{vips_jpg_params}"
-        ]
+        DEFAULT_PDF_DPI
       end
-      @cmd.run(*args)
     end
 
     # Sharpen a thumbnail.
@@ -107,7 +130,7 @@ module Kithe
         "--m1",        "0"   , # (no sharpening in flat areas)
         "--m2",        "3"   , # (some sharpening in jaggy areas)
       ]
-      @cmd.run(*args)
+      @cmd.run(*args, env: { "VIPS_BLOCK_UNTRUSTED" => "1" })
     end
 
     # Add a rectangular border (@border_pixels wide) around the thumbnail.
@@ -129,13 +152,13 @@ module Kithe
         '--extend', 'background',
         '--background', border_color
       ]
-      @cmd.run(*args)
+      @cmd.run(*args, env: { "VIPS_BLOCK_UNTRUSTED" => "1" })
     end
 
     # Return the height of an image in pixels.
     def image_height(image)
       args = [vips_header_command, '-f', 'Ysize', image.path]
-      @cmd.run(*args).out.to_i
+      @cmd.run(*args, env: { "VIPS_BLOCK_UNTRUSTED" => "1" }).out.to_i
     end
   end
 end
