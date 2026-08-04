@@ -1,12 +1,12 @@
 module Admin
-  class ManageVideoAssetComponent < ApplicationComponent
+  class ManageAvAssetComponent < ApplicationComponent
     DEFAULT_VTT_LINK_LABEL = "[WebVTT]"
 
     attr_reader :asset
 
     def initialize(asset)
-      unless asset.content_type&.start_with?("video/")
-        raise ArgumentError.new("Can only be used with video assets, #{asset.friendlier_id} has content_type #{asset.content_type}")
+      unless asset.content_type&.start_with?("video/") || asset.content_type&.start_with?("audio/")
+        raise ArgumentError.new("Can only be used with audio or video assets, #{asset.friendlier_id} has content_type #{asset.content_type}")
       end
 
       @asset = asset
