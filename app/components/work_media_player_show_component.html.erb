@@ -14,11 +14,11 @@
   <%# uploadDate REQUIRED by google for VideoObject, don't know why %>
   <%= tag.meta itemprop: "uploadDate", content: work.published_at&.iso8601 %>
 
-  <% if initial_video_asset&.file_metadata&.has_key?("duration_seconds") %>
+  <% if initial_media_asset&.file_metadata&.has_key?("duration_seconds") %>
     <%=
         # schema.org 'duration' requires ISO8601 duration which looks like `PTnHnMnS`
 
-        seconds = initial_video_asset.file_metadata["duration_seconds"]
+        seconds = initial_media_asset.file_metadata["duration_seconds"]
         tag.meta itemprop: "duration",
           content: ActiveSupport::Duration.build(
                       seconds
@@ -33,7 +33,7 @@
       <%# href leads to separate page with transcript, that we hope google will follow, but don't expect users to,
           although they can with eg "open in new tab". Normally data-bs-target will be used by Bootstrap collapse JS
           to open box on page with transcript instead %>
-      <a href="<%= asset_transcript_path(initial_video_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main mb-4" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript-collapse">
+      <a href="<%= asset_transcript_path(initial_media_asset) %>" data-bs-target="#show-video-transcript-collapse" id="showVideoTranscriptToggle" class="btn btn-lg btn-brand-main mb-4" type="button" data-bs-toggle="collapse"  aria-expanded="false" aria-controls="show-video-transcript-collapse">
         Show transcript
       </a>
     </div>
@@ -45,9 +45,9 @@
 
   <div class="show-video">
     <div class="video-player">
-      <% if initial_video_asset.present? %>
+      <% if initial_media_asset.present? %>
         <div class="position-relative vjs-theme-scihist-wrapper">
-          <% if ! initial_video_asset.published? %>
+          <% if ! initial_media_asset.published? %>
             <%= private_label %>
           <% end %>
 
@@ -59,7 +59,7 @@
                   controls: true,
                   preload: "metadata",
                   poster: poster_src,
-                  style: ("aspect-ratio: #{initial_video_asset.width }/#{ initial_video_asset.height };" if initial_video_asset.width && initial_video_asset.height),
+                  style: ("aspect-ratio: #{initial_media_asset.width }/#{ initial_media_asset.height };" if initial_media_asset.width && initial_media_asset.height),
                   # the data-setup with serialized json triggers video.js
                   data: {
                     setup: {
@@ -99,22 +99,22 @@
                         },
                         durationDisplay: true
                       },
-                      aspectRatio: ("#{initial_video_asset.width}:#{initial_video_asset.height}" if initial_video_asset.width && initial_video_asset.height)
-                    }.to_json
+                      aspectRatio: ("#{initial_media_asset.width}:#{initial_media_asset.height}" if initial_media_asset.width && initial_media_asset.height)
+                    }.compact.to_json
                   }
           ) do %>
-            <% if initial_video_asset.hls_playlist_file.present? %>
-              <%= tag "source", src: initial_video_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
+            <% if initial_media_asset.hls_playlist_file.present? %>
+              <%= tag "source", src: initial_media_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
             <% else %>
-              <%= tag "source", src: video_src_url(initial_video_asset), type: initial_video_asset.content_type %>
+              <%= tag "source", src: asset_src_url(initial_media_asset), type: initial_media_asset.content_type %>
             <% end %>
 
-            <% if caption_url = auto_caption_track_url(initial_video_asset) %>
+            <% if caption_url = auto_caption_track_url(initial_media_asset) %>
               <%= tag "track", id: "scihistAutoCaptions", src: caption_url, label: "Auto-captions", kind: "captions" %>
             <% end %>
 
             <p class="vjs-no-js">
-              To view this video please enable JavaScript, and consider upgrading to a
+              To view this audio or video please enable JavaScript, and consider upgrading to a
               web browser that
               <a href="https://videojs.com/html5-video-support/" target="_blank"
                 >supports HTML5 video</a
@@ -129,12 +129,12 @@
       <% end %>
     </div>
 
-    <% if video_assets.length > 1 %>
+    <% if media_assets.length > 1 %>
       <div class="av-transcript-list border border-dark">
         <h2 class="bg-dark text-light fs-5 py-1 px-2 m-0">Multiple Segments</h2>
         <ul class="av-transcript-list-items list-unstyled m-0">
-          <% video_assets.each do |asset| %>
-            <li class="d-flex px-2 av-transcript-line <%= "av-now-playing" if asset == initial_video_asset %>">
+          <% media_assets.each do |asset| %>
+            <li class="d-flex px-2 av-transcript-line <%= "av-now-playing" if asset == initial_media_asset %>">
               <div class="p-2 ps-0 mt-1">
                 <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id }, class: "av-thumb-wrap" do %>
                   <%= render ThumbComponent.new(asset, thumb_size: :mini) %>
@@ -147,7 +147,7 @@
               </div>
               <div class="text-break p-2">
                 <div>
-                  <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id }, aria: ({ current: true } if asset == initial_video_asset) do %>
+                  <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id }, aria: ({ current: true } if asset == initial_media_asset) do %>
                     <%= asset.title %>
                   <% end %>
                   <% if ! asset.published? %>
@@ -186,7 +186,7 @@
 
 
         <div class="show-video-transcript-content" data-transcript-content-target itemprop="transcript" tabindex="0" role="region" aria-labelledby="showVideoTranscriptHeading">
-          <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(initial_vtt_transcript_str), asset_friendlier_id: initial_video_asset.friendlier_id) %>
+          <%= render OralHistory::VttTranscriptComponent.new(OralHistoryContent::OhmsXml::VttTranscript.new(initial_vtt_transcript_str), asset_friendlier_id: initial_media_asset.friendlier_id) %>
         </div>
       </div>
     </div>

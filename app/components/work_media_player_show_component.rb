@@ -19,18 +19,18 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
   end
 
   def poster_src
-    @work.leaf_representative&.file_derivatives(:thumb_large)&.url || initial_video_asset.file_derivatives(:thumb_large)&.url || asset_path("placeholderbox.svg")
+    @work.leaf_representative&.file_derivatives(:thumb_large)&.url || initial_media_asset.file_derivatives(:thumb_large)&.url || asset_path("placeholderbox.svg")
   end
 
-  def video_src_url(asset)
+  def asset_src_url(asset)
     asset.file_url(expires_in: 5.days.to_i)
   end
 
-  def auto_caption_track_url(video_asset)
-    if video_asset.corrected_webvtt?
-      download_derivative_path(video_asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
-    elsif video_asset&.audio_asr_enabled? && video_asset.asr_webvtt?
-      download_derivative_path(video_asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
+  def auto_caption_track_url(media_asset)
+    if media_asset.corrected_webvtt?
+      download_derivative_path(media_asset, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
+    elsif media_asset&.audio_asr_enabled? && media_asset.asr_webvtt?
+      download_derivative_path(media_asset, Asset::ASR_WEBVTT_DERIVATIVE_KEY, disposition: :inline)
     end
   end
 
@@ -38,7 +38,7 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
   # into the player
   def av_media_for(asset)
     {
-      video_url:    asset.hls_playlist_file&.url || video_src_url(asset),
+      video_url:    asset.hls_playlist_file&.url || asset_src_url(asset),
       video_type:   asset.hls_playlist_file.present? ? "application/x-mpegURL" : asset.content_type,
       poster_url:   asset.file_derivatives(:thumb_large)&.url,
       captions_url: auto_caption_track_url(asset),
@@ -49,21 +49,22 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
   end
 
   def has_any_transcript?
-    !! video_assets.find do |asset|
+    !! media_assets.find do |asset|
       (asset&.audio_asr_enabled? && asset&.asr_webvtt?) || asset&.corrected_webvtt?
     end
   end
 
   def initial_vtt_transcript_str
-    if initial_video_asset.corrected_webvtt?
-      initial_video_asset.corrected_webvtt_str
-    elsif initial_video_asset.asr_webvtt?
-      initial_video_asset.asr_webvtt_str
+    if initial_media_asset.corrected_webvtt?
+      initial_media_asset.corrected_webvtt_str
+    elsif initial_media_asset.asr_webvtt?
+      initial_media_asset.asr_webvtt_str
     end
   end
 
-  def video_assets
-    @video_assets ||= begin
+
+  def media_assets
+    @media_assets ||= begin
       scope = @work.members.order(:position)
 
       unless AccessPolicy.new(current_user).can_see_unpublished_records?
@@ -72,14 +73,13 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
 
       scope.find_all do |mem|
         mem.asset? &&
-        mem&.content_type&.start_with?("video/") &&
-        (mem.published? || can_see_unpublished_records?)
+        (mem&.content_type&.start_with?("video/") || mem&.content_type&.start_with?("audio/"))
       end
     end
   end
 
-  def initial_video_asset
-    @initial_video_asset = video_assets.first
+  def initial_media_asset
+    @initial_media_asset = media_assets.first
   end
 
   def private_label
