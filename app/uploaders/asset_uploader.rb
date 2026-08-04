@@ -162,8 +162,8 @@ class AssetUploader < Kithe::AssetUploader
     end
   end
 
-  # For videos, derive a compact audio representation to use with ASR transcription
-  Attacher.define_derivative(LOFI_OPUS_AUDIO_DERIV_KEY, content_type: "video") do |original_file, attacher:, add_metadata:|
+  # For audio and videos, derive a compact audio representation to use with ASR transcription
+  Attacher.define_derivative(LOFI_OPUS_AUDIO_DERIV_KEY, content_type: ["video", "audio"]) do |original_file, attacher:, add_metadata:|
     # Need to have an audio track, or just skip it, we already extracted metadata to see.
     # We actually extract it twice and store it twice? Oops, well, check for either one.
     if attacher.file.metadata["audio_bitrate"].blank? &&
