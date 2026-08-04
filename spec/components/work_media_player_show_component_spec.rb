@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe WorkVideoShowComponent, type: :component do
+describe WorkMediaPlayerShowComponent, type: :component do
   let(:work) { create(:video_work, :published) }
   let(:placeholder_img_src) { ActionController::Base.helpers.asset_path("placeholderbox.svg") }
 

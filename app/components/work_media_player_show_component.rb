@@ -1,14 +1,14 @@
-# Individual work detail/show/view page for VIDEO
+# Individual work detail/show/view page for AUDIO and VIDEO
 #
-# Initially designed for a SINGLE video, which is the work #representative.
 #
-# If the work has any other members, they may not show up on display page... starting
-# with the simple use case.
+# If the work has any non-av members, they may not show up on display page... can be enhanced
+# if we have a use case.
 #
-# This is very similar in some wyas to standard WorkImageShowComponent, but we make
-# it a separate class instead of trying to use lots of conditionals in one class, betting
-# that will be simpler overall, and allow them to diverge as more features are added.
-class WorkVideoShowComponent < ApplicationComponent
+# This is very similar in some wyas to standard WorkImageShowComponent, but replaces poster
+# thumb with a player, and also allows a list of selectable multiple segments. We make it a
+# separate component copying some template instead of trying to DRY somehow, thinking it
+# will wind up less convoluted this way for now.
+class WorkMediaPlayerShowComponent < ApplicationComponent
   delegate :construct_page_title, :can_see_unpublished_records?, :format_ohms_timestamp, :current_user,
     to: :helpers
 

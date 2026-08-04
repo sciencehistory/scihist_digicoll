@@ -108,7 +108,7 @@ class WorksController < ApplicationController
       WorkFileListShowComponent.new(@work)
     elsif show_media_player?
       # Other generic Audio or Video work
-      WorkVideoShowComponent.new(@work)
+      WorkMediaPlayerShowComponent.new(@work)
     else
       # standard image-based template.
       WorkImageShowComponent.new(@work)
