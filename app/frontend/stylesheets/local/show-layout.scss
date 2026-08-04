@@ -266,6 +266,14 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
       padding: ($paragraph-spacer * 0.5) ($paragraph-spacer * 0.75);
     }
   }
+
+  // make sure there's space for SVG default icon to fill
+  .type-audio .av-transcript-line-icon {
+    min-width: 40px;
+  }
+  .type-audio.av-now-playing .av-transcript-line-icon svg {
+    fill: $shi-blackish !important;
+  }
 }
 
 // This has no parent selector, this component is now used in several
