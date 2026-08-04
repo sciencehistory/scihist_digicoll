@@ -108,7 +108,7 @@ gem "device_detector", "~> 1.0" # user-agent parsing we use for logging
 
 gem "attr_json", "~> 2.3"
 
-gem 'kithe', "~> 2.19"
+gem 'kithe', "~> 2.19", ">= 2.19.1"
 
 # QR code generation (see QrCodeCreator service). chunky_png is already
 # a dependency of rqrcode, but we also use it directly ourselves.
