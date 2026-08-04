@@ -186,6 +186,7 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
     "video-player"
     "transcript-toggle"
     "show-video-transcript"
+    "av-transcript-list"
     "rights-and-social"
     "transcript-disclaimer"
     "show-metadata";
@@ -193,13 +194,13 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
   .transcript-toggle { grid-area: transcript-toggle; }
   .transcript-disclaimer { grid-area: transcript-disclaimer; }
   .rights-and-social { grid-area: rights-and-social; }
+  // margin-top provides the gap above the transcript box (below video-player, since
+  // transcript-toggle occupies no height once the toggle button is hidden). Kept equal
+  // to .av-transcript-list's margin-top below so the gap looks consistent above and below.
+  .av-transcript-list { grid-area: av-transcript-list; margin-top: $paragraph-spacer; }
 
   .show-title, .video-player {
     margin-bottom: $paragraph-spacer;
-  }
-
-  .show-video-transcript {
-    margin-top: $paragraph-spacer;
   }
 
   // Big enough for grid
@@ -208,13 +209,14 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
     column-gap: $main_gutter_width;
     grid-template-areas:
       "show-video show-video-transcript"
+      "show-video transcript-toggle"
       "show-video show-title"
       "show-video show-metadata";
 
     .show-video { display: block; }
-    .video-player, .transcript-toggle, .rights-and-social, .transcript-disclaimer { grid-area: unset; }
-    .show-title { margin-bottom: unset; }
-    .show-video-transcript { margin-top: unset; }
+    .video-player, .rights-and-social, .transcript-disclaimer, .av-transcript-list { grid-area: unset; }
+    .show-title, .video-player { margin-bottom: unset; }
+    .av-transcript-list { margin-top: 2px; }
   }
 
   // Keep vide from getting too too large
@@ -263,9 +265,6 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
       // leaving room for margin and padding for highlighted paragraphs
       padding: ($paragraph-spacer * 0.5) ($paragraph-spacer * 0.75);
     }
-  }
-  .av-transcript-list {
-    margin-top: 2px;
   }
 }
 
