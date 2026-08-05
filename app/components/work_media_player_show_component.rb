@@ -26,11 +26,17 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
   # Both players are actually video.js, just set up differently. Both our video
   # and audio components take a render block with contents, usually <source> tags
   def media_player_component_instance
-    if (media_assets.any? { |a| a.content_type&.start_with?("video/") })
+    if use_video_player?
       VideoPlayerComponent.new(aspect_ratio: initial_media_asset_aspect_ratio, poster_src_url: poster_src_url)
     else
       AudioPlayerComponent.new
     end
+  end
+
+  # If ANY asset is video, use video player (which can also play audio, just with non-ideal UX)
+  # We aren't really set up for mixed audio/video content right now, but this will kind of work.
+  def use_video_player?
+    (media_assets.any? { |a| a.content_type&.start_with?("video/") })
   end
 
   def poster_src_url

@@ -47,7 +47,7 @@
     <div class="video-player">
       <% if initial_media_asset.present? %>
         <div class="position-relative vjs-theme-scihist-wrapper">
-          <% if ! initial_media_asset.published? %>
+          <% if use_video_player? && media_assets.length == 1 && !initial_media_asset.published? %>
             <%= private_label %>
           <% end %>
 
