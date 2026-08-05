@@ -18,7 +18,7 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
     @work = work
   end
 
-  def poster_src
+  def poster_src_url
     @work.leaf_representative&.file_derivatives(:thumb_large)&.url || initial_media_asset.file_derivatives(:thumb_large)&.url || asset_path("placeholderbox.svg")
   end
 
@@ -80,6 +80,12 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
 
   def initial_media_asset
     @initial_media_asset = media_assets.first
+  end
+
+  def initial_media_asset_aspect_ratio
+    if initial_media_asset && initial_media_asset.width && initial_media_asset.height
+      "#{ initial_media_asset.width }:#{ initial_media_asset.height }"
+    end
   end
 
   def private_label
