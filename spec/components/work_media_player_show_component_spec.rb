@@ -20,6 +20,11 @@ describe WorkMediaPlayerShowComponent, type: :component do
     expect(source_element).not_to have_selector("track")
   end
 
+  it "does not show the segment list when there's only one segment" do
+    render_inline described_class.new(work)
+    expect(page).not_to have_selector(".av-transcript-list")
+  end
+
   describe "when it is missing derivatives" do
     before do
       work.representative.remove_derivatives(*work.representative.file_derivatives.keys)
@@ -178,6 +183,28 @@ describe WorkMediaPlayerShowComponent, type: :component do
         expect(track_element["label"]).to eq "Auto-captions"
         expect(track_element["kind"]).to eq "captions"
       end
+    end
+  end
+
+  describe "with multiple media segments" do
+    let(:assets) do
+      (1..3).map { |i| build(:asset_with_faked_file, :video, title: "Segment #{i}", position: i - 1, published: true) }
+    end
+    let(:work) { create(:video_work, :published, members: assets) }
+
+    it "lists all segments in order, marking the first as now playing" do
+      render_inline described_class.new(work)
+
+      list_items = page.all(".av-transcript-line")
+      expect(list_items.count).to eq assets.count
+      expect(list_items.map { |li| li.find(".text-break a").text.strip }).to eq assets.map(&:title)
+      expect(list_items.first["class"]).to include("av-now-playing")
+      expect(list_items[1]["class"]).not_to include("av-now-playing")
+
+      first_link = list_items.first.find(".text-break a")
+      media_data = JSON.parse(first_link["data-av-media"])
+      expect(media_data["video_url"]).to eq assets.first.file_url
+      expect(media_data["video_type"]).to eq assets.first.content_type
     end
   end
 
