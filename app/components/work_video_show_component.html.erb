@@ -150,6 +150,9 @@
                   <%= link_to asset_transcript_path(asset), data: { av_media: av_media_for(asset), friendlier_id: asset.friendlier_id }, aria: ({ current: true } if asset == initial_video_asset) do %>
                     <%= asset.title %>
                   <% end %>
+                  <% if ! asset.published? %>
+                    <span title="Private" class="badge text-bg-warning">Private</span>
+                  <% end %>
                 </div>
                 <div class="small text-muted">
                   <%= format_ohms_timestamp(asset.file_metadata["duration_seconds"]) %>
