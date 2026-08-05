@@ -50,7 +50,7 @@ class OhTranscriptChunkerJob < ApplicationJob
   #    create fresh extracted_paragraph_container if it is possible and paragraphs are missing
   #    or not fresh.
   def perform(oral_history_content:nil, work:nil, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false)
-    unless work ^ oral_history_content
+    unless (!!work) ^ (!!oral_history_content)
       raise ArgumentError.new("Exactly one of work:#{work} and oral_history_content#{oral_history_content} must be provided")
     end
     # look it up from work if needed
