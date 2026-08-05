@@ -51,8 +51,7 @@
             <%= private_label %>
           <% end %>
 
-          <%= render VideoPlayerComponent.new(aspect_ratio: initial_media_asset_aspect_ratio,
-                                              poster_src_url: poster_src_url) do %>
+          <%= render media_player_component_instance do %>
             <% if initial_media_asset.hls_playlist_file.present? %>
               <%= tag "source", src: initial_media_asset.hls_playlist_file.url, type: "application/x-mpegURL" %>
             <% else %>

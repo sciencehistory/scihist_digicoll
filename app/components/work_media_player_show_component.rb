@@ -1,10 +1,12 @@
 # Individual work detail/show/view page for AUDIO and VIDEO
 #
+# Can dispaly audio or video, including works with multiples of either. Is not
+# designed for mixed audio/vidoe content, would need to attend to that if needed.
 #
 # If the work has any non-av members, they may not show up on display page... can be enhanced
 # if we have a use case.
 #
-# This is very similar in some wyas to standard WorkImageShowComponent, but replaces poster
+# This is similar layout to standard WorkImageShowComponent, but replaces poster
 # thumb with a player, and also allows a list of selectable multiple segments. We make it a
 # separate component copying some template instead of trying to DRY somehow, thinking it
 # will wind up less convoluted this way for now.
@@ -16,6 +18,19 @@ class WorkMediaPlayerShowComponent < ApplicationComponent
 
   def initialize(work)
     @work = work
+  end
+
+  # choose and instantiate a component to display either video or audio player,
+  # depending on content.
+  #
+  # Both players are actually video.js, just set up differently. Both our video
+  # and audio components take a render block with contents, usually <source> tags
+  def media_player_component_instance
+    if (media_assets.any? { |a| a.content_type&.start_with?("video/") })
+      VideoPlayerComponent.new(aspect_ratio: initial_media_asset_aspect_ratio, poster_src_url: poster_src_url)
+    else
+      AudioPlayerComponent.new
+    end
   end
 
   def poster_src_url
