@@ -175,33 +175,41 @@ function loadMediaForLink(player, segmentLink) {
     }];
   }
 
-  // switching while actively playing causes obscure race conditions in video.js,
-  // make sure it's not. double pausing also causes mysterious race conditions, only
-  // pause if playing!
-  if (!player.paused()) {
-    player.pause();
-  }
-
   function applyPersistedOptions() {
     player.playbackRate(persistedPlayerOptions.playbackRate);
     player.volume(persistedPlayerOptions.volume);
     player.muted(persistedPlayerOptions.muted);
   }
 
-  player.loadMedia(media);
+  function loadNewMedia() {
+    player.loadMedia(media);
 
-  // apply immediately so there's no visible flash back to defaults, and again
-  // on canplay since video.js resets playbackRate a second time once the new
-  // source is fully attached
-  applyPersistedOptions();
-  player.one("canplay", function() {
+    // apply immediately so there's no visible flash back to defaults, and again
+    // on canplay since video.js resets playbackRate a second time once the new
+    // source is fully attached
     applyPersistedOptions();
-    pendingRestoreOptions = null;
-  });
+    player.one("canplay", function() {
+      applyPersistedOptions();
+      pendingRestoreOptions = null;
+    });
 
-  // in case new video has different aspect ratio, update.
-  if (mediaData.width && mediaData.height) {
-    player.aspectRatio(`${mediaData.width}:${mediaData.height}`);
+    // in case new video has different aspect ratio, update.
+    if (mediaData.width && mediaData.height) {
+      player.aspectRatio(`${mediaData.width}:${mediaData.height}`);
+    }
+  }
+
+  // switching while actively playing causes obscure race conditions in video.js,
+  // make sure it's not. double pausing also causes mysterious race conditions, only
+  // pause if playing! And we have to wait for the (async) "pause" event to actually
+  // fire before loading new media -- loadMedia()'s internal reset() runs synchronously
+  // and tears down the tech, which if it happens first means the play/pause toggle
+  // button never hears the "pause" event and gets stuck showing "playing".
+  if (player.paused()) {
+    loadNewMedia();
+  } else {
+    player.one("pause", loadNewMedia);
+    player.pause();
   }
 
   swapTranscript(mediaData.transcript_fragment_url);
