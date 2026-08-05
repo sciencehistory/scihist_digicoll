@@ -187,7 +187,7 @@ describe WorkVideoShowComponent, type: :component do
 
     it "is included" do
       instance = described_class.new(work)
-      render_inline described_class.new(work)
+      render_inline instance
 
       container = page.find('*[itemscope][itemtype="http://schema.org/VideoObject"]')
       expect(container).to be_present

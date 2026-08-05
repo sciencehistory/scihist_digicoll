@@ -9,7 +9,7 @@
 # it a separate class instead of trying to use lots of conditionals in one class, betting
 # that will be simpler overall, and allow them to diverge as more features are added.
 class WorkVideoShowComponent < ApplicationComponent
-  delegate :construct_page_title, :can_see_unpublished_records?, :format_ohms_timestamp,
+  delegate :construct_page_title, :can_see_unpublished_records?, :format_ohms_timestamp, :current_user,
     to: :helpers
 
   attr_reader :work
@@ -63,10 +63,18 @@ class WorkVideoShowComponent < ApplicationComponent
   end
 
   def video_assets
-    @video_assets ||= @work.members.order(:position).find_all do |mem|
-      mem.asset? &&
-      mem&.content_type&.start_with?("video/") &&
-      (mem.published? || can_see_unpublished_records?)
+    @video_assets ||= begin
+      scope = @work.members.order(:position)
+
+      unless AccessPolicy.new(current_user).can_see_unpublished_records?
+        scope = scope.where(published: true)
+      end
+
+      scope.find_all do |mem|
+        mem.asset? &&
+        mem&.content_type&.start_with?("video/") &&
+        (mem.published? || can_see_unpublished_records?)
+      end
     end
   end
 
