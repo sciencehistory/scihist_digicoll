@@ -1,9 +1,49 @@
 namespace :scihist do
   desc """
+    Downloads images and a description so they can be sent to Gemini
+    so that it can prepare HOCR for them.
+
+    Example:
+
     WORK_FRIENDLIER_ID='8npkswk' \
-    HOCR_LOCAL_DIR='/Users/erubeiz/Desktop/2026 HOCR/gemini_api_experiment/v_4/output' \
-    bundle exec rake scihist:attach_hocr
+    IMAGES_LOCAL_DIR='/where/to/put/images' \
+    bundle exec rake scihist:prepare_hocr_request
   """
+  task :prepare_hocr_request => :environment do
+    images_local_dir = ENV['IMAGES_LOCAL_DIR']
+    work_friendlier_id = ENV['WORK_FRIENDLIER_ID']
+
+
+    unless images_local_dir.present? && work_friendlier_id.present?
+      abort "Please enter a local directory and a work to add HOCR to."
+    end
+    work = Work.find_by_friendlier_id(work_friendlier_id)
+    Dir.mkdir("#{images_local_dir}/#{work.friendlier_id}")
+
+    assets = work.
+      members.
+      includes(:leaf_representative).
+      where(published: true).
+      order(:position).
+      select do |m|
+        m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
+      end
+
+
+    assets.each_with_index do |asset, index|
+      filename = "#{format '%04d', index+1}-#{asset.friendlier_id}.jpg"
+      File.open("#{images_local_dir}/#{work.friendlier_id}/#{filename}", "wb") do |out|
+        IO.copy_stream(asset.file_derivatives[:download_large].to_io, out)
+      end
+    end
+    File.open("#{images_local_dir}/#{work.friendlier_id}/description.txt", "wb") do |out|
+      out.write work.description
+    end
+
+  end
+
+
+
   task :attach_hocr => :environment do
 
     hocr_local_dir = ENV['HOCR_LOCAL_DIR']
