@@ -39,8 +39,8 @@ importers:
         specifier: ^ 3.6.0
         version: 3.6.2
       js-yaml:
-        specifier: '>= 4.3.0'
-        version: 4.3.0
+        specifier: '>= 4.3.1'
+        version: 4.3.1
       openseadragon:
         specifier: ^4.0.0
         version: 4.1.0
@@ -417,8 +417,8 @@ packages:
   jquery@3.6.2:
     resolution: {integrity: sha512-/e7ulNIEEYk1Z/l4X0vpxGt+B/dNsV8ghOPAWZaJs8pkGvsSC0tm33aMGylXcj/U7y4IcvwtMXPMyBFZn/gK9A==}
 
-  js-yaml@4.3.0:
-    resolution: {integrity: sha512-1td788aAnnZ5qs7V2QIRl1owjtYpbKt749Y3xauqQgwIIGF/xXWz1wMTEBx5O3LK3lXLVuqXPdPxj2BoFHaW9Q==}
+  js-yaml@4.3.1:
+    resolution: {integrity: sha512-CY6crGq313MX8GkwvB7tzgp99vjQxY1++5y10/BKN/GUfHqWaOGQMNZkBvqSzsZKWk/ijwHlWzzkLulsGHhjWQ==}
     hasBin: true
 
   lightningcss-android-arm64@1.32.0:
@@ -941,7 +941,7 @@ snapshots:
 
   jquery@3.6.2: {}
 
-  js-yaml@4.3.0:
+  js-yaml@4.3.1:
     dependencies:
       argparse: 2.0.1
 
