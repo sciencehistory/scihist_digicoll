@@ -14,55 +14,6 @@ from google.genai import types
 # Initialize client
 client = genai.Client()
 
-def scale_coordinates(hocr_str: str, metadata: dict) -> str:
-    """
-    Parses an hOCR XML string with normalized 0-1000 bbox values,
-    scales coordinates to absolute pixel dimensions using metadata,
-    and returns updated valid hOCR markup.
-    """
-    img_width = metadata.get("width")
-    img_height = metadata.get("height")
-
-    if not img_width or not img_height:
-        return hocr_str  # Fallback if dimensions are missing
-
-    # Regular expression to catch 'bbox xmin ymin xmax ymax' patterns
-    bbox_pattern = re.compile(r'bbox\s+(\d+)\s+(\d+)\s+(\d+)\s+(\d+)')
-
-    def replace_bbox(match):
-        xmin, ymin, xmax, ymax = map(int, match.groups())
-
-        # Scale from 0-1000 normalized grid to actual pixel dimensions
-        scaled_xmin = int((xmin / 1000.0) * img_width)
-        scaled_ymin = int((ymin / 1000.0) * img_height)
-        scaled_xmax = int((xmax / 1000.0) * img_width)
-        scaled_ymax = int((ymax / 1000.0) * img_height)
-
-        return f'bbox {scaled_xmin} {scaled_ymin} {scaled_xmax} {scaled_ymax}'
-
-    try:
-        # Parse XML tree to safely alter title attributes
-        root = ET.fromstring(hocr_str)
-
-        for elem in root.iter():
-            title = elem.get('title')
-            if title and 'bbox' in title:
-                # Update page root container explicitly to 0 0 width height
-                if 'ocr_page' in elem.get('class', ''):
-                    updated_title = bbox_pattern.sub(f'bbox 0 0 {img_width} {img_height}', title)
-                else:
-                    updated_title = bbox_pattern.sub(replace_bbox, title)
-                
-                elem.set('title', updated_title)
-
-        # Convert back to clean string
-        return ET.tostring(root, encoding='utf-8', xml_declaration=True).decode('utf-8')
-
-    except ET.ParseError:
-        # Fallback regex substitution if XML parsing fails due to unescaped entities
-        return bbox_pattern.sub(replace_bbox, hocr_str)
-
-
 def process_batch(image_folder: str, output_dir: str):
     image_paths = sorted([
         p for p in Path(image_folder).glob("*") 
@@ -93,7 +44,7 @@ def process_batch(image_folder: str, output_dir: str):
         prompt_contents.append(pil_img)
 
     
-    # Detailed system prompt for handwriting analysis & hOCR formatting
+    # Detailed system prompt for handwriting analysis & transcript
     system_instruction = f"""
     You are an expert paleographer and archival OCR engine.
     You are analyzing a sequence of handwritten pages written by the same person.
@@ -104,14 +55,12 @@ def process_batch(image_folder: str, output_dir: str):
     2. Transcription Rules:
        - Preserve exact historical/personal spelling ("warts and all"). Do NOT auto-correct.
        - Hew strictly to original wording.
-       - If you are less than ~90% confident about a specific word, omit it entirely rather than guessing.
+       - If you are less than ~90% confident about a specific word, you may place a [?] after the word to indicate doubt.
        - Omit diagrams, formulas, sketches, and annotations directly tied to diagrams. Focus strictly on main running blocks of text.
     3. Output Format:
-       - Output valid, clean hOCR XML for EACH page.
-       - Express ALL bounding box coordinates ('bbox xmin ymin xmax ymax') normalized to a 1000 x 1000 grid (where 0 0 is top-left and 1000 1000 is bottom-right).
-       - Do NOT attempt to calculate absolute page pixel dimensions yourself.
+       - Output a transcript for EACH page.
     4. Response Format:
-       - Return a JSON object mapping each filename to its complete hOCR string.
+       - Return a JSON object mapping each filename to its complete transcript.
     5. Feedback & Reporting:
        - Use 'general_feedback' to note any systemic issues (e.g., if you suspect the output might cut off, or general handwriting observations).
        - Use 'page_notes' on individual pages to explain why specific sections were omitted, note illegible words, or point out ignored diagrams/annotations.
@@ -132,13 +81,13 @@ def process_batch(image_folder: str, output_dir: str):
                     "type": "OBJECT",
                     "properties": {
                         "filename": {"type": "STRING"},
-                        "hocr_markup": {"type": "STRING"},
+                        "transcript": {"type": "STRING"},
                         "page_notes": {
                             "type": "STRING",
                             "description": "Optional notes on this specific page (e.g. unreadable words, omitted diagrams, or specific ambiguities)."
                         }
                     },
-                    "required": ["filename", "hocr_markup"]
+                    "required": ["filename", "transcript"]
                 }
             }
         },
@@ -148,7 +97,7 @@ def process_batch(image_folder: str, output_dir: str):
 
 
     prompt_contents.append(
-        "Please analyze all pages above, learn the handwriting style, and produce the requested hOCR XML strings in JSON format."
+        "Please analyze all pages above, learn the handwriting style, and produce the requested transcript strings in JSON format."
     )
 
     print( prompt_contents )
@@ -185,26 +134,17 @@ def process_batch(image_folder: str, output_dir: str):
         print("==============================\n")
 
     # 2. Process Pages and Print Page-Level Notes
-    zip_filename = out_path / "hocr.zip"
-    with zipfile.ZipFile(zip_filename, 'w') as zf:
-        for page in data.get("pages", []):
-            fname = page["filename"]
-            raw_hocr = page["hocr_markup"]
-            notes = page.get("page_notes")
-
-            # Scale coordinates from 0-1000 grid to actual pixel dimensions
-            hocr_content = scale_coordinates(raw_hocr, image_metadata[fname])
-            
-            # Save individual .hocr file
-            base_name = Path(fname).stem
-            hocr_file_path = out_path / f"{base_name}.hocr"
-            hocr_file_path.write_text(hocr_content, encoding="utf-8")
-            
-            # Add to zip archive
-            zf.writestr(f"{base_name}.hocr", hocr_content)
-            print(f"Saved & Scaled: {base_name}.hocr")
-
-    print(f"\nProcessing complete! All hOCR files saved to '{output_dir}' and archived in '{zip_filename}'.")
+    for page in data.get("pages", []):
+        fname = page["filename"]
+        transcript = page["transcript"]
+        notes = page.get("page_notes")
+        
+        # Save individual .txt file
+        base_name = Path(fname).stem
+        transcript_file_path = out_path / f"{base_name}.txt"
+        transcript_file_path.write_text(transcript, encoding="utf-8")
+        
+    print(f"\nProcessing complete! All transcript files saved to '{output_dir}'.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
