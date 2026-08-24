@@ -194,10 +194,10 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
   .transcript-toggle { grid-area: transcript-toggle; }
   .transcript-disclaimer { grid-area: transcript-disclaimer; }
   .rights-and-social { grid-area: rights-and-social; }
-  // margin-top provides the gap above the transcript box (below video-player, since
-  // transcript-toggle occupies no height once the toggle button is hidden). Kept equal
-  // to .av-transcript-list's margin-top below so the gap looks consistent above and below.
-  .av-transcript-list { grid-area: av-transcript-list; margin-top: $paragraph-spacer; }
+  .av-transcript-list {
+    grid-area: av-transcript-list;
+    margin-top: $paragraph-spacer;
+  }
 
   .show-title, .video-player {
     margin-bottom: $paragraph-spacer;
@@ -216,7 +216,10 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
     .show-video { display: block; }
     .video-player, .rights-and-social, .transcript-disclaimer, .av-transcript-list { grid-area: unset; }
     .show-title, .video-player { margin-bottom: unset; }
-    .av-transcript-list { margin-top: 2px; }
+    .av-transcript-list {
+      margin-top: 0;
+      border-top: 0.25rem solid $shi-gray-3 !important;
+    }
   }
 
   // Keep vide from getting too too large
@@ -265,6 +268,14 @@ $max-image-column-breakpoint: ($max-image_column * 2) + $main_gutter_width + 90p
       // leaving room for margin and padding for highlighted paragraphs
       padding: ($paragraph-spacer * 0.5) ($paragraph-spacer * 0.75);
     }
+  }
+
+  // make sure there's space for SVG default icon to fill
+  .type-audio .av-transcript-line-icon {
+    min-width: 40px;
+  }
+  .type-audio.av-now-playing .av-transcript-line-icon svg {
+    fill: $shi-blackish !important;
   }
 }
 

@@ -62,14 +62,23 @@ describe "derivative creation" do
     describe "flac" do
       it "creates audio derivatives" do
         flac_asset.file.metadata['sha512'] = flac_file_sha512
+        flac_asset.file.metadata['audio_bitrate'] = "150000" # needs to have bitrate to trigger opus deriv
         flac_asset.save!
+
         flac_asset.create_derivatives
+
         expect(flac_asset.file_derivatives).to have_key :m4a
         m4a_deriv  = flac_asset.file_derivatives.dig(:m4a) #flac_asset.file_derivatives[:m4a]
         expect(m4a_deriv).not_to be_nil
         expect(m4a_deriv.mime_type).to eq('audio/mp4')
         # TODO can this be changed to m4a? Should we?
         expect(m4a_deriv.id).to match(/mp4$/)
+
+        # and a compact opus for whisper transcription
+        expect(flac_asset.file_derivatives[:audio_16k_opus]).to be_present
+        expect(flac_asset.file_derivatives[:audio_16k_opus].content_type).to eq "audio/ogg"
+        expect(flac_asset.file_derivatives[:audio_16k_opus].size).to be > 0
+        expect(flac_asset.file_derivatives[:audio_16k_opus].metadata["filename"]).to end_with(".oga")
       end
     end
 

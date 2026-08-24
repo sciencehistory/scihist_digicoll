@@ -79,7 +79,7 @@ describe "work factory" do
 
       it "has video representative" do
         expect(work.representative).to be_present
-        expect(work.representative.content_type).to eq "video/mpeg"
+        expect(work.representative.content_type).to eq "video/mp4"
       end
 
       it "has thumbnail derivative in video representative" do
@@ -97,7 +97,7 @@ describe "work factory" do
       it "has an attached video with the proper mime type" do
         # videos are stored separately from other originals, see asset_uploader.rb
         expect(work.representative.file_data['storage']).to eq("video_store")
-        expect(work.representative.file_data['metadata']['mime_type']).to eq("video/mpeg")
+        expect(work.representative.file_data['metadata']['mime_type']).to eq("video/mp4")
       end
     end
 

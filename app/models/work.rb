@@ -243,7 +243,7 @@ class Work < Kithe::Work
   # This method does not examine whether the work
   # actually has a video asset; the only place
   # we currently need to run that check
-  # is in WorkVideoShowComponent.
+  # is in WorkMediaPlayerShowComponent.
   def has_genre_moving_image?
     format&.include?('moving_image') || false
   end
