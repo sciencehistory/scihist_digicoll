@@ -43,151 +43,260 @@ namespace :scihist do
   end
 
 
-
-  # task :request_gemini_transcript => :environment do
-
-  #   hocr_local_dir = ENV['HOCR_LOCAL_DIR']
-  #   work_friendlier_id = ENV['WORK_FRIENDLIER_ID']
-    
-  #   unless hocr_local_dir.present? && work_friendlier_id.present?
-  #     abort "Please enter a local directory and a work to add HOCR to."
-  #   end
-  #   files_to_attach = Dir.glob("#{hocr_local_dir}/*.hocr")
-    
-  #   unless files_to_attach.present?
-  #     abort "Did not find any hocr files in directory #{hocr_local_dir}."
-  #   end
-
-  #   work = Work.find_by_friendlier_id(work_friendlier_id)
-
-  #   assets = work.members
-  #   unless assets.count == files_to_attach.count
-  #     abort "Wrong number of files."
-  #   end
-
-  #   file_map = assets.map { |a| [
-  #     a.friendlier_id,
-  #     files_to_attach.find { |f| f.include? a.friendlier_id }
-  #   ] }.to_h
-
-  #   "HOCR files we want to attach:"
-  #   pp file_map
-
-  #   assets.each do |asset|
-  #     friendlier_id = asset.friendlier_id
-  #     path = file_map[friendlier_id]
-  #     begin
-  #       hocr_string = File.read(path)
-  #       parsed_hocr = Nokogiri::XML(hocr_string) { |config| config.strict }
-  #       unless parsed_hocr.css(".ocr_page").length == 1
-  #         abort "This HOCR file isn't valid  - no ocr_page element found"
-  #       end
-  #     rescue Nokogiri::XML::SyntaxError => e
-  #       puts "=== ERROR OCCURRED ==="
-  #       puts "Class: #{e.class}"
-  #       puts "Message: #{e.message}"
-  #       puts "Backtrace:"
-  #       puts e.backtrace.join("\n")
-  #       abort "This HOCR file isn't valid  -  syntax error."
-  #     end
-  #     puts "Found valid hocr for #{friendlier_id}"
-
-  #   end
-
-
-  #   puts "Attach these files to '#{work.title}' ? (y/n)"
-  #   input = STDIN.gets.chomp.to_s.strip.downcase
-  #   unless input == 'y' || input == 'yes'
-  #     abort "Have a nice day."
-  #   end
-
-  #   # do an asset transaction here
-  #   assets.each do |asset|
-  #     friendlier_id = asset.friendlier_id
-  #     path = file_map[friendlier_id]
-  #     puts "Attaching hocr to #{friendlier_id}."
-  #     hocr_string = File.read(path)
-  #     asset.update!({hocr: hocr_string, suppress_ocr: false, ocr_admin_note: nil})
-  #   end
-
-  # end
-
-  desc "Transcribe a batch of handwritten page images using Gemini"
-  task :request_gemini_transcript => :environment do
+  desc "Transcribe handwritten page images using Gemini"
+  task request_gemini_transcript: :environment do
+    byebug
     friendlier_id = ENV["FRIENDLIER_ID"]
     gemini_api_key = ENV["GEMINI_API_KEY"]
 
     unless friendlier_id.present? && gemini_api_key.present?
       abort <<~MESSAGE
         Required environment variables:
-          FRIENDLIER_ID
+          friendlier_id
           GEMINI_API_KEY
       MESSAGE
     end
 
+
     dry_run = ENV.fetch("DRY_RUN", 'true') == 'true'
 
-    input_folder =
+    image_folder =
       Rails.root.join("gemini_htr", "images", friendlier_id)
 
-    output_folder =
+    output_dir =
       Rails.root.join("gemini_htr", "output", friendlier_id)
 
     python_script =
       Rails.root.join("python_script", "gemini_htr.py")
 
-    unless input_folder.directory?
-      abort "Input directory does not exist: #{input_folder}"
+    python =
+      ENV.fetch("PYTHON", "python3")
+
+    model =
+      ENV.fetch("GEMINI_MODEL", "gemini-3.6-flash")
+
+    unless image_folder.directory?
+      abort "Input directory does not exist: #{image_folder}"
     end
 
     unless python_script.file?
       abort "Python script does not exist: #{python_script}"
     end
 
-    # This lets you point the task at a virtualenv if desired:
+    image_paths =
+      image_folder
+        .children
+        .select(&:file?)
+        .select { |path| %w[.png .jpg .jpeg].include?(path.extname.downcase) }
+        .sort
+
+    if image_paths.empty?
+      abort "No image files found in #{image_folder}"
+    end
+
+    description_path =
+      image_folder.join("description.txt")
+
+    unless description_path.file?
+      abort "Expected description file does not exist: #{description_path}"
+    end
+
+    description =
+      description_path.read
+
+    puts "Found #{image_paths.length} images."
+    puts "Model: #{model}"
+
+    system_instruction = <<~PROMPT
+      You are an expert paleographer and archival OCR engine.
+      You are analyzing a sequence of handwritten pages written by the same person.
+      You are provided with some context about the images, as follows: "#{description}."
+
+      TASK INSTRUCTIONS:
+      1. Cross-Page Learning: Examine the handwriting, vocabulary, and shorthand across ALL provided images first to establish a baseline for the script. Use context from the entire set to clarify ambiguous words on individual pages.
+      2. Transcription Rules:
+         - Preserve exact historical/personal spelling ("warts and all"). Do NOT auto-correct.
+         - Hew strictly to original wording.
+         - If you are less than ~90% confident about a specific word, you may place a [?] after the word to indicate doubt.
+         - Omit diagrams, formulas, sketches, and annotations directly tied to diagrams. Focus strictly on main running blocks of text.
+      3. Output Format:
+         - Output a transcript for EACH page.
+      4. Response Format:
+         - Return a JSON object containing the transcript for each filename.
+      5. Feedback & Reporting:
+         - Use 'general_feedback' to note any systemic issues (e.g., if you suspect the output might cut off, or general handwriting observations).
+         - Use 'page_notes' on individual pages to explain why specific sections were omitted, note illegible words, or point out ignored diagrams/annotations.
+    PROMPT
+
+    response_schema = {
+      type: "OBJECT",
+      properties: {
+        general_feedback: {
+          type: "STRING",
+          description: "Optional overall comments about the batch, handwriting legibility, token limits, or context."
+        },
+        pages: {
+          type: "ARRAY",
+          items: {
+            type: "OBJECT",
+            properties: {
+              filename: {
+                type: "STRING"
+              },
+              transcript: {
+                type: "STRING"
+              },
+              page_notes: {
+                type: "STRING",
+                description: "Optional notes on this specific page (e.g. unreadable words, omitted diagrams, or specific ambiguities)."
+              }
+            },
+            required: [
+              "filename",
+              "transcript"
+            ]
+          }
+        }
+      },
+      required: ["pages"]
+    }
+
     #
-    #   PYTHON=/path/to/venv/bin/python ...
+    # Construct the ordered multimodal prompt.
     #
-    python = ENV.fetch("PYTHON", "python3")
+    # Keeping the filename immediately before its corresponding image
+    # gives Gemini an explicit association between the two.
+    #
+    contents = []
 
-    # Keep the model configurable without requiring it as an ENV variable.
-    model = ENV.fetch("GEMINI_MODEL", "gemini-3.6-flash")
+    image_paths.each do |path|
+      contents << {
+        type: "text",
+        text: "Image File: #{path.basename}"
+      }
 
-    puts "Processing #{friendlier_id}"
-    puts "Input:  #{input_folder}"
-    puts "Output: #{output_folder}"
-    puts "Model:  #{model}"
+      contents << {
+        type: "image",
+        path: path.to_s
+      }
+    end
 
+    contents << {
+      type: "text",
+      text: <<~TEXT.strip
+        Please analyze all pages above, learn the handwriting style,
+        and produce the requested transcript strings in JSON format.
+      TEXT
+    }
 
-    command = [
-      python,
-      python_script.to_s,
-      "--input-folder", input_folder.to_s,
-      "--output-folder", output_folder.to_s,
-      "--model", model
-    ]
+    #
+    # This is the complete request description sent to the Python
+    # Gemini adapter.
+    #
+    manifest = {
+      model: model,
+      system_instruction: system_instruction,
+      response_schema: response_schema,
+      contents: contents,
+      generation_config: {
+        max_output_tokens: 65_536,
+        media_resolution: "MEDIA_RESOLUTION_HIGH"
+      }
+    }
 
     if dry_run
-      pp command
+      pp manifest
       abort "Dry run! Not running it."
     end
 
-    success = system(
-      { "GEMINI_API_KEY" => gemini_api_key },
-      *command
-    )
 
-    unless success
-      exit_status = $?.exitstatus if $?
+    puts "Sending request to Gemini..."
 
-      abort(
-        "Gemini transcription failed" +
-        (exit_status ? " with exit status #{exit_status}" : "")
+    stdout, stderr, status =
+      Open3.capture3(
+        {
+          "GEMINI_API_KEY" => gemini_api_key
+        },
+        python,
+        python_script.to_s,
+        stdin_data: JSON.generate(manifest)
       )
+
+    #
+    # The Python adapter reserves stdout for the model response.
+    # Any diagnostic output goes to stderr.
+    #
+    warn stderr if stderr.present?
+
+    unless status.success?
+      abort "Gemini transcription failed with exit status #{status.exitstatus}"
     end
 
-    puts "Gemini transcription complete."
+    if stdout.blank?
+      abort "Gemini returned an empty response."
+    end
+
+    #
+    # Everything below this point is application/output handling,
+    # and therefore remains in Rails.
+    #
+    FileUtils.mkdir_p(output_dir)
+
+    raw_response_path =
+      output_dir.join("raw_response.json")
+
+    raw_response_path.write(stdout)
+
+    puts "Raw response saved to #{raw_response_path}"
+
+    begin
+      data = JSON.parse(stdout)
+    rescue JSON::ParserError => e
+      abort <<~MESSAGE
+        Gemini's response was not valid JSON.
+
+        The raw response has been preserved at:
+          #{raw_response_path}
+
+        JSON error:
+          #{e.message}
+      MESSAGE
+    end
+
+    if data["general_feedback"].present?
+      puts
+      puts "=== MODEL GENERAL FEEDBACK ==="
+      puts data["general_feedback"]
+      puts "=============================="
+      puts
+    end
+
+    data.fetch("pages", []).each do |page|
+      filename = page.fetch("filename")
+      transcript = page.fetch("transcript")
+      notes = page["page_notes"]
+
+      base_name =
+        File.basename(filename, File.extname(filename))
+
+      transcript_path =
+        output_dir.join("#{base_name}.txt")
+
+      transcript_path.write(transcript)
+
+      puts "Saved #{transcript_path.basename}"
+
+      if notes.present?
+        puts
+        puts "=== PAGE NOTES: #{filename} ==="
+        puts notes
+        puts "============================="
+        puts
+      end
+    end
+
+    puts
+    puts "Processing complete!"
+    puts "All transcript files saved to '#{output_dir}'."
   end
-
-
 end
