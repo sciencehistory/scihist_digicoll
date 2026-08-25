@@ -140,9 +140,10 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
-    barnes (0.0.9)
-      multi_json (~> 1)
-      statsd-ruby (~> 1.1)
+    barnes (1.0.1)
+      json
+      logger
+      ostruct
     base64 (0.3.0)
     bcp47_spec (0.2.1)
     bcrypt (3.1.22)
@@ -460,7 +461,7 @@ GEM
       prism (~> 1.5)
     mono_logger (1.1.2)
     msgpack (1.8.2)
-    multi_json (1.19.1)
+    multi_json (1.21.1)
     multi_xml (0.9.1)
       bigdecimal (>= 3.1, < 5)
     multipart-post (2.4.1)
@@ -780,7 +781,6 @@ GEM
       retriable
       ruby-progressbar
     ssrf_filter (1.5.0)
-    statsd-ruby (1.5.0)
     stringio (3.2.0)
     test-prof (1.6.1)
     thor (1.5.0)
@@ -878,7 +878,7 @@ DEPENDENCIES
   aws-sdk-mediaconvert (~> 1.0)
   aws-sdk-s3 (~> 1.208)
   axe-core-rspec (~> 4.3)
-  barnes
+  barnes (~> 1.0)
   blacklight (~> 9.0.0)
   blacklight_range_limit (~> 9.2.0)
   bootsnap (>= 1.4.4)
