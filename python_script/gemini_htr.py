@@ -3,7 +3,9 @@
 import json
 import mimetypes
 import sys
+import pdb
 from pathlib import Path
+
 
 from google import genai
 from google.genai import types
@@ -36,7 +38,27 @@ def build_part(item):
 
 
 def main():
-    manifest = json.load(sys.stdin)
+    #manifest = json.load(sys.stdin)
+
+    try:
+        manifest_2 = json.load(sys.stdin)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(
+           f"Invalid JSON received: {e}", file=sys.stderr
+        )
+
+    try:
+        manifest = json.loads(manifest_2)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(
+           f"Invalid JSON received: {e}", file=sys.stderr
+        )
+
+
+    if isinstance(manifest, str):
+        raise RuntimeError(
+           f"Manifest is a string: {manifest}. Standard in was {sys.stdin}.",
+        )
 
     contents = [
         build_part(item)
@@ -46,6 +68,7 @@ def main():
     generation_config = manifest["generation_config"]
 
     client = genai.Client()
+
 
     try:
         response = client.models.generate_content(
