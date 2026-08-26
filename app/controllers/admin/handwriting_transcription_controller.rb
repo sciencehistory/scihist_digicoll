@@ -126,14 +126,11 @@ class Admin::HandwritingTranscriptionController < AdminController
       base_name =
         File.basename(filename, File.extname(filename))
 
-      #transcript_path =
-      #  output_dir.join("#{base_name}.txt")
-
       transcript_path = File.join(output_dir_name, "#{base_name}.txt")
       File.write(transcript_path, stdout)
 
-      puts "Saved #{transcript_path.basename}"
-      byebug
+      puts "Saved #{transcript_path}"
+
 
       if notes.present?
         puts
@@ -144,9 +141,43 @@ class Admin::HandwritingTranscriptionController < AdminController
       end
     end
 
-    puts
+
+    # TODO: refactor this (DRY from above)
+    assets = @work.
+      members.
+      includes(:leaf_representative).
+      where(published: true).
+      order(:position).
+      select do |m|
+        m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
+      end
+
+
+    unless assets.count == data.fetch("pages", []).count
+      abort "Wrong number of transcripts."
+    end
+
+
+    pages = data.fetch("pages", [])
+
+    transcript_map = assets.map { |a| [
+      a.friendlier_id,
+      pages.find {|p| p["filename"].include? a.friendlier_id }
+    ] }.to_h
+
+
+    # do an asset transaction here
+    assets.each do |asset|
+      friendlier_id = asset.friendlier_id
+      transcript = transcript_map[friendlier_id]['transcript']
+      puts "Attaching transcript to #{friendlier_id}."
+      asset.update!({transcription: transcript})
+    end
+
+
+    ###############################.  END ATTACHING
+
     puts "Processing complete!"
-    puts "All transcript files saved to '#{output_dir}'."
   end
 
   def gemerate_manifest(image_paths)
