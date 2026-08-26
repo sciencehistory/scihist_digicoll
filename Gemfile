@@ -162,7 +162,7 @@ gem 'browser', '~> 6.0' # browser user-agent detection, maybe only for IE-unsupp
 # Until oai 1.0 is released...
 gem 'oai', "~> 1.0", ">= 1.0.1"
 
-gem 'sitemap_generator', '~> 6.0' # google sitemap generation
+gem 'sitemap_generator', '~> 7.0' # google sitemap generation
 
 gem 'sane_patch', '< 2.0' # time-limited monkey patches
 
