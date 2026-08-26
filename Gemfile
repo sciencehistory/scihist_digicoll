@@ -75,7 +75,7 @@ gem 'aws-sdk-bedrockruntime', '~> 1.66'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '>= 7.0.0.pre1', '< 8'
+gem 'puma', '~> 8.0'
 
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
