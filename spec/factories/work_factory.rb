@@ -220,6 +220,7 @@ FactoryBot.define do
       }
       date_of_work { [ Work::DateOfWork.new(start: "1986-06-03") ] }
       rights { "https://creativecommons.org/licenses/by-nc-nd/4.0/" }
+      rights_holder { "Science History Institute"}
       place  { [{category: "place_of_interview", value:"University of Maryland, College Park"}] }
       format { ['text'] }
       genre { ["Oral histories"] }
@@ -369,6 +370,7 @@ FactoryBot.define do
       created_at { DateTime.now }
       date_of_work { [ Work::DateOfWork.new(start: "1986-06-03") ] }
       rights { "https://creativecommons.org/licenses/by-nc-nd/4.0/" }
+      rights_holder { "Some Lab, Inc."}
       department { "Archives" }
       members { [ build(:asset_with_faked_file, :video, published: true) ] }
 
