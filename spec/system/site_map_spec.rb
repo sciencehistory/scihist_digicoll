@@ -20,6 +20,17 @@ describe "sitemap generator", js: false do
     $force_local_sitemap_generation = false
   end
 
+  # silence sitemap_generators annoying logging that became default in 7.x
+  around(:each) do |example|
+    $original_sitemap_generator_verbose = SitemapGenerator.verbose
+    SitemapGenerator.verbose = false
+
+    example.run
+
+    SitemapGenerator.verbose = $original_sitemap_generator_verbose
+  end
+
+
   after(:each) do
     # reset rake task, weirdly.
     Rake::Task["sitemap:create"].reenable

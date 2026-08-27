@@ -75,7 +75,7 @@ gem 'aws-sdk-bedrockruntime', '~> 1.66'
 # Use postgresql as the database for Active Record
 gem 'pg', '>= 0.18', '< 2.0'
 # Use Puma as the app server
-gem 'puma', '>= 7.0.0.pre1', '< 8'
+gem 'puma', '~> 8.0'
 
 # resque+redis being used for activejob.
 # resque-pool currently does not support resque 2.0 alas.
@@ -85,7 +85,7 @@ gem "resque-pool"
 gem "resque-heroku-signals" # gah, weirdly needed for graceful shutdown on heroku. https://github.com/resque/resque#heroku
 
 
-gem "http", "~> 5.2" # for http client access
+gem "http", "~> 6.0" # for http client access
 
 # using memcached for Rails.cache in production, requires dalli
 
@@ -162,7 +162,7 @@ gem 'browser', '~> 6.0' # browser user-agent detection, maybe only for IE-unsupp
 # Until oai 1.0 is released...
 gem 'oai', "~> 1.0", ">= 1.0.1"
 
-gem 'sitemap_generator', '~> 6.0' # google sitemap generation
+gem 'sitemap_generator', '~> 7.0' # google sitemap generation
 
 gem 'sane_patch', '< 2.0' # time-limited monkey patches
 
