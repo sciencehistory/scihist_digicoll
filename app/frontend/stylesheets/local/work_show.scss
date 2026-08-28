@@ -275,8 +275,14 @@
     box-shadow: inset 4px 0 0 0 $shi-red;
 
     .av-thumb-play-icon { display: none; }
+  }
+  .av-transcript-line.av-now-playing.type-video {
     .av-thumb-now-playing-icon { display: flex; }
   }
+  .av-transcript-line.type-audio {
+    .av-thumb-play-icon { display: none; }
+  }
+
 
   .av-thumb-wrap {
     position: relative;

@@ -134,7 +134,7 @@ describe OralHistory::LegacyTranscriptComponent, type: :component do
       it "assigns a zero timestamp" do
         allow(ohms_transcript_display).to receive(:sync_timecodes).and_return({})
 
-        render_inline ohms_transcript_display
+        parsed # trigger rendering
 
         expect(
           ohms_transcript_display.format_ohms_line(

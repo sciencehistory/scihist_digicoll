@@ -106,8 +106,9 @@ class WorksController < ApplicationController
     elsif @work.is_oral_history?
       # OH with no playable audio, either becuae it's by-request or it's not there at all.
       WorkFileListShowComponent.new(@work)
-    elsif show_video_player?
-      WorkVideoShowComponent.new(@work)
+    elsif show_media_player?
+      # Other generic Audio or Video work
+      WorkMediaPlayerShowComponent.new(@work)
     else
       # standard image-based template.
       WorkImageShowComponent.new(@work)
@@ -150,14 +151,16 @@ class WorksController < ApplicationController
     end
   end
 
-  def show_video_player?
-    @show_video_player if defined?(@show_video_player)
+  def show_media_player?
+    @show_media_player if defined?(@show_media_player)
 
+    # We use metadata instead of checking for actual files, for SQL efficiency.
+    # It's possible our checks are getting convoluted, and we just need staff
+    # to choose "view template" in metadata?
 
-    # It's actually fine to NOT check for a video asset here.
-    # WorkVideoShowComponent contains that check and
-    # fails gracefully if the video asset is absent.
-    @show_video_player =  @work.has_genre_moving_image?
+    @show_media_player =  @work.has_genre_moving_image? || (
+      @work.format.include?("sound") && !@work.department.downcase.include?("center for oral history")
+    )
   end
 
   def set_work

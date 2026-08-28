@@ -71,8 +71,8 @@
       </div>
     <% end %>
 
-    <% if @asset.content_type&.start_with?("video/") %>
-      <%= render Admin::ManageVideoAssetComponent.new(@asset) %>
+    <% if @asset.content_type&.start_with?("video/") || @asset.content_type&.start_with?("audio/") %>
+      <%= render Admin::ManageAvAssetComponent.new(@asset) %>
     <% end %>
 
   </div>

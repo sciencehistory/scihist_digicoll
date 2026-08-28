@@ -16,7 +16,8 @@ let captionsPreferredShowing = false;
 // volume/muted/playbackRate awaiting restore on the next canplay, if a switch is in flight
 let pendingRestoreOptions = null;
 
-const videoPlayerEl = document.querySelector("#work-video-player");
+// find video player anywhere, or audio player on our WorkMediaPlayerShowComponent
+const videoPlayerEl = document.querySelector("#work-video-player, .video-show-page-layout .scihist-video-js-audio-no-poster");
 
 if (videoPlayerEl) {
   setupVideoPlayer(videojs(videoPlayerEl));
