@@ -11,6 +11,13 @@
   <% end %>
 </p>
 
+
+<p class="alert alert-info">
+Transcribe using Google Gemini (beta feature): <br/>
+
+<%= link_to('Request transcription', admin_request_handwriting_transcription_path(work_id: @work.friendlier_id), class: "btn btn-sm btn-outline-secondary my-3") %>
+
+</p>
 <% if work_language_warning? %>
   <p>
     <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i> OCR enabled, but work does not include languages

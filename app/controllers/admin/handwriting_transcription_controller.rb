@@ -2,46 +2,27 @@ class Admin::HandwritingTranscriptionController < AdminController
 
   before_action :set_work
 
-  #class_attribute :extract_pdf_text_command,
-  #  default: ScihistDigicoll::Util.prefix_python_exec_command("./python_script/gemini_htr.py")
-
   def request_handwriting_transcription
-
-    # http://localhost:3000/admin/works/db78tc078#tab=nav-ocr
 
     gemini_api_key =    ScihistDigicoll::Env.lookup("gemini_api_key")
 
-    assets = @work.
-      members.
-      includes(:leaf_representative).
-      where(published: true).
-      order(:position).
-      select do |m|
-        m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
-      end
-
     Dir.mktmpdir do |dir|
-      # Use 'dir' to get the full path string of your temp directory
-      puts dir # => "/tmp/d20260825-12345-abcde"
-      
       image_paths = []
       description_path = "#{dir}/description.txt" 
-
       assets.each_with_index do |asset, index|
         filename = "#{format '%04d', index+1}-#{asset.friendlier_id}.jpg"
         File.open("#{dir}/#{filename}", "wb") do |out|
-          IO.copy_stream(asset.file_derivatives[:download_large].to_io, out)
+          large_deriv = asset.file_derivatives[:download_large] || asset.file_derivatives[:download_full]
+          if large_deriv.nil?
+            redirect_to admin_work_path(@work), flash: { notice: "Unable to find a suitable file to transcribe for asset #{asset.friendlier_id}." }, anchor: anchor
+            return
+          else
+            IO.copy_stream(large_deriv.to_io, out)
+          end
         end
         image_paths << "#{dir}/#{filename}"
       end
-
-      pp image_paths
-      pp description_path
-
-      manifest = gemerate_manifest(image_paths)
-      pp manifest
-
-
+      manifest = generate_manifest(image_paths)
       python_command =
         ScihistDigicoll::Util.prefix_python_exec_command(
           "./python_script/gemini_htr.py"
@@ -54,7 +35,7 @@ class Admin::HandwritingTranscriptionController < AdminController
             "GEMINI_API_KEY" => gemini_api_key
           },
           python_command,
-          stdin_data: JSON.generate(manifest),
+          stdin_data: manifest,
           chdir: Rails.root.to_s
         )
 
@@ -65,10 +46,7 @@ class Admin::HandwritingTranscriptionController < AdminController
     end
   end
 
-
   private
-
-
   def process_results( stdout: stdout, stderr: stderr, status: status)
      #
     # The Python adapter reserves stdout for the model response.
@@ -84,12 +62,6 @@ class Admin::HandwritingTranscriptionController < AdminController
       abort "Gemini returned an empty response."
     end
 
-    byebug
-
-    #
-    # Everything below this point is application/output handling,
-    # and therefore remains in Rails.
-    #
     output_dir_name = "gemini_results_#{@work.friendlier_id}"
     file_path = File.join(output_dir_name, "raw_response.json")
     FileUtils.mkdir_p(output_dir_name)
@@ -141,18 +113,6 @@ class Admin::HandwritingTranscriptionController < AdminController
       end
     end
 
-
-    # TODO: refactor this (DRY from above)
-    assets = @work.
-      members.
-      includes(:leaf_representative).
-      where(published: true).
-      order(:position).
-      select do |m|
-        m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
-      end
-
-
     unless assets.count == data.fetch("pages", []).count
       abort "Wrong number of transcripts."
     end
@@ -165,7 +125,6 @@ class Admin::HandwritingTranscriptionController < AdminController
       pages.find {|p| p["filename"].include? a.friendlier_id }
     ] }.to_h
 
-
     # do an asset transaction here
     assets.each do |asset|
       friendlier_id = asset.friendlier_id
@@ -173,15 +132,10 @@ class Admin::HandwritingTranscriptionController < AdminController
       puts "Attaching transcript to #{friendlier_id}."
       asset.update!({transcription: transcript})
     end
-
-
-    ###############################.  END ATTACHING
-
     puts "Processing complete!"
   end
 
-  def gemerate_manifest(image_paths)
-
+  def generate_manifest(image_paths)
     system_instruction = <<~PROMPT
       You are an expert paleographer and archival OCR engine.
       You are analyzing a sequence of handwritten pages written by the same person.
@@ -282,49 +236,18 @@ class Admin::HandwritingTranscriptionController < AdminController
     JSON.generate(manifest)
   end
 
-  # def set_audio_asr_enabled
-  #   @asset.update!(audio_asr_enabled: params[:asset][:audio_asr_enabled])
-
-  #   # If we don't have an ASR, and we just enabled it, then queue a job
-  #   # to create it.
-  #   if !@asset.asr_webvtt? && @asset.audio_asr_enabled_previous_change&.last
-  #     OpenaiAudioTranscribeJob.perform_later(@asset)
-  #   end
-
-  #   redirect_to admin_asset_path(@asset)
-  # end
-
-  # def upload_corrected_vtt
-  #   # validate, will raise if invalid from inside, or if we raise for no cues
-  #   unless OralHistoryContent::OhmsXml::VttTranscript.new(
-  #     params[:asset_derivative][Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY].read,
-  #     auto_correct_format: false
-  #   ).cues.length > 0
-  #     raise WebVTT::MalformedFile.new("Has no cues, probably malformed")
-  #   end
-
-  #   @asset.file_attacher.add_persisted_derivatives({
-  #      Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY =>
-  #       params[:asset_derivative][Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY]
-  #   })
-
-  #   redirect_to admin_asset_path(@asset)
-  # rescue WebVTT::MalformedFile => e
-  #   redirect_to admin_asset_path(@asset), flash: { error: "Could not upload corrected VTT file: #{e.message}" }
-  # end
-
-  # def delete_transcript
-  #   unless params[:derivative_key].to_sym.in?([Asset::ASR_WEBVTT_DERIVATIVE_KEY, Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY])
-  #     raise ArgumentError.new("param derivative_key needs to be #{Asset::ASR_WEBVTT_DERIVATIVE_KEY} or #{Asset::CORRECTED_WEBVTT_DERIVATIVE_KEY}, not `#{params[:derivative_key]}`")
-  #   end
-
-  #   @asset.remove_derivatives(params[:derivative_key].to_sym)
-
-  #   redirect_to admin_asset_path(@asset)
-  # end
-
-
   def set_work
     @work = Work.find_by_friendlier_id(params[:work_id])
+  end
+
+  def assets
+    @assets ||= @work.
+      members.
+      includes(:leaf_representative).
+      where(published: true).
+      order(:position).
+      select do |m|
+        m.leaf_representative.content_type == "image/jpeg" || m.leaf_representative&.file_derivatives(:download_full)
+      end
   end
 end
