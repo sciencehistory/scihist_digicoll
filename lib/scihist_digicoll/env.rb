@@ -722,6 +722,11 @@ module ScihistDigicoll
     # nil means use default, but we can define if we want to put all OCR work on, say, `special_jobs`.
     define_key :active_job_ocr_queue
 
+    # Handwriting text recognition (HTR) settings:
+
+    define_key :gemini_api_key
+    define_key :gemini_model
+
     # Used for sending mail, and if no queue is specified:
     define_key :regular_job_worker_count, default: -> {
       Rails.env.production? ? 1 : 0
