@@ -20,16 +20,11 @@ def build_part(item):
     if item["type"] == "image":
         path = Path(item["path"])
 
-        mime_type, _ = mimetypes.guess_type(path)
-
-        if mime_type not in ("image/png", "image/jpeg"):
-            raise ValueError(
-                f"Unsupported image type for {path}: {mime_type}"
-            )
+        mime_type, _ = mimetypes.guess_type(path.name)
 
         return types.Part.from_bytes(
             data=path.read_bytes(),
-            mime_type=mime_type,
+            mime_type=mime_type or "application/octet-stream",
         )
 
     raise ValueError(

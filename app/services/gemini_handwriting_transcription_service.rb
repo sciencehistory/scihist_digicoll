@@ -1,59 +1,66 @@
 class GeminiHandwritingTranscriptionService
-  class MissingDerivativeError < StandardError
-    attr_reader :asset
 
-    def initialize(asset)
-      @asset = asset
+  class Error < StandardError; end
+  class AdapterError < Error; end
+  class InvalidResponseError < Error; end
+  class NoEligibleAssetsError < Error; end
+  class UnsupportedImageTypeError < Error; end
 
-      super(
-        "Unable to find a suitable file to transcribe " \
-        "for asset #{asset.friendlier_id}."
-      )
-    end
-  end
-
-  def initialize(work:, assets:)
+  def initialize(work:)
     @work = work
-    @assets = assets
   end
 
   def call
+    byebug
+    if eligible_assets.empty?
+      raise NoEligibleAssetsError,
+        "No eligible image assets were found for work #{work.friendlier_id}"
+    end
+
     Dir.mktmpdir do |dir|
-      image_paths = stage_images(dir)
-      manifest = generate_manifest(image_paths)
+      staged_images = stage_images(dir)
+      manifest = generate_manifest(staged_images)
+
 
       stdout, stderr, status = request_transcription(manifest)
 
       process_results(
         stdout: stdout,
         stderr: stderr,
-        status: status
+        status: status,
+        staged_images: staged_images
       )
     end
   end
 
   private
 
-  attr_reader :work, :assets
+  attr_reader :work
 
   def stage_images(dir)
-    assets.each_with_index.map do |asset, index|
-      filename =
-        "#{format('%04d', index + 1)}-#{asset.friendlier_id}.jpg"
+    eligible_assets.each_with_index.map do |asset, index|
+      representative = asset.leaf_representative
+
+      image_derivative =
+        representative.file_derivatives[:download_large] ||
+        representative.file_derivatives[:download_full]
+
+      filename = [
+        format("%04d", index + 1),
+        asset.friendlier_id
+      ].join("-") + extension_for(image_derivative)
 
       path = File.join(dir, filename)
 
-      derivative =
-        asset.file_derivatives[:download_large] ||
-        asset.file_derivatives[:download_full]
-
-      raise MissingDerivativeError, asset if derivative.nil?
-
       File.open(path, "wb") do |out|
-        IO.copy_stream(derivative.to_io, out)
+        IO.copy_stream(image_derivative.to_io, out)
       end
 
-      path
+      {
+        asset: asset,
+        filename: filename,
+        path: path
+      }
     end
   end
 
@@ -66,7 +73,9 @@ class GeminiHandwritingTranscriptionService
         "./python_script/gemini_htr.py"
       )
 
-    puts "Sending request to Gemini..."
+    Rails.logger.info(
+      "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
+    )
 
     Open3.capture3(
       {
@@ -78,103 +87,188 @@ class GeminiHandwritingTranscriptionService
     )
   end
 
-  def process_results(stdout:, stderr:, status:)
-    #
-    # The Python adapter reserves stdout for the model response.
-    # Any diagnostic output goes to stderr.
-    #
-    warn stderr if stderr.present?
+  def process_results(stdout:, stderr:, status:, staged_images:)
+    log_adapter_stderr(stderr)
+    validate_adapter_result!(stdout:, status:)
 
+    raw_response_path = preserve_raw_response(stdout)
+    data = parse_response!(stdout, raw_response_path:)
+
+    pages =
+      extract_and_validate_pages!(
+        data,
+        staged_images: staged_images
+      )
+
+    log_model_feedback(data)
+    write_transcript_files(pages)
+
+    attach_transcripts!(
+      pages,
+      staged_images: staged_images
+    )
+
+    Rails.logger.info(
+      "Gemini handwriting transcription completed for work #{work.friendlier_id}"
+    )
+  end
+
+  def log_adapter_stderr(stderr)
+    return if stderr.blank?
+
+    Rails.logger.warn(
+      "Gemini HTR Python adapter stderr:\n#{stderr}"
+    )
+  end
+
+  def validate_adapter_result!(stdout:, status:)
     unless status.success?
-      abort "Gemini transcription failed with exit status #{status.exitstatus}"
+      raise AdapterError,
+        "Gemini transcription failed with exit status #{status.exitstatus}"
     end
 
     if stdout.blank?
-      abort "Gemini returned an empty response."
+      raise InvalidResponseError,
+        "Gemini returned an empty response"
+    end
+  end
+
+  def preserve_raw_response(stdout)
+    output_directory = debug_output_directory
+    return unless output_directory
+
+    FileUtils.mkdir_p(output_directory)
+
+    path = output_directory.join("raw_response.json")
+    File.write(path, stdout)
+
+    path
+  end
+
+  def parse_response!(stdout, raw_response_path:)
+    JSON.parse(stdout)
+  rescue JSON::ParserError => e
+    message = +"Gemini's response was not valid JSON."
+
+    if raw_response_path
+      message << " Raw response preserved at #{raw_response_path}."
     end
 
-    output_dir_name = "gemini_results_#{work.friendlier_id}"
-    file_path = File.join(output_dir_name, "raw_response.json")
+    message << " JSON error: #{e.message}"
 
-    FileUtils.mkdir_p(output_dir_name)
-    File.write(file_path, stdout)
+    raise InvalidResponseError, message
+  end
 
-    begin
-      data = JSON.parse(stdout)
-    rescue JSON::ParserError => e
-      abort <<~MESSAGE
-        Gemini's response was not valid JSON.
+def debug_output_directory
+  return unless Rails.env.development?
 
-        # The raw response has been preserved at:
-        #   #{raw_response_path}
+  @debug_output_directory ||= Rails.root.join(
+    "tmp",
+    "gemini_htr",
+    work.friendlier_id,
+    "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
+  )
+end
 
-        JSON error:
-          #{e.message}
+
+  def extract_and_validate_pages!(data, staged_images:)
+    pages = data["pages"]
+
+    unless pages.is_a?(Array)
+      raise InvalidResponseError,
+        "Gemini response does not contain a pages array"
+    end
+
+    pages.each do |page|
+      unless page.is_a?(Hash) &&
+          page["filename"].present? &&
+          page["transcript"].is_a?(String)
+        raise InvalidResponseError,
+          "Gemini returned an invalid page entry: #{page.inspect}"
+      end
+    end
+
+    expected_filenames =
+      staged_images.map { |image| image.fetch(:filename) }
+
+    returned_filenames =
+      pages.map { |page| page.fetch("filename") }
+
+    unless returned_filenames.sort == expected_filenames.sort
+      raise InvalidResponseError, <<~MESSAGE.squish
+        Gemini returned an unexpected set of filenames.
+        Expected: #{expected_filenames.inspect}.
+        Returned: #{returned_filenames.inspect}.
       MESSAGE
     end
 
+    pages
+  end
+
+  def attach_transcripts!(pages, staged_images:)
+    pages_by_filename =
+      pages.index_by { |page| page.fetch("filename") }
+
+    Asset.transaction do
+      staged_images.each do |image|
+        asset = image.fetch(:asset)
+        filename = image.fetch(:filename)
+
+        transcript =
+          pages_by_filename.fetch(filename).fetch("transcript")
+
+        Rails.logger.info(
+          "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
+        )
+
+        asset.update!(transcription: transcript)
+      end
+    end
+  end
+
+  def log_model_feedback(data)
     if data["general_feedback"].present?
-      puts
-      puts "=== MODEL GENERAL FEEDBACK ==="
-      puts data["general_feedback"]
-      puts "=============================="
-      puts
+      Rails.logger.info(
+        "Gemini HTR general feedback for work #{work.friendlier_id}: " \
+        "#{data['general_feedback']}"
+      )
     end
 
-    data.fetch("pages", []).each do |page|
+    data["pages"].each do |page|
+      next if page["page_notes"].blank?
+
+      Rails.logger.info(
+        "Gemini HTR notes for #{page['filename']}: " \
+        "#{page['page_notes']}"
+      )
+    end
+  end
+
+  def write_transcript_files(pages)
+    output_directory = debug_output_directory
+    return unless output_directory
+
+    FileUtils.mkdir_p(output_directory)
+
+    pages.each do |page|
       filename = page.fetch("filename")
       transcript = page.fetch("transcript")
-      notes = page["page_notes"]
 
       base_name =
         File.basename(filename, File.extname(filename))
 
       transcript_path =
-        File.join(output_dir_name, "#{base_name}.txt")
+        output_directory.join("#{base_name}.txt")
 
-      File.write(transcript_path, stdout)
+      File.write(transcript_path, transcript)
 
-      puts "Saved #{transcript_path}"
-
-      if notes.present?
-        puts
-        puts "=== PAGE NOTES: #{filename} ==="
-        puts notes
-        puts "============================="
-        puts
-      end
+      Rails.logger.debug(
+        "Saved Gemini HTR transcript to #{transcript_path}"
+      )
     end
-
-    unless assets.count == data.fetch("pages", []).count
-      abort "Wrong number of transcripts."
-    end
-
-    pages = data.fetch("pages", [])
-
-    transcript_map =
-      assets.map do |asset|
-        [
-          asset.friendlier_id,
-          pages.find do |page|
-            page["filename"].include?(asset.friendlier_id)
-          end
-        ]
-      end.to_h
-
-    # do an asset transaction here
-    assets.each do |asset|
-      friendlier_id = asset.friendlier_id
-      transcript = transcript_map[friendlier_id]["transcript"]
-
-      puts "Attaching transcript to #{friendlier_id}."
-
-      asset.update!(transcription: transcript)
-    end
-
-    puts "Processing complete!"
   end
 
-  def generate_manifest(image_paths)
+  def generate_manifest(staged_images)
     system_instruction = <<~PROMPT
       You are an expert paleographer and archival OCR engine.
       You are analyzing a sequence of handwritten pages written by the same person.
@@ -237,15 +331,15 @@ class GeminiHandwritingTranscriptionService
     #
     contents = []
 
-    image_paths.each do |path|
+    staged_images.each do |image|
       contents << {
         type: "text",
-        text: "Image File: #{File.basename(path)}"
+        text: "Image File: #{image.fetch(:filename)}"
       }
 
       contents << {
         type: "image",
-        path: path.to_s
+        path: image.fetch(:path)
       }
     end
 
@@ -270,4 +364,32 @@ class GeminiHandwritingTranscriptionService
 
     JSON.generate(manifest)
   end
+
+  def eligible_assets
+    @eligible_assets ||= work.
+      members.
+      includes(:leaf_representative).
+      where(published: true, type: Asset.sti_name).
+      order(:position).
+      select { |asset| eligible_asset?(asset) }
+  end
+
+  def eligible_asset?(asset)
+    representative = asset.leaf_representative
+    return false unless representative&.content_type&.start_with?("image/")
+
+    derivatives = representative.file_derivatives
+
+    derivatives[:download_large].present? ||
+      derivatives[:download_full].present?
+  end
+
+  def extension_for(image_derivative)
+    Rack::Mime::MIME_TYPES.key(image_derivative.mime_type) ||
+      raise(
+        UnsupportedImageTypeError,
+        "Unknown MIME type: #{image_derivative.mime_type}"
+      )
+  end
+
 end
