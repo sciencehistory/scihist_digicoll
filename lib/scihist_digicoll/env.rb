@@ -719,7 +719,6 @@ module ScihistDigicoll
     # Handwriting text recognition (HTR) settings:
 
     define_key :gemini_api_key
-    define_key :python_executable
     define_key :gemini_model
 
     # Used for sending mail, and if no queue is specified:
