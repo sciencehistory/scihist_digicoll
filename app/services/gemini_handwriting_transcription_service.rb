@@ -11,7 +11,6 @@ class GeminiHandwritingTranscriptionService
   end
 
   def call
-    byebug
     if eligible_assets.empty?
       raise NoEligibleAssetsError,
         "No eligible image assets were found for work #{work.friendlier_id}"
