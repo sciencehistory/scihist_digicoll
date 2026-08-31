@@ -855,7 +855,7 @@ DEPENDENCIES
   aws-sdk-mediaconvert (~> 1.0)
   aws-sdk-s3 (~> 1.208)
   axe-core-rspec (~> 4.3)
-  barnes
+  barnes (~> 1.0)
   blacklight (~> 9.0.0)
   blacklight_range_limit (~> 9.2.0)
   bootsnap (>= 1.4.4)
