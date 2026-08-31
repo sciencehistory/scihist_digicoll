@@ -20,6 +20,19 @@ describe "WorkMediaPlayerShowComponent multiple segments", type: :system, js: tr
     end
   end
 
+  # play_at_timecode.js sets currentTime then calls play(), so on a short silent
+  # test file the playhead keeps advancing past our seek point -- just wait until
+  # it's jumped near (or past) the target and isn't still near the start.
+  def wait_for_seek(min_seconds)
+    Timeout.timeout(Capybara.default_max_wait_time) do
+      loop do
+        current = page.evaluate_script("document.querySelector('.vjs-tech')?.currentTime")
+        break current if current.present? && current >= min_seconds
+        sleep 0.1
+      end
+    end
+  end
+
   shared_examples "can switch segments" do
     it "switches the player, now-playing indicator, and transcript when a segment is clicked" do
       visit work_path(work.friendlier_id)
@@ -29,6 +42,11 @@ describe "WorkMediaPlayerShowComponent multiple segments", type: :system, js: tr
 
       click_on "Show transcript"
       expect(page).to have_content("Alpha transcript text")
+
+      # clicking a transcript timestamp seeks the player before switching segments
+      expect(page.evaluate_script("document.querySelector('.vjs-tech')?.currentTime")).to be < 1
+      find("a.ohms-transcript-timestamp[data-ohms-timestamp-s='3.000']").click
+      expect(wait_for_seek(2.9)).to be >= 2.9
 
       click_link "Segment 2"
 
@@ -40,14 +58,19 @@ describe "WorkMediaPlayerShowComponent multiple segments", type: :system, js: tr
       # transcript swap is an async fetch, Capybara's matcher will wait/retry for it
       expect(page).to have_content("Beta transcript text")
       expect(page).not_to have_content("Alpha transcript text")
+
+      # clicking a transcript timestamp still seeks the player after switching segments
+      expect(page.evaluate_script("document.querySelector('.vjs-tech')?.currentTime")).to be < 1
+      find("a.ohms-transcript-timestamp[data-ohms-timestamp-s='3.000']").click
+      expect(wait_for_seek(2.9)).to be >= 2.9
     end
   end
 
   describe "video work" do
     let(:assets) do
       [
-        build(:asset_with_faked_file, :video, :asr_vtt, title: "Segment 1", position: 0, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nAlpha transcript text"),
-        build(:asset_with_faked_file, :video, :asr_vtt, title: "Segment 2", position: 1, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nBeta transcript text"),
+        build(:asset_with_faked_file, :video, :asr_vtt, title: "Segment 1", position: 0, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nAlpha transcript text\n\n00:03.000 --> 00:04.500\nAlpha transcript later"),
+        build(:asset_with_faked_file, :video, :asr_vtt, title: "Segment 2", position: 1, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nBeta transcript text\n\n00:03.000 --> 00:04.500\nBeta transcript later"),
         build(:asset_with_faked_file, :video, title: "Segment 3", position: 2, published: true),
       ]
     end
@@ -59,8 +82,8 @@ describe "WorkMediaPlayerShowComponent multiple segments", type: :system, js: tr
   describe "audio work" do
     let(:assets) do
       [
-        build(:asset_with_faked_file, :mp3, :asr_vtt, title: "Segment 1", position: 0, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nAlpha transcript text"),
-        build(:asset_with_faked_file, :mp3, :asr_vtt, title: "Segment 2", position: 1, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nBeta transcript text"),
+        build(:asset_with_faked_file, :mp3, :asr_vtt, title: "Segment 1", position: 0, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nAlpha transcript text\n\n00:03.000 --> 00:04.500\nAlpha transcript later"),
+        build(:asset_with_faked_file, :mp3, :asr_vtt, title: "Segment 2", position: 1, published: true, vtt_source: "WEBVTT\n\n00:00.000 --> 00:01.500\nBeta transcript text\n\n00:03.000 --> 00:04.500\nBeta transcript later"),
         build(:asset_with_faked_file, :mp3, title: "Segment 3", position: 2, published: true),
       ]
     end
