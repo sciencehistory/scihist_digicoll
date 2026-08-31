@@ -10,10 +10,10 @@ class OralHistoryAiConversationController < ApplicationController
   def create
     authorize! :create, OralHistory::AiConversation
 
-    #search_params = params.slice(:access_limit,).to_unsafe_h
-    # convert include_restricted presence/absence to an access limit restriction. Misisng
-    # access limit means everything.
-    search_params = { "access_limit" => (params["include_restricted"] == "1" ? nil : 'immediate_or_automatic')}
+    # convert include_restricted presence/absence to an access limit restriction, if
+    # user is allolwed to do so. Empty access limit means you are searching everything.
+    include_restricted = (ScihistDigicoll::Env.lookup(:ai_searchable_restricted_oh) || can?(:access_staff_functions)) && params["include_restricted"] == "1"
+    search_params = { "access_limit" => (include_restricted ? nil : 'immediate_or_automatic')}
 
     conversation = OralHistoryAiConversationJob.launch(session_id: session.id, question: params.require(:q), search_params: search_params)
 

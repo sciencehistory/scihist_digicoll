@@ -713,6 +713,12 @@ module ScihistDigicoll
       ! ScihistDigicoll::Env.production?
     }
 
+    # Can people use AI search over restricted (request approved manually) OH's, even
+    # though they can't see them with permission?  Does not apply to staff whose permissions
+    # say they CAN see restricted OH's without a request (DC and OH staff)
+    define_key :ai_searchable_restricted_oh, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM,
+      default: -> { false }
+
     # nil means use default, but we can define if we want to put all OCR work on, say, `special_jobs`.
     define_key :active_job_ocr_queue
 

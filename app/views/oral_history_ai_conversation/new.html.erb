@@ -38,24 +38,27 @@
       <%= f.button :submit, "Ask", class: "btn btn-brand-main" %>
     </div>
 
-    <div>
-      <%= f.input :include_restricted, as: :boolean, input_html: { checked: true },
-              label: "Include restricted-access oral history transcripts",
-              hint: "Restricted-access transcripts require a request and approval process to access complete transcripts"
-      %>
 
-      <%# f.input :access_limit, as: :radio_buttons, required: false,
-            collection: [
-              ['immediate_ohms_only', "Only those with synchronized audio (OHMS) — #{@immediate_ohms_only_count}"],
-              ['immediate_only', "Only those fully public (do not require request) — #{@immediate_only_count}"],
-              ['immediate_or_automatic', "Both fully public and those with automatically approved request — #{@immediate_or_automatic_count}"],
-              ['', "All: Includes those which require request approval — #{@all_count}"]
-            ],
-            label_method: ->(item) { item[1].html_safe },
-            value_method: ->(item) { item[0] },
-            checked: '',
-            label: "Which Oral Histories to consider in search" %>
-    </div>
+    <% if ScihistDigicoll::Env.lookup(:ai_searchable_restricted_oh) || can?(:access_staff_functions) %>
+      <div>
+        <%= f.input :include_restricted, as: :boolean, input_html: { checked: true },
+                label: "Include restricted-access oral history transcripts",
+                hint: "Restricted-access transcripts require a request and approval process to access complete transcripts"
+        %>
+
+        <%# f.input :access_limit, as: :radio_buttons, required: false,
+              collection: [
+                ['immediate_ohms_only', "Only those with synchronized audio (OHMS) — #{@immediate_ohms_only_count}"],
+                ['immediate_only', "Only those fully public (do not require request) — #{@immediate_only_count}"],
+                ['immediate_or_automatic', "Both fully public and those with automatically approved request — #{@immediate_or_automatic_count}"],
+                ['', "All: Includes those which require request approval — #{@all_count}"]
+              ],
+              label_method: ->(item) { item[1].html_safe },
+              value_method: ->(item) { item[0] },
+              checked: '',
+              label: "Which Oral Histories to consider in search" %>
+      </div>
+    <% end %>
 
   <% end %>
 
