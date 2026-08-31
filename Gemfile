@@ -29,6 +29,8 @@ gem "sinatra", ">= 4.0"
 # After updating, you always need to run `bundle exec vite upgrade` to update JS packages to match
 # among other things.
 gem "vite_rails", "~> 3.0"
+# rack-proxy 1.x adds an SSRF guard that 502s vite_ruby's Host-derived dev-server proxy
+gem "rack-proxy", "~> 0.7"
 
 # mail is a rails dependency, opt into 2.8.0.rc1 pre-release for ruby 3.1 compat,
 # this line is no longer needed once 2.8.0 final is released:
