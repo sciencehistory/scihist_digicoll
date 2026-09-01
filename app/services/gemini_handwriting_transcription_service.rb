@@ -13,10 +13,26 @@ class GeminiHandwritingTranscriptionService
   end
 
 
+  def work_eligibility_problems
+    problems = []
+    if eligible_assets.empty?
+      problems << "no usable images were found"
+    end
+    if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
+      problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
+    end
+    unless work.published?
+      problems  << "this work is not published"
+    end
+    unless public_domain?
+      problems  << "this work is not in the public domain"
+    end
+  end
+
   def call
     if work_eligibility_problems.present?
       raise IneligibleWorkError,
-        "We will not send Work #{work.friendlier_id} to be transcribed, because #{problems_with_work.join ('; ')}."
+        "We will not send Work #{work.friendlier_id} to be transcribed, because #{problems_with_work.to_sentence}."
     end
 
     Dir.mktmpdir do |dir|
@@ -371,21 +387,6 @@ end
   end
 
 
-  def work_eligibility_problems
-    problems = []
-    if eligible_assets.empty?
-      problems << "no eligible image assets were found"
-    end
-    if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
-      problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
-    end
-    unless work.published?
-      problems  << "this work is not published"
-    end
-    unless public_domain?
-      problems  << "this work is not in the public domain"
-    end
-  end
 
 
   def public_domain?
