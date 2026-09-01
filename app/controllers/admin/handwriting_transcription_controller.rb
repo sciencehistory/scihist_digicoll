@@ -2,6 +2,14 @@ class Admin::HandwritingTranscriptionController < AdminController
   before_action :set_work
 
   def request_handwriting_transcription
+    unless ScihistDigicoll::Env.lookup(:gemini_htr_transcripts_feature_flag)
+      redirect_to(
+        admin_work_path(@work),
+        flash: { notice: "Automatic handwriting transcription isn't available." },
+        anchor: "tab=nav-ocr"
+      )
+    end
+
     GeminiHandwritingTranscriptionService.new(work: @work).call
 
     redirect_to(
