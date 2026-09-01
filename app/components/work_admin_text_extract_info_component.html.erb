@@ -14,8 +14,12 @@
 
 <p class="alert alert-info">
 Transcribe using Google Gemini (beta feature): <br/>
-
-<%= link_to('Request transcription', admin_request_handwriting_transcription_path(work_id: @work.friendlier_id), class: "btn btn-sm btn-outline-secondary my-3") %>
+<% problems = GeminiHandwritingTranscriptionService.new(work: @work).work_eligibility_problems %>
+<% if problems.present? %>
+  <%= "This work isn't eligible as #{problems.to_sentence}." %>
+<% else %>
+  <%= link_to('Request transcription', admin_request_handwriting_transcription_path(work_id: @work.friendlier_id), class: "btn btn-sm btn-outline-secondary my-3") %>
+<% end %>
 
 </p>
 <% if work_language_warning? %>
