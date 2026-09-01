@@ -3,17 +3,20 @@ class GeminiHandwritingTranscriptionService
   class Error < StandardError; end
   class AdapterError < Error; end
   class InvalidResponseError < Error; end
-  class NoEligibleAssetsError < Error; end
   class UnsupportedImageTypeError < Error; end
+  class IneligibleWorkError < Error; end
+
+  MAX_FILES_TO_TRANSCRIBE = 10
 
   def initialize(work:)
     @work = work
   end
 
+
   def call
-    if eligible_assets.empty?
-      raise NoEligibleAssetsError,
-        "No eligible image assets were found for work #{work.friendlier_id}"
+    if work_eligibility_problems.present?
+      raise IneligibleWorkError,
+        "We will not send Work #{work.friendlier_id} to be transcribed, because #{problems_with_work.join ('; ')}."
     end
 
     Dir.mktmpdir do |dir|
@@ -213,16 +216,19 @@ end
         asset = image.fetch(:asset)
         filename = image.fetch(:filename)
 
-        transcript =
+        attach_transcript!(
+          asset,
           pages_by_filename.fetch(filename).fetch("transcript")
-
-        Rails.logger.info(
-          "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
         )
-
-        asset.update!(transcription: transcript)
       end
     end
+  end
+
+  def attach_transcript!(asset, transcript)
+    Rails.logger.info(
+      "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
+    )
+    asset.update!(transcription: transcript)
   end
 
   def log_model_feedback(data)
@@ -362,6 +368,28 @@ end
     }
 
     JSON.generate(manifest)
+  end
+
+
+  def work_eligibility_problems
+    problems = []
+    if eligible_assets.empty?
+      problems << "no eligible image assets were found"
+    end
+    if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
+      problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
+    end
+    unless work.published?
+      problems  << "this work is not published"
+    end
+    unless public_domain?
+      problems  << "this work is not in the public domain"
+    end
+  end
+
+
+  def public_domain?
+    ['http://creativecommons.org/publicdomain/mark/1.0/'].include? work.rights
   end
 
   def eligible_assets
