@@ -12,7 +12,7 @@
 </p>
 
 
-<% if gemini_htr_service_with_simple_front_end %>
+<% if ScihistDigicoll::Env.lookup(:gemini_htr_transcripts_feature_flag) %>
   <p class="alert alert-info">
     Transcribe using Google Gemini (beta feature): <br/>
     <% problems = GeminiHandwritingTranscriptionService.new(work: @work).work_eligibility_problems %>
