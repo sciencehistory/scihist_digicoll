@@ -10,17 +10,11 @@ class Admin::HandwritingTranscriptionController < AdminController
       )
     end
 
-    GeminiHandwritingTranscriptionService.new(work: @work).call
+    HandwritingTranscriptionJob.perform_later(@work)
 
     redirect_to(
       admin_work_path(@work),
-      flash: { notice: "Handwriting transcription completed." },
-      anchor: "tab=nav-ocr"
-    )
-  rescue GeminiHandwritingTranscriptionService::Error => e
-    redirect_to(
-      admin_work_path(@work),
-      flash: { alert: e.message },
+      flash: { notice: "Requesting a transcript. Check back in a few minutes!" },
       anchor: "tab=nav-ocr"
     )
   end
