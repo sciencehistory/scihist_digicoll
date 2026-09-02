@@ -61,5 +61,28 @@ if [ -n "$FILES" ]; then
     fi
 fi
 
+# Refuse commits directly to master. Override with:
+#   ALLOW_MASTER_COMMIT=1 git commit ...
+# or: git commit --no-verify
+protected_branch="master"
+current_branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+
+# Define color variables
+RED='\033[0;31m'
+NC='\033[0m' # No Color (Reset)
+
+if [ "$current_branch" = "$protected_branch" ] && [ -z "$ALLOW_MASTER_COMMIT" ]; then
+    printf "⚠️   %bRefusing to commit directly to '%s'.%b\n" "$RED" "$protected_branch" "$NC"
+    echo
+    echo 'Create a branch first, e.g.: `git checkout -b my-feature`'
+    echo
+    echo '  (Override: `ALLOW_MASTER_COMMIT=1 git commit ...`)'
+    echo '  (or to skip all pre-commit hooks `git commit --no-verify`)'
+    echo
+    exit 1
+fi
+
+
+
 # Normal exit
 exit 0
