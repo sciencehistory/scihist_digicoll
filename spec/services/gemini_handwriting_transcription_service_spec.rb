@@ -70,7 +70,7 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(service).to have_received(:request_transcription).once
 
-      expect(assets.map { |asset| asset.reload.transcription }).
+      expect(assets.map { |asset| asset.reload.gemini_htr_transcript }).
         to eq(sample_transcripts)
     end
   end
@@ -134,7 +134,7 @@ describe GeminiHandwritingTranscriptionService do
         staged_images: staged_images
       )
 
-      expect(assets.map { |asset| asset.reload.transcription }).
+      expect(assets.map { |asset| asset.reload.gemini_htr_transcript }).
         to eq(sample_transcripts)
     end
   end
@@ -173,7 +173,7 @@ describe GeminiHandwritingTranscriptionService do
         staged_images: staged_images
       )
 
-      expect(assets.map { |asset| asset.reload.transcription }).
+      expect(assets.map { |asset| asset.reload.gemini_htr_transcript }).
         to eq(sample_transcripts)
     end
   end

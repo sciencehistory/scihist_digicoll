@@ -35,12 +35,15 @@ class GeminiHandwritingTranscriptionService
         "We will not send Work #{work.friendlier_id} to be transcribed, because #{problems_with_work.to_sentence}."
     end
 
+    db_log_status('started')
+
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
       manifest = generate_manifest(staged_images)
 
 
       stdout, stderr, status = request_transcription(manifest)
+      db_log_status('received')
 
       process_results(
         stdout: stdout,
@@ -49,6 +52,8 @@ class GeminiHandwritingTranscriptionService
         staged_images: staged_images
       )
     end
+    db_log_status('success')
+
   end
 
   private
@@ -95,6 +100,7 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
+    db_log_status('requested')
     Open3.capture3(
       {
         "GEMINI_API_KEY" => gemini_api_key
@@ -141,13 +147,15 @@ class GeminiHandwritingTranscriptionService
 
   def validate_adapter_result!(stdout:, status:)
     unless status.success?
-      raise AdapterError,
-        "Gemini transcription failed with exit status #{status.exitstatus}"
+      msg = "Gemini transcription failed with exit status #{status.exitstatus}"
+      db_log_error(msg)
+      raise AdapterError, msg
     end
 
     if stdout.blank?
-      raise InvalidResponseError,
-        "Gemini returned an empty response"
+      msg = "Gemini returned an empty response"
+      db_log_error(msg)
+      raise InvalidResponseError, msg
     end
   end
 
@@ -166,43 +174,52 @@ class GeminiHandwritingTranscriptionService
   def parse_response!(stdout, raw_response_path:)
     JSON.parse(stdout)
   rescue JSON::ParserError => e
-    message = +"Gemini's response was not valid JSON."
+    msg = +"Gemini's response was not valid JSON."
 
     if raw_response_path
-      message << " Raw response preserved at #{raw_response_path}."
+      msg << " Raw response preserved at #{raw_response_path}."
     end
 
-    message << " JSON error: #{e.message}"
+    msg << " JSON error: #{e.message}"
 
-    raise InvalidResponseError, message
+    raise InvalidResponseError, msg
+    db_log_error(msg)
+
   end
 
-def debug_output_directory
-  return unless Rails.env.development?
+  def debug_output_directory
+    return unless Rails.env.development?
 
-  @debug_output_directory ||= Rails.root.join(
-    "tmp",
-    "gemini_htr",
-    work.friendlier_id,
-    "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
-  )
-end
+    @debug_output_directory ||= Rails.root.join(
+      "tmp",
+      "gemini_htr",
+      work.friendlier_id,
+      transcript_request_id
+    )
+  end
+
+  def transcript_request_id
+    @transcript_request_id  ||= "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
+  end
 
 
   def extract_and_validate_pages!(data, staged_images:)
     pages = data["pages"]
 
     unless pages.is_a?(Array)
-      raise InvalidResponseError,
-        "Gemini response does not contain a pages array"
+      msg = "Gemini response does not contain a pages array"
+      db_log_error(msg)
+      raise InvalidResponseError, msg
     end
 
     pages.each do |page|
       unless page.is_a?(Hash) &&
           page["filename"].present? &&
           page["transcript"].is_a?(String)
-        raise InvalidResponseError,
-          "Gemini returned an invalid page entry: #{page.inspect}"
+
+        msg = "Gemini returned an invalid page entry: #{page.inspect}"
+        db_log_error(msg)
+        raise InvalidResponseError, msg
       end
     end
 
@@ -213,11 +230,13 @@ end
       pages.map { |page| page.fetch("filename") }
 
     unless returned_filenames.sort == expected_filenames.sort
-      raise InvalidResponseError, <<~MESSAGE.squish
+      msg = <<~MESSAGE.squish
         Gemini returned an unexpected set of filenames.
         Expected: #{expected_filenames.inspect}.
         Returned: #{returned_filenames.inspect}.
       MESSAGE
+      db_log_error(msg)
+      raise InvalidResponseError, msg
     end
 
     pages
@@ -244,7 +263,13 @@ end
     Rails.logger.info(
       "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
     )
-    asset.update!(transcription: transcript)
+
+    # old:
+    #asset.update!(transcription: transcript)
+
+    # new:
+    asset.update!(gemini_htr_transcript: transcript)
+
   end
 
   def log_model_feedback(data)
@@ -419,5 +444,39 @@ end
         "Unknown MIME type: #{image_derivative.mime_type}"
       )
   end
+
+  # A list of requests for transcripts from Google Gemini
+  # attr_json :gemini_htr_transcript_requests, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
+  # work.gemini_htr_transcript_requests = {123 => {}}
+
+
+  # set log to one of
+  # started, requested, received, error, success
+  def db_log_status(status)
+    db_log['status'] = status
+    db_log_save!
+  end
+
+  def db_log_error(error)
+    db_log_status('error')
+    db_log['error'] = error
+    db_log_save!
+  end
+
+  def db_log_save!
+    work.gemini_htr_transcript_requests ||= {}
+    work.gemini_htr_transcript_requests[transcript_request_id] = db_log
+    work.save!
+  end
+
+  # creates and/or returns this log
+  # find the highest key and add 10.
+  # log requester
+  # start_date
+  # requester
+  def db_log
+    @db_log ||= { 'errors' => [], 'status' => "" }
+  end
+
 
 end
