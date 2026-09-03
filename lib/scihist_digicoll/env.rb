@@ -723,7 +723,7 @@ module ScihistDigicoll
     define_key :active_job_ocr_queue
 
     # Handwriting text recognition (HTR) settings:
-
+    define_key :gemini_htr_transcripts_feature_flag, default: false, system_env_transform: Kithe::ConfigBase::BOOLEAN_TRANSFORM
     define_key :gemini_api_key
     define_key :gemini_model
 
