@@ -263,13 +263,7 @@ class GeminiHandwritingTranscriptionService
     Rails.logger.info(
       "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
     )
-
-    # old:
-    #asset.update!(transcription: transcript)
-
-    # new:
-    asset.update!(gemini_htr_transcript: transcript)
-
+    asset.update!(htr_transcript: transcript)
   end
 
   def log_model_feedback(data)

@@ -145,7 +145,7 @@ class Asset < Kithe::Asset
 
   # Handwritten transcript data from Google Gemini.
   # See also transcription above for transcriptions authored by people.
-  attr_json :gemini_htr_transcript, :text, container_attribute: :derived_metadata_jsonb
+  attr_json :htr_transcript, :text, container_attribute: :derived_metadata_jsonb
 
 
   # Only for assets with role `extracted_pdf_page`, some info about source of extraction
