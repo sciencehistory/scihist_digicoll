@@ -189,7 +189,7 @@ describe "Public work show page", type: :system, js: false do
 
       # if we are in small screen menu, we need to click on currently selected tab to open menu first!
       click_on "Description"
-      click_on "Transcription"
+      click_on "Transcription (created by a person)"
 
       expect(page).to have_text(/IMAGE 1.*This is file-1 transcription.*IMAGE 2.*This is file-2 transcription/m)
       expect(page).not_to have_text("This is file-1 translation")
@@ -199,7 +199,7 @@ describe "Public work show page", type: :system, js: false do
       expect(page).to have_link(text: "IMAGE 2", href: viewer_path(work, work.members.second.friendlier_id))
 
       # if we are in small screen menu, we need to click on currently selected tab to open menu first!
-      click_on "Transcription"
+      click_on "Transcription (created by a person)"
       click_on "English Translation"
 
       expect(page).to have_text(/IMAGE 1.*This is file-1 translation.*IMAGE 2.*This is file-2 translation/m)
