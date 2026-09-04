@@ -20,6 +20,10 @@ class TranscriptionTabsComponent < ApplicationComponent
     @transcription_texts ||= Work::TextPage.compile(members, accessor: :transcription)
   end
 
+  def htr_transcript_texts
+    @htr_transcript_texts ||= Work::TextPage.compile(members, accessor: :htr_transcript)
+  end
+
   def translation_texts
     @translation_texts ||= Work::TextPage.compile(members, accessor: :english_translation)
   end
