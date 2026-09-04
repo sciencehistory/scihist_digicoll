@@ -78,9 +78,9 @@ module ScihistDigicoll
     # it uses uv to install dependencies, it installs them into PATH directly and you
     # don't/can't use `uv run`, a bit inconvenient.
     #
-    # command_array = ScihistDigicoll::Util.python_exec_command("img2pdf")
+    # command_array = ScihistDigicoll::Util.prefix_python_exec_command("img2pdf")
     # TTY::Command.new(printer: :null).run( *command_array, [other args...] )
-    def self.python_exec_command(bare_command)
+    def self.prefix_python_exec_command(bare_command)
       if Rails.env.development? || Rails.env.test? || system("which uv >/dev/null 2>&1")
         ["uv", "run", bare_command]
       elsif bare_command.start_with?("./")

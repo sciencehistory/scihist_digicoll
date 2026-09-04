@@ -11,7 +11,7 @@ module OralHistory
     class Error < StandardError ; end
 
     class_attribute :extract_pdf_text_command,
-      default: ScihistDigicoll::Util.python_exec_command("./python_script/extract_pdf_text.py")
+      default: ScihistDigicoll::Util.prefix_python_exec_command("./python_script/extract_pdf_text.py")
 
     attr_reader :pdf_file_path
 
