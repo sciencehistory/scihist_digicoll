@@ -11,7 +11,7 @@ module OralHistory
     class Error < StandardError ; end
 
     class_attribute :extract_pdf_text_command,
-      default: ScihistDigicoll::Util.prefix_python_exec_command("./python_script/extract_pdf_text.py")
+      default: ScihistDigicoll::Util.python_exec_command("./python_script/extract_pdf_text.py")
 
     attr_reader :pdf_file_path
 
@@ -28,7 +28,7 @@ module OralHistory
     #
     # Will validate against our JSON schema and raise if invalid!
     def extract_pdf_text(validate: true)
-      out, err = extract_pdf_text_tty_command.run(extract_pdf_text_command, pdf_file_path)
+      out, err = extract_pdf_text_tty_command.run(*extract_pdf_text_command, pdf_file_path)
 
       parsed = JSON.parse(out)
       if validate

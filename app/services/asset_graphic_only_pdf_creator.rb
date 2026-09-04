@@ -13,8 +13,7 @@ class AssetGraphicOnlyPdfCreator
 
   # A python pip package, that we still haven't totally figured out how we're
   # going to get installed.
-  class_attribute :img2pdf_convert_command, default: ScihistDigicoll::Util.prefix_python_exec_command("img2pdf")
-
+  class_attribute :img2pdf_convert_command, default: ScihistDigicoll::Util.python_exec_command("img2pdf")
 
   # Will resize output to this DPI, based on known input DPI
   DEFAULT_TARGET_DPI = 150
@@ -125,10 +124,10 @@ class AssetGraphicOnlyPdfCreator
     output_pdf_tempfile = Tempfile.new(["scihist_digicoll_asset_pdf_creator", ".pdf"])
 
     tty_command.run(
-      img2pdf_convert_command,
+      *img2pdf_convert_command,
       graphic_temp_file.path,
       "--imgsize", "#{target_dpi} dpi",
-      "-o",output_pdf_tempfile.path
+      "-o", output_pdf_tempfile.path
     )
 
     output_pdf_tempfile
