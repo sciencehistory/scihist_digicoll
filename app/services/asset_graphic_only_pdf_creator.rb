@@ -125,10 +125,10 @@ class AssetGraphicOnlyPdfCreator
     output_pdf_tempfile = Tempfile.new(["scihist_digicoll_asset_pdf_creator", ".pdf"])
 
     tty_command.run(
-      img2pdf_convert_command,
+      *img2pdf_convert_command,
       graphic_temp_file.path,
       "--imgsize", "#{target_dpi} dpi",
-      "-o",output_pdf_tempfile.path
+      "-o", output_pdf_tempfile.path
     )
 
     output_pdf_tempfile
