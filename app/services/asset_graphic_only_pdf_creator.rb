@@ -15,6 +15,7 @@ class AssetGraphicOnlyPdfCreator
   # going to get installed.
   class_attribute :img2pdf_convert_command, default: ScihistDigicoll::Util.prefix_python_exec_command("img2pdf")
 
+
   # Will resize output to this DPI, based on known input DPI
   DEFAULT_TARGET_DPI = 150
 
