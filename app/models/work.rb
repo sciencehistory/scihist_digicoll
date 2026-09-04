@@ -88,6 +88,9 @@ class Work < Kithe::Work
   attr_json :file_creator, :string
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
+  # A list of requests for transcripts from Google Gemini
+  attr_json :gemini_htr_transcript_requests, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
+
   # text_extraction_mode is an expression of intent of if we want to OCR this work; or if we plan
   # to extract pages with text from a born-digital PDF with text; or neither. It is used to trigger
   # actual OCR extraction; pdf_extraction is more of a signal that we plan for it to be there, may not

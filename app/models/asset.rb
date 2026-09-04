@@ -127,7 +127,7 @@ class Asset < Kithe::Asset
   # really anticipated for any other use.
   attr_json :caption, :string
 
-  attr_json :transcription, :text
+  attr_json :transcription, :text # see also gemini_htr_transcript below
   attr_json :english_translation, :text
 
   # If this is set, do not create OCR for this asset,
@@ -142,6 +142,11 @@ class Asset < Kithe::Asset
 
   # OCR data in hOCR format, for the image asset
   attr_json :hocr, :text, container_attribute: :derived_metadata_jsonb
+
+  # Handwritten transcript data from Google Gemini.
+  # See also transcription above for transcriptions authored by people.
+  attr_json :htr_transcript, :text, container_attribute: :derived_metadata_jsonb
+
 
   # Only for assets with role `extracted_pdf_page`, some info about source of extraction
   attr_json :extracted_pdf_source_info, ExtractedPdfSourceInfo.to_type
