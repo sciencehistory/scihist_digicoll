@@ -9,10 +9,11 @@
 // container `data-role="now-playing-container"`
 
 $(document).on("click", "*[data-ohms-timestamp-s]", function(event) {
+  debugger;
   var seconds = this.dataset.ohmsTimestampS;
 
-  // OH audio player, or our video player
-  var html5Media = $("*[data-role=now-playing-container] audio, .show-video video").get(0);
+  // OH audio player, or our video player (in audio or video mode)
+  var html5Media = $("*[data-role=now-playing-container] audio, .show-video video, .show-video audio").get(0);
 
   if (seconds && html5Media) {
     event.preventDefault();

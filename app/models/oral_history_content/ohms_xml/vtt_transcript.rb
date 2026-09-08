@@ -29,9 +29,9 @@ class OralHistoryContent
       def initialize(raw_webvtt_text = "", auto_correct_format: true)
         # WebVTT must be in UTF-8, and vtt gem does not well if they aren't, but
         # file uplaods etc from Rails come in in Binary
-        if raw_webvtt_text.encoding == Encoding::BINARY
+        if raw_webvtt_text&.encoding == Encoding::BINARY
           raw_webvtt_text.force_encoding("UTF-8")
-        elsif raw_webvtt_text.encoding == Encoding::UTF_8
+        elsif raw_webvtt_text&.encoding == Encoding::UTF_8
           raw_webvtt_text.encode("UTF-8")
         end
 

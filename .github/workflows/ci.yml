@@ -62,8 +62,6 @@ jobs:
             RAILS_ENV=test bundle exec rails db:test:prepare
             pnpm install
 
-
-
         # This cache probably doesn't actually save us any time, but it hopes to save
         # us being throttled by apache foundation servers unhappy that solr_wrapper
         # is downloading solr over and over again.
@@ -81,6 +79,12 @@ jobs:
           run: |
             bundle exec rake solr:start
 
+        - name: Test rake assets:precompile
+          env:
+            RAILS_ENV: test
+          run: |
+            bundle exec rake assets:precompile
+
         - name: Run tests
           run: |
             bundle exec rspec
@@ -92,6 +96,3 @@ jobs:
             name: screenshots
             path: tmp/capybara/*.png
             if-no-files-found: ignore
-
-
-
