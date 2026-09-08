@@ -27,12 +27,13 @@ class GeminiHandwritingTranscriptionService
     unless public_domain?
       problems  << "this work is not in the public domain"
     end
+    problems
   end
 
   def call
     if work_eligibility_problems.present?
       raise IneligibleWorkError,
-        "We will not send Work #{work.friendlier_id} to be transcribed, because #{problems_with_work.to_sentence}."
+        "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
     end
 
     db_log_status('started')
@@ -182,8 +183,8 @@ class GeminiHandwritingTranscriptionService
 
     msg << " JSON error: #{e.message}"
 
-    raise InvalidResponseError, msg
     db_log_error(msg)
+    raise InvalidResponseError, msg
 
   end
 
@@ -406,8 +407,7 @@ class GeminiHandwritingTranscriptionService
   end
 
 
-
-
+  # We can define this differently if we want.
   def public_domain?
     ['http://creativecommons.org/publicdomain/mark/1.0/'].include? work.rights
   end
@@ -439,13 +439,7 @@ class GeminiHandwritingTranscriptionService
       )
   end
 
-  # A list of requests for transcripts from Google Gemini
-  # attr_json :gemini_htr_transcript_requests, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
-  # work.gemini_htr_transcript_requests = {123 => {}}
 
-
-  # set log to one of
-  # started, requested, received, error, success
   def db_log_status(status)
     db_log['status'] = status
     db_log_save!
@@ -463,11 +457,6 @@ class GeminiHandwritingTranscriptionService
     work.save!
   end
 
-  # creates and/or returns this log
-  # find the highest key and add 10.
-  # log requester
-  # start_date
-  # requester
   def db_log
     @db_log ||= { 'errors' => [], 'status' => "" }
   end
