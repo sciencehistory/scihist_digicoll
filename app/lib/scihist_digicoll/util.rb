@@ -78,7 +78,7 @@ module ScihistDigicoll
     # it uses uv to install dependencies, it installs them into PATH directly and you
     # don't/can't use `uv run`, a bit inconvenient.
     def self.prefix_python_exec_command(bare_command)
-      if Rails.env.development? || Rails.env.test? || system("which uv 2>1 >/dev/null")
+      if Rails.env.development? || Rails.env.test? || system("which uv >/dev/null 2>&1")
         "uv run #{bare_command}"
       elsif bare_command.start_with?("./")
         # it's a path to script inside our app like ./python_script/something, we use `python3` on heroku
@@ -87,17 +87,6 @@ module ScihistDigicoll
         # it's a python-dependent command installed by a package, like img2pdf, we
         # just use the command itself which will be avail in PATH
         bare_command
-      end
-    end
-
-    
-    def self.python_exec_command(bare_command)
-      if Rails.env.development? || Rails.env.test? || system("which uv >/dev/null 2>&1")
-        ["uv", "run", bare_command]
-      elsif bare_command.start_with?("./")
-        ["python3", bare_command]
-      else
-        [bare_command]
       end
     end
 
