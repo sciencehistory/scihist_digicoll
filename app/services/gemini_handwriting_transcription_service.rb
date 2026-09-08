@@ -1,5 +1,4 @@
 class GeminiHandwritingTranscriptionService
-
   class Error < StandardError; end
   class AdapterError < Error; end
   class InvalidResponseError < Error; end
@@ -12,20 +11,19 @@ class GeminiHandwritingTranscriptionService
     @work = work
   end
 
-
   def work_eligibility_problems
     problems = []
     if eligible_assets.empty?
       problems << "no usable images were found"
     end
     if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
-      problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
+      problems << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
     end
     unless work.published?
-      problems  << "this work is not published"
+      problems << "this work is not published"
     end
     unless public_domain?
-      problems  << "this work is not in the public domain"
+      problems << "this work is not in the public domain"
     end
     problems
   end
@@ -33,7 +31,7 @@ class GeminiHandwritingTranscriptionService
   def call
     if work_eligibility_problems.present?
       raise IneligibleWorkError,
-        "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
+            "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
     end
 
     db_log_status('started')
@@ -41,7 +39,6 @@ class GeminiHandwritingTranscriptionService
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
       manifest = generate_manifest(staged_images)
-
 
       stdout, stderr, status = request_transcription(manifest)
       db_log_status('received')
@@ -54,7 +51,6 @@ class GeminiHandwritingTranscriptionService
       )
     end
     db_log_status('success')
-
   end
 
   private
@@ -185,7 +181,6 @@ class GeminiHandwritingTranscriptionService
 
     db_log_error(msg)
     raise InvalidResponseError, msg
-
   end
 
   def debug_output_directory
@@ -200,9 +195,8 @@ class GeminiHandwritingTranscriptionService
   end
 
   def transcript_request_id
-    @transcript_request_id  ||= "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
+    @transcript_request_id ||= "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
   end
-
 
   def extract_and_validate_pages!(data, staged_images:)
     pages = data["pages"]
@@ -215,8 +209,8 @@ class GeminiHandwritingTranscriptionService
 
     pages.each do |page|
       unless page.is_a?(Hash) &&
-          page["filename"].present? &&
-          page["transcript"].is_a?(String)
+             page["filename"].present? &&
+             page["transcript"].is_a?(String)
 
         msg = "Gemini returned an invalid page entry: #{page.inspect}"
         db_log_error(msg)
@@ -406,19 +400,18 @@ class GeminiHandwritingTranscriptionService
     JSON.generate(manifest)
   end
 
-
   # We can define this differently if we want.
   def public_domain?
     ['http://creativecommons.org/publicdomain/mark/1.0/'].include? work.rights
   end
 
   def eligible_assets
-    @eligible_assets ||= work.
-      members.
-      includes(:leaf_representative).
-      where(published: true, type: Asset.sti_name).
-      order(:position).
-      select { |asset| eligible_asset?(asset) }
+    @eligible_assets ||= work
+                         .members
+                         .includes(:leaf_representative)
+                         .where(published: true, type: Asset.sti_name)
+                         .order(:position)
+                         .select { |asset| eligible_asset?(asset) }
   end
 
   def eligible_asset?(asset)
@@ -438,7 +431,6 @@ class GeminiHandwritingTranscriptionService
         "Unknown MIME type: #{image_derivative.mime_type}"
       )
   end
-
 
   def db_log_status(status)
     db_log['status'] = status
@@ -460,6 +452,4 @@ class GeminiHandwritingTranscriptionService
   def db_log
     @db_log ||= { 'errors' => [], 'status' => "" }
   end
-
-
 end
