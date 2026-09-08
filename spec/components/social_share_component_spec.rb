@@ -27,11 +27,11 @@ describe SocialShareComponent, type: :component do
     expect(pinterest_uri.host).to eq "pinterest.com"
     expect(pinterest_uri.query).to be_present
 
-    pinterest_params = CGI.parse(pinterest_uri.query)
-    expect(pinterest_params["url"]).to eq [work_url(work)]
-    expect(pinterest_params["description"]).to eq ["#{work.title} - Science History Institute Digital Collections: #{work.description}"]
+    pinterest_params = Rack::Utils.parse_query(pinterest_uri.query)
+    expect(pinterest_params["url"]).to eq work_url(work)
+    expect(pinterest_params["description"]).to eq "#{work.title} - Science History Institute Digital Collections: #{work.description}"
     expect(pinterest_params["media"]).to be_present
-    expect(Addressable::URI.parse(pinterest_params["media"].first)).not_to be_relative
+    expect(Addressable::URI.parse(pinterest_params["media"])).not_to be_relative
   end
 
 end
