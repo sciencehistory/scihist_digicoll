@@ -37,15 +37,15 @@ describe GeminiHandwritingTranscriptionService do
   before do
     allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
 
-    allow(ScihistDigicoll::Env).
-      to receive(:lookup).
-      with("gemini_model").
-      and_return("gemini-test-model")
+    allow(ScihistDigicoll::Env)
+      .to receive(:lookup)
+      .with("gemini_model")
+      .and_return("gemini-test-model")
 
-    allow(ScihistDigicoll::Env).
-      to receive(:lookup).
-      with("gemini_api_key").
-      and_return("gemini-test-api-key")
+    allow(ScihistDigicoll::Env)
+      .to receive(:lookup)
+      .with("gemini_api_key")
+      .and_return("gemini-test-api-key")
   end
 
   after do
@@ -70,8 +70,8 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(service).to have_received(:request_transcription).once
 
-      expect(assets.map { |asset| asset.reload.htr_transcript }).
-        to eq(sample_transcripts)
+      expect(assets.map { |asset| asset.reload.htr_transcript })
+        .to eq(sample_transcripts)
     end
   end
 
@@ -106,10 +106,10 @@ describe GeminiHandwritingTranscriptionService do
       python_command = "test-python-command"
       adapter_result = ["stdout", "stderr", successful_status]
 
-      expect(ScihistDigicoll::Util).
-        to receive(:prefix_python_exec_command).
-        with("./python_script/gemini_htr.py").
-        and_return(python_command)
+      expect(ScihistDigicoll::Util)
+        .to receive(:prefix_python_exec_command)
+        .with("./python_script/gemini_htr.py")
+        .and_return(python_command)
 
       expect(Open3).to receive(:capture3).with(
         { "GEMINI_API_KEY" => "gemini-test-api-key" },
@@ -134,8 +134,8 @@ describe GeminiHandwritingTranscriptionService do
         staged_images: staged_images
       )
 
-      expect(assets.map { |asset| asset.reload.htr_transcript }).
-        to eq(sample_transcripts)
+      expect(assets.map { |asset| asset.reload.htr_transcript })
+        .to eq(sample_transcripts)
     end
   end
 
@@ -173,8 +173,8 @@ describe GeminiHandwritingTranscriptionService do
         staged_images: staged_images
       )
 
-      expect(assets.map { |asset| asset.reload.htr_transcript }).
-        to eq(sample_transcripts)
+      expect(assets.map { |asset| asset.reload.htr_transcript })
+        .to eq(sample_transcripts)
     end
   end
 
@@ -183,11 +183,11 @@ describe GeminiHandwritingTranscriptionService do
       manifest =
         JSON.parse(service.send(:generate_manifest, staged_images))
 
-      expect(manifest.fetch("model")).
-        to eq("gemini-test-model")
+      expect(manifest.fetch("model"))
+        .to eq("gemini-test-model")
 
-      expect(manifest.fetch("system_instruction")).
-        to include(work.description)
+      expect(manifest.fetch("system_instruction"))
+        .to include(work.description)
 
       expect(
         manifest.dig(
@@ -234,14 +234,186 @@ describe GeminiHandwritingTranscriptionService do
 
   describe "#eligible_assets" do
     it "returns the three published TIFF assets in position order" do
-      expect(assets.map(&:content_type)).
-        to eq(["image/tiff"] * 3)
+      expect(assets.map(&:content_type))
+        .to eq(["image/tiff"] * 3)
 
       expect(assets).to all(be_published)
 
-      expect(service.send(:eligible_assets)).
-        to eq(assets)
+      expect(service.send(:eligible_assets))
+        .to eq(assets)
     end
+    it "raises AdapterError when the adapter process exits unsuccessfully" do
+      failed_status =
+        instance_double(Process::Status, success?: false, exitstatus: 1)
+
+      expect {
+        service.send(
+          :validate_adapter_result!,
+          stdout: "",
+          status: failed_status
+        )
+      }.to raise_error(
+        described_class::AdapterError,
+        "Gemini transcription failed with exit status 1"
+      )
+    end
+  end
+
+  describe "adapter process exits unsuccessfully" do
+    it "raises AdapterError" do
+      failed_status =
+        instance_double(Process::Status, success?: false, exitstatus: 1)
+
+      expect {
+        service.send(
+          :validate_adapter_result!,
+          stdout: "",
+          status: failed_status
+        )
+      }.to raise_error(
+        described_class::AdapterError,
+        "Gemini transcription failed with exit status 1"
+      )
+    end
+  end
+
+  describe "#process_results regression cases" do
+    it "rejects blank stdout" do
+      expect_invalid_response(
+        " \n\t ",
+        message: "Gemini returned an empty response"
+      )
+    end
+
+    it "rejects malformed JSON" do
+      expect_invalid_response(
+        '{"pages": [',
+        message: "Gemini's response was not valid JSON."
+      )
+    end
+
+    it "rejects a response with no pages key" do
+      expect_invalid_response(
+        JSON.generate("general_feedback" => "No pages returned"),
+        message: "Gemini response does not contain a pages array"
+      )
+    end
+
+    it "rejects a pages value that is not an array" do
+      expect_invalid_response(
+        JSON.generate("pages" => {}),
+        message: "Gemini response does not contain a pages array"
+      )
+    end
+
+    [
+      nil,
+      "not a page",
+      {},
+      { "filename" => "page.jpg" },
+      { "filename" => "", "transcript" => "Text" },
+      { "filename" => "page.jpg", "transcript" => nil },
+      { "filename" => "page.jpg", "transcript" => 123 }
+    ].each do |invalid_page|
+      it "rejects an invalid page entry: #{invalid_page.inspect}" do
+        expect_invalid_response(
+          JSON.generate("pages" => [invalid_page]),
+          message: "Gemini returned an invalid page entry:"
+        )
+      end
+    end
+
+    it "rejects a response that omits a staged page" do
+      expect_invalid_response(
+        JSON.generate("pages" => pages.first(2)),
+        message: "Gemini returned an unexpected set of filenames."
+      )
+    end
+
+    it "rejects a response containing an unexpected filename" do
+      unexpected_pages = pages.map(&:dup)
+      unexpected_pages.first["filename"] = "not-a-staged-file.jpg"
+
+      expect_invalid_response(
+        JSON.generate("pages" => unexpected_pages),
+        message: "Gemini returned an unexpected set of filenames."
+      )
+    end
+
+    it "rejects duplicate filenames even when the page count matches" do
+      duplicate_pages = pages.map(&:dup)
+      duplicate_pages.last["filename"] = duplicate_pages.first["filename"]
+
+      expect_invalid_response(
+        JSON.generate("pages" => duplicate_pages),
+        message: "Gemini returned an unexpected set of filenames."
+      )
+    end
+  end
+
+  describe "#call eligibility regression cases" do
+    it "rejects a work with no eligible assets before invoking the adapter" do
+      allow(service).to receive(:eligible_assets).and_return([])
+
+      expect(service).not_to receive(:request_transcription)
+
+      expect {
+        service.call
+      }.to raise_error(
+        described_class::IneligibleWorkError,
+        /no usable images were found/
+      )
+    end
+  end
+
+  describe "#extension_for regression cases" do
+    it "rejects an unsupported derivative MIME type" do
+      derivative = double(
+        "image derivative",
+        mime_type: "image/x-unsupported-test"
+      )
+
+      expect {
+        service.send(:extension_for, derivative)
+      }.to raise_error(
+        described_class::UnsupportedImageTypeError,
+        "Unknown MIME type: image/x-unsupported-test"
+      )
+    end
+  end
+
+  def expect_invalid_response(stdout, message:)
+    images = staged_images
+    original_transcripts =
+      assets.map { |asset| asset.reload.htr_transcript }
+
+    expect(service).not_to receive(:attach_transcript!)
+
+    expect {
+      service.send(
+        :process_results,
+        stdout: stdout,
+        stderr: "",
+        status: successful_status,
+        staged_images: images
+      )
+    }.to raise_error(
+      described_class::InvalidResponseError,
+      a_string_including(message)
+    )
+
+    expect(assets.map { |asset| asset.reload.htr_transcript })
+      .to eq(original_transcripts)
+
+    request_log =
+      work.reload.gemini_htr_transcript_requests.fetch(
+        service.send(:transcript_request_id)
+      )
+
+    expect(request_log).to include(
+      "status" => "error",
+      "error" => a_string_including(message)
+    )
   end
 
   def build_tiff_asset(position:)
