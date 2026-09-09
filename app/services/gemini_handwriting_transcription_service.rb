@@ -8,6 +8,12 @@ class GeminiHandwritingTranscriptionService
 
   MAX_FILES_TO_TRANSCRIBE = 10
 
+  # Where we store the transcripts on the asset:
+  HTR_TRANSCRIPT_ASSET_ATTRIBUTE = :htr_transcript
+
+  # Where we store the state of attempts to get transcripts on the work:
+  HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE = :gemini_htr_transcript_requests
+
   # A class to wrap our requests to Google Gemini to transcribe a work.
   # GeminiHandwritingTranscriptionService.new(work: work).call
   # will ask Gemini for a transcript for each image asset on the work, then 
@@ -285,7 +291,7 @@ class GeminiHandwritingTranscriptionService
     Rails.logger.info(
       "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
     )
-    asset.update!(htr_transcript: transcript)
+    asset.update!(HTR_TRANSCRIPT_ASSET_ATTRIBUTE => transcript)
   end
 
   # The model will often provide notes about the transcription process.
@@ -467,7 +473,6 @@ class GeminiHandwritingTranscriptionService
       )
   end
 
-
   def db_log_status(status)
     db_log['status'] = status
     db_log_save!
@@ -479,10 +484,19 @@ class GeminiHandwritingTranscriptionService
     db_log_save!
   end
 
+  # Store state of the request on the work
   def db_log_save!
-    work.gemini_htr_transcript_requests ||= {}
-    work.gemini_htr_transcript_requests[transcript_request_id] = db_log
+    set_work_transcript_requests( {} ) if work_transcript_requests.nil?
+    work_transcript_requests[transcript_request_id] = db_log
     work.save!
+  end
+
+  def work_transcript_requests
+    work.public_send(HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE)
+  end
+
+  def set_work_transcript_requests(val)
+    work.public_send("#{HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE}=", val)
   end
 
   def db_log
