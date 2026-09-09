@@ -106,6 +106,7 @@ class GeminiHandwritingTranscriptionService
     gemini_api_key =
       ScihistDigicoll::Env.lookup("gemini_api_key")
 
+
     python_command =
       ScihistDigicoll::Util.prefix_python_exec_command(
         "./python_script/gemini_htr.py"
@@ -120,7 +121,7 @@ class GeminiHandwritingTranscriptionService
       {
         "GEMINI_API_KEY" => gemini_api_key
       },
-      python_command,
+      *python_command,
       stdin_data: manifest,
       chdir: Rails.root.to_s
     )
