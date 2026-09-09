@@ -1,3 +1,12 @@
+# A class to wrap our requests to Google Gemini to transcribe a work.
+#
+# GeminiHandwritingTranscriptionService.new(work: work).call
+#
+# will ask Gemini for a transcript for each image asset on the work, then 
+# attach a transcript to the :htr_transcript attribute for the asset.
+#
+# We consider the transcript ephemeral, machine-produced metadata,
+# so we store it in derived_metadata_jsonb.
 class GeminiHandwritingTranscriptionService
 
   class Error < StandardError; end
@@ -14,32 +23,8 @@ class GeminiHandwritingTranscriptionService
   # Where we store the state of attempts to get transcripts on the work:
   HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE = :gemini_htr_transcript_requests
 
-  # A class to wrap our requests to Google Gemini to transcribe a work.
-  # GeminiHandwritingTranscriptionService.new(work: work).call
-  # will ask Gemini for a transcript for each image asset on the work, then 
-  # attach a transcript to the :htr_transcript attribute for the asset.
-  # This is stored as as ephemeral JSON metadata in derived_metadata_jsonb.
-
   def initialize(work:)
     @work = work
-  end
-
-  # Any and all reasons to exclude a work from receiving a transcript.
-  def work_eligibility_problems
-    problems = []
-    if eligible_assets.empty?
-      problems << "no usable images were found"
-    end
-    if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
-      problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
-    end
-    unless work.published?
-      problems  << "this work is not published"
-    end
-    unless public_domain?
-      problems  << "this work is not in the public domain"
-    end
-    problems
   end
 
   # Main method to invoke this class.
@@ -68,6 +53,25 @@ class GeminiHandwritingTranscriptionService
     end
     db_log_status('success')
 
+  end
+
+
+  # Any and all reasons to exclude a work from receiving a transcript.
+  def work_eligibility_problems
+    problems = []
+    if eligible_assets.empty?
+      problems << "no usable images were found"
+    end
+    if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
+      problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
+    end
+    unless work.published?
+      problems  << "this work is not published"
+    end
+    unless public_domain?
+      problems  << "this work is not in the public domain"
+    end
+    problems
   end
 
   private
