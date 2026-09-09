@@ -7,10 +7,26 @@ class GeminiHandwritingTranscriptionService
 
   MAX_FILES_TO_TRANSCRIBE = 10
 
+  # Where we store the transcripts on the asset:
+  HTR_TRANSCRIPT_ASSET_ATTRIBUTE = :htr_transcript
+
+  # Where we store the state of attempts to get transcripts on the work:
+  HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE = :gemini_htr_transcript_requests
+
+  # A class to wrap our requests to Google Gemini to transcribe a work.
+  # GeminiHandwritingTranscriptionService.new(work: work).call
+  # will ask Gemini for a transcript for each image asset on the work, then 
+  # attach a transcript to the :htr_transcript attribute for the asset.
+  # This is stored as as ephemeral JSON metadata in derived_metadata_jsonb.
+
   def initialize(work:)
     @work = work
   end
 
+<<<<<<< HEAD
+=======
+  # Any and all reasons to exclude a work from receiving a transcript.
+>>>>>>> gemini_htr_service
   def work_eligibility_problems
     problems = []
     if eligible_assets.empty?
@@ -28,6 +44,7 @@ class GeminiHandwritingTranscriptionService
     problems
   end
 
+  # Main method to invoke this class.
   def call
     if work_eligibility_problems.present?
       raise IneligibleWorkError,
@@ -57,6 +74,9 @@ class GeminiHandwritingTranscriptionService
 
   attr_reader :work
 
+  # Downloads the assets to a temporary directory, from which they will be sent to Gemini.
+  # It's possible to imagine sending derivative URLS directly to Gemini,
+  # but this is simpler and probably more practical.
   def stage_images(dir)
     eligible_assets.each_with_index.map do |asset, index|
       representative = asset.leaf_representative
@@ -84,6 +104,7 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
+  # Calls the thin Python wrapper with info about our request.
   def request_transcription(manifest)
     gemini_api_key =
       ScihistDigicoll::Env.lookup("gemini_api_key")
@@ -108,6 +129,9 @@ class GeminiHandwritingTranscriptionService
     )
   end
 
+  # The transcript, and notes about the transcription process,
+  # should come in via stdout. This method attaches each page's transcript
+  # to the corresponding asset.
   def process_results(stdout:, stderr:, status:, staged_images:)
     log_adapter_stderr(stderr)
     validate_adapter_result!(stdout:, status:)
@@ -134,6 +158,7 @@ class GeminiHandwritingTranscriptionService
     )
   end
 
+  # Sends any errors coming from Gemini to the Rails log.
   def log_adapter_stderr(stderr)
     return if stderr.blank?
 
@@ -142,6 +167,7 @@ class GeminiHandwritingTranscriptionService
     )
   end
 
+  # Alert the Rails log of any problems coming in from the python adapter.
   def validate_adapter_result!(stdout:, status:)
     unless status.success?
       msg = "Gemini transcription failed with exit status #{status.exitstatus}"
@@ -156,6 +182,7 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
+  # In development, save the files in a temp directory so we can debug problems.
   def preserve_raw_response(stdout)
     output_directory = debug_output_directory
     return unless output_directory
@@ -168,6 +195,7 @@ class GeminiHandwritingTranscriptionService
     path
   end
 
+  # Parse the JSON returned from the Python wrapper
   def parse_response!(stdout, raw_response_path:)
     JSON.parse(stdout)
   rescue JSON::ParserError => e
@@ -183,6 +211,7 @@ class GeminiHandwritingTranscriptionService
     raise InvalidResponseError, msg
   end
 
+  # Only used in dev
   def debug_output_directory
     return unless Rails.env.development?
 
@@ -198,6 +227,7 @@ class GeminiHandwritingTranscriptionService
     @transcript_request_id ||= "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
   end
 
+  # Checks the transcript info looks the way it should. Returns a hash of pages.
   def extract_and_validate_pages!(data, staged_images:)
     pages = data["pages"]
 
@@ -237,6 +267,7 @@ class GeminiHandwritingTranscriptionService
     pages
   end
 
+  # Attach the transcript of each page to its asset
   def attach_transcripts!(pages, staged_images:)
     pages_by_filename =
       pages.index_by { |page| page.fetch("filename") }
@@ -258,9 +289,11 @@ class GeminiHandwritingTranscriptionService
     Rails.logger.info(
       "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
     )
-    asset.update!(htr_transcript: transcript)
+    asset.update!(HTR_TRANSCRIPT_ASSET_ATTRIBUTE => transcript)
   end
 
+  # The model will often provide notes about the transcription process.
+  # Put these notes in the rails log so we can look at them in production, as needed.
   def log_model_feedback(data)
     if data["general_feedback"].present?
       Rails.logger.info(
@@ -279,6 +312,7 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
+  # Only in dev, write the transcript pages out to disk.
   def write_transcript_files(pages)
     output_directory = debug_output_directory
     return unless output_directory
@@ -303,6 +337,8 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
+
+  # Returns the prompt we send to Gemini in JSON form.
   def generate_manifest(staged_images)
     system_instruction = <<~PROMPT
       You are an expert paleographer and archival OCR engine.
@@ -400,11 +436,14 @@ class GeminiHandwritingTranscriptionService
     JSON.generate(manifest)
   end
 
-  # We can define this differently if we want.
+
+  # Returns true if we consider this work in "the public domain".
+  # Simplest rule that could work for now; subject to input from curators.
   def public_domain?
     ['http://creativecommons.org/publicdomain/mark/1.0/'].include? work.rights
   end
 
+  # Published assets with derivatives we can use.
   def eligible_assets
     @eligible_assets ||= work
                          .members
@@ -443,10 +482,19 @@ class GeminiHandwritingTranscriptionService
     db_log_save!
   end
 
+  # Store state of the request on the work
   def db_log_save!
-    work.gemini_htr_transcript_requests ||= {}
-    work.gemini_htr_transcript_requests[transcript_request_id] = db_log
+    set_work_transcript_requests( {} ) if work_transcript_requests.nil?
+    work_transcript_requests[transcript_request_id] = db_log
     work.save!
+  end
+
+  def work_transcript_requests
+    work.public_send(HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE)
+  end
+
+  def set_work_transcript_requests(val)
+    work.public_send("#{HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE}=", val)
   end
 
   def db_log

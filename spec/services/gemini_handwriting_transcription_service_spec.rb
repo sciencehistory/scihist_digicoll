@@ -9,6 +9,9 @@ describe GeminiHandwritingTranscriptionService do
     ]
   end
 
+  let(:asset_attribute_for_transcript) { described_class::HTR_TRANSCRIPT_ASSET_ATTRIBUTE }
+  let(:work_attribute_for_transcript_requests) { described_class::HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE }
+
   let(:assets) { [asset1, asset2, asset3] }
   let(:asset1) { build_tiff_asset(position: 1) }
   let(:asset2) { build_tiff_asset(position: 2) }
@@ -70,7 +73,7 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(service).to have_received(:request_transcription).once
 
-      expect(assets.map { |asset| asset.reload.htr_transcript })
+      expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
         .to eq(sample_transcripts)
     end
   end
@@ -134,7 +137,7 @@ describe GeminiHandwritingTranscriptionService do
         staged_images: staged_images
       )
 
-      expect(assets.map { |asset| asset.reload.htr_transcript })
+      expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
         .to eq(sample_transcripts)
     end
   end
@@ -173,7 +176,7 @@ describe GeminiHandwritingTranscriptionService do
         staged_images: staged_images
       )
 
-      expect(assets.map { |asset| asset.reload.htr_transcript })
+      expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
         .to eq(sample_transcripts)
     end
   end
@@ -385,7 +388,7 @@ describe GeminiHandwritingTranscriptionService do
   def expect_invalid_response(stdout, message:)
     images = staged_images
     original_transcripts =
-      assets.map { |asset| asset.reload.htr_transcript }
+      assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) }
 
     expect(service).not_to receive(:attach_transcript!)
 
@@ -402,13 +405,16 @@ describe GeminiHandwritingTranscriptionService do
       a_string_including(message)
     )
 
-    expect(assets.map { |asset| asset.reload.htr_transcript })
+    expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
       .to eq(original_transcripts)
 
-    request_log =
-      work.reload.gemini_htr_transcript_requests.fetch(
-        service.send(:transcript_request_id)
-      )
+    # let(:work_attribute_for_transcript_requests) { described_class::HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE }
+
+    request_id = service.send(:transcript_request_id)
+    
+    request_log = work.reload.
+      public_send(work_attribute_for_transcript_requests).
+      fetch(request_id)
 
     expect(request_log).to include(
       "status" => "error",

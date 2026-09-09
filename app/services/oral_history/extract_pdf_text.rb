@@ -28,7 +28,7 @@ module OralHistory
     #
     # Will validate against our JSON schema and raise if invalid!
     def extract_pdf_text(validate: true)
-      out, err = extract_pdf_text_tty_command.run(extract_pdf_text_command, pdf_file_path)
+      out, err = extract_pdf_text_tty_command.run(*extract_pdf_text_command, pdf_file_path)
 
       parsed = JSON.parse(out)
       if validate
