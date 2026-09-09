@@ -123,7 +123,7 @@ class GeminiHandwritingTranscriptionService
       {
         "GEMINI_API_KEY" => gemini_api_key
       },
-      python_command,
+      *python_command,
       stdin_data: manifest,
       chdir: Rails.root.to_s
     )
