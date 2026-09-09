@@ -23,10 +23,7 @@ class GeminiHandwritingTranscriptionService
     @work = work
   end
 
-<<<<<<< HEAD
-=======
   # Any and all reasons to exclude a work from receiving a transcript.
->>>>>>> gemini_htr_service
   def work_eligibility_problems
     problems = []
     if eligible_assets.empty?
