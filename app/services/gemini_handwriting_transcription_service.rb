@@ -70,8 +70,7 @@ class GeminiHandwritingTranscriptionService
 
   # Downloads the assets to a temporary directory, from which they will be sent to Gemini.
   # It's possible to imagine sending derivative URLS directly to Gemini,
-  # but this simplifies the process a bit
-  # and doesn't slow anything down.
+  # but this is simpler and probably more practical.
   def stage_images(dir)
     eligible_assets.each_with_index.map do |asset, index|
       representative = asset.leaf_representative
