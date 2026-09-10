@@ -108,6 +108,10 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
+  def tty_command
+    @tty_command ||= TTY::Command.new(printer: :null)
+  end
+
   # Calls the thin Python wrapper with info about our request.
   def request_transcription(manifest)
     gemini_api_key =
@@ -123,14 +127,15 @@ class GeminiHandwritingTranscriptionService
     )
 
     db_log_status('requested')
-    Open3.capture3(
-      {
-        "GEMINI_API_KEY" => gemini_api_key
-      },
+
+    result = tty_command.run!(
       *python_command,
-      stdin_data: manifest,
+      env: { "GEMINI_API_KEY" => gemini_api_key },
+      input: manifest,
       chdir: Rails.root.to_s
     )
+
+    [result.out, result.err, result]
   end
 
   # The transcript, and notes about the transcription process,
@@ -174,7 +179,7 @@ class GeminiHandwritingTranscriptionService
   # Alert the Rails log of any problems coming in from the python adapter.
   def validate_adapter_result!(stdout:, status:)
     unless status.success?
-      msg = "Gemini transcription failed with exit status #{status.exitstatus}"
+      msg = "Gemini transcription failed with exit status #{status.exit_status}"
       db_log_error(msg)
       raise AdapterError, msg
     end

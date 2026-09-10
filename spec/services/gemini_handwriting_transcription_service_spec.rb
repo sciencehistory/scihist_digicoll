@@ -28,7 +28,7 @@ describe GeminiHandwritingTranscriptionService do
   let(:service) { described_class.new(work: work) }
 
   let(:successful_status) do
-    instance_double(Process::Status, success?: true, exitstatus: 0)
+    instance_double(TTY::Command::Result, success?: true, exit_status: 0)
   end
 
   let(:staged_images) { service.send(:stage_images, tmpdir) }
@@ -107,23 +107,28 @@ describe GeminiHandwritingTranscriptionService do
     it "passes the manifest and Gemini API key to the Python adapter" do
       manifest = JSON.generate("some" => "manifest")
       python_command = "test-python-command"
-      adapter_result = ["stdout", "stderr", successful_status]
+
+      result = instance_double(
+        TTY::Command::Result,
+        out: "stdout",
+        err: "stderr"
+      )
 
       expect(ScihistDigicoll::Util)
         .to receive(:prefix_python_exec_command)
         .with("./python_script/gemini_htr.py")
         .and_return(python_command)
 
-      expect(Open3).to receive(:capture3).with(
-        { "GEMINI_API_KEY" => "gemini-test-api-key" },
+      expect(service.send(:tty_command)).to receive(:run!).with(
         python_command,
-        stdin_data: manifest,
+        env: { "GEMINI_API_KEY" => "gemini-test-api-key" },
+        input: manifest,
         chdir: Rails.root.to_s
-      ).and_return(adapter_result)
+      ).and_return(result)
 
       expect(
         service.send(:request_transcription, manifest)
-      ).to eq(adapter_result)
+      ).to eq(["stdout", "stderr", result])
     end
   end
 
@@ -247,7 +252,7 @@ describe GeminiHandwritingTranscriptionService do
     end
     it "raises AdapterError when the adapter process exits unsuccessfully" do
       failed_status =
-        instance_double(Process::Status, success?: false, exitstatus: 1)
+        instance_double(TTY::Command::Result, success?: false, exit_status: 1)
 
       expect {
         service.send(
@@ -265,7 +270,7 @@ describe GeminiHandwritingTranscriptionService do
   describe "adapter process exits unsuccessfully" do
     it "raises AdapterError" do
       failed_status =
-        instance_double(Process::Status, success?: false, exitstatus: 1)
+        instance_double(TTY::Command::Result, success?: false, exit_status: 1)
 
       expect {
         service.send(
