@@ -8,12 +8,13 @@
 # We consider the transcript ephemeral, machine-produced metadata,
 # so we store it in derived_metadata_jsonb.
 class GeminiHandwritingTranscriptionService
+  
+  class GeminiHandwritingTranscriptionServiceError < StandardError; end
 
-  class Error < StandardError; end
-  class AdapterError < Error; end
-  class InvalidResponseError < Error; end
-  class UnsupportedImageTypeError < Error; end
-  class IneligibleWorkError < Error; end
+  class AdapterError < GeminiHandwritingTranscriptionServiceError; end
+  class InvalidResponseError < GeminiHandwritingTranscriptionServiceError; end
+  class UnsupportedImageTypeError < GeminiHandwritingTranscriptionServiceError; end
+  class IneligibleWorkError < GeminiHandwritingTranscriptionServiceError; end
 
   MAX_FILES_TO_TRANSCRIBE = 10
 
