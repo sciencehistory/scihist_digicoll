@@ -494,17 +494,14 @@ class GeminiHandwritingTranscriptionService
   # Merge the given fields into the current db_log, and persist it on the work.
   def db_log_save!(fields)
     db_log.merge!(fields)
-    set_work_transcript_requests( {} ) if work_transcript_requests.nil?
     work_transcript_requests[transcript_request_id] = db_log
     work.save!
   end
 
+  # The jsonb hash of transcript attempts for this work, keyed by request id.
   def work_transcript_requests
-    work.public_send(HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE)
-  end
-
-  def set_work_transcript_requests(val)
-    work.public_send("#{HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE}=", val)
+    work.public_send(HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE) ||
+      work.public_send(:"#{HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE}=", {})
   end
 
   def db_log
