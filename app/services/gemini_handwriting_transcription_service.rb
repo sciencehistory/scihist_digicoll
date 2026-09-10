@@ -478,18 +478,17 @@ class GeminiHandwritingTranscriptionService
   end
 
   def db_log_status(status)
-    db_log['status'] = status
-    db_log_save!
+    db_log_save!('status' => status)
   end
 
   def db_log_error(error)
-    db_log_status('error')
-    db_log['error'] = error
-    db_log_save!
+    db_log['errors'] << error
+    db_log_save!('status' => 'error')
   end
 
-  # Store state of the request on the work
-  def db_log_save!
+  # Merge the given fields into the current db_log, and persist it on the work.
+  def db_log_save!(fields)
+    db_log.merge!(fields)
     set_work_transcript_requests( {} ) if work_transcript_requests.nil?
     work_transcript_requests[transcript_request_id] = db_log
     work.save!

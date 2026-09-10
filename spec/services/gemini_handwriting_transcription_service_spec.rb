@@ -418,7 +418,7 @@ describe GeminiHandwritingTranscriptionService do
 
     expect(request_log).to include(
       "status" => "error",
-      "error" => a_string_including(message)
+      "errors" => include(a_string_including(message))
     )
   end
 
