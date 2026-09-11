@@ -113,7 +113,7 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    db_log_status('requested')
+    db_log_save!('status' => 'requested', 'start_time' => Time.current)
 
     tty_command.run!(
       *python_command,
@@ -429,7 +429,7 @@ class GeminiHandwritingTranscriptionService
   end
 
   def db_log
-    @db_log ||= { 'errors' => [], 'status' => "" }
+    @db_log ||= { 'errors' => [], 'status' => "", 'start_time' => nil }
   end
 
   def transcript_request_id
