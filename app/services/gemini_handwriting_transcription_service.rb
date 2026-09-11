@@ -8,19 +8,15 @@
 # We consider the transcript ephemeral, machine-produced metadata,
 # so we store it in derived_metadata_jsonb.
 class GeminiHandwritingTranscriptionService
-  class Error < StandardError; end
-  class AdapterError < Error; end
-  class InvalidResponseError < Error; end
-  class UnsupportedImageTypeError < Error; end
-  class IneligibleWorkError < Error; end
+
+  class GeminiHandwritingTranscriptionServiceError < StandardError; end
+
+  class AdapterError < GeminiHandwritingTranscriptionServiceError; end
+  class InvalidResponseError < GeminiHandwritingTranscriptionServiceError; end
+  class UnsupportedImageTypeError < GeminiHandwritingTranscriptionServiceError; end
+  class IneligibleWorkError < GeminiHandwritingTranscriptionServiceError; end
 
   MAX_FILES_TO_TRANSCRIBE = 10
-
-  # Where we store the transcripts on the asset:
-  HTR_TRANSCRIPT_ASSET_ATTRIBUTE = :htr_transcript
-
-  # Where we store the state of attempts to get transcripts on the work:
-  HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE = :gemini_htr_transcript_requests
 
   def initialize(work:)
     @work = work
@@ -105,6 +101,10 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
+  def tty_command
+    @tty_command ||= TTY::Command.new(printer: :null)
+  end
+
   # Calls the thin Python wrapper with info about our request.
   def request_transcription(manifest)
     gemini_api_key =
@@ -121,14 +121,15 @@ class GeminiHandwritingTranscriptionService
     )
 
     db_log_status('requested')
-    Open3.capture3(
-      {
-        "GEMINI_API_KEY" => gemini_api_key
-      },
+
+    result = tty_command.run!(
       *python_command,
-      stdin_data: manifest,
+      env: { "GEMINI_API_KEY" => gemini_api_key },
+      input: manifest,
       chdir: Rails.root.to_s
     )
+
+    [result.out, result.err, result]
   end
 
   # The transcript, and notes about the transcription process,
@@ -172,7 +173,7 @@ class GeminiHandwritingTranscriptionService
   # Alert the Rails log of any problems coming in from the python adapter.
   def validate_adapter_result!(stdout:, status:)
     unless status.success?
-      msg = "Gemini transcription failed with exit status #{status.exitstatus}"
+      msg = "Gemini transcription failed with exit status #{status.exit_status}"
       db_log_error(msg)
       raise AdapterError, msg
     end
@@ -291,7 +292,7 @@ class GeminiHandwritingTranscriptionService
     Rails.logger.info(
       "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
     )
-    asset.update!(HTR_TRANSCRIPT_ASSET_ATTRIBUTE => transcript)
+    asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
   end
 
   # The model will often provide notes about the transcription process.
@@ -474,29 +475,25 @@ class GeminiHandwritingTranscriptionService
   end
 
   def db_log_status(status)
-    db_log['status'] = status
-    db_log_save!
+    db_log_save!('status' => status)
   end
 
   def db_log_error(error)
-    db_log_status('error')
-    db_log['error'] = error
-    db_log_save!
+    db_log['errors'] << error
+    db_log_save!('status' => 'error')
   end
 
-  # Store state of the request on the work
-  def db_log_save!
-    set_work_transcript_requests( {} ) if work_transcript_requests.nil?
+  # Merge the given fields into the current db_log, and persist it on the work.
+  def db_log_save!(fields)
+    db_log.merge!(fields)
     work_transcript_requests[transcript_request_id] = db_log
     work.save!
   end
 
+  # The jsonb hash of transcript attempts for this work, keyed by request id.
   def work_transcript_requests
-    work.public_send(HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE)
-  end
-
-  def set_work_transcript_requests(val)
-    work.public_send("#{HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE}=", val)
+    work.public_send(Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE) ||
+      work.public_send(:"#{Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE}=", {})
   end
 
   def db_log
