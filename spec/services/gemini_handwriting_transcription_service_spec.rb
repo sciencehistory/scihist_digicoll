@@ -9,8 +9,8 @@ describe GeminiHandwritingTranscriptionService do
     ]
   end
 
-  let(:asset_attribute_for_transcript) { described_class::HTR_TRANSCRIPT_ASSET_ATTRIBUTE }
-  let(:work_attribute_for_transcript_requests) { described_class::HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE }
+  let(:asset_attribute_for_transcript) { Asset::HTR_TRANSCRIPT_ATTRIBUTE }
+  let(:work_attribute_for_transcript_requests) { Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE }
 
   let(:assets) { [asset1, asset2, asset3] }
   let(:asset1) { build_tiff_asset(position: 1) }
@@ -412,8 +412,6 @@ describe GeminiHandwritingTranscriptionService do
 
     expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
       .to eq(original_transcripts)
-
-    # let(:work_attribute_for_transcript_requests) { described_class::HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE }
 
     request_id = service.send(:transcript_request_id)
     

@@ -8,7 +8,7 @@
 # We consider the transcript ephemeral, machine-produced metadata,
 # so we store it in derived_metadata_jsonb.
 class GeminiHandwritingTranscriptionService
-  
+
   class GeminiHandwritingTranscriptionServiceError < StandardError; end
 
   class AdapterError < GeminiHandwritingTranscriptionServiceError; end
@@ -17,12 +17,6 @@ class GeminiHandwritingTranscriptionService
   class IneligibleWorkError < GeminiHandwritingTranscriptionServiceError; end
 
   MAX_FILES_TO_TRANSCRIBE = 10
-
-  # Where we store the transcripts on the asset:
-  HTR_TRANSCRIPT_ASSET_ATTRIBUTE = :htr_transcript
-
-  # Where we store the state of attempts to get transcripts on the work:
-  HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE = :gemini_htr_transcript_requests
 
   def initialize(work:)
     @work = work
@@ -301,7 +295,7 @@ class GeminiHandwritingTranscriptionService
     Rails.logger.info(
       "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
     )
-    asset.update!(HTR_TRANSCRIPT_ASSET_ATTRIBUTE => transcript)
+    asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
   end
 
   # The model will often provide notes about the transcription process.
@@ -501,8 +495,8 @@ class GeminiHandwritingTranscriptionService
 
   # The jsonb hash of transcript attempts for this work, keyed by request id.
   def work_transcript_requests
-    work.public_send(HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE) ||
-      work.public_send(:"#{HTR_TRANSCRIPT_ATTEMPT_WORK_ATTRIBUTE}=", {})
+    work.public_send(Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE) ||
+      work.public_send(:"#{Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE}=", {})
   end
 
   def db_log
