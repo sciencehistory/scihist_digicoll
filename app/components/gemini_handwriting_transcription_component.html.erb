@@ -1,6 +1,6 @@
 <% if ScihistDigicoll::Env.lookup(:gemini_htr_transcripts_feature_flag) %>
   <div class="alert alert-info">
-    Transcribe using Google Gemini (beta feature): <br/>
+    <p class="h4 alert-heading"> Automatic transcription of handwritten text using Google Gemini (this is an experimental feature):</p>
 
     <% if most_recent_request_status_message %>
       <p>
@@ -13,8 +13,8 @@
     <% elsif !request_pending? %>
       <%= link_to(request_button_label, admin_request_handwriting_transcription_path(work_id: work.friendlier_id), class: "btn btn-outline-secondary my-3") %>
     <% end %>
-
-    <p>debug info:</p>
+    <hr/>
+    <p>Debug info (temporary):</p>
     <pre><%= raw_transcript_requests_json %></pre>
 
   </div>
