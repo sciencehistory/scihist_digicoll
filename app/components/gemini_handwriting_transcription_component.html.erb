@@ -1,13 +1,23 @@
 <% if ScihistDigicoll::Env.lookup(:gemini_htr_transcripts_feature_flag) %>
-  <p class="alert alert-info">
+  <div class="alert alert-info">
     Transcribe using Google Gemini (beta feature): <br/>
+
+    <% if most_recent_request_status_message %>
+      <p>
+        <%= most_recent_request_status_message %>
+      </p>
+    <% end %>
+
     <% if eligibility_problems.present? %>
       <%= "This work isn't eligible, as #{eligibility_problems.to_sentence}." %>
-    <% else %>
-      <%= link_to('Request transcription', admin_request_handwriting_transcription_path(work_id: work.friendlier_id), class: "btn btn-sm btn-outline-secondary my-3") %>
+    <% elsif !request_pending? %>
+      <%= link_to(request_button_label, admin_request_handwriting_transcription_path(work_id: work.friendlier_id), class: "btn btn-outline-secondary my-3") %>
     <% end %>
-  </p>
+
+    <p>debug info:</p>
+    <pre><%= raw_transcript_requests_json %></pre>
+
+  </div>
 <% end %>
 
-<%# TEMPORARY, for debugging -- remove once we have a real display for this. %>
-<pre><%= raw_transcript_requests_json %></pre>
+
