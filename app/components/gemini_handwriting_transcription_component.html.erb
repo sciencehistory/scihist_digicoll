@@ -1,0 +1,10 @@
+<% if ScihistDigicoll::Env.lookup(:gemini_htr_transcripts_feature_flag) %>
+  <p class="alert alert-info">
+    Transcribe using Google Gemini (beta feature): <br/>
+    <% if eligibility_problems.present? %>
+      <%= "This work isn't eligible, as #{eligibility_problems.to_sentence}." %>
+    <% else %>
+      <%= link_to('Request transcription', admin_request_handwriting_transcription_path(work_id: work.friendlier_id), class: "btn btn-sm btn-outline-secondary my-3") %>
+    <% end %>
+  </p>
+<% end %>
