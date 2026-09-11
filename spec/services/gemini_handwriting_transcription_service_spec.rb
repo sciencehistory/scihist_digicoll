@@ -122,6 +122,29 @@ describe GeminiHandwritingTranscriptionService do
         service.send(:request_transcription, manifest)
       ).to eq(result)
     end
+
+    it "records status and start_time on the work before invoking the adapter" do
+      manifest = JSON.generate("some" => "manifest")
+
+      allow(ScihistDigicoll::Util)
+        .to receive(:prefix_python_exec_command)
+        .and_return("test-python-command")
+
+      allow(service.send(:tty_command)).to receive(:run!).and_return(adapter_result)
+
+      now = Time.current
+      travel_to(now) do
+        service.send(:request_transcription, manifest)
+      end
+
+      request_id = service.send(:transcript_request_id)
+      request_log = work.reload.
+        public_send(work_attribute_for_transcript_requests).
+        fetch(request_id)
+
+      expect(request_log["status"]).to eq("requested")
+      expect(Time.zone.parse(request_log["start_time"])).to be_within(1.second).of(now)
+    end
   end
 
   describe "#process_results" do
