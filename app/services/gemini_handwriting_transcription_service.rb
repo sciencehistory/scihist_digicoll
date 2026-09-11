@@ -2,7 +2,7 @@
 #
 # GeminiHandwritingTranscriptionService.new(work: work).call
 #
-# will ask Gemini for a transcript for each image asset on the work, then 
+# will ask Gemini for a transcript for each image asset on the work, then
 # attach a transcript to the :htr_transcript attribute for the asset.
 #
 # We consider the transcript ephemeral, machine-produced metadata,
@@ -35,21 +35,13 @@ class GeminiHandwritingTranscriptionService
       staged_images = stage_images(dir)
       manifest = generate_manifest(staged_images)
 
-
-      stdout, stderr, status = request_transcription(manifest)
+      result = request_transcription(manifest)
       db_log_status('received')
 
-      process_results(
-        stdout: stdout,
-        stderr: stderr,
-        status: status,
-        staged_images: staged_images
-      )
+      process_results(result: result, staged_images: staged_images)
     end
     db_log_status('success')
-
   end
-
 
   # Any and all reasons to exclude a work from receiving a transcript.
   def work_eligibility_problems
@@ -123,25 +115,23 @@ class GeminiHandwritingTranscriptionService
 
     db_log_status('requested')
 
-    result = tty_command.run!(
+    tty_command.run!(
       *python_command,
       env: { "GEMINI_API_KEY" => gemini_api_key },
       input: manifest,
       chdir: Rails.root.to_s
     )
-
-    [result.out, result.err, result]
   end
 
   # The transcript, and notes about the transcription process,
   # should come in via stdout. This method attaches each page's transcript
   # to the corresponding asset.
-  def process_results(stdout:, stderr:, status:, staged_images:)
-    log_adapter_stderr(stderr)
-    validate_adapter_result!(stdout:, status:)
+  def process_results(result:, staged_images:)
+    log_adapter_stderr(result.err)
+    validate_adapter_result!(result)
 
-    raw_response_path = preserve_raw_response(stdout)
-    data = parse_response!(stdout, raw_response_path:)
+    raw_response_path = preserve_raw_response(result.out)
+    data = parse_response!(result.out, raw_response_path:)
 
     pages =
       extract_and_validate_pages!(
@@ -172,31 +162,18 @@ class GeminiHandwritingTranscriptionService
   end
 
   # Alert the Rails log of any problems coming in from the python adapter.
-  def validate_adapter_result!(stdout:, status:)
-    unless status.success?
-      msg = "Gemini transcription failed with exit status #{status.exit_status}"
+  def validate_adapter_result!(result)
+    unless result.success?
+      msg = "Gemini transcription failed with exit status #{result.exit_status}"
       db_log_error(msg)
       raise AdapterError, msg
     end
 
-    if stdout.blank?
+    if result.out.blank?
       msg = "Gemini returned an empty response"
       db_log_error(msg)
       raise InvalidResponseError, msg
     end
-  end
-
-  # In development, save the files in a temp directory so we can debug problems.
-  def preserve_raw_response(stdout)
-    output_directory = debug_output_directory
-    return unless output_directory
-
-    FileUtils.mkdir_p(output_directory)
-
-    path = output_directory.join("raw_response.json")
-    File.write(path, stdout)
-
-    path
   end
 
   # Parse the JSON returned from the Python wrapper
@@ -215,23 +192,6 @@ class GeminiHandwritingTranscriptionService
     raise InvalidResponseError, msg
 
   end
-
-  # Only used in dev
-  def debug_output_directory
-    return unless Rails.env.development?
-
-    @debug_output_directory ||= Rails.root.join(
-      "tmp",
-      "gemini_htr",
-      work.friendlier_id,
-      transcript_request_id
-    )
-  end
-
-  def transcript_request_id
-    @transcript_request_id  ||= "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
-  end
-
 
   # Checks the transcript info looks the way it should. Returns a hash of pages.
   def extract_and_validate_pages!(data, staged_images:)
@@ -318,32 +278,6 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
-  # Only in dev, write the transcript pages out to disk.
-  def write_transcript_files(pages)
-    output_directory = debug_output_directory
-    return unless output_directory
-
-    FileUtils.mkdir_p(output_directory)
-
-    pages.each do |page|
-      filename = page.fetch("filename")
-      transcript = page.fetch("transcript")
-
-      base_name =
-        File.basename(filename, File.extname(filename))
-
-      transcript_path =
-        output_directory.join("#{base_name}.txt")
-
-      File.write(transcript_path, transcript)
-
-      Rails.logger.debug(
-        "Saved Gemini HTR transcript to #{transcript_path}"
-      )
-    end
-  end
-
-
   # Returns the prompt we send to Gemini in JSON form.
   def generate_manifest(staged_images)
     system_instruction = <<~PROMPT
@@ -400,12 +334,8 @@ class GeminiHandwritingTranscriptionService
       required: ["pages"]
     }
 
-    #
-    # Construct the ordered multimodal prompt.
-    #
-    # Keeping the filename immediately before its corresponding image
-    # gives Gemini an explicit association between the two.
-    #
+    # Construct the ordered multimodal prompt. Keeping the filename immediately
+    # before its corresponding image gives Gemini an explicit association between the two.
     contents = []
 
     staged_images.each do |image|
@@ -441,7 +371,6 @@ class GeminiHandwritingTranscriptionService
 
     JSON.generate(manifest)
   end
-
 
   # Returns true if we consider this work in "the public domain".
   # Simplest rule that could work for now; subject to input from curators.
@@ -501,5 +430,59 @@ class GeminiHandwritingTranscriptionService
 
   def db_log
     @db_log ||= { 'errors' => [], 'status' => "" }
+  end
+
+  def transcript_request_id
+    @transcript_request_id  ||= "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
+  end
+
+  # --- Dev-only debugging helpers below: preserve the raw Gemini response and each
+  # page's transcript on disk under tmp/gemini_htr, so failures are easier to inspect. ---
+
+  def debug_output_directory
+    return unless Rails.env.development?
+
+    @debug_output_directory ||= Rails.root.join(
+      "tmp",
+      "gemini_htr",
+      work.friendlier_id,
+      transcript_request_id
+    )
+  end
+
+  def preserve_raw_response(stdout)
+    output_directory = debug_output_directory
+    return unless output_directory
+
+    FileUtils.mkdir_p(output_directory)
+
+    path = output_directory.join("raw_response.json")
+    File.write(path, stdout)
+
+    path
+  end
+
+  def write_transcript_files(pages)
+    output_directory = debug_output_directory
+    return unless output_directory
+
+    FileUtils.mkdir_p(output_directory)
+
+    pages.each do |page|
+      filename = page.fetch("filename")
+      transcript = page.fetch("transcript")
+
+      base_name =
+        File.basename(filename, File.extname(filename))
+
+      transcript_path =
+        output_directory.join("#{base_name}.txt")
+
+      File.write(transcript_path, transcript)
+
+      Rails.logger.debug(
+        "Saved Gemini HTR transcript to #{transcript_path}"
+      )
+    end
   end
 end

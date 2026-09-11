@@ -27,10 +27,6 @@ describe GeminiHandwritingTranscriptionService do
 
   let(:service) { described_class.new(work: work) }
 
-  let(:successful_status) do
-    instance_double(TTY::Command::Result, success?: true, exit_status: 0)
-  end
-
   let(:staged_images) { service.send(:stage_images, tmpdir) }
 
   let(:pages) do
@@ -62,11 +58,7 @@ describe GeminiHandwritingTranscriptionService do
       allow(service).to receive(:request_transcription) do |manifest|
         filenames = filenames_from_manifest(manifest)
 
-        [
-          JSON.generate("pages" => pages_for(filenames)),
-          "",
-          successful_status
-        ]
+        adapter_result(out: JSON.generate("pages" => pages_for(filenames)))
       end
 
       service.call
@@ -128,7 +120,7 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(
         service.send(:request_transcription, manifest)
-      ).to eq(["stdout", "stderr", result])
+      ).to eq(result)
     end
   end
 
@@ -136,9 +128,7 @@ describe GeminiHandwritingTranscriptionService do
     it "processes a successful adapter response and persists all transcripts" do
       service.send(
         :process_results,
-        stdout: JSON.generate("pages" => pages),
-        stderr: "",
-        status: successful_status,
+        result: adapter_result(out: JSON.generate("pages" => pages)),
         staged_images: staged_images
       )
 
@@ -152,8 +142,7 @@ describe GeminiHandwritingTranscriptionService do
       expect {
         service.send(
           :validate_adapter_result!,
-          stdout: JSON.generate("pages" => []),
-          status: successful_status
+          adapter_result(out: JSON.generate("pages" => []))
         )
       }.not_to raise_error
     end
@@ -251,14 +240,10 @@ describe GeminiHandwritingTranscriptionService do
         .to eq(assets)
     end
     it "raises AdapterError when the adapter process exits unsuccessfully" do
-      failed_status =
-        instance_double(TTY::Command::Result, success?: false, exit_status: 1)
-
       expect {
         service.send(
           :validate_adapter_result!,
-          stdout: "",
-          status: failed_status
+          adapter_result(success: false, exit_status: 1)
         )
       }.to raise_error(
         described_class::AdapterError,
@@ -269,14 +254,10 @@ describe GeminiHandwritingTranscriptionService do
 
   describe "adapter process exits unsuccessfully" do
     it "raises AdapterError" do
-      failed_status =
-        instance_double(TTY::Command::Result, success?: false, exit_status: 1)
-
       expect {
         service.send(
           :validate_adapter_result!,
-          stdout: "",
-          status: failed_status
+          adapter_result(success: false, exit_status: 1)
         )
       }.to raise_error(
         described_class::AdapterError,
@@ -400,9 +381,7 @@ describe GeminiHandwritingTranscriptionService do
     expect {
       service.send(
         :process_results,
-        stdout: stdout,
-        stderr: "",
-        status: successful_status,
+        result: adapter_result(out: stdout),
         staged_images: images
       )
     }.to raise_error(
@@ -422,6 +401,16 @@ describe GeminiHandwritingTranscriptionService do
     expect(request_log).to include(
       "status" => "error",
       "errors" => include(a_string_including(message))
+    )
+  end
+
+  def adapter_result(out: "", err: "", success: true, exit_status: 0)
+    instance_double(
+      TTY::Command::Result,
+      out: out,
+      err: err,
+      success?: success,
+      exit_status: exit_status
     )
   end
 
