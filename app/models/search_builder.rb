@@ -22,6 +22,6 @@ class SearchBuilder < Blacklight::SearchBuilder
   #   self.default_processor_chain += [:add_custom_data_to_query]
   #
   #   def add_custom_data_to_query(solr_parameters)
-  #     solr_parameters[:custom] = blacklight_params[:user_value]
+  #     solr_parameters[:custom] = search_state.params["user_value"]
   #   end
 end

@@ -6,7 +6,7 @@ class SearchBuilder
     # https://github.com/projectblacklight/blacklight/blob/v6.7.2/lib/blacklight/search_builder.rb#L224
     def sort
       # if no sort is specified by the user, and there's no search phrase
-      if blacklight_params[:sort].blank? && blacklight_params[:q].blank?
+      if search_state.params["sort"].blank? && search_state.params["q"].blank?
         # use the default sort order from catalog controller
         @default_blank_query_sort ||= default_sort_order
       else
