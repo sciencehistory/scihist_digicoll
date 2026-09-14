@@ -21,7 +21,7 @@ class TranscriptionTabsComponent < ApplicationComponent
   end
 
   def htr_transcript_texts
-    @htr_transcript_texts ||= Work::TextPage.compile(members, accessor: :htr_transcript)
+    @htr_transcript_texts ||= Work::TextPage.compile(members, accessor: Asset::HTR_TRANSCRIPT_ATTRIBUTE)
   end
 
   def translation_texts
