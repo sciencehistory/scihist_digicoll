@@ -45,7 +45,10 @@ import re
 #     # pretty-print the json with indent=2
 #
 
-RATIO_THRESHOLD = 0.7  # when space to line height exceeds
+# when space to line height exceeds, call it a paragraph break. Higher 0.7 worked
+# well for our born digital, but for OCR'd 0.5 works better. We could make it paramterized
+# by whehter we know if it's born digital or not, but for now this seems to work for both.
+RATIO_THRESHOLD = 0.5
 MIN_GAP = 2.0  # pdf pixels
 
 
