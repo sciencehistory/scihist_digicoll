@@ -263,7 +263,7 @@ class GeminiHandwritingTranscriptionService
         Rails.logger.info(
           "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
         )
-        asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
+        asset.update!(htr_transcript: transcript)
       end
     end
   end
@@ -315,7 +315,7 @@ class GeminiHandwritingTranscriptionService
   # We only keep the current request's log -- not a history of past attempts.
   def db_log_save!(fields)
     db_log.merge!(fields)
-    work.public_send(:"#{Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE}=", db_log)
+    work.htr_transcript_status = db_log
     work.save!
   end
 
