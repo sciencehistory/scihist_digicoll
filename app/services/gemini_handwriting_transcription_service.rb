@@ -155,8 +155,6 @@ class GeminiHandwritingTranscriptionService
         staged_images: staged_images
       )
 
-    log_model_feedback(data)
-
     attach_transcripts!(
       pages,
       staged_images: staged_images
@@ -267,26 +265,6 @@ class GeminiHandwritingTranscriptionService
         )
         asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
       end
-    end
-  end
-
-  # The model will often provide notes about the transcription process.
-  # Put these notes in the rails log so we can look at them in production, as needed.
-  def log_model_feedback(data)
-    if data["general_feedback"].present?
-      Rails.logger.info(
-        "Gemini HTR general feedback for work #{work.friendlier_id}: " \
-        "#{data['general_feedback']}"
-      )
-    end
-
-    data["pages"].each do |page|
-      next if page["page_notes"].blank?
-
-      Rails.logger.info(
-        "Gemini HTR notes for #{page['filename']}: " \
-        "#{page['page_notes']}"
-      )
     end
   end
 
