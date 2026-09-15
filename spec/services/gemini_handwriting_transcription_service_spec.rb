@@ -367,7 +367,7 @@ describe GeminiHandwritingTranscriptionService do
     original_transcripts =
       assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) }
 
-    expect(service).not_to receive(:attach_transcript!)
+    expect(service).not_to receive(:attach_transcripts!)
 
     expect {
       service.send(

@@ -267,20 +267,14 @@ class GeminiHandwritingTranscriptionService
       staged_images.each do |image|
         asset = image.fetch(:asset)
         filename = image.fetch(:filename)
+        transcript = pages_by_filename.fetch(filename).fetch("transcript")
 
-        attach_transcript!(
-          asset,
-          pages_by_filename.fetch(filename).fetch("transcript")
+        Rails.logger.info(
+          "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
         )
+        asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
       end
     end
-  end
-
-  def attach_transcript!(asset, transcript)
-    Rails.logger.info(
-      "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
-    )
-    asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
   end
 
   # The model will often provide notes about the transcription process.
