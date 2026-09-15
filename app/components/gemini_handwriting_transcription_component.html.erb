@@ -2,9 +2,9 @@
   <div class="alert alert-info">
     <p class="h4 alert-heading"> Automatic transcription of handwritten text using Google Gemini (this is an experimental feature):</p>
 
-    <% if most_recent_request_status_message %>
+    <% if current_request_status_message %>
       <p>
-        <%= most_recent_request_status_message %>
+        <%= current_request_status_message %>
       </p>
     <% end %>
 
@@ -15,7 +15,7 @@
     <% end %>
     <hr/>
     <p>Debug info (temporary):</p>
-    <pre><%= raw_transcript_requests_json %></pre>
+    <pre><%= transcript_request_json %></pre>
 
   </div>
 <% end %>

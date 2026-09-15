@@ -9,17 +9,17 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
     GeminiHandwritingTranscriptionService.new(work: work).work_eligibility_problems
   end
 
-  # The single most recent transcription attempt logged on the work, or nil
-  # if none have ever been made.
-  def most_recent_request
-    requests = work.public_send(Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE) || {}
-    requests.values.max_by { |request| request["start_time"] || "" }
+  # The transcription request currently logged on the work, or nil if none
+  # has ever been made. (We only ever keep the current request's log, not a
+  # history of past attempts.)
+  def current_request
+    work.public_send(Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE)
   end
 
-  # A human-readable sentence describing the status of the most recent
-  # transcription attempt, or nil if there has never been one.
-  def most_recent_request_status_message
-    request = most_recent_request
+  # A human-readable sentence describing the status of the current
+  # transcription request, or nil if there has never been one.
+  def current_request_status_message
+    request = current_request
     return nil unless request
 
     time = formatted_start_time(request)
@@ -49,7 +49,7 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
   # Label for the "request transcription" button -- worded differently if a
   # successful transcript already exists, since a new request would replace it.
   def request_button_label
-    if most_recent_request&.dig("status") == "success"
+    if current_request&.dig("status") == "success"
       "Request a new transcription to replace the current one"
     else
       "Request transcription"
@@ -60,18 +60,18 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
   # request reaches one of these, it's done and won't change on its own.
   TERMINAL_STATUSES = ["success", "error"].freeze
 
-  # True if the most recent request hasn't reached a final status yet (e.g.
+  # True if the current request hasn't reached a final status yet (e.g.
   # "started", "requested", "received") -- we don't want to let the admin
   # fire off a second, concurrent request while one is still in progress.
   def request_pending?
-    status = most_recent_request&.dig("status")
+    status = current_request&.dig("status")
     status.present? && !TERMINAL_STATUSES.include?(status)
   end
 
   # TEMPORARY, for debugging -- raw contents of the transcript request log
   # we keep on the work, as pretty-printed JSON.
-  def raw_transcript_requests_json
-    JSON.pretty_generate(work.public_send(Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE) || {})
+  def transcript_request_json
+    JSON.pretty_generate(current_request || {})
   end
 
   private
