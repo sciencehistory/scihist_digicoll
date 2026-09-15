@@ -306,7 +306,7 @@ class GeminiHandwritingTranscriptionService
   # Returns true if we consider this work in "the public domain".
   # Simplest rule that could work for now; subject to input from curators.
   def public_domain?
-    ['http://creativecommons.org/publicdomain/mark/1.0/'].include? work.rights
+    'http://creativecommons.org/publicdomain/mark/1.0/' == work.rights
   end
 
   # Published assets with derivatives we can use.
