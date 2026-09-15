@@ -145,8 +145,9 @@ class GeminiHandwritingTranscriptionService
 
     text = extract_generated_text!(response)
 
-    raw_response_path = preserve_raw_response(text)
-    data = parse_response!(text, raw_response_path:)
+    Rails.logger.debug("Gemini raw response for work #{work.friendlier_id}: #{text}")
+
+    data = parse_response!(text)
 
     pages =
       extract_and_validate_pages!(
@@ -155,7 +156,6 @@ class GeminiHandwritingTranscriptionService
       )
 
     log_model_feedback(data)
-    write_transcript_files(pages)
 
     attach_transcripts!(
       pages,
@@ -202,20 +202,13 @@ class GeminiHandwritingTranscriptionService
   end
 
   # Parse the JSON transcript text returned by Gemini
-  def parse_response!(stdout, raw_response_path:)
+  def parse_response!(stdout)
     JSON.parse(stdout)
   rescue JSON::ParserError => e
-    msg = +"Gemini's response was not valid JSON."
-
-    if raw_response_path
-      msg << " Raw response preserved at #{raw_response_path}."
-    end
-
-    msg << " JSON error: #{e.message}"
+    msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
 
     db_log_error(msg)
     raise InvalidResponseError, msg
-
   end
 
   # Checks the transcript info looks the way it should. Returns a hash of pages.
@@ -341,73 +334,14 @@ class GeminiHandwritingTranscriptionService
   end
 
   # Merge the given fields into the current db_log, and persist it on the work.
+  # We only keep the current request's log -- not a history of past attempts.
   def db_log_save!(fields)
     db_log.merge!(fields)
-    work_transcript_requests[transcript_request_id] = db_log
+    work.public_send(:"#{Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE}=", db_log)
     work.save!
-  end
-
-  # The jsonb hash of transcript attempts for this work, keyed by request id.
-  def work_transcript_requests
-    work.public_send(Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE) ||
-      work.public_send(:"#{Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE}=", {})
   end
 
   def db_log
     @db_log ||= { 'errors' => [], 'status' => "", 'start_time' => nil }
-  end
-
-  def transcript_request_id
-    @transcript_request_id  ||= "#{Time.current.strftime('%Y%m%d-%H%M%S')}-#{SecureRandom.hex(4)}"
-  end
-
-  # --- Dev-only debugging helpers below: preserve the raw Gemini response and each
-  # page's transcript on disk under tmp/gemini_htr, so failures are easier to inspect. ---
-
-  def debug_output_directory
-    return unless Rails.env.development?
-
-    @debug_output_directory ||= Rails.root.join(
-      "tmp",
-      "gemini_htr",
-      work.friendlier_id,
-      transcript_request_id
-    )
-  end
-
-  def preserve_raw_response(stdout)
-    output_directory = debug_output_directory
-    return unless output_directory
-
-    FileUtils.mkdir_p(output_directory)
-
-    path = output_directory.join("raw_response.json")
-    File.write(path, stdout)
-
-    path
-  end
-
-  def write_transcript_files(pages)
-    output_directory = debug_output_directory
-    return unless output_directory
-
-    FileUtils.mkdir_p(output_directory)
-
-    pages.each do |page|
-      filename = page.fetch("filename")
-      transcript = page.fetch("transcript")
-
-      base_name =
-        File.basename(filename, File.extname(filename))
-
-      transcript_path =
-        output_directory.join("#{base_name}.txt")
-
-      File.write(transcript_path, transcript)
-
-      Rails.logger.debug(
-        "Saved Gemini HTR transcript to #{transcript_path}"
-      )
-    end
   end
 end
