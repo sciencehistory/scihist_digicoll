@@ -34,27 +34,13 @@ class GeminiContentRequestBuilder
 
   attr_reader :staged_images, :work_description
 
+  # Prompt text lives in config/locales/gemini_transcript_prompt.en.yml, since
+  # it's liable to be tweaked independently of the request-building logic.
   def system_instruction
-    <<~PROMPT
-      You are an expert paleographer and archival OCR engine.
-      You are analyzing a sequence of handwritten pages written by the same person.
-      You are provided with some context about the images, as follows: "#{work_description}."
-
-      TASK INSTRUCTIONS:
-      1. Cross-Page Learning: Examine the handwriting, vocabulary, and shorthand across ALL provided images first to establish a baseline for the script. Use context from the entire set to clarify ambiguous words on individual pages.
-      2. Transcription Rules:
-         - Preserve exact historical/personal spelling ("warts and all"). Do NOT auto-correct.
-         - Hew strictly to original wording.
-         - If you are less than ~90% confident about a specific word, you may place a [?] after the word to indicate doubt.
-         - Omit diagrams, formulas, sketches, and annotations directly tied to diagrams. Focus strictly on main running blocks of text.
-      3. Output Format:
-         - Output a transcript for EACH page.
-      4. Response Format:
-         - Return a JSON object containing the transcript for each filename.
-      5. Feedback & Reporting:
-         - Use 'general_feedback' to note any systemic issues (e.g., if you suspect the output might cut off, or general handwriting observations).
-         - Use 'page_notes' on individual pages to explain why specific sections were omitted, note illegible words, or point out ignored diagrams/annotations.
-    PROMPT
+    I18n.t(
+      "gemini_content_request_builder.system_instruction",
+      work_description: work_description
+    )
   end
 
   def response_schema
@@ -63,7 +49,7 @@ class GeminiContentRequestBuilder
       properties: {
         general_feedback: {
           type: "STRING",
-          description: "Optional overall comments about the batch, handwriting legibility, token limits, or context."
+          description: I18n.t("gemini_content_request_builder.response_schema.general_feedback_description")
         },
         pages: {
           type: "ARRAY",
@@ -78,7 +64,7 @@ class GeminiContentRequestBuilder
               },
               page_notes: {
                 type: "STRING",
-                description: "Optional notes on this specific page (e.g. unreadable words, omitted diagrams, or specific ambiguities)."
+                description: I18n.t("gemini_content_request_builder.response_schema.page_notes_description")
               }
             },
             required: [
@@ -102,12 +88,7 @@ class GeminiContentRequestBuilder
       parts << image_part(image)
     end
 
-    parts << {
-      text: <<~TEXT.strip
-        Please analyze all pages above, learn the handwriting style,
-        and produce the requested transcript strings in JSON format.
-      TEXT
-    }
+    parts << { text: I18n.t("gemini_content_request_builder.final_instruction") }
 
     parts
   end

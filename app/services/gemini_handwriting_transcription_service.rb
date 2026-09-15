@@ -11,12 +11,13 @@ require 'http'
 # so we store it in derived_metadata_jsonb.
 class GeminiHandwritingTranscriptionService
 
-  class GeminiHandwritingTranscriptionServiceError < StandardError; end
+  # this is just the superclass of all the errors this class can throw.
+  class Error < StandardError; end
 
-  class AdapterError < GeminiHandwritingTranscriptionServiceError; end
-  class InvalidResponseError < GeminiHandwritingTranscriptionServiceError; end
-  class UnsupportedImageTypeError < GeminiHandwritingTranscriptionServiceError; end
-  class IneligibleWorkError < GeminiHandwritingTranscriptionServiceError; end
+  class AdapterError < Error; end
+  class InvalidResponseError < Error; end
+  class UnsupportedImageTypeError < Error; end
+  class IneligibleWorkError < Error; end
 
   MAX_FILES_TO_TRANSCRIBE = 10
 
