@@ -131,10 +131,7 @@ describe GeminiHandwritingTranscriptionService do
         service.send(:request_transcription, staged_images)
       end
 
-      request_id = service.send(:transcript_request_id)
-      request_log = work.reload.
-        public_send(work_attribute_for_transcript_requests).
-        fetch(request_id)
+      request_log = work.reload.public_send(work_attribute_for_transcript_requests)
 
       expect(request_log["status"]).to eq("requested")
       expect(Time.zone.parse(request_log["start_time"])).to be_within(1.second).of(now)
@@ -147,10 +144,7 @@ describe GeminiHandwritingTranscriptionService do
         service.send(:request_transcription, staged_images)
       }.to raise_error(described_class::AdapterError, /Could not reach Gemini/)
 
-      request_id = service.send(:transcript_request_id)
-      request_log = work.reload.
-        public_send(work_attribute_for_transcript_requests).
-        fetch(request_id)
+      request_log = work.reload.public_send(work_attribute_for_transcript_requests)
 
       expect(request_log["status"]).to eq("error")
     end
@@ -383,11 +377,7 @@ describe GeminiHandwritingTranscriptionService do
     expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
       .to eq(original_transcripts)
 
-    request_id = service.send(:transcript_request_id)
-
-    request_log = work.reload.
-      public_send(work_attribute_for_transcript_requests).
-      fetch(request_id)
+    request_log = work.reload.public_send(work_attribute_for_transcript_requests)
 
     expect(request_log).to include(
       "status" => "error",
