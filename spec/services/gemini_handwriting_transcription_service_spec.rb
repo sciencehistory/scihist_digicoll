@@ -55,10 +55,10 @@ describe GeminiHandwritingTranscriptionService do
 
   describe "#call" do
     it "stages the work, sends it to the adapter, and attaches returned transcripts" do
-      allow(service).to receive(:request_transcription) do |manifest|
-        filenames = filenames_from_manifest(manifest)
+      allow(service).to receive(:request_transcription) do |images|
+        filenames = images.map { |image| image.fetch(:filename) }
 
-        adapter_result(out: JSON.generate("pages" => pages_for(filenames)))
+        gemini_response(text: JSON.generate("pages" => pages_for(filenames)))
       end
 
       service.call
@@ -91,50 +91,44 @@ describe GeminiHandwritingTranscriptionService do
         expect(File.size(image.fetch(:path))).to eq(
           asset.file_derivatives.fetch(:download_large).size
         )
+
+        expect(image.fetch(:mime_type)).to eq("image/jpeg")
       end
     end
   end
 
+  describe "#gemini_client" do
+    it "sets the Gemini API key as a request header" do
+      client = service.send(:gemini_client)
+      expect(client.default_options.headers["x-goog-api-key"]).to eq("gemini-test-api-key")
+    end
+  end
+
   describe "#request_transcription" do
-    it "passes the manifest and Gemini API key to the Python adapter" do
-      manifest = JSON.generate("some" => "manifest")
-      python_command = "test-python-command"
+    it "posts the built request body to the model's generateContent endpoint" do
+      request_body = { some: "request body" }
+      allow(GeminiContentRequestBuilder).to receive(:new)
+        .with(staged_images: staged_images, work_description: work.description)
+        .and_return(instance_double(GeminiContentRequestBuilder, call: request_body))
 
-      result = instance_double(
-        TTY::Command::Result,
-        out: "stdout",
-        err: "stderr"
-      )
+      response = gemini_response(text: "{}")
 
-      expect(ScihistDigicoll::Util)
-        .to receive(:prefix_python_exec_command)
-        .with("./python_script/gemini_htr.py")
-        .and_return(python_command)
-
-      expect(service.send(:tty_command)).to receive(:run!).with(
-        python_command,
-        env: { "GEMINI_API_KEY" => "gemini-test-api-key" },
-        input: manifest,
-        chdir: Rails.root.to_s
-      ).and_return(result)
+      expect(service.send(:gemini_client)).to receive(:post).with(
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-test-model:generateContent",
+        json: request_body
+      ).and_return(response)
 
       expect(
-        service.send(:request_transcription, manifest)
-      ).to eq(result)
+        service.send(:request_transcription, staged_images)
+      ).to eq(response)
     end
 
     it "records status and start_time on the work before invoking the adapter" do
-      manifest = JSON.generate("some" => "manifest")
-
-      allow(ScihistDigicoll::Util)
-        .to receive(:prefix_python_exec_command)
-        .and_return("test-python-command")
-
-      allow(service.send(:tty_command)).to receive(:run!).and_return(adapter_result)
+      allow(service.send(:gemini_client)).to receive(:post).and_return(gemini_response(text: "{}"))
 
       now = Time.current
       travel_to(now) do
-        service.send(:request_transcription, manifest)
+        service.send(:request_transcription, staged_images)
       end
 
       request_id = service.send(:transcript_request_id)
@@ -145,13 +139,28 @@ describe GeminiHandwritingTranscriptionService do
       expect(request_log["status"]).to eq("requested")
       expect(Time.zone.parse(request_log["start_time"])).to be_within(1.second).of(now)
     end
+
+    it "raises AdapterError when Gemini can't be reached at all" do
+      allow(service.send(:gemini_client)).to receive(:post).and_raise(HTTP::TimeoutError.new("timed out"))
+
+      expect {
+        service.send(:request_transcription, staged_images)
+      }.to raise_error(described_class::AdapterError, /Could not reach Gemini/)
+
+      request_id = service.send(:transcript_request_id)
+      request_log = work.reload.
+        public_send(work_attribute_for_transcript_requests).
+        fetch(request_id)
+
+      expect(request_log["status"]).to eq("error")
+    end
   end
 
   describe "#process_results" do
     it "processes a successful adapter response and persists all transcripts" do
       service.send(
         :process_results,
-        result: adapter_result(out: JSON.generate("pages" => pages)),
+        response: gemini_response(text: JSON.generate("pages" => pages)),
         staged_images: staged_images
       )
 
@@ -165,9 +174,47 @@ describe GeminiHandwritingTranscriptionService do
       expect {
         service.send(
           :validate_adapter_result!,
-          adapter_result(out: JSON.generate("pages" => []))
+          gemini_response(text: JSON.generate("pages" => []))
         )
       }.not_to raise_error
+    end
+
+    it "raises AdapterError when Gemini returns a non-success HTTP status" do
+      expect {
+        service.send(
+          :validate_adapter_result!,
+          gemini_response(status_code: 500, error_message: "Internal error, sorry")
+        )
+      }.to raise_error(
+        described_class::AdapterError,
+        "Gemini transcription failed with HTTP status 500: Internal error, sorry"
+      )
+    end
+  end
+
+  describe "#extract_generated_text!" do
+    it "returns the model's generated text" do
+      expect(
+        service.send(:extract_generated_text!, gemini_response(text: "hello"))
+      ).to eq("hello")
+    end
+
+    it "raises InvalidResponseError when the response has no text" do
+      expect {
+        service.send(:extract_generated_text!, gemini_response(text: nil))
+      }.to raise_error(described_class::InvalidResponseError, "Gemini returned an empty response")
+    end
+
+    it "raises InvalidResponseError when the response envelope isn't valid JSON" do
+      response = instance_double(
+        HTTP::Response,
+        status: instance_double(HTTP::Response::Status, success?: true),
+        body: "not json"
+      )
+
+      expect {
+        service.send(:extract_generated_text!, response)
+      }.to raise_error(described_class::InvalidResponseError, /Gemini's response was not valid JSON/)
     end
   end
 
@@ -198,60 +245,6 @@ describe GeminiHandwritingTranscriptionService do
     end
   end
 
-  describe "#generate_manifest" do
-    it "builds an ordered multimodal manifest for all staged images" do
-      manifest =
-        JSON.parse(service.send(:generate_manifest, staged_images))
-
-      expect(manifest.fetch("model"))
-        .to eq("gemini-test-model")
-
-      expect(manifest.fetch("system_instruction"))
-        .to include(work.description)
-
-      expect(
-        manifest.dig(
-          "response_schema",
-          "properties",
-          "pages",
-          "items",
-          "required"
-        )
-      ).to eq(["filename", "transcript"])
-
-      expect(manifest.fetch("generation_config")).to eq(
-        "max_output_tokens" => 65_536,
-        "media_resolution" => "MEDIA_RESOLUTION_HIGH"
-      )
-
-      expected_image_contents =
-        staged_images.flat_map do |image|
-          [
-            {
-              "type" => "text",
-              "text" => "Image File: #{image.fetch(:filename)}"
-            },
-            {
-              "type" => "image",
-              "path" => image.fetch(:path)
-            }
-          ]
-        end
-
-      expect(
-        manifest.fetch("contents").first(expected_image_contents.length)
-      ).to eq(expected_image_contents)
-
-      expect(manifest.fetch("contents").last).to eq(
-        "type" => "text",
-        "text" => <<~TEXT.strip
-          Please analyze all pages above, learn the handwriting style,
-          and produce the requested transcript strings in JSON format.
-        TEXT
-      )
-    end
-  end
-
   describe "#eligible_assets" do
     it "returns the three published TIFF assets in position order" do
       expect(assets.map(&:content_type))
@@ -261,31 +254,6 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(service.send(:eligible_assets))
         .to eq(assets)
-    end
-    it "raises AdapterError when the adapter process exits unsuccessfully" do
-      expect {
-        service.send(
-          :validate_adapter_result!,
-          adapter_result(success: false, exit_status: 1)
-        )
-      }.to raise_error(
-        described_class::AdapterError,
-        "Gemini transcription failed with exit status 1"
-      )
-    end
-  end
-
-  describe "adapter process exits unsuccessfully" do
-    it "raises AdapterError" do
-      expect {
-        service.send(
-          :validate_adapter_result!,
-          adapter_result(success: false, exit_status: 1)
-        )
-      }.to raise_error(
-        described_class::AdapterError,
-        "Gemini transcription failed with exit status 1"
-      )
     end
   end
 
@@ -394,17 +362,17 @@ describe GeminiHandwritingTranscriptionService do
     end
   end
 
-  def expect_invalid_response(stdout, message:)
+  def expect_invalid_response(text, message:)
     images = staged_images
     original_transcripts =
       assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) }
 
-    expect(service).not_to receive(:attach_transcript!)
+    expect(service).not_to receive(:attach_transcripts!)
 
     expect {
       service.send(
         :process_results,
-        result: adapter_result(out: stdout),
+        response: gemini_response(text: text),
         staged_images: images
       )
     }.to raise_error(
@@ -416,7 +384,7 @@ describe GeminiHandwritingTranscriptionService do
       .to eq(original_transcripts)
 
     request_id = service.send(:transcript_request_id)
-    
+
     request_log = work.reload.
       public_send(work_attribute_for_transcript_requests).
       fetch(request_id)
@@ -427,14 +395,24 @@ describe GeminiHandwritingTranscriptionService do
     )
   end
 
-  def adapter_result(out: "", err: "", success: true, exit_status: 0)
-    instance_double(
-      TTY::Command::Result,
-      out: out,
-      err: err,
-      success?: success,
-      exit_status: exit_status
+  # Builds a stand-in for the HTTP::Response Gemini's generateContent endpoint
+  # returns -- either a successful envelope wrapping the given generated `text`,
+  # or an error envelope with the given `error_message`.
+  def gemini_response(text: nil, status_code: 200, error_message: nil)
+    status = instance_double(
+      HTTP::Response::Status,
+      success?: (200..299).cover?(status_code),
+      to_s: status_code.to_s
     )
+
+    body =
+      if error_message
+        JSON.generate("error" => { "message" => error_message })
+      else
+        JSON.generate("candidates" => [{ "content" => { "parts" => [{ "text" => text }] } }])
+      end
+
+    instance_double(HTTP::Response, status: status, body: body)
   end
 
   def build_tiff_asset(position:)
@@ -464,14 +442,6 @@ describe GeminiHandwritingTranscriptionService do
         "filename" => filename,
         "transcript" => transcript
       }
-    end
-  end
-
-  def filenames_from_manifest(manifest)
-    JSON.parse(manifest).fetch("contents").filter_map do |content|
-      next unless content["type"] == "text"
-
-      content["text"][/\AImage File: (.+)\z/, 1]
     end
   end
 end

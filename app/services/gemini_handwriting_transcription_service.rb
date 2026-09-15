@@ -1,3 +1,5 @@
+require 'http'
+
 # A class to wrap our requests to Google Gemini to transcribe a work.
 #
 # GeminiHandwritingTranscriptionService.new(work: work).call
@@ -9,14 +11,21 @@
 # so we store it in derived_metadata_jsonb.
 class GeminiHandwritingTranscriptionService
 
-  class GeminiHandwritingTranscriptionServiceError < StandardError; end
+  # this is just the superclass of all the errors this class can throw.
+  class Error < StandardError; end
 
-  class AdapterError < GeminiHandwritingTranscriptionServiceError; end
-  class InvalidResponseError < GeminiHandwritingTranscriptionServiceError; end
-  class UnsupportedImageTypeError < GeminiHandwritingTranscriptionServiceError; end
-  class IneligibleWorkError < GeminiHandwritingTranscriptionServiceError; end
+  class AdapterError < Error; end
+  class InvalidResponseError < Error; end
+  class UnsupportedImageTypeError < Error; end
+  class IneligibleWorkError < Error; end
 
   MAX_FILES_TO_TRANSCRIBE = 10
+
+  GEMINI_API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta"
+
+  # How long we'll wait on Gemini before giving up -- a multi-page, multi-image
+  # request can legitimately take a couple of minutes.
+  GEMINI_HTTP_TIMEOUT = 300 # seconds
 
   def initialize(work:)
     @work = work
@@ -33,12 +42,11 @@ class GeminiHandwritingTranscriptionService
 
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
-      manifest = generate_manifest(staged_images)
 
-      result = request_transcription(manifest)
+      response = request_transcription(staged_images)
       db_log_status('received')
 
-      process_results(result: result, staged_images: staged_images)
+      process_results(response: response, staged_images: staged_images)
     end
     db_log_status('success')
   end
@@ -90,48 +98,55 @@ class GeminiHandwritingTranscriptionService
       {
         asset: asset,
         filename: filename,
-        path: path
+        path: path,
+        mime_type: image_derivative.mime_type
       }
     end
   end
 
-  def tty_command
-    @tty_command ||= TTY::Command.new(printer: :null)
+  def gemini_client
+    @gemini_client ||= HTTP
+      .headers("x-goog-api-key" => ScihistDigicoll::Env.lookup("gemini_api_key"))
+      .timeout(GEMINI_HTTP_TIMEOUT)
   end
 
-  # Calls the thin Python wrapper with info about our request.
-  def request_transcription(manifest)
-    gemini_api_key =
-      ScihistDigicoll::Env.lookup("gemini_api_key")
+  def gemini_generate_content_url
+    model = ScihistDigicoll::Env.lookup("gemini_model")
+    "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent"
+  end
 
-    python_command =
-      ScihistDigicoll::Util.prefix_python_exec_command(
-        "./python_script/gemini_htr.py"
-      )
-
+  # Posts the request directly to Gemini's REST API. Returns the raw HTTP::Response;
+  # #process_results is responsible for validating it and pulling out the transcript.
+  def request_transcription(staged_images)
     Rails.logger.info(
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
     db_log_save!('status' => 'requested', 'start_time' => Time.current)
 
-    tty_command.run!(
-      *python_command,
-      env: { "GEMINI_API_KEY" => gemini_api_key },
-      input: manifest,
-      chdir: Rails.root.to_s
+    gemini_client.post(
+      gemini_generate_content_url,
+      json: GeminiContentRequestBuilder.new(
+        staged_images: staged_images,
+        work_description: work.description
+      ).call
     )
+  rescue HTTP::Error, SocketError => e
+    msg = "Could not reach Gemini: #{e.class}: #{e.message}"
+    db_log_error(msg)
+    raise AdapterError, msg
   end
 
   # The transcript, and notes about the transcription process,
-  # should come in via stdout. This method attaches each page's transcript
-  # to the corresponding asset.
-  def process_results(result:, staged_images:)
-    log_adapter_stderr(result.err)
-    validate_adapter_result!(result)
+  # should come in via the response body. This method attaches each page's
+  # transcript to the corresponding asset.
+  def process_results(response:, staged_images:)
+    validate_adapter_result!(response)
 
-    raw_response_path = preserve_raw_response(result.out)
-    data = parse_response!(result.out, raw_response_path:)
+    text = extract_generated_text!(response)
+
+    raw_response_path = preserve_raw_response(text)
+    data = parse_response!(text, raw_response_path:)
 
     pages =
       extract_and_validate_pages!(
@@ -152,31 +167,41 @@ class GeminiHandwritingTranscriptionService
     )
   end
 
-  # Sends any errors coming from Gemini to the Rails log.
-  def log_adapter_stderr(stderr)
-    return if stderr.blank?
+  # Alert the Rails log of any problems coming back from the Gemini API itself
+  # (as opposed to problems with the content of its response, handled below).
+  def validate_adapter_result!(response)
+    return if response.status.success?
 
-    Rails.logger.warn(
-      "Gemini HTR Python adapter stderr:\n#{stderr}"
-    )
+    msg = "Gemini transcription failed with HTTP status #{response.status}: #{error_summary(response)}"
+    db_log_error(msg)
+    raise AdapterError, msg
   end
 
-  # Alert the Rails log of any problems coming in from the python adapter.
-  def validate_adapter_result!(result)
-    unless result.success?
-      msg = "Gemini transcription failed with exit status #{result.exit_status}"
-      db_log_error(msg)
-      raise AdapterError, msg
-    end
+  def error_summary(response)
+    JSON.parse(response.body.to_s).dig("error", "message")
+  rescue JSON::ParserError
+    response.body.to_s.truncate(500)
+  end
 
-    if result.out.blank?
+  # Pulls the model's generated text out of Gemini's response envelope.
+  def extract_generated_text!(response)
+    envelope = JSON.parse(response.body.to_s)
+    text = envelope.dig("candidates", 0, "content", "parts", 0, "text")
+
+    if text.blank?
       msg = "Gemini returned an empty response"
       db_log_error(msg)
       raise InvalidResponseError, msg
     end
+
+    text
+  rescue JSON::ParserError => e
+    msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
+    db_log_error(msg)
+    raise InvalidResponseError, msg
   end
 
-  # Parse the JSON returned from the Python wrapper
+  # Parse the JSON transcript text returned by Gemini
   def parse_response!(stdout, raw_response_path:)
     JSON.parse(stdout)
   rescue JSON::ParserError => e
@@ -242,20 +267,14 @@ class GeminiHandwritingTranscriptionService
       staged_images.each do |image|
         asset = image.fetch(:asset)
         filename = image.fetch(:filename)
+        transcript = pages_by_filename.fetch(filename).fetch("transcript")
 
-        attach_transcript!(
-          asset,
-          pages_by_filename.fetch(filename).fetch("transcript")
+        Rails.logger.info(
+          "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
         )
+        asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
       end
     end
-  end
-
-  def attach_transcript!(asset, transcript)
-    Rails.logger.info(
-      "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
-    )
-    asset.update!(Asset::HTR_TRANSCRIPT_ATTRIBUTE => transcript)
   end
 
   # The model will often provide notes about the transcription process.
@@ -278,104 +297,10 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
-  # Returns the prompt we send to Gemini in JSON form.
-  def generate_manifest(staged_images)
-    system_instruction = <<~PROMPT
-      You are an expert paleographer and archival OCR engine.
-      You are analyzing a sequence of handwritten pages written by the same person.
-      You are provided with some context about the images, as follows: "#{work.description}."
-
-      TASK INSTRUCTIONS:
-      1. Cross-Page Learning: Examine the handwriting, vocabulary, and shorthand across ALL provided images first to establish a baseline for the script. Use context from the entire set to clarify ambiguous words on individual pages.
-      2. Transcription Rules:
-         - Preserve exact historical/personal spelling ("warts and all"). Do NOT auto-correct.
-         - Hew strictly to original wording.
-         - If you are less than ~90% confident about a specific word, you may place a [?] after the word to indicate doubt.
-         - Omit diagrams, formulas, sketches, and annotations directly tied to diagrams. Focus strictly on main running blocks of text.
-      3. Output Format:
-         - Output a transcript for EACH page.
-      4. Response Format:
-         - Return a JSON object containing the transcript for each filename.
-      5. Feedback & Reporting:
-         - Use 'general_feedback' to note any systemic issues (e.g., if you suspect the output might cut off, or general handwriting observations).
-         - Use 'page_notes' on individual pages to explain why specific sections were omitted, note illegible words, or point out ignored diagrams/annotations.
-    PROMPT
-
-    response_schema = {
-      type: "OBJECT",
-      properties: {
-        general_feedback: {
-          type: "STRING",
-          description: "Optional overall comments about the batch, handwriting legibility, token limits, or context."
-        },
-        pages: {
-          type: "ARRAY",
-          items: {
-            type: "OBJECT",
-            properties: {
-              filename: {
-                type: "STRING"
-              },
-              transcript: {
-                type: "STRING"
-              },
-              page_notes: {
-                type: "STRING",
-                description: "Optional notes on this specific page (e.g. unreadable words, omitted diagrams, or specific ambiguities)."
-              }
-            },
-            required: [
-              "filename",
-              "transcript"
-            ]
-          }
-        }
-      },
-      required: ["pages"]
-    }
-
-    # Construct the ordered multimodal prompt. Keeping the filename immediately
-    # before its corresponding image gives Gemini an explicit association between the two.
-    contents = []
-
-    staged_images.each do |image|
-      contents << {
-        type: "text",
-        text: "Image File: #{image.fetch(:filename)}"
-      }
-
-      contents << {
-        type: "image",
-        path: image.fetch(:path)
-      }
-    end
-
-    contents << {
-      type: "text",
-      text: <<~TEXT.strip
-        Please analyze all pages above, learn the handwriting style,
-        and produce the requested transcript strings in JSON format.
-      TEXT
-    }
-
-    manifest = {
-      model: ScihistDigicoll::Env.lookup("gemini_model"),
-      system_instruction: system_instruction,
-      response_schema: response_schema,
-      contents: contents,
-      generation_config: {
-        max_output_tokens: 65_536,
-        media_resolution: "MEDIA_RESOLUTION_HIGH"
-      }
-    }
-
-    JSON.generate(manifest)
-  end
-
   # Returns true if we consider this work in "the public domain".
   # Simplest rule that could work for now; subject to input from curators.
   def public_domain?
-    ['http://creativecommons.org/publicdomain/mark/1.0/'].include? work.rights
+    'http://creativecommons.org/publicdomain/mark/1.0/' == work.rights
   end
 
   # Published assets with derivatives we can use.
