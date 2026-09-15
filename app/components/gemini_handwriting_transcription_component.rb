@@ -13,7 +13,7 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
   # has ever been made. (We only ever keep the current request's log, not a
   # history of past attempts.)
   def current_request
-    work.public_send(Work::HTR_TRANSCRIPT_REQUEST_ATTRIBUTE)
+    work.htr_transcript_status
   end
 
   # A human-readable sentence describing the status of the current
