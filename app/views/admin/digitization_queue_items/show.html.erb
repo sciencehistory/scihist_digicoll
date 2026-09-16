@@ -48,11 +48,20 @@
         <% end %>
       </dd>
 
+      <dt>Created by</dt>
+      <dd>
+        <% if @admin_digitization_queue_item.created_by %>
+          <% if @admin_digitization_queue_item.created_by.name.present? %>
+            <%= @admin_digitization_queue_item.created_by.name  %>,
+          <% end %>
+          <%= @admin_digitization_queue_item.created_by.email %>
+        <% end %>
+      </dd>
+
       <dt>Created at</dt>
       <dd>
         <%= l @admin_digitization_queue_item.created_at, format: :admin %>
       </dd>
-
 
       <dt>Status</dt>
       <dd>
