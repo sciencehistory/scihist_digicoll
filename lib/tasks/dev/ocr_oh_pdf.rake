@@ -5,6 +5,111 @@ namespace :scihist do
   namespace :dev do
     namespace :ocr_oh_pdf do
       desc """
+        Run the full workflow for OCR'ing a non-text Oral History PDF, and attaching
+        it as  ocr_text_only_pdf derivative.
+
+        Download from [staging|production]; run OCR; upload output to S3; attach
+        from S3 as derivative in original record on [staging|production]
+
+        ENV['DEPLOYED_TIER'] 'staging' or `production` required, auth required
+        for staging.
+
+          DEPLOYED_TIER=staging BASIC_AUTH=shared_name:shared_password ./bin/rake scihist:dev:ocr_oh_pdf:process[$friendlier_id]
+      """
+      task :process, [:friendlier_id] => :environment do |t, args|
+        friendlier_id = args[:friendlier_id]
+        fail("Usage: rake 'scihist:dev:ocr_oh_pdf:process[friendlier_id]'") if friendlier_id.blank?
+
+        target_env = ENV["DEPLOYED_TIER"]
+        unless %w[staging production].include?(target_env)
+          fail("ENV['DEPLOYED_TIER'] must be 'staging' or 'production', got: #{target_env.inspect}")
+        end
+        unless system("which", "heroku", out: File::NULL, err: File::NULL)
+          fail("heroku CLI not found -- needed to run attach remotely. Try `brew install heroku`")
+        end
+
+        download_task     = Rake::Task["scihist:dev:ocr_oh_pdf:download"]
+        perform_ocr_task  = Rake::Task["scihist:dev:ocr_oh_pdf:perform_ocr"]
+        upload_task       = Rake::Task["scihist:dev:ocr_oh_pdf:upload"]
+
+        puts "Downloading #{friendlier_id}"
+        download_task.reenable
+        download_task.invoke(friendlier_id)
+        original_path = File.join("tmp", "oh_ocr_text_only", "#{friendlier_id}.pdf")
+
+        puts "OCR'ing #{friendlier_id}"
+        perform_ocr_task.reenable
+        perform_ocr_task.invoke(original_path)
+        ocr_path = original_path.sub(/\.pdf\z/i, "") + "-OCR-TEXT-ONLY.pdf"
+
+        puts "Uploading to S3 #{friendlier_id}"
+        upload_task.reenable
+        upload_task.invoke(ocr_path)
+
+        s3_key = "oh_ocr_text_only/#{File.basename(ocr_path)}"
+        app_name = "scihist-digicoll-#{target_env}"
+
+        puts "attaching from S3 #{friendlier_id}"
+        unless system("heroku", "run", "rake", "scihist:dev:ocr_oh_pdf:attach[#{s3_key},#{friendlier_id}]", "--app", app_name)
+          fail("heroku run rake scihist:dev:ocr_oh_pdf:attach failed for #{friendlier_id} (app: #{app_name})")
+        end
+
+        puts "\n\nDone -- attached to asset #{friendlier_id} on #{app_name}"
+      end
+
+      desc """
+        Download one or more OH PDF Asset originals straight from the public app,
+
+        DEPLOYED_TIER 'staging' or 'production' required, where to download from.
+
+        Will be written to to ./tmp/oh_ocr_text_only/<friendlier_id>.pdf
+
+          BASIC_AUTH=shared_name:shared_password DEPLOYED_TIER=staging ./bin/rake 'scihist:dev:ocr_oh_pdf:download[abc123 def456]'
+      """
+      task :download, [:friendlier_ids] do |t, args|
+        target_env = ENV["DEPLOYED_TIER"]
+        unless %w[staging production].include?(target_env)
+          fail("ENV['DEPLOYED_TIER'] must be 'staging' or 'production', got: #{target_env.inspect}")
+        end
+
+        friendlier_ids = args[:friendlier_ids].to_s.split(/\s+/)
+        if friendlier_ids.empty?
+          fail("Usage: DEPLOYED_TIER=staging|production rake 'scihist:dev:ocr_oh_pdf:download[friendlier_id1 friendlier_id2 ...]'")
+        end
+
+        if target_env == "staging" && ENV["BASIC_AUTH"].blank?
+          fail("ENV['BASIC_AUTH'] (formatted as name:password) is required when DEPLOYED_TIER=staging")
+        end
+
+        host = target_env == "production" ? "digital.sciencehistory.org" : "staging-digital.sciencehistory.org"
+
+        output_dir = File.join("tmp", "oh_ocr_text_only")
+        FileUtils.mkdir_p(output_dir)
+
+        friendlier_ids.each do |friendlier_id|
+          url = "https://#{host}/downloads/orig/pdf/#{friendlier_id}"
+
+          begin
+            tempfile = Down::Http.download(url) do |client|
+              if ENV["BASIC_AUTH"].present?
+                user, pass = ENV["BASIC_AUTH"].split(":", 2)
+                client.basic_auth(user: user, pass: pass)
+              else
+                client
+              end
+            end
+          rescue Down::Error => e
+            fail("Download failed for #{friendlier_id} (#{url}): #{e.message}")
+          end
+
+          output_path = File.join(output_dir, "#{friendlier_id}.pdf")
+          FileUtils.mv(tempfile.path, output_path)
+
+          puts "Wrote #{output_path}"
+        end
+      end
+
+      desc """
         OCR an oral history PDF with ocrmypdf/tesseract, then strip images via
         ghostscript to leave a text-only PDF with the invisible OCR text layer.
         Output is written alongside the input, named <input>-OCR-TEXT-ONLY.pdf.
@@ -12,18 +117,18 @@ namespace :scihist do
         Meant to be run in dev, we don't have 'ocrmypdf' CLI dependendency
         available in deployed environments.
 
-          ./bin/rake scihist:dev:ocr_oh_pdf:create[./path/to/input.pdf]
+          ./bin/rake scihist:dev:ocr_oh_pdf:perform_ocr[./path/to/input.pdf]
 
         Or pass second arg true to skip the ghostscript image-stripping step and
         keep the OCR'd images instead; output is named <input>-WITH-OCR.pdf.
 
-          ./bin/rake scihist:dev:ocr_oh_pdf:create[./path/to/input.pdf,true]
+          ./bin/rake scihist:dev:ocr_oh_pdf:perform_ocr[./path/to/input.pdf,true]
       """
-      task :create, [:pdf_path, :leave_images] do |t, args|
+      task :perform_ocr, [:pdf_path, :leave_images] do |t, args|
         pdf_path = args[:pdf_path]
         leave_images = args[:leave_images] == "true"
 
-        fail("Usage: rake scihist:dev:ocr_oh_pdf:create[/path/to/input.pdf]") if pdf_path.blank?
+        fail("Usage: rake scihist:dev:ocr_oh_pdf:perform_ocr[/path/to/input.pdf]") if pdf_path.blank?
         fail("No such file: #{pdf_path}") unless File.exist?(pdf_path)
         unless system("which", "ocrmypdf", out: File::NULL, err: File::NULL)
           fail("ocrmypdf not found. This task is intended only for development machines. Try `brew install ocrmypdf`")
@@ -65,7 +170,7 @@ namespace :scihist do
       end
 
       desc """
-        Upload a locally-created OCR text-only PDF (see scihist:dev:ocr_oh_pdf:create)
+        Upload a locally-created OCR text-only PDF (see scihist:dev:ocr_oh_pdf:perform_ocr)
         to the S3 'uploads' (shrine `cache`) bucket for staging or production, under oh_ocr_text_only/,
         so it can later be picked up by scihist:dev:ocr_oh_pdf:attach running on that tier.
 
@@ -143,111 +248,6 @@ namespace :scihist do
         ScihistDigicoll::Env.shrine_cache_storage.delete(s3_key) if delete_from_storage
 
         puts "\n\nAttached `#{s3_key}` to asset `#{friendlier_id}` as derivative `#{AssetUploader::OCR_TEXT_ONLY_PDF}`"
-      end
-
-      desc """
-        Download one or more OH PDF Asset originals straight from the public app,
-
-        DEPLOYED_TIER 'staging' or 'production' required, where to download from.
-
-        Will be written to to ./tmp/oh_ocr_text_only/<friendlier_id>.pdf
-
-          BASIC_AUTH=shared_name:shared_password DEPLOYED_TIER=staging ./bin/rake 'scihist:dev:ocr_oh_pdf:download[abc123 def456]'
-      """
-      task :download, [:friendlier_ids] do |t, args|
-        target_env = ENV["DEPLOYED_TIER"]
-        unless %w[staging production].include?(target_env)
-          fail("ENV['DEPLOYED_TIER'] must be 'staging' or 'production', got: #{target_env.inspect}")
-        end
-
-        friendlier_ids = args[:friendlier_ids].to_s.split(/\s+/)
-        if friendlier_ids.empty?
-          fail("Usage: DEPLOYED_TIER=staging|production rake 'scihist:dev:ocr_oh_pdf:download[friendlier_id1 friendlier_id2 ...]'")
-        end
-
-        if target_env == "staging" && ENV["BASIC_AUTH"].blank?
-          fail("ENV['BASIC_AUTH'] (formatted as name:password) is required when DEPLOYED_TIER=staging")
-        end
-
-        host = target_env == "production" ? "digital.sciencehistory.org" : "staging-digital.sciencehistory.org"
-
-        output_dir = File.join("tmp", "oh_ocr_text_only")
-        FileUtils.mkdir_p(output_dir)
-
-        friendlier_ids.each do |friendlier_id|
-          url = "https://#{host}/downloads/orig/pdf/#{friendlier_id}"
-
-          begin
-            tempfile = Down::Http.download(url) do |client|
-              if ENV["BASIC_AUTH"].present?
-                user, pass = ENV["BASIC_AUTH"].split(":", 2)
-                client.basic_auth(user: user, pass: pass)
-              else
-                client
-              end
-            end
-          rescue Down::Error => e
-            fail("Download failed for #{friendlier_id} (#{url}): #{e.message}")
-          end
-
-          output_path = File.join(output_dir, "#{friendlier_id}.pdf")
-          FileUtils.mv(tempfile.path, output_path)
-
-          puts "Wrote #{output_path}"
-        end
-      end
-
-      desc """
-        Run the full workflow for OCR'ing a non-text Oral History PDF, and attaching
-        it as  ocr_text_only_pdf derivative.
-
-        Download from [staging|production]; run OCR; upload output to S3; attach
-        from S3 as derivative in original record on [staging|production]
-
-        ENV['DEPLOYED_TIER'] 'staging' or `production` required, auth required
-        for staging.
-
-          DEPLOYED_TIER=staging BASIC_AUTH=shared_name:shared_password ./bin/rake scihist:dev:ocr_oh_pdf:process[$friendlier_id]
-      """
-      task :process, [:friendlier_id] => :environment do |t, args|
-        friendlier_id = args[:friendlier_id]
-        fail("Usage: rake 'scihist:dev:ocr_oh_pdf:process[friendlier_id]'") if friendlier_id.blank?
-
-        target_env = ENV["DEPLOYED_TIER"]
-        unless %w[staging production].include?(target_env)
-          fail("ENV['DEPLOYED_TIER'] must be 'staging' or 'production', got: #{target_env.inspect}")
-        end
-        unless system("which", "heroku", out: File::NULL, err: File::NULL)
-          fail("heroku CLI not found -- needed to run attach remotely. Try `brew install heroku`")
-        end
-
-        download_task = Rake::Task["scihist:dev:ocr_oh_pdf:download"]
-        create_task   = Rake::Task["scihist:dev:ocr_oh_pdf:create"]
-        upload_task   = Rake::Task["scihist:dev:ocr_oh_pdf:upload"]
-
-        puts "Downloading #{friendlier_id}"
-        download_task.reenable
-        download_task.invoke(friendlier_id)
-        original_path = File.join("tmp", "oh_ocr_text_only", "#{friendlier_id}.pdf")
-
-        puts "OCR'ing #{friendlier_id}"
-        create_task.reenable
-        create_task.invoke(original_path)
-        ocr_path = original_path.sub(/\.pdf\z/i, "") + "-OCR-TEXT-ONLY.pdf"
-
-        puts "Uploading to S3 #{friendlier_id}"
-        upload_task.reenable
-        upload_task.invoke(ocr_path)
-
-        s3_key = "oh_ocr_text_only/#{File.basename(ocr_path)}"
-        app_name = "scihist-digicoll-#{target_env}"
-
-        puts "attaching from S3 #{friendlier_id}"
-        unless system("heroku", "run", "rake", "scihist:dev:ocr_oh_pdf:attach[#{s3_key},#{friendlier_id}]", "--app", app_name)
-          fail("heroku run rake scihist:dev:ohcr_oh_pdf:attach failed for #{friendlier_id} (app: #{app_name})")
-        end
-
-        puts "\n\nDone -- attached to asset #{friendlier_id} on #{app_name}"
       end
     end
   end
