@@ -3,6 +3,9 @@ class AssetUploader < Kithe::AssetUploader
   WHITE_EDGE_DETECT_KEY = "white_edge_detect"
   LOFI_OPUS_AUDIO_DERIV_KEY = :audio_16k_opus
 
+  # used for scanned Oral History PDFs we need to OCR, a invisible-text-only PDF with OCR output
+  OCR_TEXT_ONLY_PDF = :ocr_text_only_pdf
+
   # gives us md5, sha1, sha512
   plugin :kithe_checksum_signatures
 
