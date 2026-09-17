@@ -53,7 +53,7 @@ namespace :scihist do
             # Pipe ocrmypdf's output through gs to make an invisible text-only PDF, without
             # images, that we'll use to store our OCR info, which can also be input to our
             # PDF text extraction stuff.
-            ["gs", "-sDEVICE=pdfwrite", "-dFILTERIMAGE=true", "-o", output_path, "-"]
+            ["gs", "-q", "-sDEVICE=pdfwrite", "-dFILTERIMAGE=true", "-o", output_path, "-"]
           )
 
           unless statuses.all?(&:success?)
