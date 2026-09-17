@@ -1,4 +1,5 @@
 require "open3"
+require "down/http"
 
 namespace :scihist do
   namespace :dev do
@@ -142,6 +143,58 @@ namespace :scihist do
         ScihistDigicoll::Env.shrine_cache_storage.delete(s3_key) if delete_from_storage
 
         puts "\n\nAttached `#{s3_key}` to asset `#{friendlier_id}` as derivative `#{AssetUploader::OCR_TEXT_ONLY_PDF}`"
+      end
+
+      desc """
+        Download one or more OH PDF Asset originals straight from the public app,
+
+        DEPLOYED_TIER 'staging' or 'production' required, where to download from.
+
+        Will be written to to ./tmp/oh_ocr_text_only/<friendlier_id>.pdf
+
+          BASIC_AUTH=shared_name:shared_password DEPLOYED_TIER=staging bundle exec rake 'scihist:dev:ocr_oh_pdf:download[abc123 def456]'
+      """
+      task :download, [:friendlier_ids] do |t, args|
+        target_env = ENV["DEPLOYED_TIER"]
+        unless %w[staging production].include?(target_env)
+          fail("ENV['DEPLOYED_TIER'] must be 'staging' or 'production', got: #{target_env.inspect}")
+        end
+
+        friendlier_ids = args[:friendlier_ids].to_s.split(/\s+/)
+        if friendlier_ids.empty?
+          fail("Usage: DEPLOYED_TIER=staging|production rake 'scihist:dev:ocr_oh_pdf:download[friendlier_id1 friendlier_id2 ...]'")
+        end
+
+        if target_env == "staging" && ENV["BASIC_AUTH"].blank?
+          fail("ENV['BASIC_AUTH'] (formatted as name:password) is required when DEPLOYED_TIER=staging")
+        end
+
+        host = target_env == "production" ? "digital.sciencehistory.org" : "staging-digital.sciencehistory.org"
+
+        output_dir = File.join("tmp", "oh_ocr_text_only")
+        FileUtils.mkdir_p(output_dir)
+
+        friendlier_ids.each do |friendlier_id|
+          url = "https://#{host}/downloads/orig/pdf/#{friendlier_id}"
+
+          begin
+            tempfile = Down::Http.download(url) do |client|
+              if ENV["BASIC_AUTH"].present?
+                user, pass = ENV["BASIC_AUTH"].split(":", 2)
+                client.basic_auth(user: user, pass: pass)
+              else
+                client
+              end
+            end
+          rescue Down::Error => e
+            fail("Download failed for #{friendlier_id} (#{url}): #{e.message}")
+          end
+
+          output_path = File.join(output_dir, "#{friendlier_id}.pdf")
+          FileUtils.mv(tempfile.path, output_path)
+
+          puts "Wrote #{output_path}"
+        end
       end
     end
   end
