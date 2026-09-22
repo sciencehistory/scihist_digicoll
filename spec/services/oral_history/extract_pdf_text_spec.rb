@@ -11,6 +11,30 @@ describe OralHistory::ExtractPdfText do
       expect(as_json).to be_present
     end
 
+    describe "source_text_is_ocr" do
+      # two pages from an ocrmypdf'd PDF -- p1 has a paragraph PyMuPDF's own block
+      # detection spuriously splits in two; p2 has a trailing page-number-only block.
+      let(:ocr_sample_pages_pdf_path) { Rails.root + "spec/test_support/pdf/oh/benfey_o_0094_ocr_sample_pages.pdf" }
+
+      # something we were having trouble doing with OCR'd text before some changes
+      it "properly forms paragraphs and still finds page number" do
+        as_json = described_class.new(pdf_file_path: ocr_sample_pages_pdf_path, source_text_is_ocr: true).extract_pdf_text
+
+        page1_paragraphs = as_json["pages"][0]["blocks"][0]["paragraphs"]
+        expect(page1_paragraphs.count).to eq(7)
+        expect(page1_paragraphs[4]["text"]).to start_with(
+          "Friends of ours, the Mendl family, had emigrated to England maybe two years earlier, to establish a London branch of a German firm"
+        )
+        page1_last_block_paragraphs = as_json["pages"][0]["blocks"].last["paragraphs"]
+        expect(page1_last_block_paragraphs.count).to eq(1)
+        expect(page1_last_block_paragraphs.first["text"]).to eq("4")
+
+        page2_last_block_paragraphs = as_json["pages"][1]["blocks"].last["paragraphs"]
+        expect(page2_last_block_paragraphs.count).to eq(1)
+        expect(page2_last_block_paragraphs.first["text"]).to eq("10")
+      end
+    end
+
     describe "schema-invalid JSON from python tool" do
       let(:extracter) do
         described_class.new(pdf_file_path: old_oh_sample_pages_pdf_path).tap do |obj|
