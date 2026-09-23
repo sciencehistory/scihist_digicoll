@@ -27,6 +27,9 @@ class OralHistoryContent
     attr_json :pdf_md5, :string
     attr_json :combined_audio_fingerprint, :string
 
+    # Snapshot of the `source` metadata hash from an Asset's `extracted_pdf_text_json` derivative,
+    # that we use to create paragraphs, so we can ensure it's still fresh.
+    attr_json :extracted_pdf_text_json_source, ActiveModel::Type::Value.new
 
     # Git SHA just for additional provenance
     attr_json :source_version, :string
@@ -75,7 +78,8 @@ class OralHistoryContent
         source_version: ENV['SOURCE_VERSION'],
         pdf_md5: pdf_md5,
         file_start_times: file_start_times,
-        combined_audio_fingerprint: combined_audio_fingerprint
+        combined_audio_fingerprint: combined_audio_fingerprint,
+        extracted_pdf_text_json_source: extracted_pdf_text_json.metadata["source"]
       )
       container.warnings = warnings if warnings
 
@@ -86,26 +90,35 @@ class OralHistoryContent
       return container
     end
 
-    # our sources are the PDF itself and the audio file start times, so
-    # use those as fingerprint.
+    # our sources are the PDF itself, the audio file start times, and the `source`
+    # metadata of the extracted_pdf_text_json derivative the paragraphs came from --
+    # so use those as fingerprint.
+    #
+    # `extracted_pdf_text_json_source` is `compact`ed so a key that's simply absent (eg
+    # `ocr_text_only_pdf_id` on a born-digital extraction) compares equal to one present
+    # with an explicit nil -- keys like `created_from_ocr_text_only_pdf` are only ever set when
+    # true, never explicitly set to `false`.
     def source_fingerprint
       @source_fingerprint ||= {
         "pdf_md5" => self.pdf_md5,
-        "combined_audio_fingerprint" => self.combined_audio_fingerprint
-      }
+        "combined_audio_fingerprint" => self.combined_audio_fingerprint,
+        "extracted_pdf_text_json_source" => self.extracted_pdf_text_json_source&.compact
+      }.compact
     end
 
     # Will fetch the work#members if not already fetched. Fingerprinting includes
     # audio files as well as PDF becuase the audio file lengths are used to calculate
-    # offsets for some internal timestamps.
+    # offsets for some internal timestamps, as well as source fingerprints of PDF
+    # and extracted paragraph metadata.
     def fresh?(oral_history_content:)
       combined_audio = CombinedAudioDerivativeCreator.new(oral_history_content.work)
       pdf_asset = oral_history_content.work.members.find { |a| a.respond_to?(:role) && a.role == "transcript" }
 
       self.source_fingerprint == {
         "pdf_md5" => pdf_asset.file_metadata&.dig("md5"),
-        "combined_audio_fingerprint" => combined_audio.fingerprint
-      }
+        "combined_audio_fingerprint" => combined_audio.fingerprint,
+        "extracted_pdf_text_json_source" => pdf_asset.file_derivatives[:extracted_pdf_text_json]&.metadata&.dig("source")&.compact
+      }.compact
     end
   end
 end

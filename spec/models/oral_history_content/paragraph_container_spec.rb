@@ -99,6 +99,58 @@ describe OralHistoryContent::ParagraphContainer do
       expect(oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)).to be false
     end
 
+    describe "freshness dueto extracted_pdf_text_json source changes" do
+      # eg from scihist:dev:ocr_oh_pdf:extract_pdf_text_json -- the transcript Asset's own
+      # file/md5 never changes in this scenario, only the extracted_pdf_text_json derivative's
+      # own `source` metadata does, so this is the only thing that can tell us it's stale.
+      let!(:container) do
+        OralHistoryContent::ParagraphContainer.create(
+          oral_history_content: oral_history_content,
+        )
+      end
+
+      before do
+        oral_history_content.reload
+      end
+
+
+      it "is not fresh if created_from_ocr_text_only_pdf and ocr_text_only_pdf_id change" do
+        pdf_asset.file_derivatives[:extracted_pdf_text_json].metadata["source"].merge!(
+          "created_from_ocr_text_only_pdf" => true,
+          "ocr_text_only_pdf_id" => "some_derivative_storage_id"
+        )
+        pdf_asset.file_attacher.write
+        pdf_asset.save!
+        oral_history_content.reload
+
+        expect(oral_history_content.extracted_paragraph_container.fresh?(
+          oral_history_content: oral_history_content
+        )).to be false
+      end
+
+      it "is not fresh if just ocr_text_only_pdf_id changes" do
+        pdf_asset.file_derivatives[:extracted_pdf_text_json].metadata["source"]["ocr_text_only_pdf_id"] = "a_different_id"
+        pdf_asset.file_attacher.write
+        pdf_asset.save!
+        oral_history_content.reload
+
+        expect(oral_history_content.extracted_paragraph_container.fresh?(
+          oral_history_content: oral_history_content
+        )).to be false
+      end
+
+      it "is not fresh if extracted_pdf_text_json has been removed" do
+        pdf_asset.file_attacher.derivatives.delete(:extracted_pdf_text_json)
+        pdf_asset.file_attacher.write
+        pdf_asset.save!
+        oral_history_content.reload
+
+        expect(oral_history_content.extracted_paragraph_container.fresh?(
+          oral_history_content: oral_history_content
+        )).to be false
+      end
+    end
+
     describe "with warnings" do
       # missing mp3 assets, so there will be a sync warning
       let(:work) do
