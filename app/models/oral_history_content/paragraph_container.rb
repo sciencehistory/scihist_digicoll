@@ -120,6 +120,19 @@ class OralHistoryContent
         "extracted_pdf_text_json_source" => pdf_asset.file_derivatives[:extracted_pdf_text_json]&.metadata&.dig("source")&.compact
       }.compact
     end
+
+    # Is there an extracted_pdf_text_json derivative on the transcript PDF asset that
+    # doesn't have a properly matching extracted_paragraph_container?
+    #
+    # @return [Boolean]
+    def self.stale?(oral_history_content:)
+      pdf_asset = oral_history_content.work.members.find { |a| a.respond_to?(:role) && a.role == "transcript" }
+
+      pdf_asset && pdf_asset.file_derivatives[:extracted_pdf_text_json].present? && (
+        oral_history_content.extracted_paragraph_container.nil? ||
+        !oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)
+      )
+    end
   end
 end
 

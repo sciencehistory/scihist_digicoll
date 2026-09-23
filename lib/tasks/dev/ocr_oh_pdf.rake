@@ -226,7 +226,7 @@ namespace :scihist do
 
           heroku run rake 'scihist:dev:ocr_oh_pdf:attach[oh_ocr_text_only/foo.pdf,<friendlier_id>,true]' --app scihist-digicoll-staging
 
-        See also scihist:dev:ocr_oh_pdf:extract_pdf_text_json, to (re-)extract the
+        See also scihist:dev:ocr_oh_pdf:extract_pdf_text_paragraphs, to (re-)extract the
         extracted_pdf_text_json derivative from the ocr_text_only_pdf attached here.
       """
       task :attach, [:s3_key, :friendlier_id, :delete_from_storage] => :environment do |t, args|
@@ -263,17 +263,19 @@ namespace :scihist do
         Extract text from an Asset's already-attached `:ocr_text_only_pdf` derivative
         and attach the result as the Asset's `:extracted_pdf_text_json` derivative.
 
+        Also create the OralHistoryContent#paragraph_container if needed.
+
         The 'source' metadata on the extracted_pdf_text_json derivative will record that it
         came from the ocr_text_only_pdf, and that derivative's id.
 
         Meant to be run live on a Heroku-deployed staging or production, on an Asset that
         already has an ocr_text_only_pdf derivative attached.
 
-          heroku run rake 'scihist:dev:ocr_oh_pdf:extract_pdf_text_json[<friendlier_id>]' --app scihist-digicoll-staging
+          heroku run rake 'scihist:dev:ocr_oh_pdf:extract_pdf_text_paragraphs[<friendlier_id>]' --app scihist-digicoll-staging
       """
-      task :extract_pdf_text_json, [:friendlier_id] => :environment do |t, args|
+      task :extract_pdf_text_paragraphs, [:friendlier_id] => :environment do |t, args|
         friendlier_id = args[:friendlier_id]
-        fail("Usage: rake 'scihist:dev:ocr_oh_pdf:extract_pdf_text_json[friendlier_id]'") if friendlier_id.blank?
+        fail("Usage: rake 'scihist:dev:ocr_oh_pdf:extract_pdf_text_paragraphs[friendlier_id]'") if friendlier_id.blank?
 
         asset = Asset.find_by_friendlier_id!(friendlier_id)
 
@@ -303,12 +305,18 @@ namespace :scihist do
         end
 
         puts "Attached `extracted_pdf_text_json` (extracted from ocr_text_only_pdf) to asset `#{friendlier_id}`"
+
+        oral_history_content = asset.parent&.oral_history_content
+        if oral_history_content && OralHistoryContent::ParagraphContainer.stale?(oral_history_content: oral_history_content)
+          OralHistoryContent::ParagraphContainer.create(oral_history_content: oral_history_content, allow_failure_to_sync: true)
+          puts "Refreshed `extracted_paragraph_container` for `#{friendlier_id}` -- note oral_history_chunks are now stale and need to be recreated (see OhTranscriptChunkerJob / scihist:validate_oral_history_chunks)"
+        end
       end
 
       desc """
         Attach multiple previously-uploaded OCR text-only PDFs in a single invocation, to avoid
         repeated slow heroku remote execs. For each pair, calls scihist:dev:ocr_oh_pdf:attach to
-        attach the ocr_text_only_pdf derivative, then scihist:dev:ocr_oh_pdf:extract_pdf_text_json
+        attach the ocr_text_only_pdf derivative, then scihist:dev:ocr_oh_pdf:extract_pdf_text_paragraphs
         to (re-)extract extracted_pdf_text_json from it.
 
         Args are space-separated `friendlier_id:s3_key` pairs.
@@ -326,7 +334,7 @@ namespace :scihist do
         fail("Usage: rake 'scihist:dev:ocr_oh_pdf:attach_and_process_many[friendlier_id1:s3_key1 friendlier_id2:s3_key2 ...]'") if pairs.empty?
 
         attach_task  = Rake::Task["scihist:dev:ocr_oh_pdf:attach"]
-        extract_task = Rake::Task["scihist:dev:ocr_oh_pdf:extract_pdf_text_json"]
+        extract_task = Rake::Task["scihist:dev:ocr_oh_pdf:extract_pdf_text_paragraphs"]
 
         pairs.each do |pair|
           friendlier_id, s3_key = pair.split(":", 2)
