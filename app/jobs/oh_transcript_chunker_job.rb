@@ -1,8 +1,5 @@
 # Makes OH chunks with embeddings! This is slow and does cost money, using OpenAI API!
 #
-# Forr now only works with OHMS legacy transcripts, will have to be enhanced.
-#
-# Refuses to run if there are already chunks, cause that would create a real mess!
 class OhTranscriptChunkerJob < ApplicationJob
   # In a local constnat only so we can stub to something different in tests
   CHUNKER_CLASS = OralHistory::TranscriptChunker
