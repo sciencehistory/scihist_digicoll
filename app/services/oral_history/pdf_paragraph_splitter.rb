@@ -37,8 +37,9 @@ module OralHistory
     # <T: N min>  usually found in mid-paragraph.
     OLD_STYLE_TIMECODE_RE = /<T: (\d+) min>/
 
-    # A paragraph consisting solely of a page number
-    PAGE_NUMBER_RE = /\A(?:[Pp]age )?(\d+)\Z/
+    # A paragraph consisting solely of a page number -- tolerating stray non-word
+    # punctuation (eg OCR noise like "|" or ".") around it.
+    PAGE_NUMBER_RE = /\A\W*(?:[Pp]age )?(\d+)\W*\Z/
 
     # often it's own paragraph, but can also be mid-paragraph, maybe from zoom!
     END_OF_AUDIO_FILE_RE = /\[END OF (AUDIO, FILE)|(TAPE, SIDE) .*\]/

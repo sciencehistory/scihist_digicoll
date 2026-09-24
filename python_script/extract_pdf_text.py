@@ -51,8 +51,12 @@ BORN_DIGITAL_RATIO_THRESHOLD = 0.7
 OCR_RATIO_THRESHOLD = 0.5
 MIN_GAP = 2.0  # pdf pixels
 
+# OCR-detected line bboxes are sometimes anomalously tall leading to wrong calcs,
+# cap it.
+OCR_MAX_GAP = 6.0  # pdf pixels
+
 # keep in sync with Ruby's PdfParagraphSplitter::PAGE_NUMBER_RE
-PAGE_NUMBER_RE = re.compile(r"\A(?:[Pp]age )?(\d+)\Z")
+PAGE_NUMBER_RE = re.compile(r"\A\W*(?:[Pp]age )?(\d+)\W*\Z")
 
 
 def normalize_text_whitespace(text):
@@ -74,12 +78,17 @@ def bbox_dict(b):
 
 
 # get lines with normalized whitespace and bbox; we don't need span/word granularity
-def extract_lines(block):
+def extract_lines(block, source_text_is_ocr=False):
     lines = []
 
     for line in block.get("lines", []):
         _each_spantext = (_span.get("text", "") for _span in line.get("spans", []))
         raw = "".join(_each_spantext)
+
+        # OCR consistently hallucinates stray "|" from scan-edge/margin artifacts;
+        # a real OCR'd transcript rarely shouldn't contain one that matters to us, better to remove.
+        if source_text_is_ocr:
+            raw = raw.replace("|", "")
 
         text = normalize_text_whitespace(raw)
 
@@ -98,7 +107,7 @@ def extract_lines(block):
     return lines
 
 # is the current line bbox far enough from previous to indicate start of new paragraph?
-def is_paragraph_break(prev_bbox, curr_bbox, ratio_threshold):
+def is_paragraph_break(prev_bbox, curr_bbox, ratio_threshold, source_text_is_ocr=False):
     prev_y1 = prev_bbox["y1"]
     curr_y0 = curr_bbox["y0"]
 
@@ -106,6 +115,8 @@ def is_paragraph_break(prev_bbox, curr_bbox, ratio_threshold):
     line_height = prev_bbox["y1"] - prev_bbox["y0"]
 
     threshold = max(MIN_GAP, line_height * ratio_threshold)
+    if source_text_is_ocr:
+        threshold = min(threshold, OCR_MAX_GAP)
     return gap > threshold
 
 
@@ -122,7 +133,7 @@ def merge_bbox(bboxes):
 
 # take list of lines, and group into paragraphs, with line text joined,
 # and total merged bbox of the lines.
-def build_paragraphs(lines, ratio_threshold):
+def build_paragraphs(lines, ratio_threshold, source_text_is_ocr=False):
     paragraphs = []
     current_lines = []
 
@@ -131,7 +142,7 @@ def build_paragraphs(lines, ratio_threshold):
             current_lines.append(line)
             continue
 
-        if is_paragraph_break(current_lines[-1]["bbox"], line["bbox"], ratio_threshold):
+        if is_paragraph_break(current_lines[-1]["bbox"], line["bbox"], ratio_threshold, source_text_is_ocr=source_text_is_ocr):
             paragraphs.append(current_lines)
             current_lines = [line]
         else:
@@ -174,7 +185,7 @@ def process_page(page, source_text_is_ocr=False):
         if pending_lines:
             result_blocks.append({
                 "bbox": merge_bbox(pending_bboxes),
-                "paragraphs": build_paragraphs(pending_lines, ratio_threshold),
+                "paragraphs": build_paragraphs(pending_lines, ratio_threshold, source_text_is_ocr=source_text_is_ocr),
             })
             pending_lines.clear()
             pending_bboxes.clear()
@@ -183,17 +194,17 @@ def process_page(page, source_text_is_ocr=False):
         if block.get("type") != 0:
             continue
 
-        lines = extract_lines(block)
+        lines = extract_lines(block, source_text_is_ocr=source_text_is_ocr)
         if not lines:
             continue
 
-        is_page_number = len(lines) == 1 and PAGE_NUMBER_RE.match(lines[0]["text"])
+        is_page_number = PAGE_NUMBER_RE.match(" ".join(l["text"] for l in lines))
 
         if not merge_blocks or is_page_number:
             flush_pending()
             result_blocks.append({
                 "bbox": bbox_dict(block["bbox"]),
-                "paragraphs": build_paragraphs(lines, ratio_threshold),
+                "paragraphs": build_paragraphs(lines, ratio_threshold, source_text_is_ocr=source_text_is_ocr),
             })
         else:
             pending_lines.extend(lines)
