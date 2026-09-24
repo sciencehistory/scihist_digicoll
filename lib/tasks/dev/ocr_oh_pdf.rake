@@ -50,7 +50,8 @@ namespace :scihist do
         app_name = "scihist-digicoll-#{target_env}"
 
         puts "attaching from S3 #{friendlier_id}"
-        unless system("heroku", "run", "rake", "scihist:dev:ocr_oh_pdf:attach[#{s3_key},#{friendlier_id}]", "--app", app_name)
+        ## --exit-code needed to make sure it passes on exit code of remote process locally, so we can fail.
+        unless system("heroku", "run", "--exit-code", "rake", "scihist:dev:ocr_oh_pdf:attach[#{s3_key},#{friendlier_id}]", "--app", app_name)
           fail("heroku run rake scihist:dev:ocr_oh_pdf:attach failed for #{friendlier_id} (app: #{app_name})")
         end
 
