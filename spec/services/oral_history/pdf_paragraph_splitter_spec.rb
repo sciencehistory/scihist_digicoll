@@ -48,6 +48,19 @@ describe OralHistory::PdfParagraphSplitter do
     end
   end
 
+  describe "OCR'd with noisy page number" do
+    let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/hyde_jf_0026_ocr_sample_page.pdf" }
+    let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path, source_text_is_ocr: true).extract_pdf_text }
+
+    it "finds page 1 and strips the noisy page-number paragraph" do
+      paragraphs = splitter.paragraphs
+
+      expect(paragraphs).to be_present
+      expect(paragraphs.first.pdf_logical_page_number).to eq 1
+      expect(paragraphs).to all(satisfy { |p| p.text != "1 ." })
+    end
+  end
+
   describe "old transcript with upper page numbers, and asterisk footnotes" do
     let_it_be(:oh_pdf_path) { Rails.root + "spec/test_support/pdf/oh/prelog_1984_sample_pages_2514nm37q.pdf"}
     let_it_be(:extracted_pdf_text) { OralHistory::ExtractPdfText.new(pdf_file_path: oh_pdf_path).extract_pdf_text }
