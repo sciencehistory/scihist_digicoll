@@ -78,12 +78,17 @@ def bbox_dict(b):
 
 
 # get lines with normalized whitespace and bbox; we don't need span/word granularity
-def extract_lines(block):
+def extract_lines(block, source_text_is_ocr=False):
     lines = []
 
     for line in block.get("lines", []):
         _each_spantext = (_span.get("text", "") for _span in line.get("spans", []))
         raw = "".join(_each_spantext)
+
+        # OCR consistently hallucinates stray "|" from scan-edge/margin artifacts;
+        # a real OCR'd transcript rarely shouldn't contain one that matters to us, better to remove.
+        if source_text_is_ocr:
+            raw = raw.replace("|", "")
 
         text = normalize_text_whitespace(raw)
 
@@ -189,7 +194,7 @@ def process_page(page, source_text_is_ocr=False):
         if block.get("type") != 0:
             continue
 
-        lines = extract_lines(block)
+        lines = extract_lines(block, source_text_is_ocr=source_text_is_ocr)
         if not lines:
             continue
 
