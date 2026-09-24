@@ -56,7 +56,7 @@ MIN_GAP = 2.0  # pdf pixels
 OCR_MAX_GAP = 6.0  # pdf pixels
 
 # keep in sync with Ruby's PdfParagraphSplitter::PAGE_NUMBER_RE
-PAGE_NUMBER_RE = re.compile(r"\A(?:[Pp]age )?(\d+)\Z")
+PAGE_NUMBER_RE = re.compile(r"\A\W*(?:[Pp]age )?(\d+)\W*\Z")
 
 
 def normalize_text_whitespace(text):
@@ -198,7 +198,7 @@ def process_page(page, source_text_is_ocr=False):
         if not lines:
             continue
 
-        is_page_number = len(lines) == 1 and PAGE_NUMBER_RE.match(lines[0]["text"])
+        is_page_number = PAGE_NUMBER_RE.match(" ".join(l["text"] for l in lines))
 
         if not merge_blocks or is_page_number:
             flush_pending()
