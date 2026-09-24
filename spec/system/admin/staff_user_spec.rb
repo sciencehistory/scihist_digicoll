@@ -18,6 +18,7 @@ RSpec.describe "Staff user cannot use UI elements that are off limits",
     expect(disabled_links_text).to eq  [
       "Create new work",
       "Batch create works",
+      "Batch replace metadata",
       "Edit Metadata",
       "Members",
       "Demote to Asset",

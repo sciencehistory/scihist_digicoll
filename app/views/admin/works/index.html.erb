@@ -2,6 +2,7 @@
   <p>
     <%= link_to 'Create new work', new_admin_work_path, class: "btn btn-primary #{"disabled" unless can?(:create, Kithe::Model) }" %>
     <%= link_to 'Batch create works', admin_batch_create_path, class: "btn btn-outline-secondary #{"disabled" unless can?(:create, Kithe::Model) }" %>
+    <%= link_to 'Batch replace metadata', admin_batch_replace_metadata_path, class: "btn btn-outline-secondary #{"disabled" unless can?(:update, Kithe::Model) }" %>
   </p>
 
 <%= simple_form_for(admin_works_path, method: "get") do %>
