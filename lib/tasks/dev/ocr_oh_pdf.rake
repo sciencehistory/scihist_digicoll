@@ -14,11 +14,11 @@ namespace :scihist do
         ENV['DEPLOYED_TIER'] 'staging' or `production` required, auth required
         for staging.
 
-          DEPLOYED_TIER=staging BASIC_AUTH=shared_name:shared_password ./bin/rake scihist:dev:ocr_oh_pdf:process[$friendlier_id]
+          DEPLOYED_TIER=staging BASIC_AUTH=shared_name:shared_password ./bin/rake 'scihist:dev:ocr_oh_pdf:process[<friendlier_id1> <friendlier_id2>]'
       """
-      task :process, [:friendlier_id] => :environment do |t, args|
-        friendlier_id = args[:friendlier_id]
-        fail("Usage: rake 'scihist:dev:ocr_oh_pdf:process[friendlier_id]'") if friendlier_id.blank?
+      task :process, [:friendlier_ids] => :environment do |t, args|
+        friendlier_ids = args[:friendlier_ids].to_s.split(/\s+/)
+        fail("Usage: rake 'scihist:dev:ocr_oh_pdf:process[friendlier_id1 friendlier_id2 ...]'") if friendlier_ids.empty?
 
         target_env = ENV["DEPLOYED_TIER"]
         unless %w[staging production].include?(target_env)
@@ -32,30 +32,35 @@ namespace :scihist do
         perform_ocr_task  = Rake::Task["scihist:dev:ocr_oh_pdf:perform_ocr"]
         upload_task       = Rake::Task["scihist:dev:ocr_oh_pdf:upload"]
 
-        puts "Downloading #{friendlier_id}"
-        download_task.reenable
-        download_task.invoke(friendlier_id)
-        original_path = File.join("tmp", "oh_ocr_text_only", "#{friendlier_id}.pdf")
+        pairs = friendlier_ids.map do |friendlier_id|
+          puts
+          puts "Downloading #{friendlier_id}"
+          download_task.reenable
+          download_task.invoke(friendlier_id)
+          original_path = File.join("tmp", "oh_ocr_text_only", "#{friendlier_id}.pdf")
 
-        puts "OCR'ing #{friendlier_id}"
-        perform_ocr_task.reenable
-        perform_ocr_task.invoke(original_path)
-        ocr_path = original_path.sub(/\.pdf\z/i, "") + "-OCR-TEXT-ONLY.pdf"
+          puts "OCR'ing #{friendlier_id}"
+          perform_ocr_task.reenable
+          perform_ocr_task.invoke(original_path)
+          ocr_path = original_path.sub(/\.pdf\z/i, "") + "-OCR-TEXT-ONLY.pdf"
 
-        puts "Uploading to S3 #{friendlier_id}"
-        upload_task.reenable
-        upload_task.invoke(ocr_path)
+          puts "Uploading to S3 #{friendlier_id}"
+          upload_task.reenable
+          upload_task.invoke(ocr_path)
 
-        s3_key = "oh_ocr_text_only/#{File.basename(ocr_path)}"
-        app_name = "scihist-digicoll-#{target_env}"
-
-        puts "attaching from S3 #{friendlier_id}"
-        ## --exit-code needed to make sure it passes on exit code of remote process locally, so we can fail.
-        unless system("heroku", "run", "--exit-code", "rake", "scihist:dev:ocr_oh_pdf:attach[#{s3_key},#{friendlier_id}]", "--app", app_name)
-          fail("heroku run rake scihist:dev:ocr_oh_pdf:attach failed for #{friendlier_id} (app: #{app_name})")
+          "#{friendlier_id}:oh_ocr_text_only/#{File.basename(ocr_path)}"
         end
 
-        puts "\n\nDone -- attached to asset #{friendlier_id} on #{app_name}"
+        app_name = "scihist-digicoll-#{target_env}"
+
+        puts "\nAttaching from S3 #{friendlier_ids.join(", ")}"
+        remote_command = "rake 'scihist:dev:ocr_oh_pdf:attach_many[#{pairs.join(" ")},true]'"
+        ## --exit-code needed to make sure it passes on exit code of remote process locally, so we can fail.
+        unless system("heroku", "run", "--exit-code", remote_command, "--app", app_name)
+          fail("heroku run rake scihist:dev:ocr_oh_pdf:attach_many failed for #{friendlier_ids.join(", ")} (app: #{app_name})")
+        end
+
+        puts "\n\nDone -- attached to assets #{friendlier_ids.join(", ")} on #{app_name}"
       end
 
       desc """
@@ -167,7 +172,7 @@ namespace :scihist do
           end
         end
 
-        puts "\n\nWrote #{output_path}"
+        puts "Wrote #{output_path}"
       end
 
       desc """
@@ -203,9 +208,9 @@ namespace :scihist do
           pdf_path, bucket: bucket_name, key: s3_key, content_type: "application/pdf"
         )
 
-        puts "\n\nUploaded to `s3://#{bucket_name}/#{s3_key}`"
-        puts "\nTo attach it to an asset, run on the matching Heroku app:"
-        puts "  heroku run rake 'scihist:dev:ocr_oh_pdf:attach[#{s3_key.sub(/\Aweb\//, "")},<friendlier_id>]' --app scihist-digicoll-#{target_env}"
+        puts "Uploaded to `s3://#{bucket_name}/#{s3_key}`"
+        puts "  To attach it to an asset, run on the matching Heroku app:"
+        puts "    heroku run rake 'scihist:dev:ocr_oh_pdf:attach[#{s3_key.sub(/\Aweb\//, "")},<friendlier_id>]' --app scihist-digicoll-#{target_env}"
       end
 
       desc """
@@ -248,7 +253,37 @@ namespace :scihist do
 
         ScihistDigicoll::Env.shrine_cache_storage.delete(s3_key) if delete_from_storage
 
-        puts "\n\nAttached `#{s3_key}` to asset `#{friendlier_id}` as derivative `#{AssetUploader::OCR_TEXT_ONLY_PDF}`"
+        puts "Attached `#{s3_key}` to asset `#{friendlier_id}` as derivative `#{AssetUploader::OCR_TEXT_ONLY_PDF}`"
+      end
+
+      desc """
+        Attach multiple previously-uploaded OCR text-only PDFs in a single invocation, to avoid
+        repeated slow heroku remote execs. Just loops calling scihist:dev:ocr_oh_pdf:attach for
+        each pair.
+
+        Args are space-separated `friendlier_id:s3_key` pairs.
+
+        Meant to be run live on a Heroku-deployed staging or production
+
+          heroku run \"rake 'scihist:dev:ocr_oh_pdf:attach_many[<id1>:oh_ocr_text_only/foo.pdf <id2>:oh_ocr_text_only/bar.pdf]'\" --app scihist-digicoll-staging
+
+        or to clean up source files, delete them from storage after attaching:
+
+          heroku run \"rake 'scihist:dev:ocr_oh_pdf:attach_many[<id1>:oh_ocr_text_only/foo.pdf <id2>:oh_ocr_text_only/bar.pdf,true]'\" --app scihist-digicoll-staging
+      """
+      task :attach_many, [:pairs, :delete_from_storage] => :environment do |t, args|
+        pairs = args[:pairs].to_s.split(/\s+/)
+        fail("Usage: rake 'scihist:dev:ocr_oh_pdf:attach_many[friendlier_id1:s3_key1 friendlier_id2:s3_key2 ...]'") if pairs.empty?
+
+        attach_task = Rake::Task["scihist:dev:ocr_oh_pdf:attach"]
+
+        pairs.each do |pair|
+          friendlier_id, s3_key = pair.split(":", 2)
+          fail("Malformed pair #{pair.inspect}, expected friendlier_id:s3_key") if friendlier_id.blank? || s3_key.blank?
+
+          attach_task.reenable
+          attach_task.invoke(s3_key, friendlier_id, args[:delete_from_storage])
+        end
       end
     end
   end
