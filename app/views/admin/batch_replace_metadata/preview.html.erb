@@ -1,0 +1,41 @@
+<div class="admin-header sticky-top d-flex justify-content-between p-2 mb-4 mt-1 bg-light border">
+  <h1 class="h5">Batch Replace Metadata &mdash; Preview</h1>
+</div>
+
+<p>
+  Replacing <code><%= @form.old_value %></code> with <code><%= @form.new_value %></code>
+  in <strong><%= @form.field_label %></strong>:
+</p>
+
+<div class="d-flex justify-content-between mt-3 mb-4">
+  <%= link_to "Cancel", admin_batch_replace_metadata_path, class: "btn btn-outline-secondary" %>
+
+  <% if @form.matching_work_count > 0 %>
+    <%= form_with url: admin_batch_replace_metadata_path, method: :post, local: true do |f| %>
+      <%= f.hidden_field :field_name, value: @form.field_name %>
+      <%= f.hidden_field :old_value, value: @form.old_value %>
+      <%= f.hidden_field :new_value, value: @form.new_value %>
+      <%= f.submit "Replace", class: "btn btn-danger",
+            data: { confirm: "In #{@form.matching_work_count} matching work(s):\n\nReplace #{@form.field_label} \"#{@form.old_value}\" with \"#{@form.new_value}\" ?\n\nThis cannot be undone." } %>
+    <% end %>
+  <% end %>
+</div>
+
+<p><%= pluralize(@form.matching_work_count, "Work") %> will be affected.</p>
+
+<% if @form.matching_work_count > 0 %>
+  <ul>
+    <% @works_to_list.each do |work| %>
+      <li><%= link_to work.title, admin_work_path(work), target: "_blank", rel: "noopener" %></li>
+    <% end %>
+  </ul>
+
+  <% if !@show_all && @form.matching_work_count > @works_to_list.size %>
+    <p>
+      <%= link_to "See all (#{@form.matching_work_count} total)",
+            admin_preview_batch_replace_metadata_path(
+              field_name: @form.field_name, old_value: @form.old_value, new_value: @form.new_value, show_all: 1
+            ) %>
+    </p>
+  <% end %>
+<% end %>

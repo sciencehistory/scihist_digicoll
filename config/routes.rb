@@ -383,6 +383,10 @@ Rails.application.routes.draw do
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
 
+    get  "/batch_replace_metadata", to: "batch_replace_metadata#new", as: "batch_replace_metadata"
+    get  "/batch_replace_metadata/preview", to: "batch_replace_metadata#preview", as: "preview_batch_replace_metadata"
+    post "/batch_replace_metadata", to: "batch_replace_metadata#create"
+
     resources :digitization_queue_items do
       member do
         post :add_comment
