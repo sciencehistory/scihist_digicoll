@@ -38,17 +38,17 @@ class GeminiHandwritingTranscriptionService
         "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
     end
 
-    db_log_status('started')
+    db_log_write!(status: 'started')
 
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
 
       response = request_transcription(staged_images)
-      db_log_status('received')
+      db_log_write!(status: 'received')
 
       process_results(response: response, staged_images: staged_images)
     end
-    db_log_status('success')
+    db_log_write!(status: 'success')
   end
 
   # Any and all reasons to exclude a work from receiving a transcript.
@@ -112,7 +112,7 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    db_log_save!('status' => 'requested', 'start_time' => Time.current)
+    db_log_write!(status: 'requested',  start_time: Time.current)
 
     model = ScihistDigicoll::Env.lookup("gemini_model")
 
@@ -125,7 +125,8 @@ class GeminiHandwritingTranscriptionService
     )
   rescue HTTP::Error, SocketError => e
     msg = "Could not reach Gemini: #{e.class}: #{e.message}"
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
+
     raise AdapterError, msg
   end
 
@@ -163,7 +164,7 @@ class GeminiHandwritingTranscriptionService
     return if response.status.success?
 
     msg = "Gemini transcription failed with HTTP status #{response.status}: #{error_summary(response)}"
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
     raise AdapterError, msg
   end
 
@@ -180,14 +181,14 @@ class GeminiHandwritingTranscriptionService
 
     if text.blank?
       msg = "Gemini returned an empty response"
-      db_log_error(msg)
+      db_log_write!(error_message: msg)
       raise InvalidResponseError, msg
     end
 
     text
   rescue JSON::ParserError => e
     msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
     raise InvalidResponseError, msg
   end
 
@@ -197,7 +198,7 @@ class GeminiHandwritingTranscriptionService
   rescue JSON::ParserError => e
     msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
 
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
     raise InvalidResponseError, msg
   end
 
@@ -207,7 +208,7 @@ class GeminiHandwritingTranscriptionService
 
     unless pages.is_a?(Array)
       msg = "Gemini response does not contain a pages array"
-      db_log_error(msg)
+      db_log_write!(error_message: msg)
       raise InvalidResponseError, msg
     end
 
@@ -217,7 +218,7 @@ class GeminiHandwritingTranscriptionService
           page["transcript"].is_a?(String)
 
         msg = "Gemini returned an invalid page entry: #{page.inspect}"
-        db_log_error(msg)
+        db_log_write!(error_message: msg)
         raise InvalidResponseError, msg
       end
     end
@@ -234,7 +235,7 @@ class GeminiHandwritingTranscriptionService
         Expected: #{expected_filenames.inspect}.
         Returned: #{returned_filenames.inspect}.
       MESSAGE
-      db_log_error(msg)
+      db_log_write!(error_message: msg)
       raise InvalidResponseError, msg
     end
 
@@ -283,20 +284,20 @@ class GeminiHandwritingTranscriptionService
       )
   end
 
-  def db_log_status(status)
-    db_log_save!('status' => status)
-  end
+  # We use these methods to keep track of the state of the transcription request.
+  def db_log_write!(status: status, error_message: nil, start_time: nil)
 
-  def db_log_error(error)
-    db_log['errors'] << error
-    db_log_save!('status' => 'error')
-  end
+    db_log['errors'] << error_message if error_message.present?
 
-  # Merge the given fields into the current db_log, and persist it on the work.
-  # We only keep the current request's log -- not a history of past attempts.
-  def db_log_save!(fields)
-    db_log.merge!(fields)
-    work.htr_transcript_status = db_log
+    fields = if error_message.nil?
+      { status: status }
+    else
+      { status: 'error' }
+    end
+
+    fields['start_time'] = start_time if start_time.present?
+
+    work.htr_transcript_status = db_log.merge!(fields)
     work.save!
   end
 
