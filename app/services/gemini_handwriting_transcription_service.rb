@@ -60,12 +60,6 @@ class GeminiHandwritingTranscriptionService
     if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
       problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
     end
-    unless work.published?
-      problems  << "this work is not published"
-    end
-    unless public_domain?
-      problems  << "this work is not in the public domain"
-    end
     problems
   end
 
@@ -266,12 +260,6 @@ class GeminiHandwritingTranscriptionService
         asset.update!(htr_transcript: transcript)
       end
     end
-  end
-
-  # Returns true if we consider this work in "the public domain".
-  # Simplest rule that could work for now; subject to input from curators.
-  def public_domain?
-    'http://creativecommons.org/publicdomain/mark/1.0/' == work.rights
   end
 
   # Published assets with derivatives we can use.
