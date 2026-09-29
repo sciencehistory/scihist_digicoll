@@ -104,10 +104,6 @@ class GeminiHandwritingTranscriptionService
       .timeout(GEMINI_HTTP_TIMEOUT)
   end
 
-  def gemini_generate_content_url
-    model = ScihistDigicoll::Env.lookup("gemini_model")
-    "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent"
-  end
 
   # Posts the request directly to Gemini's REST API. Returns the raw HTTP::Response;
   # #process_results is responsible for validating it and pulling out the transcript.
@@ -118,8 +114,10 @@ class GeminiHandwritingTranscriptionService
 
     db_log_save!('status' => 'requested', 'start_time' => Time.current)
 
+    model = ScihistDigicoll::Env.lookup("gemini_model")
+
     gemini_client.post(
-      gemini_generate_content_url,
+      "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent",
       json: GeminiContentRequestBuilder.new(
         staged_images: staged_images,
         work_description: work.description
