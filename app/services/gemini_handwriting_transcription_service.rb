@@ -267,17 +267,12 @@ class GeminiHandwritingTranscriptionService
       includes(:leaf_representative).
       where(published: true, type: Asset.sti_name).
       order(:position).
-      select { |asset| eligible_asset?(asset) }
-  end
-
-  def eligible_asset?(asset)
-    representative = asset.leaf_representative
-    return false unless representative&.content_type&.start_with?("image/")
-
-    derivatives = representative.file_derivatives
-
-    derivatives[:download_large].present? ||
-      derivatives[:download_full].present?
+      select do |asset|
+        representative = asset.leaf_representative
+        return false unless representative&.content_type&.start_with?("image/")
+        representative.file_derivatives[:download_large].present? ||
+          representative.file_derivatives[:download_full].present?
+      end
   end
 
   def extension_for(image_derivative)
