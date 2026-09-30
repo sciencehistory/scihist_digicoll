@@ -33,3 +33,5 @@ brew "ghostscript" # maybe already a dependency of vips but we also use directly
 ## Development dependencies:
 
 brew "uv" # for python dependency management
+
+brew "rclone" # for prod-to-staging S3 syncing
