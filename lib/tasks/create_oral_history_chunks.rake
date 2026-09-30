@@ -61,7 +61,7 @@ namespace :scihist do
       end
 
       if only_invalid
-        unless OralHistory::ChunkValidator.new(oh_content, check_source_fingerprints: true).validate
+        if OralHistory::ChunkValidator.new(oh_content, check_source_fingerprints: true).validate
           skipped_count +=1
           next
         end
