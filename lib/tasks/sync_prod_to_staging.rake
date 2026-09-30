@@ -59,7 +59,7 @@ namespace :scihist do
       begin
         puts "\nUpdating Solr index."
         # heroku --no-tty makes ruby-progressbar somewhat less spammy to our console,although not perfect, tolerable.
-        cmd.run("heroku run rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME, "--no-tty")
+        cmd.run("heroku run --exit code rake scihist:solr:reindex scihist:solr:delete_orphans --app ", STAGING_APP_NAME, "--no-tty")
       rescue TTY::Command::ExitError => e
         # The reindex runs in a remote heroku dyno, so all we see locally is a non-zero
         # exit status -- we can't catch the traject writer exception itself.
