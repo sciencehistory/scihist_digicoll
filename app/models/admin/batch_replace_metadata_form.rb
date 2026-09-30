@@ -3,8 +3,10 @@
 # a value that exactly matches the old value, and can replace it with the new value
 # across all of them.
 #
-#     form = Admin::BatchReplaceMetadataForm.new(field_name: "creator", old_value: "Foo Bar", new_value: "Baz")
-#     form.matching_works        # => #<ActiveRecord::Relation [#<Work ...>, ...]>
+# Scoped to a current_user's cart.
+#
+#     form = Admin::BatchReplaceMetadataForm.new(current_user: current_user, form_params: { field_name: "creator", old_value: "Foo Bar", new_value: "Baz" })
+#     form.matching_works        # => #<ActiveRecord::Relation [#<Work ...>, ...]>, works in current_user's Cart only
 #     form.matching_work_count   # => 12
 #     form.replace!              # => true, and all matching works are now saved with the replacement made
 #
@@ -42,10 +44,16 @@ class Admin::BatchReplaceMetadataForm
   }.freeze
 
   attr_accessor :field_name, :old_value, :new_value
+  attr_reader :current_user
 
   validates :old_value, presence: true
   validates :new_value, presence: true
   validate :field_name_must_be_a_known_field
+
+  def initialize(current_user:, form_params: {})
+    @current_user = current_user
+    super(form_params)
+  end
 
   # ALLOWED_FIELDS as [label, name] pairs sorted by label, ready for use with
   # `options_for_select` in the field-selection form.
@@ -58,13 +66,20 @@ class Admin::BatchReplaceMetadataForm
     Work.human_attribute_name(field_name)
   end
 
-  # All Works whose configured field exactly matches `old_value`, found with a database
-  # query (via AttrJson's `jsonb_contains`) rather than loading every Work.
+  # How many Works are in current_user's Cart in total -- the universe this feature
+  # searches/replaces within.
+  def cart_work_count
+    current_user.works_in_cart.count
+  end
+
+  # Works in current_user's Cart whose configured field exactly matches `old_value`,
+  # found with a database query (via AttrJson's `jsonb_contains`) rather than loading
+  # every Work in the Cart.
   #
   # @return [ActiveRecord::Relation<Work>]
   def matching_works
     return Work.none unless valid?
-    @matching_works ||= Work.jsonb_contains(contains_key => old_value)
+    @matching_works ||= current_user.works_in_cart.jsonb_contains(contains_key => old_value)
   end
 
   def matching_work_count
