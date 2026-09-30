@@ -56,19 +56,19 @@ namespace :scihist do
       end
 
       puts "\nSyncing S3 non-video originals (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-originals", "scihist-digicoll-staging-originals")
 
       puts "\nSyncing S3 video originals (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals-video s3://scihist-digicoll-staging-originals-video")
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-originals-video", "scihist-digicoll-staging-originals-video")
 
       puts "\nSyncing S3 derivatives (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-derivatives", "scihist-digicoll-staging-derivatives")
 
       puts "\nSyncing S3 video derivatives (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives-video s3://scihist-digicoll-staging-derivatives-video")
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-derivatives-video", "scihist-digicoll-staging-derivatives-video")
 
       # indexing now refers to files on s3 (derivatives mostly, transcripts etc), so we need to reindex AFTER
-      # se sync
+      # s3 sync
       tries = 1
       begin
         puts "\nUpdating Solr index."
@@ -95,5 +95,11 @@ namespace :scihist do
 
       puts "\nDone."
     end
+  end
+end
+
+module SyncProdToStagingUtil
+  def self.aws_sync(cmd, source_bucket, target_bucket)
+    cmd.run("aws s3 sync --only-show-errors --delete s3://#{source_bucket} s3://#{target_bucket}")
   end
 end
