@@ -3,8 +3,8 @@
 </div>
 
 <p class="text-muted">
-  Find an exact value in a single Work metadata field, across <strong>all</strong> Works, and replace it
-  with a new value.
+  Find an exact value in a single Work metadata field, and replace it with a new value, across the
+  <strong><%= pluralize(@form.cart_work_count, "Work") %></strong> currently in your Cart.
 </p>
 
 <% if @form.errors.any? %>
@@ -39,7 +39,7 @@
   </div>
 
   <div class="form-actions d-flex justify-content-between">
-    <%= link_to "Cancel", admin_works_path, class: "btn btn-outline-secondary" %>
+    <%= link_to "Cancel", admin_cart_items_path, class: "btn btn-outline-secondary" %>
     <%= f.submit "Preview", class: "btn btn-primary" %>
   </div>
 <% end %>

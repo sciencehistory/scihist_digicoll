@@ -1,6 +1,6 @@
-# Admin feature to search-and-replace a value in a single Work metadata field,
-# across ALL Works (not scoped to cart/collection). See Admin::BatchReplaceMetadataForm
-# for the actual logic and field configuration.
+# Admin feature to search-and-replace a value in a single Work metadata field, scoped
+# to only the Works currently in the acting user's Cart (not all Works). See
+# Admin::BatchReplaceMetadataForm for the actual logic and field configuration.
 class Admin::BatchReplaceMetadataController < AdminController
   # authorize! :update, Work would make more sense here, but we currently aren't
   # allowed to do that -- see Admin::WorksController#batch_update for the same issue
@@ -8,13 +8,13 @@ class Admin::BatchReplaceMetadataController < AdminController
   before_action -> { authorize! :update, Kithe::Model }
 
   def new
-    @form = Admin::BatchReplaceMetadataForm.new
+    @form = Admin::BatchReplaceMetadataForm.new(current_user: current_user)
   end
 
-  # Shows how many Works match the given search, and the first 50 (or all, with
-  # `show_all` param) of them, with a button to actually perform the replacement.
+  # Shows how many Works in the Cart match the given search, and the first 50 (or all,
+  # with `show_all` param) of them, with a button to actually perform the replacement.
   def preview
-    @form = Admin::BatchReplaceMetadataForm.new(form_params)
+    @form = Admin::BatchReplaceMetadataForm.new(current_user: current_user, form_params: form_params)
 
     unless @form.valid?
       render :new
@@ -26,7 +26,7 @@ class Admin::BatchReplaceMetadataController < AdminController
   end
 
   def create
-    @form = Admin::BatchReplaceMetadataForm.new(form_params)
+    @form = Admin::BatchReplaceMetadataForm.new(current_user: current_user, form_params: form_params)
 
     unless @form.valid?
       render :new
@@ -40,7 +40,7 @@ class Admin::BatchReplaceMetadataController < AdminController
       return
     end
 
-    redirect_to admin_works_path, notice: "Replaced metadata in #{count} work#{"s" unless count == 1}. It may take a few minutes for changes to be visible in public search."
+    redirect_to admin_cart_items_path, notice: "Replaced metadata in #{helpers.pluralize(count, "work")} in your Cart. It may take a few minutes for changes to be visible in public search."
   end
 
   # Params rails-ujs / the browser adds to our form submissions that aren't actual

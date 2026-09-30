@@ -16,12 +16,14 @@
       <%= f.hidden_field :old_value, value: @form.old_value %>
       <%= f.hidden_field :new_value, value: @form.new_value %>
       <%= f.submit "Replace", class: "btn btn-danger",
-            data: { confirm: "In #{@form.matching_work_count} matching work(s):\n\nReplace #{@form.field_label} \"#{@form.old_value}\" with \"#{@form.new_value}\" ?\n\nThis cannot be undone." } %>
+            data: { confirm: "In #{@form.matching_work_count}/#{@form.cart_work_count} matching work(s) in your Cart:\n\nReplace #{@form.field_label} \"#{@form.old_value}\" with \"#{@form.new_value}\" ?\n\nThis cannot be undone." } %>
     <% end %>
   <% end %>
 </div>
 
-<p><%= pluralize(@form.matching_work_count, "Work") %> will be affected.</p>
+<p>
+  <%= @form.matching_work_count %> out of <%= pluralize(@form.cart_work_count, "Work") %> in your Cart will be affected.
+</p>
 
 <% if @form.matching_work_count > 0 %>
   <ul>

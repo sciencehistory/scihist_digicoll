@@ -12,12 +12,20 @@ RSpec.describe Admin::BatchReplaceMetadataController, logged_in_user: :editor, t
   describe "#preview" do
     let!(:matching_work) { create(:work, description: "a widget") }
     let!(:other_work) { create(:work, description: "nothing here") }
+    let!(:matching_work_not_in_cart) { create(:work, description: "a widget") }
 
-    it "shows the matching works" do
+    before do
+      controller.current_user.works_in_cart << matching_work
+      controller.current_user.works_in_cart << other_work
+      # matching_work_not_in_cart deliberately left out of the cart
+    end
+
+    it "shows only the matching works that are in the Cart" do
       get :preview, params: { field_name: "description", old_value: "a widget", new_value: "a gadget" }
 
       expect(response).to have_http_status(200)
       expect(assigns(:form).matching_work_count).to eq(1)
+      expect(assigns(:form).cart_work_count).to eq(2)
       expect(assigns(:works_to_list)).to contain_exactly(matching_work)
     end
 
@@ -41,13 +49,20 @@ RSpec.describe Admin::BatchReplaceMetadataController, logged_in_user: :editor, t
 
   describe "#create" do
     let!(:work) { create(:work, description: "a widget") }
+    let!(:matching_work_not_in_cart) { create(:work, description: "a widget") }
 
-    it "performs the replacement and redirects" do
+    before do
+      controller.current_user.works_in_cart << work
+      # matching_work_not_in_cart deliberately left out of the cart
+    end
+
+    it "performs the replacement on Cart works only, and redirects" do
       post :create, params: { field_name: "description", old_value: "a widget", new_value: "a gadget" }
 
-      expect(response).to redirect_to(admin_works_path)
+      expect(response).to redirect_to(admin_cart_items_path)
       expect(flash[:notice]).to match /Replaced metadata in 1 work/
       expect(work.reload.description).to eq("a gadget")
+      expect(matching_work_not_in_cart.reload.description).to eq("a widget")
     end
 
     it "re-renders the form with errors on invalid input" do
