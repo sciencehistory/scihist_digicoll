@@ -20,3 +20,8 @@ dependencies = [
     "img2pdf==0.6.1",
     "pymupdf~=1.27.0"
 ]
+
+[tool.uv]
+# Change cache dir to inside local dir instead of default ~/.cache/uv so it's inside
+# claude sandbox, and claude can execute easier.
+cache-dir = "tmp/uv-cache"
