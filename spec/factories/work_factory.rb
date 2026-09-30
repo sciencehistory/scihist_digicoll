@@ -376,7 +376,7 @@ FactoryBot.define do
         members { [ build(:asset_with_faked_file, :video, published: true) ] }
         published { true}
         published_at { Time.now - 86400}
-        genre { ["Video Recordings"] }
+        genre { ["Video recordings"] }
       end
 
       trait :with_poster_frame do
@@ -390,7 +390,7 @@ FactoryBot.define do
         representative { members[1] }
         published { true }
         published_at { Time.now - 86400}
-        genre { ["Video Recordings"] }
+        genre { ["Video recordings"] }
       end
     end
   end
