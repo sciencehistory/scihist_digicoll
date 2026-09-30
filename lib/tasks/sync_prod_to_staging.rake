@@ -55,6 +55,20 @@ namespace :scihist do
         cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{confirm_value}")
       end
 
+      puts "\nSyncing S3 non-video originals (with --delete)."
+      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
+
+      puts "\nSyncing S3 video originals (with --delete)."
+      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals-video s3://scihist-digicoll-staging-originals-video")
+
+      puts "\nSyncing S3 derivatives (with --delete)."
+      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
+
+      puts "\nSyncing S3 video derivatives (with --delete)."
+      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives-video s3://scihist-digicoll-staging-derivatives-video")
+
+      # indexing now refers to files on s3 (derivatives mostly, transcripts etc), so we need to reindex AFTER
+      # se sync
       tries = 1
       begin
         puts "\nUpdating Solr index."
@@ -73,18 +87,6 @@ namespace :scihist do
         end
         puts "\nWARNING: Solr reindex failed twice, continuing with the rest of the sync anyway."
       end
-
-      puts "\nSyncing S3 non-video originals (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals s3://scihist-digicoll-staging-originals")
-
-      puts "\nSyncing S3 video originals (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-originals-video s3://scihist-digicoll-staging-originals-video")
-
-      puts "\nSyncing S3 derivatives (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives s3://scihist-digicoll-staging-derivatives")
-
-      puts "\nSyncing S3 video derivatives (with --delete)."
-      cmd.run("aws s3 sync --only-show-errors --delete s3://scihist-digicoll-production-derivatives-video s3://scihist-digicoll-staging-derivatives-video")
     ensure
       if USE_MAINTENANCE_MODE == "true"
         puts "\nHeroku maintenance off."
