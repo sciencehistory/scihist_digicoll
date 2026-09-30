@@ -47,7 +47,12 @@ namespace :scihist do
         end
       else
         puts "\nCopying backup from prod to staging."
-        cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{STAGING_APP_NAME}")
+        # heroku CLI 11.9.0+ wants the attachment name to confirm, older wants the app name
+        # https://github.com/sciencehistory/scihist_digicoll/issues/3613
+        heroku_version = Gem::Version.new(cmd.run("heroku --version", only_output_on_error: true).out[%r{heroku/(\d+\.\d+\.\d+)}, 1])
+        confirm_value = heroku_version >= Gem::Version.new("11.9.0") ? "DATABASE" : STAGING_APP_NAME
+
+        cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{confirm_value}")
       end
 
       tries = 1
