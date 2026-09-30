@@ -199,7 +199,7 @@ describe CitableAttributes do
                 title: "Some Old Video",
                 creator: { category: "creator_of_work", value: "Perkin-Elmer Corporation" },
                 place: { category: "place_of_creation", value: "Universität Wien" },
-                genre: "Video Recordings",
+                genre: "Video recordings",
                 format: "moving_image",
                 extent: "8M 35S",
                 medium: "16mm (photographic film size)",
