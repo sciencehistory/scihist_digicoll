@@ -1,8 +1,5 @@
 # Makes OH chunks with embeddings! This is slow and does cost money, using OpenAI API!
 #
-# Forr now only works with OHMS legacy transcripts, will have to be enhanced.
-#
-# Refuses to run if there are already chunks, cause that would create a real mess!
 class OhTranscriptChunkerJob < ApplicationJob
   # In a local constnat only so we can stub to something different in tests
   CHUNKER_CLASS = OralHistory::TranscriptChunker
@@ -56,24 +53,16 @@ class OhTranscriptChunkerJob < ApplicationJob
     # look it up from work if needed
     (oral_history_content ||= work.oral_history_content) or raise ArgumentError.new("work #{work.friendlier_id} has no oral_history_content")
 
-    if refresh_extracted_pdf_paragraphs
-      members = oral_history_content.work.members
-      transcript_asset = members.loaded? ? members.find {|a| a.role == "transcript" } : members.where(role: "transcript").first
+    if refresh_extracted_pdf_paragraphs && OralHistoryContent::ParagraphContainer.stale?(oral_history_content: oral_history_content)
+      Rails.logger.info("#{self.class.name}: refresh_extracted_pdf_paragraphs:true and needs paragraphs, so creating.")
 
-      # if we have extracted_pdf_text_json and don't have fresh paragraphs stored, we must refresh
-      if transcript_asset && transcript_asset.file_derivatives[:extracted_pdf_text_json].present? && (
-            oral_history_content.extracted_paragraph_container.nil? || !oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)
-         )
-        Rails.logger.info("#{self.class.name}: refresh_extracted_pdf_paragraphs:true and needs paragraphs, so creating.")
-
-        begin
-          OralHistoryContent::ParagraphContainer.create(
-            oral_history_content: oral_history_content,
-            allow_failure_to_sync: true
-          )
-        rescue PdfParagraphSplitter::Error => e
-          Rails.logger.error("#{self.class.name}: Could not create extracted_paragraph_container: #{e}")
-        end
+      begin
+        OralHistoryContent::ParagraphContainer.create(
+          oral_history_content: oral_history_content,
+          allow_failure_to_sync: true
+        )
+      rescue PdfParagraphSplitter::Error => e
+        Rails.logger.error("#{self.class.name}: Could not create extracted_paragraph_container: #{e}")
       end
     end
 
