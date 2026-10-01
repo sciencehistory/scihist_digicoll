@@ -34,13 +34,21 @@ class GeminiContentRequestBuilder
 
   attr_reader :staged_images, :work_description
 
-  # Prompt text lives in config/locales/gemini_transcript_prompt.en.yml, since
-  # it's liable to be tweaked independently of the request-building logic.
+  # Prompt text lives in app/views/gemini_content_request_builder/, since it's
+  # liable to be tweaked independently of the request-building logic.
   def system_instruction
-    I18n.t(
-      "gemini_content_request_builder.system_instruction",
-      work_description: work_description
+    ApplicationController.render(
+      template: "gemini_content_request_builder/system_instruction",
+      locals: { work_description: work_description },
+      formats: [:text]
     )
+  end
+
+  def final_instruction
+    ApplicationController.render(
+      template: "gemini_content_request_builder/final_instruction",
+      formats: [:text]
+    ).strip
   end
 
   def response_schema
@@ -49,7 +57,7 @@ class GeminiContentRequestBuilder
       properties: {
         general_feedback: {
           type: "STRING",
-          description: I18n.t("gemini_content_request_builder.response_schema.general_feedback_description")
+          description: "Optional overall comments about the batch, handwriting legibility, token limits, or context."
         },
         pages: {
           type: "ARRAY",
@@ -64,7 +72,7 @@ class GeminiContentRequestBuilder
               },
               page_notes: {
                 type: "STRING",
-                description: I18n.t("gemini_content_request_builder.response_schema.page_notes_description")
+                description: "Optional notes on this specific page (e.g. unreadable words, omitted diagrams, or specific ambiguities)."
               }
             },
             required: [
@@ -88,7 +96,7 @@ class GeminiContentRequestBuilder
       parts << image_part(image)
     end
 
-    parts << { text: I18n.t("gemini_content_request_builder.final_instruction") }
+    parts << { text: final_instruction }
 
     parts
   end
