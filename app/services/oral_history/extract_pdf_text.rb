@@ -13,10 +13,12 @@ module OralHistory
     class_attribute :extract_pdf_text_command,
       default: ScihistDigicoll::Util.prefix_python_exec_command("./python_script/extract_pdf_text.py")
 
-    attr_reader :pdf_file_path
+    attr_reader :pdf_file_path, :source_text_is_ocr
 
-    def initialize(pdf_file_path:)
+    # @param source_text_is_ocr [Boolean] true if PDF text layer was added by OCR, not born-digital
+    def initialize(pdf_file_path:, source_text_is_ocr: false)
       @pdf_file_path = pdf_file_path.to_s
+      @source_text_is_ocr = source_text_is_ocr
     end
 
     def extracted_pdf_text
@@ -28,7 +30,11 @@ module OralHistory
     #
     # Will validate against our JSON schema and raise if invalid!
     def extract_pdf_text(validate: true)
-      out, err = extract_pdf_text_tty_command.run(*extract_pdf_text_command, pdf_file_path)
+      args = [*extract_pdf_text_command]
+      args << "--source-text-is-ocr" if source_text_is_ocr
+      args << pdf_file_path
+
+      out, err = extract_pdf_text_tty_command.run(*args)
 
       parsed = JSON.parse(out)
       if validate

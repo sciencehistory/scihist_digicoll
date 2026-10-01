@@ -45,8 +45,14 @@ import re
 #     # pretty-print the json with indent=2
 #
 
-RATIO_THRESHOLD = 0.7  # when space to line height exceeds
+# when space to line height exceeds, call it a paragraph break. Higher 0.7 worked
+# well for our born digital, but for OCR'd 0.5 is necessary to not miss some.
+BORN_DIGITAL_RATIO_THRESHOLD = 0.7
+OCR_RATIO_THRESHOLD = 0.5
 MIN_GAP = 2.0  # pdf pixels
+
+# keep in sync with Ruby's PdfParagraphSplitter::PAGE_NUMBER_RE
+PAGE_NUMBER_RE = re.compile(r"\A(?:[Pp]age )?(\d+)\Z")
 
 
 def normalize_text_whitespace(text):
@@ -92,14 +98,14 @@ def extract_lines(block):
     return lines
 
 # is the current line bbox far enough from previous to indicate start of new paragraph?
-def is_paragraph_break(prev_bbox, curr_bbox):
+def is_paragraph_break(prev_bbox, curr_bbox, ratio_threshold):
     prev_y1 = prev_bbox["y1"]
     curr_y0 = curr_bbox["y0"]
 
     gap = curr_y0 - prev_y1
     line_height = prev_bbox["y1"] - prev_bbox["y0"]
 
-    threshold = max(MIN_GAP, line_height * RATIO_THRESHOLD)
+    threshold = max(MIN_GAP, line_height * ratio_threshold)
     return gap > threshold
 
 
@@ -116,7 +122,7 @@ def merge_bbox(bboxes):
 
 # take list of lines, and group into paragraphs, with line text joined,
 # and total merged bbox of the lines.
-def build_paragraphs(lines):
+def build_paragraphs(lines, ratio_threshold):
     paragraphs = []
     current_lines = []
 
@@ -125,7 +131,7 @@ def build_paragraphs(lines):
             current_lines.append(line)
             continue
 
-        if is_paragraph_break(current_lines[-1]["bbox"], line["bbox"]):
+        if is_paragraph_break(current_lines[-1]["bbox"], line["bbox"], ratio_threshold):
             paragraphs.append(current_lines)
             current_lines = [line]
         else:
@@ -143,26 +149,11 @@ def build_paragraphs(lines):
     ]
 
 
-# Take a block, and process it into paragraphs, throwing out line/span level
-# bbox and separation.
-def process_block(block):
-    lines = extract_lines(block)
-    if not lines:
-        return None
+# source_text_is_ocr: for unreliable OCR block detection, use OCR_RATIO_THRESHOLD and build paragraphs page-wide instead of per-block; page-number-only blocks always stay separate (needed by PdfParagraphSplitter#block_is_page_number)
+def process_page(page, source_text_is_ocr=False):
+    merge_blocks = source_text_is_ocr
+    ratio_threshold = OCR_RATIO_THRESHOLD if source_text_is_ocr else BORN_DIGITAL_RATIO_THRESHOLD
 
-    paragraphs = build_paragraphs(lines)
-
-    block_bbox = block.get("bbox")
-    if not block_bbox:
-        return None
-
-    return {
-        "bbox": bbox_dict(block_bbox),
-        "paragraphs": paragraphs,
-    }
-
-
-def process_page(page):
     tp = page.get_textpage("layout")
     d = tp.extractDICT()
 
@@ -177,14 +168,38 @@ def process_page(page):
     )
 
     result_blocks = []
+    pending_lines, pending_bboxes = [], []
+
+    def flush_pending():
+        if pending_lines:
+            result_blocks.append({
+                "bbox": merge_bbox(pending_bboxes),
+                "paragraphs": build_paragraphs(pending_lines, ratio_threshold),
+            })
+            pending_lines.clear()
+            pending_bboxes.clear()
 
     for block in blocks:
         if block.get("type") != 0:
             continue
 
-        processed = process_block(block)
-        if processed:
-            result_blocks.append(processed)
+        lines = extract_lines(block)
+        if not lines:
+            continue
+
+        is_page_number = len(lines) == 1 and PAGE_NUMBER_RE.match(lines[0]["text"])
+
+        if not merge_blocks or is_page_number:
+            flush_pending()
+            result_blocks.append({
+                "bbox": bbox_dict(block["bbox"]),
+                "paragraphs": build_paragraphs(lines, ratio_threshold),
+            })
+        else:
+            pending_lines.extend(lines)
+            pending_bboxes.append(bbox_dict(block["bbox"]))
+
+    flush_pending()
 
     return {
         "width": round(page.rect.width, 1),
@@ -201,11 +216,16 @@ def main():
         action="store_true",
         help="Pretty-print JSON output (indent=2)",
     )
+    parser.add_argument(
+        "--source-text-is-ocr",
+        action="store_true",
+        help="Text layer was added by OCR (e.g. ocrmypdf), not born-digital -- adjusts paragraph detection accordingly",
+    )
 
     args = parser.parse_args()
 
     doc = pymupdf.open(args.pdf_path)
-    pages = [process_page(page) for page in doc]
+    pages = [process_page(page, source_text_is_ocr=args.source_text_is_ocr) for page in doc]
 
     json_kwargs = {
         "ensure_ascii": False
