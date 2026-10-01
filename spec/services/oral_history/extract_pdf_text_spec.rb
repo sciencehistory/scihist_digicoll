@@ -33,6 +33,20 @@ describe OralHistory::ExtractPdfText do
         expect(page2_last_block_paragraphs.count).to eq(1)
         expect(page2_last_block_paragraphs.first["text"]).to eq("10")
       end
+
+      describe "dirtier OCR page numbers" do
+        # one page where OCR noise splits the page number ("1") and a stray "."
+        # into two separate raw lines within the same block, instead of one clean line
+        let(:ocr_sample_pages_pdf_path) { Rails.root + "spec/test_support/pdf/oh/hyde_jf_0026_ocr_sample_page.pdf" }
+
+        it "correctly isolates page number in it's own block" do
+          as_json = described_class.new(pdf_file_path: ocr_sample_pages_pdf_path, source_text_is_ocr: true).extract_pdf_text
+
+          last_block_paragraphs = as_json["pages"][0]["blocks"].last["paragraphs"]
+          expect(last_block_paragraphs.count).to eq(1)
+          expect(last_block_paragraphs.first["text"]).to eq("1 .")
+        end
+      end
     end
 
     describe "schema-invalid JSON from python tool" do
