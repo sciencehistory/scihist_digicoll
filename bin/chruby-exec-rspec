@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# This file is meant for use by Claude Code (or similar), so we can allow-list running rspec
+# with chruby, via this wrapper. And not get sandbox permissions popups all the time, but
+# keep our allow-list exception targetted. Also, of course Claude Code helped us write this,
+# we ain't bash mavens. 
+
+# Accept leading KEY=VALUE args as env vars for the rspec subprocess,
+# so callers can write: ./bin/rspec-with-chruby FPROF=1 spec/foo_spec.rb
+# instead of: FPROF=1 ./bin/rspec-with-chruby spec/foo_spec.rb
+# (the latter breaks the sandbox allowlist since the command no longer starts with ./bin/rspec-with-chruby)
+
+script_dir="$(dirname "$0")"
+env_vars=()
+
+while [[ $# -gt 0 && "$1" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; do
+  env_vars+=("$1")
+  shift
+done
+
+exec chruby-exec "$(cat "$script_dir/../.ruby-version")" -- env "${env_vars[@]}" "$script_dir/rspec" "$@"

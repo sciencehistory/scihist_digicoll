@@ -10,7 +10,7 @@ class SearchBuilder
     self.default_processor_chain += [:within_featured_topic]
 
     def within_featured_topic(solr_parameters)
-      featured_topic = FeaturedTopic.from_slug(blacklight_params[:slug])
+      featured_topic = FeaturedTopic.from_slug(search_state.params["slug"])
       solr_parameters[:fq] ||= []
       solr_parameters[:fq] << featured_topic.solr_fq
     end

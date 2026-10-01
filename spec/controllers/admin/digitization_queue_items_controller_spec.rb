@@ -41,6 +41,7 @@ RSpec.describe Admin::DigitizationQueueItemsController, :logged_in_user, type: :
       new_item = Admin::DigitizationQueueItem.all.last
       expect(new_item.collecting_area).to eq "archives"
       expect(new_item.title).to eq "newer item"
+      expect(new_item.created_by).to eq controller.current_user
     end
 
     it "can add, then delete a comment" do
