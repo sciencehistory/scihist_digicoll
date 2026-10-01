@@ -284,20 +284,13 @@ class GeminiHandwritingTranscriptionService
       )
   end
 
-  # We use these methods to keep track of the state of the transcription request.
-  def db_log_write!(status: status, error_message: nil, start_time: nil)
-
+  # We use this method to keep track of the state of the transcription request.
+  def db_log_write!(status: nil, error_message: nil, start_time: nil)
     db_log['errors'] << error_message if error_message.present?
+    db_log['status'] = error_message.present? ? 'error' : status
+    db_log['start_time'] = start_time if start_time.present?
 
-    fields = if error_message.nil?
-      { status: status }
-    else
-      { status: 'error' }
-    end
-
-    fields['start_time'] = start_time if start_time.present?
-
-    work.htr_transcript_status = db_log.merge!(fields)
+    work.htr_transcript_status = db_log
     work.save!
   end
 
