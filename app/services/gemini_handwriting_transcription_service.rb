@@ -270,7 +270,8 @@ class GeminiHandwritingTranscriptionService
       order(:position).
       select do |asset|
         representative = asset.leaf_representative
-        return false unless representative&.content_type&.start_with?("image/")
+        next false unless representative&.content_type&.start_with?("image/")
+
         representative.file_derivatives[:download_large].present? ||
           representative.file_derivatives[:download_full].present?
       end
