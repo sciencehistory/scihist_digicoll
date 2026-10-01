@@ -38,17 +38,17 @@ class GeminiHandwritingTranscriptionService
         "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
     end
 
-    db_log_status('started')
+    db_log_write!(status: 'started')
 
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
 
       response = request_transcription(staged_images)
-      db_log_status('received')
+      db_log_write!(status: 'received')
 
       process_results(response: response, staged_images: staged_images)
     end
-    db_log_status('success')
+    db_log_write!(status: 'success')
   end
 
   # Any and all reasons to exclude a work from receiving a transcript.
@@ -59,12 +59,6 @@ class GeminiHandwritingTranscriptionService
     end
     if eligible_assets.count > MAX_FILES_TO_TRANSCRIBE
       problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
-    end
-    unless work.published?
-      problems  << "this work is not published"
-    end
-    unless public_domain?
-      problems  << "this work is not in the public domain"
     end
     problems
   end
@@ -110,10 +104,6 @@ class GeminiHandwritingTranscriptionService
       .timeout(GEMINI_HTTP_TIMEOUT)
   end
 
-  def gemini_generate_content_url
-    model = ScihistDigicoll::Env.lookup("gemini_model")
-    "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent"
-  end
 
   # Posts the request directly to Gemini's REST API. Returns the raw HTTP::Response;
   # #process_results is responsible for validating it and pulling out the transcript.
@@ -122,10 +112,12 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    db_log_save!('status' => 'requested', 'start_time' => Time.current)
+    db_log_write!(status: 'requested',  start_time: Time.current)
+
+    model = ScihistDigicoll::Env.lookup("gemini_model")
 
     gemini_client.post(
-      gemini_generate_content_url,
+      "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent",
       json: GeminiContentRequestBuilder.new(
         staged_images: staged_images,
         work_description: work.description
@@ -133,7 +125,8 @@ class GeminiHandwritingTranscriptionService
     )
   rescue HTTP::Error, SocketError => e
     msg = "Could not reach Gemini: #{e.class}: #{e.message}"
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
+
     raise AdapterError, msg
   end
 
@@ -171,7 +164,7 @@ class GeminiHandwritingTranscriptionService
     return if response.status.success?
 
     msg = "Gemini transcription failed with HTTP status #{response.status}: #{error_summary(response)}"
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
     raise AdapterError, msg
   end
 
@@ -188,14 +181,14 @@ class GeminiHandwritingTranscriptionService
 
     if text.blank?
       msg = "Gemini returned an empty response"
-      db_log_error(msg)
+      db_log_write!(error_message: msg)
       raise InvalidResponseError, msg
     end
 
     text
   rescue JSON::ParserError => e
     msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
     raise InvalidResponseError, msg
   end
 
@@ -205,7 +198,7 @@ class GeminiHandwritingTranscriptionService
   rescue JSON::ParserError => e
     msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
 
-    db_log_error(msg)
+    db_log_write!(error_message: msg)
     raise InvalidResponseError, msg
   end
 
@@ -215,7 +208,7 @@ class GeminiHandwritingTranscriptionService
 
     unless pages.is_a?(Array)
       msg = "Gemini response does not contain a pages array"
-      db_log_error(msg)
+      db_log_write!(error_message: msg)
       raise InvalidResponseError, msg
     end
 
@@ -225,7 +218,7 @@ class GeminiHandwritingTranscriptionService
           page["transcript"].is_a?(String)
 
         msg = "Gemini returned an invalid page entry: #{page.inspect}"
-        db_log_error(msg)
+        db_log_write!(error_message: msg)
         raise InvalidResponseError, msg
       end
     end
@@ -242,7 +235,7 @@ class GeminiHandwritingTranscriptionService
         Expected: #{expected_filenames.inspect}.
         Returned: #{returned_filenames.inspect}.
       MESSAGE
-      db_log_error(msg)
+      db_log_write!(error_message: msg)
       raise InvalidResponseError, msg
     end
 
@@ -268,12 +261,6 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
-  # Returns true if we consider this work in "the public domain".
-  # Simplest rule that could work for now; subject to input from curators.
-  def public_domain?
-    'http://creativecommons.org/publicdomain/mark/1.0/' == work.rights
-  end
-
   # Published assets with derivatives we can use.
   def eligible_assets
     @eligible_assets ||= work.
@@ -281,17 +268,12 @@ class GeminiHandwritingTranscriptionService
       includes(:leaf_representative).
       where(published: true, type: Asset.sti_name).
       order(:position).
-      select { |asset| eligible_asset?(asset) }
-  end
-
-  def eligible_asset?(asset)
-    representative = asset.leaf_representative
-    return false unless representative&.content_type&.start_with?("image/")
-
-    derivatives = representative.file_derivatives
-
-    derivatives[:download_large].present? ||
-      derivatives[:download_full].present?
+      select do |asset|
+        representative = asset.leaf_representative
+        return false unless representative&.content_type&.start_with?("image/")
+        representative.file_derivatives[:download_large].present? ||
+          representative.file_derivatives[:download_full].present?
+      end
   end
 
   def extension_for(image_derivative)
@@ -302,19 +284,12 @@ class GeminiHandwritingTranscriptionService
       )
   end
 
-  def db_log_status(status)
-    db_log_save!('status' => status)
-  end
+  # We use this method to keep track of the state of the transcription request.
+  def db_log_write!(status: nil, error_message: nil, start_time: nil)
+    db_log['errors'] << error_message if error_message.present?
+    db_log['status'] = error_message.present? ? 'error' : status
+    db_log['start_time'] = start_time if start_time.present?
 
-  def db_log_error(error)
-    db_log['errors'] << error
-    db_log_save!('status' => 'error')
-  end
-
-  # Merge the given fields into the current db_log, and persist it on the work.
-  # We only keep the current request's log -- not a history of past attempts.
-  def db_log_save!(fields)
-    db_log.merge!(fields)
     work.htr_transcript_status = db_log
     work.save!
   end
