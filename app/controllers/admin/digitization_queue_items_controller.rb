@@ -26,6 +26,7 @@ class Admin::DigitizationQueueItemsController < AdminController
   # POST /admin/digitization_queue_items.json
   def create
     @admin_digitization_queue_item = Admin::DigitizationQueueItem.new(admin_digitization_queue_item_params)
+    @admin_digitization_queue_item.created_by = current_user
     respond_to do |format|
       if @admin_digitization_queue_item.save
         # send an alert if email address is set

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_15_173658) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_16_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -111,6 +111,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_173658) do
     t.string "collecting_area"
     t.string "copyright_status"
     t.datetime "created_at", precision: nil, null: false
+    t.bigint "created_by_id"
     t.date "deadline"
     t.string "dimensions"
     t.string "folder"
@@ -123,6 +124,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_173658) do
     t.datetime "status_changed_at", precision: nil
     t.string "title"
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["created_by_id"], name: "index_digitization_queue_items_on_created_by_id"
   end
 
   create_table "fixity_checks", force: :cascade do |t|
@@ -363,6 +365,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_15_173658) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "digitization_queue_items", "users", column: "created_by_id"
   add_foreign_key "fixity_checks", "kithe_models", column: "asset_id"
   add_foreign_key "google_arts_and_culture_downloads", "users"
   add_foreign_key "kithe_model_contains", "kithe_models", column: "containee_id"

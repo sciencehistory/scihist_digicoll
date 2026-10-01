@@ -142,16 +142,16 @@ GEM
     bcrypt (3.1.22)
     bigdecimal (3.3.1)
     bindex (0.8.1)
-    blacklight (9.0.0)
+    blacklight (9.1.0)
       globalid
       i18n (>= 1.7.0)
       jbuilder (~> 2.7)
       kaminari (>= 0.15)
       ostruct (>= 0.3.2)
-      rails (>= 7.0, < 9)
-      view_component (>= 3.0, < 5.0)
+      rails (>= 7.2, < 9)
+      view_component (~> 4.0)
       zeitwerk
-    blacklight_range_limit (9.2.0)
+    blacklight_range_limit (9.3.0)
       blacklight (>= 7.25.2, < 10)
       view_component (>= 2.54, < 5)
     bootsnap (1.25.0)
@@ -857,8 +857,8 @@ DEPENDENCIES
   aws-sdk-s3 (~> 1.208)
   axe-core-rspec (~> 4.3)
   barnes (~> 1.0)
-  blacklight (~> 9.0.0)
-  blacklight_range_limit (~> 9.2.0)
+  blacklight (~> 9.1.0)
+  blacklight_range_limit (~> 9.3.0)
   bootsnap (>= 1.4.4)
   bootstrap4-kaminari-views
   bot_challenge_page (>= 1.1.0, < 2)
@@ -945,7 +945,7 @@ DEPENDENCIES
   webvtt-ruby (< 2)
 
 RUBY VERSION
-   ruby 4.0.3p0
+  ruby 4.0.3p0
 
 BUNDLED WITH
-   4.0.19
+  4.0.19
