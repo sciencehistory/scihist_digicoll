@@ -10,7 +10,6 @@ describe GeminiHandwritingTranscriptionService do
   end
 
   let(:asset_attribute_for_transcript) { :htr_transcript }
-  let(:work_attribute_for_transcript_requests) { :htr_transcript_status }
 
   let(:assets) { [asset1, asset2, asset3] }
   let(:asset1) { build_tiff_asset(position: 1) }
@@ -64,6 +63,8 @@ describe GeminiHandwritingTranscriptionService do
       service.call
 
       expect(service).to have_received(:request_transcription).once
+
+      expect(work.reload.htr_transcript_status).to be_success
 
       expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
         .to eq(sample_transcripts)
@@ -131,10 +132,10 @@ describe GeminiHandwritingTranscriptionService do
         service.send(:request_transcription, staged_images)
       end
 
-      request_log = work.reload.public_send(work_attribute_for_transcript_requests)
+      request_state = work.reload.htr_transcript_status
 
-      expect(request_log["status"]).to eq("requested")
-      expect(Time.zone.parse(request_log["start_time"])).to be_within(1.second).of(now)
+      expect(request_state.status).to eq("requested")
+      expect(request_state.start_time).to be_within(1.second).of(now)
     end
 
     it "raises AdapterError when Gemini can't be reached at all" do
@@ -144,9 +145,10 @@ describe GeminiHandwritingTranscriptionService do
         service.send(:request_transcription, staged_images)
       }.to raise_error(described_class::AdapterError, /Could not reach Gemini/)
 
-      request_log = work.reload.public_send(work_attribute_for_transcript_requests)
+      request_state = work.reload.htr_transcript_status
 
-      expect(request_log["status"]).to eq("error")
+      expect(request_state.status).to eq("failure")
+      expect(request_state.error).to include("Could not reach Gemini")
     end
   end
 
@@ -377,11 +379,9 @@ describe GeminiHandwritingTranscriptionService do
     expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
       .to eq(original_transcripts)
 
-    request_log = work.reload.public_send(work_attribute_for_transcript_requests)
-
-    expect(request_log).to include(
-      "status" => "error",
-      "errors" => include(a_string_including(message))
+    expect(work.reload.htr_transcript_status).to have_attributes(
+      status: "failure",
+      error: a_string_including(message)
     )
   end
 
