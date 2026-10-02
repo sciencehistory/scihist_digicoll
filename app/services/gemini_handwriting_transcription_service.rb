@@ -271,10 +271,6 @@ class GeminiHandwritingTranscriptionService
       select do |asset|
         representative = asset.leaf_representative
         next false unless representative&.content_type&.start_with?("image/")
-<<<<<<< HEAD
-
-=======
->>>>>>> gemini_htr_service
         representative.file_derivatives[:download_large].present? ||
           representative.file_derivatives[:download_full].present?
       end
