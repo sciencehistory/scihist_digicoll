@@ -1,14 +1,9 @@
 require 'http'
 
-# A class to wrap our requests to Google Gemini to transcribe a work.
-#
 # GeminiHandwritingTranscriptionService.new(work: work).call
 #
 # will ask Gemini for a transcript for each image asset on the work, then
-# attach a transcript to the :htr_transcript attribute for the asset.
-#
-# We consider the transcript ephemeral, machine-produced metadata,
-# so we store it in derived_metadata_jsonb.
+# attach a transcript to the :htr_transcript attribute for each image asset in the work.
 class GeminiHandwritingTranscriptionService
 
   # this is just the superclass of all the errors this class can throw.
@@ -284,11 +279,10 @@ class GeminiHandwritingTranscriptionService
       )
   end
 
-  # We use this method to keep track of the state of the transcription request.
+  # Keep track of the state of the transcription request.
   # Takes any attributes of Work::HtrTranscriptionRequest (status:, error:, start_time:, ...).
   def write_request_state!(**attributes)
     request_state.assign_attributes(attributes)
-
     work.htr_transcription_request = request_state
     work.save!
   end
