@@ -9,11 +9,11 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
     GeminiHandwritingTranscriptionService.new(work: work).work_eligibility_problems
   end
 
-  # The transcription request currently logged on the work, or nil if none
-  # has ever been made. (We only ever keep the current request's log, not a
+  # The Work::HtrTranscriptionRequest currently stored on the work, or nil if
+  # none has ever been made. (We only ever keep the current request, not a
   # history of past attempts.)
   def current_request
-    work.htr_transcript_status
+    work.htr_transcription_request
   end
 
   # A human-readable sentence describing the status of the current
@@ -24,18 +24,19 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
 
     time = formatted_start_time(request)
 
-    case request["status"]
-    when "success"
+    if request.success?
       if time
         "An automatic transcript exists; it was created on #{time} #{transcript_link}.".html_safe
       else
         "An automatic transcript exists #{transcript_link}.".html_safe
       end
-    when "error"
-      if time
-        "We requested a transcript from Google at #{time}, but it failed; more information is available in the logs."
+    elsif request.failure?
+      requested = time ? "We requested a transcript from Google at #{time}" : "We requested a transcript from Google"
+
+      if request.error.present?
+        "#{requested}, but it failed. The error was: #{request.error}"
       else
-        "We requested a transcript from Google, but it failed; more information is available in the logs."
+        "#{requested}, but it failed; more information is available in the logs."
       end
     else
       if time
@@ -49,29 +50,24 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
   # Label for the "request transcription" button -- worded differently if a
   # successful transcript already exists, since a new request would replace it.
   def request_button_label
-    if current_request&.dig("status") == "success"
+    if current_request&.success?
       "Request a new transcription to replace the current one"
     else
       "Request transcription"
     end
   end
 
-  # Statuses GeminiHandwritingTranscriptionService considers final -- once a
-  # request reaches one of these, it's done and won't change on its own.
-  TERMINAL_STATUSES = ["success", "error"].freeze
-
-  # True if the current request hasn't reached a final status yet (e.g.
-  # "started", "requested", "received") -- we don't want to let the admin
-  # fire off a second, concurrent request while one is still in progress.
+  # True if the current request hasn't reached a final status yet -- we don't
+  # want to let the admin fire off a second, concurrent request while one is
+  # still in progress.
   def request_pending?
-    status = current_request&.dig("status")
-    status.present? && !TERMINAL_STATUSES.include?(status)
+    current_request&.pending? || false
   end
 
   # TEMPORARY, for debugging -- raw contents of the transcript request log
   # we keep on the work, as pretty-printed JSON.
   def transcript_request_json
-    JSON.pretty_generate(current_request || {})
+    JSON.pretty_generate(current_request.as_json || {})
   end
 
   private
@@ -82,9 +78,8 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
   end
 
   def formatted_start_time(request)
-    start_time = request["start_time"]
-    return nil if start_time.blank?
+    return nil if request.start_time.blank?
 
-    l(Time.zone.parse(start_time), format: :admin_compact)
+    l(request.start_time, format: :admin_compact)
   end
 end

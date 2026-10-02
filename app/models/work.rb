@@ -88,9 +88,8 @@ class Work < Kithe::Work
   attr_json :file_creator, :string
   attr_json :admin_note, :text, array: true, default: -> { [] }
 
-  # Status of the current (or most recent) request to transcribe this work's
-  # handwriting.
-  attr_json :htr_transcript_status, ActiveModel::Type::Value.new, container_attribute: :derived_metadata_jsonb
+  # The current (or most recent) request to transcribe this work's handwriting.
+  attr_json :htr_transcription_request, Work::HtrTranscriptionRequest.to_type, container_attribute: :derived_metadata_jsonb
 
   # text_extraction_mode is an expression of intent of if we want to OCR this work; or if we plan
   # to extract pages with text from a born-digital PDF with text; or neither. It is used to trigger
