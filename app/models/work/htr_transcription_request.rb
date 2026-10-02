@@ -1,6 +1,6 @@
 class Work
   # The state of the current (or most recent) request to transcribe a work's
-  # handwriting. Stored in the work's derived_metadata_jsonb, as :htr_transcript_status.
+  # handwriting. Stored in the work's derived_metadata_jsonb, as :htr_transcription_request.
   # We only keep the current request, not a history of past ones.
   #
   # Statuses move from "started" -> "requested" -> "received", and end in one of

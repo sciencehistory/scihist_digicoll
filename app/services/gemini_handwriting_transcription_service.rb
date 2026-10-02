@@ -289,7 +289,7 @@ class GeminiHandwritingTranscriptionService
   def write_request_state!(**attributes)
     request_state.assign_attributes(attributes)
 
-    work.htr_transcript_status = request_state
+    work.htr_transcription_request = request_state
     work.save!
   end
 

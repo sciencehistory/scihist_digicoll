@@ -41,14 +41,14 @@ describe Work::HtrTranscriptionRequest do
     let(:work) { create(:work) }
 
     it "is nil until a request is made" do
-      expect(work.htr_transcript_status).to be_nil
+      expect(work.htr_transcription_request).to be_nil
     end
 
     it "round-trips through the database, with a real Time for start_time" do
       now = Time.current
-      work.update!(htr_transcript_status: described_class.new(status: "requested", start_time: now))
+      work.update!(htr_transcription_request: described_class.new(status: "requested", start_time: now))
 
-      reloaded = work.reload.htr_transcript_status
+      reloaded = work.reload.htr_transcription_request
 
       expect(reloaded).to be_a(described_class)
       expect(reloaded.status).to eq("requested")
@@ -57,9 +57,9 @@ describe Work::HtrTranscriptionRequest do
     end
 
     it "accepts a plain hash" do
-      work.update!(htr_transcript_status: { "status" => "failure", "error" => "oops" })
+      work.update!(htr_transcription_request: { "status" => "failure", "error" => "oops" })
 
-      expect(work.reload.htr_transcript_status).to have_attributes(status: "failure", error: "oops")
+      expect(work.reload.htr_transcription_request).to have_attributes(status: "failure", error: "oops")
     end
   end
 
@@ -72,9 +72,9 @@ describe Work::HtrTranscriptionRequest do
 
     it "don't prevent loading previously-stored data with some other shape" do
       work = create(:work)
-      work.update!(htr_transcript_status: { "status" => "error", "errors" => ["an old-style error"] })
+      work.update!(htr_transcription_request: { "status" => "error", "errors" => ["an old-style error"] })
 
-      expect(work.reload.htr_transcript_status.status).to eq("error")
+      expect(work.reload.htr_transcription_request.status).to eq("error")
     end
   end
 end
