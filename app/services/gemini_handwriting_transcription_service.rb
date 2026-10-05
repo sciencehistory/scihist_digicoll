@@ -256,7 +256,7 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
-  # Published assets with derivatives we can use.
+  # Published IMAGE assets with a derivative we consider high-res enough to use.
   def eligible_assets
     @eligible_assets ||= work.
       members.
