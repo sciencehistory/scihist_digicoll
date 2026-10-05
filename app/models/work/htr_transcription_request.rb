@@ -13,9 +13,11 @@ class Work
 
     attr_json_config(unknown_key: :allow)
 
-    TERMINAL_STATUSES = %w{success failure}.freeze
+    STATUS_VALUES = %w{started requested received success failure}
 
     attr_json :status, :string
+    validates :status, inclusion: { in: STATUS_VALUES, allow_blank: true }
+
     attr_json :error, :string
     attr_json :start_time, :datetime
 
@@ -29,7 +31,7 @@ class Work
 
     # Has reached a final status; it won't change on its own any more.
     def finished?
-      status.in?(TERMINAL_STATUSES)
+      success? || failure?
     end
 
     # Underway, but not finished yet.
