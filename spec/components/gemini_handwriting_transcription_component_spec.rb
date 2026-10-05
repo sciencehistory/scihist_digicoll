@@ -11,7 +11,7 @@ describe GeminiHandwritingTranscriptionComponent, type: :component do
   end
 
   def store_request(**attributes)
-    work.update!(htr_transcription_request: Work::HtrTranscriptionRequest.new(**attributes))
+    work.update!(handwriting_transcription_request: Work::HandwritingTranscriptionRequest.new(**attributes))
   end
 
   describe "with no request ever made" do

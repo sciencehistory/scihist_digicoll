@@ -9,11 +9,11 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
     GeminiHandwritingTranscriptionService.new(work: work).work_eligibility_problems
   end
 
-  # The Work::HtrTranscriptionRequest currently stored on the work, or nil if
+  # The Work::HandwritingTranscriptionRequest currently stored on the work, or nil if
   # none has ever been made. (We only ever keep the current request, not a
   # history of past attempts.)
   def current_request
-    work.htr_transcription_request
+    work.handwriting_transcription_request
   end
 
   # A human-readable sentence describing the status of the current
