@@ -85,10 +85,19 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def has_transcription_or_translation?
-    # at least one 'english_translation' or 'transcription' that is not NULL and not empty string
-    @has_transcription_or_translation ||= ordered_viewable_members_scope.
-      where("NULLIF(json_attributes ->> 'english_translation', '') is not null OR NULLIF(json_attributes ->> 'transcription', '') is not null").
-      exists?
+
+    # at least one transcription or translation is not NULL and not empty string
+    transcript_metadata_locations = [
+      [ 'json_attributes',         'english_translation'],
+      [ 'json_attributes',        'transcription'      ],
+      [ 'derived_metadata_jsonb', 'htr_transcript'     ]
+    ]
+
+    sql_test = transcript_metadata_locations.map do |attribute, value|
+      "NULLIF( #{attribute} ->> '#{value}', '') is not null" 
+     end.join(' OR ')
+
+    @has_transcription_or_translation ||= ordered_viewable_members_scope.where(sql_test).exists?
   end
 
 
