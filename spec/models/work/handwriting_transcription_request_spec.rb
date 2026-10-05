@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe Work::HtrTranscriptionRequest do
+describe Work::HandwritingTranscriptionRequest do
   describe "status predicates" do
     it "is neither pending nor finished with no status" do
       request = described_class.new
@@ -41,14 +41,14 @@ describe Work::HtrTranscriptionRequest do
     let(:work) { create(:work) }
 
     it "is nil until a request is made" do
-      expect(work.htr_transcription_request).to be_nil
+      expect(work.handwriting_transcription_request).to be_nil
     end
 
     it "round-trips through the database, with a real Time for start_time" do
       now = Time.current
-      work.update!(htr_transcription_request: described_class.new(status: "requested", start_time: now))
+      work.update!(handwriting_transcription_request: described_class.new(status: "requested", start_time: now))
 
-      reloaded = work.reload.htr_transcription_request
+      reloaded = work.reload.handwriting_transcription_request
 
       expect(reloaded).to be_a(described_class)
       expect(reloaded.status).to eq("requested")
@@ -57,9 +57,9 @@ describe Work::HtrTranscriptionRequest do
     end
 
     it "accepts a plain hash" do
-      work.update!(htr_transcription_request: { "status" => "failure", "error" => "oops" })
+      work.update!(handwriting_transcription_request: { "status" => "failure", "error" => "oops" })
 
-      expect(work.reload.htr_transcription_request).to have_attributes(status: "failure", error: "oops")
+      expect(work.reload.handwriting_transcription_request).to have_attributes(status: "failure", error: "oops")
     end
   end
 
@@ -72,9 +72,9 @@ describe Work::HtrTranscriptionRequest do
 
     it "don't prevent loading previously-stored data with some other shape" do
       work = create(:work)
-      work.update!(htr_transcription_request: { "status" => "failure", "errors" => ["an old-style error"] })
+      work.update!(handwriting_transcription_request: { "status" => "failure", "errors" => ["an old-style error"] })
 
-      expect(work.reload.htr_transcription_request.status).to eq("failure")
+      expect(work.reload.handwriting_transcription_request.status).to eq("failure")
     end
   end
 end

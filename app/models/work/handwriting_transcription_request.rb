@@ -1,6 +1,6 @@
 class Work
   # The state of the current (or most recent) request to transcribe a work's
-  # handwriting. Stored in the work's derived_metadata_jsonb, as :htr_transcription_request.
+  # handwriting. Stored in the work's derived_metadata_jsonb, as :handwriting_transcription_request.
   # We only keep the current request, not a history of past ones.
   #
   # Statuses move from "started" -> "requested" -> "received", and end in one of
@@ -8,7 +8,7 @@ class Work
   #
   # Unknown keys are allowed, so we can add more details about requests later
   # without having to change this class.
-  class HtrTranscriptionRequest
+  class HandwritingTranscriptionRequest
     include AttrJson::Model
 
     attr_json_config(unknown_key: :allow)
