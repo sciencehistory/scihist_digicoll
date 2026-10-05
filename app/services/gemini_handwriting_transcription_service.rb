@@ -33,17 +33,17 @@ class GeminiHandwritingTranscriptionService
         "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
     end
 
-    write_request_state!(status: 'started')
+    update_htr_transcription_request(status: 'started')
 
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
 
       response = request_transcription(staged_images)
-      write_request_state!(status: 'received')
+      update_htr_transcription_request(status: 'received')
 
       process_results(response: response, staged_images: staged_images)
     end
-    write_request_state!(status: 'success')
+    update_htr_transcription_request(status: 'success')
   end
 
   # Any and all reasons to exclude a work from receiving a transcript.
@@ -107,7 +107,7 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    write_request_state!(status: 'requested', start_time: Time.current)
+    update_htr_transcription_request(status: 'requested', start_time: Time.current)
 
     model = ScihistDigicoll::Env.lookup("gemini_model")
 
@@ -120,7 +120,7 @@ class GeminiHandwritingTranscriptionService
     )
   rescue HTTP::Error, SocketError => e
     msg = "Could not reach Gemini: #{e.class}: #{e.message}"
-    write_request_state!(status: 'failure', error: msg)
+    update_htr_transcription_request(status: 'failure', error: msg)
 
     raise AdapterError, msg
   end
@@ -159,7 +159,7 @@ class GeminiHandwritingTranscriptionService
     return if response.status.success?
 
     msg = "Gemini transcription failed with HTTP status #{response.status}: #{error_summary(response)}"
-    write_request_state!(status: 'failure', error: msg)
+    update_htr_transcription_request(status: 'failure', error: msg)
     raise AdapterError, msg
   end
 
@@ -176,14 +176,14 @@ class GeminiHandwritingTranscriptionService
 
     if text.blank?
       msg = "Gemini returned an empty response"
-      write_request_state!(status: 'failure', error: msg)
+      update_htr_transcription_request(status: 'failure', error: msg)
       raise InvalidResponseError, msg
     end
 
     text
   rescue JSON::ParserError => e
     msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
-    write_request_state!(status: 'failure', error: msg)
+    update_htr_transcription_request(status: 'failure', error: msg)
     raise InvalidResponseError, msg
   end
 
@@ -193,7 +193,7 @@ class GeminiHandwritingTranscriptionService
   rescue JSON::ParserError => e
     msg = "Gemini's response was not valid JSON. JSON error: #{e.message}"
 
-    write_request_state!(status: 'failure', error: msg)
+    update_htr_transcription_request(status: 'failure', error: msg)
     raise InvalidResponseError, msg
   end
 
@@ -203,7 +203,7 @@ class GeminiHandwritingTranscriptionService
 
     unless pages.is_a?(Array)
       msg = "Gemini response does not contain a pages array"
-      write_request_state!(status: 'failure', error: msg)
+      update_htr_transcription_request(status: 'failure', error: msg)
       raise InvalidResponseError, msg
     end
 
@@ -213,7 +213,7 @@ class GeminiHandwritingTranscriptionService
           page["transcript"].is_a?(String)
 
         msg = "Gemini returned an invalid page entry: #{page.inspect}"
-        write_request_state!(status: 'failure', error: msg)
+        update_htr_transcription_request(status: 'failure', error: msg)
         raise InvalidResponseError, msg
       end
     end
@@ -230,7 +230,7 @@ class GeminiHandwritingTranscriptionService
         Expected: #{expected_filenames.inspect}.
         Returned: #{returned_filenames.inspect}.
       MESSAGE
-      write_request_state!(status: 'failure', error: msg)
+      update_htr_transcription_request(status: 'failure', error: msg)
       raise InvalidResponseError, msg
     end
 
@@ -256,7 +256,7 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
-  # Published assets with derivatives we can use.
+  # Published IMAGE assets with a derivative we consider high-res enough to use.
   def eligible_assets
     @eligible_assets ||= work.
       members.
@@ -281,13 +281,8 @@ class GeminiHandwritingTranscriptionService
 
   # Keep track of the state of the transcription request.
   # Takes any attributes of Work::HtrTranscriptionRequest (status:, error:, start_time:, ...).
-  def write_request_state!(**attributes)
-    request_state.assign_attributes(attributes)
-    work.htr_transcription_request = request_state
+  def update_htr_transcription_request(**attributes)
+    (work.htr_transcription_request ||= Work::HtrTranscriptionRequest.new).assign_attributes(attributes)
     work.save!
-  end
-
-  def request_state
-    @request_state ||= Work::HtrTranscriptionRequest.new
   end
 end

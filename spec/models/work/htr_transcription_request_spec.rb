@@ -72,9 +72,9 @@ describe Work::HtrTranscriptionRequest do
 
     it "don't prevent loading previously-stored data with some other shape" do
       work = create(:work)
-      work.update!(htr_transcription_request: { "status" => "error", "errors" => ["an old-style error"] })
+      work.update!(htr_transcription_request: { "status" => "failure", "errors" => ["an old-style error"] })
 
-      expect(work.reload.htr_transcription_request.status).to eq("error")
+      expect(work.reload.htr_transcription_request.status).to eq("failure")
     end
   end
 end
