@@ -64,7 +64,7 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(service).to have_received(:request_transcription).once
 
-      expect(work.reload.htr_transcription_request).to be_success
+      expect(work.reload.handwriting_transcription_request).to be_success
 
       expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
         .to eq(sample_transcripts)
@@ -132,7 +132,7 @@ describe GeminiHandwritingTranscriptionService do
         service.send(:request_transcription, staged_images)
       end
 
-      request_state = work.reload.htr_transcription_request
+      request_state = work.reload.handwriting_transcription_request
 
       expect(request_state.status).to eq("requested")
       expect(request_state.start_time).to be_within(1.second).of(now)
@@ -145,7 +145,7 @@ describe GeminiHandwritingTranscriptionService do
         service.send(:request_transcription, staged_images)
       }.to raise_error(described_class::AdapterError, /Could not reach Gemini/)
 
-      request_state = work.reload.htr_transcription_request
+      request_state = work.reload.handwriting_transcription_request
 
       expect(request_state.status).to eq("failure")
       expect(request_state.error).to include("Could not reach Gemini")
@@ -379,7 +379,7 @@ describe GeminiHandwritingTranscriptionService do
     expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
       .to eq(original_transcripts)
 
-    expect(work.reload.htr_transcription_request).to have_attributes(
+    expect(work.reload.handwriting_transcription_request).to have_attributes(
       status: "failure",
       error: a_string_including(message)
     )
