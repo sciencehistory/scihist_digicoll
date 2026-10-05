@@ -282,12 +282,7 @@ class GeminiHandwritingTranscriptionService
   # Keep track of the state of the transcription request.
   # Takes any attributes of Work::HtrTranscriptionRequest (status:, error:, start_time:, ...).
   def write_request_state!(**attributes)
-    request_state.assign_attributes(attributes)
-    work.htr_transcription_request = request_state
+    (work.htr_transcription_request ||= Work::HtrTranscriptionRequest.new).assign_attributes(attributes)
     work.save!
-  end
-
-  def request_state
-    @request_state ||= Work::HtrTranscriptionRequest.new
   end
 end
