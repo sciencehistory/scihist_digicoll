@@ -148,6 +148,8 @@ class GeminiHandwritingTranscriptionService
       staged_images: staged_images
     )
 
+    ReindexWorksJob.perform_later([work&.id])
+
     Rails.logger.info(
       "Gemini handwriting transcription completed for work #{work.friendlier_id}"
     )
