@@ -127,7 +127,7 @@ class Asset < Kithe::Asset
   # really anticipated for any other use.
   attr_json :caption, :string
 
-  attr_json :transcription, :text # see also htr_transcript below
+  attr_json :transcription, :text # see also handwriting_transcription below
   attr_json :english_translation, :text
 
   # If this is set, do not create OCR for this asset,
@@ -145,7 +145,7 @@ class Asset < Kithe::Asset
 
   # Handwritten transcript data from Google Gemini.
   # See also transcription above for transcriptions authored by people.
-  attr_json :htr_transcript, :text, container_attribute: :derived_metadata_jsonb
+  attr_json :handwriting_transcription, :text, container_attribute: :derived_metadata_jsonb
 
 
   # Only for assets with role `extracted_pdf_page`, some info about source of extraction
