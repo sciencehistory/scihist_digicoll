@@ -124,6 +124,11 @@ describe Asset do
         Asset.create!(title: "asset", transcription: "transcription", parent: parent)
         expect(WebMock).to have_requested(:post, solr_update_url_regex)
       end
+
+      it "re-indexes parent with a handwriting transcription in child" do
+        Asset.create!(title: "asset", handwriting_transcription: "handwriting transcription", parent: parent)
+        expect(WebMock).to have_requested(:post, solr_update_url_regex)
+      end
     end
 
     describe "destroy asset" do
@@ -152,6 +157,19 @@ describe Asset do
           expect(WebMock).to have_requested(:post, solr_update_url_regex)
         end
       end
+
+      describe "when asset has a handwriting transcription" do
+        let(:asset) do
+          Kithe::Indexable.index_with(disable_callbacks: true) do
+            create(:asset, parent: create(:work), handwriting_transcription: "some handwriting")
+          end
+        end
+
+        it "re-indexes" do
+          asset.destroy!
+          expect(WebMock).to have_requested(:post, solr_update_url_regex)
+        end
+      end
     end
 
     describe "existing asset with indexed attributes" do
@@ -164,6 +182,24 @@ describe Asset do
 
       it "is reindexed on published status change" do
         asset.update!(published: !asset.published)
+        expect(WebMock).to have_requested(:post, solr_update_url_regex)
+      end
+    end
+
+    describe "existing asset with a handwriting transcription" do
+      let(:asset) do
+        Kithe::Indexable.index_with(disable_callbacks: true) do
+          create(:asset, parent: create(:work), handwriting_transcription: "some handwriting")
+        end
+      end
+
+      it "is reindexed on published status change" do
+        asset.update!(published: !asset.published)
+        expect(WebMock).to have_requested(:post, solr_update_url_regex)
+      end
+
+      it "is reindexed when the handwriting transcription changes" do
+        asset.update!(handwriting_transcription: "revised handwriting")
         expect(WebMock).to have_requested(:post, solr_update_url_regex)
       end
     end

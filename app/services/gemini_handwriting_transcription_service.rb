@@ -148,8 +148,6 @@ class GeminiHandwritingTranscriptionService
       staged_images: staged_images
     )
 
-    ReindexWorksJob.perform_later([work&.id])
-
     Rails.logger.info(
       "Gemini handwriting transcription completed for work #{work.friendlier_id}"
     )
@@ -239,21 +237,25 @@ class GeminiHandwritingTranscriptionService
     pages
   end
 
-  # Attach the transcript of each page to its asset
+  # Attach the transcript of each page to its asset. Saving an asset with a new
+  # handwriting_transcription re-indexes its parent work, so we batch to send
+  # all those updates to Solr together.
   def attach_transcripts!(pages, staged_images:)
     pages_by_filename =
       pages.index_by { |page| page.fetch("filename") }
 
-    Asset.transaction do
-      staged_images.each do |image|
-        asset = image.fetch(:asset)
-        filename = image.fetch(:filename)
-        transcript = pages_by_filename.fetch(filename).fetch("transcript")
+    Kithe::Indexable.index_with(batching: true) do
+      Asset.transaction do
+        staged_images.each do |image|
+          asset = image.fetch(:asset)
+          filename = image.fetch(:filename)
+          transcript = pages_by_filename.fetch(filename).fetch("transcript")
 
-        Rails.logger.info(
-          "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
-        )
-        asset.update!(handwriting_transcription: transcript)
+          Rails.logger.info(
+            "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
+          )
+          asset.update!(handwriting_transcription: transcript)
+        end
       end
     end
   end

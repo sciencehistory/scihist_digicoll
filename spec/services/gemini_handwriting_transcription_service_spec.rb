@@ -165,6 +165,33 @@ describe GeminiHandwritingTranscriptionService do
     end
   end
 
+  # we use webmock on the Solr connection as a way to test "did indexing get triggered?"
+  describe "reindexing", indexable_callbacks: true do
+    let(:solr_update_url_regex) { /^#{Regexp.escape(ScihistDigicoll::Env.lookup!(:solr_url) + "/update/json")}/ }
+
+    before do
+      stub_request(:any, solr_update_url_regex)
+
+      # create our fixtures, and forget the Solr updates that caused. Reload
+      # the work, so it doesn't hold on to the factory's copies of its members.
+      staged_images
+      work.reload
+      WebMock.reset_executed_requests!
+    end
+
+    it "reindexes the work, in one batch, including the new transcripts" do
+      service.send(
+        :process_results,
+        response: gemini_response(text: JSON.generate("pages" => pages)),
+        staged_images: staged_images
+      )
+
+      expect(WebMock).to have_requested(:post, solr_update_url_regex).once.with { |request|
+        request.body.include?("Dear Cousin James")
+      }
+    end
+  end
+
   describe "#validate_adapter_result!" do
     it "accepts a successful, non-empty adapter response" do
       expect {
