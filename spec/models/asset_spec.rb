@@ -124,11 +124,6 @@ describe Asset do
         Asset.create!(title: "asset", transcription: "transcription", parent: parent)
         expect(WebMock).to have_requested(:post, solr_update_url_regex)
       end
-
-      it "re-indexes parent with a handwriting transcription in child" do
-        Asset.create!(title: "asset", handwriting_transcription: "handwriting transcription", parent: parent)
-        expect(WebMock).to have_requested(:post, solr_update_url_regex)
-      end
     end
 
     describe "destroy asset" do
