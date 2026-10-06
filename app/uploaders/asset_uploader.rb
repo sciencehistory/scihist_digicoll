@@ -140,8 +140,8 @@ class AssetUploader < Kithe::AssetUploader
       original_filename: "extracted_pdf_text.json",
       mime_type: "application/json",
       source: {
-        pdf_md5: attacher.file&.md5,
-        source_version: ENV['SOURCE_VERSION']
+        "pdf_md5" => attacher.file&.md5,
+        "source_version" => ENV['SOURCE_VERSION']
       }
     )
 
