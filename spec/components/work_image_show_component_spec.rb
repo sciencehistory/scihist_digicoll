@@ -112,3 +112,21 @@ describe WorkImageShowComponent, type: :component do
     end
   end
 end
+
+describe WorkImageShowComponent, "handwriting transcription tab", type: :component do
+  let(:asset) { create(:asset_with_faked_file, faked_derivatives: {}, position: 0) }
+  let(:work) { create(:work, :published, :with_complete_metadata, members: [asset], representative: asset) }
+
+  it "has no transcription tabs when there is no transcript" do
+    render_inline described_class.new(work)
+    expect(page).not_to have_css("#handwriting-transcription-tab")
+  end
+
+  it "shows a handwriting transcription tab when an asset has one" do
+    asset.update!(handwriting_transcription: "some machine-read handwriting")
+
+    render_inline described_class.new(work)
+    expect(page).to have_css("a#handwriting-transcription-tab[href='#handwriting-transcription']")
+    expect(page).to have_css("#handwriting-transcription", text: "some machine-read handwriting")
+  end
+end

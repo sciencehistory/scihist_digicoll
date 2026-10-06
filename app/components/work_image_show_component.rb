@@ -90,7 +90,7 @@ class WorkImageShowComponent < ApplicationComponent
     transcript_metadata_locations = [
       [ 'json_attributes',         'english_translation'],
       [ 'json_attributes',        'transcription'      ],
-      [ 'derived_metadata_jsonb', 'htr_transcript'     ]
+      [ 'derived_metadata_jsonb', 'handwriting_transcription']
     ]
 
     sql_test = transcript_metadata_locations.map do |attribute, value|

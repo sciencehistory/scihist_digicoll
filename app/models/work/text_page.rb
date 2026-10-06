@@ -16,7 +16,7 @@ class Work
     # @param members [Array<Kithe::Model>] Array of "members", Works or Assets.
     #   At the moment, Works are skipped, only Assets are numbered in order.
     #
-    # @param accessor [Symbol] generally `:transcription` or `:english_translation` or `:htr_transcript`
+    # @param accessor [Symbol] generally `:transcription` or `:english_translation` or `:handwriting_transcription`
     #    method to get the text from.
     def self.compile(members, accessor:)
       members.collect.with_index do |member, i|

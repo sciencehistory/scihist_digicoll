@@ -20,8 +20,8 @@ class TranscriptionTabsComponent < ApplicationComponent
     @transcription_texts ||= Work::TextPage.compile(members, accessor: :transcription)
   end
 
-  def htr_transcript_texts
-    @htr_transcript_texts ||= Work::TextPage.compile(members, accessor: :htr_transcript)
+  def handwriting_transcription_texts
+    @handwriting_transcription_texts ||= Work::TextPage.compile(members, accessor: :handwriting_transcription)
   end
 
   def translation_texts

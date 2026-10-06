@@ -51,7 +51,7 @@ describe GeminiHandwritingTranscriptionComponent, type: :component do
       expect(result.text).to include("Request a new transcription to replace the current one")
 
       link = result.css("a").find { |a| a.text.include?("view transcript") }
-      expect(link["href"]).to eq("/works/#{work.friendlier_id}#tab=htr-transcript")
+      expect(link["href"]).to eq("/works/#{work.friendlier_id}#tab=handwriting-transcription")
     end
   end
 
