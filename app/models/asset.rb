@@ -257,7 +257,7 @@ class Asset < Kithe::Asset
   # worse if we end up not indexing when we do!
   #
   # This may be "too clever"... but seems ok?
-  def should_reindex_parent_after_save?(indexed_attributes: [:transcription, :english_translation, :audio_asr_enabled])
+  def should_reindex_parent_after_save?(indexed_attributes: [:transcription, :handwriting_transcription, :english_translation, :audio_asr_enabled])
     if parent.nil?
       return false
     elsif self.destroyed?

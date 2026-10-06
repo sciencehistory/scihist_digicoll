@@ -213,6 +213,7 @@ class WorkIndexer < Kithe::Indexer
       # Manual transcription, OCR, ASR, whatever
       if rec.language == ['English']
         acc.concat get_string_from_each_published_member(rec, :transcription)
+        acc.concat get_string_from_each_published_member(rec, :handwriting_transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
         acc.concat get_webvtt(rec)
       end
@@ -229,6 +230,7 @@ class WorkIndexer < Kithe::Indexer
       if rec.language == ['German']
         # Index the transcription and OCR here if the work is entirely in German.
         acc.concat get_string_from_each_published_member(rec, :transcription)
+        acc.concat get_string_from_each_published_member(rec, :handwriting_transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
         acc.concat get_webvtt(rec)
       end
@@ -241,6 +243,7 @@ class WorkIndexer < Kithe::Indexer
       entirely_in_german  = (rec.language == ['German'])
       unless entirely_in_english || entirely_in_german
         acc.concat get_string_from_each_published_member(rec, :transcription)
+        acc.concat get_string_from_each_published_member(rec, :handwriting_transcription)
         acc.concat get_string_from_each_published_member(rec, :hocr).map { |hocr| ocr_text(hocr) }
         acc.concat get_webvtt(rec)
       end

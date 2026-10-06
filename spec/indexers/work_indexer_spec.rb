@@ -412,6 +412,73 @@ describe WorkIndexer do
       end
     end
 
+    describe "with handwriting transcription" do
+      let(:assets) do
+        [3,2,1].map { |page| create(
+          :asset,
+          handwriting_transcription: "htr_#{page}",
+          position: page,
+          published: true
+          ) }
+      end
+
+      let(:expected_htr) { ["htr_1", "htr_2", "htr_3"] }
+
+      let(:output_hash) { WorkIndexer.new.map_record(language_test_work) }
+      let(:english) { output_hash["searchable_fulltext_en"] }
+      let(:german)  { output_hash["searchable_fulltext_de"] }
+      let(:unsure)  { output_hash["searchable_fulltext_language_agnostic"] }
+
+      describe "text known to be in English" do
+        let(:language_test_work) { create(:public_work, language: ['English'], members: assets ) }
+        it "goes in searchable_fulltext_en" do
+          expect(english).to eq(expected_htr)
+          expect(german).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "text known to be in German" do
+        let(:language_test_work) { create(:public_work, language: ['German'], members: assets ) }
+        it "goes in searchable_fulltext_de" do
+          expect(german).to eq(expected_htr)
+          expect(english).to be_nil
+          expect(unsure).to be_nil
+        end
+      end
+      describe "bilingual text" do
+        let(:language_test_work) { create(:public_work, language: ['English', 'German'], members: assets) }
+        it "goes in searchable_fulltext_language_agnostic" do
+          expect(german).to be_nil
+          expect(unsure).to eq(expected_htr)
+          expect(english).to be_nil
+        end
+      end
+
+      describe "alongside a transcription created by a person" do
+        let(:assets) do
+          [create(:asset, transcription: "human_1", handwriting_transcription: "htr_1", position: 1, published: true)]
+        end
+        let(:language_test_work) { create(:public_work, language: ['English'], members: assets) }
+
+        it "indexes both" do
+          expect(english).to eq(["human_1", "htr_1"])
+        end
+      end
+
+      describe "with unpublished assets" do
+        let(:assets) do
+          [create(:asset, handwriting_transcription: "htr_1", position: 1, published: false)]
+        end
+        let(:language_test_work) { create(:public_work, language: ['English'], members: assets) }
+
+        it "does not index" do
+          expect(english).to be_blank
+          expect(german).to be_blank
+          expect(unsure).to be_blank
+        end
+      end
+    end
+
     describe "with webvtt" do
       let(:assets) do
         [2, 1].map { |page| create(
