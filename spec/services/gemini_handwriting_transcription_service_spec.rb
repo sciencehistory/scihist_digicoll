@@ -9,7 +9,7 @@ describe GeminiHandwritingTranscriptionService do
     ]
   end
 
-  let(:asset_attribute_for_transcript) { :htr_transcript }
+  let(:asset_attribute_for_transcript) { :handwriting_transcription }
 
   let(:assets) { [asset1, asset2, asset3] }
   let(:asset1) { build_tiff_asset(position: 1) }

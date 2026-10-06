@@ -3,7 +3,7 @@ require 'http'
 # GeminiHandwritingTranscriptionService.new(work: work).call
 #
 # will ask Gemini for a transcript for each image asset on the work, then
-# attach a transcript to the :htr_transcript attribute for each image asset in the work.
+# attach a transcript to the :handwriting_transcription attribute for each image asset in the work.
 class GeminiHandwritingTranscriptionService
 
   # this is just the superclass of all the errors this class can throw.
@@ -251,7 +251,7 @@ class GeminiHandwritingTranscriptionService
         Rails.logger.info(
           "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
         )
-        asset.update!(htr_transcript: transcript)
+        asset.update!(handwriting_transcription: transcript)
       end
     end
   end
