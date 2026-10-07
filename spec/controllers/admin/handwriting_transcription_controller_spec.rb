@@ -65,5 +65,18 @@ RSpec.describe Admin::HandwritingTranscriptionController, :logged_in_user, type:
       expect(response).to redirect_to("#{admin_work_path(work)}#tab=nav-ocr")
       expect(flash[:notice]).to eq("Transcript successfully deleted")
     end
+
+    it "acknowledges an error, and logs it" do
+      allow_any_instance_of(GeminiHandwritingTranscriptionService)
+        .to receive(:remove_transcription!).and_raise(StandardError.new("something broke"))
+      allow(Rails.logger).to receive(:error)
+
+      delete :delete_handwriting_transcription, params: { work_id: work.friendlier_id }
+
+      expect(response).to redirect_to("#{admin_work_path(work)}#tab=nav-ocr")
+      expect(flash[:error]).to eq("We were unable to delete the transcript. Please check the logs for more information.")
+      expect(flash[:notice]).to be_nil
+      expect(Rails.logger).to have_received(:error).with(/Could not delete handwriting transcript for work #{work.friendlier_id}: StandardError: something broke/)
+    end
   end
 end

@@ -24,6 +24,15 @@ class Admin::HandwritingTranscriptionController < AdminController
       admin_work_path(@work, anchor: "tab=nav-ocr"),
       flash: { notice: "Transcript successfully deleted" }
     )
+  rescue StandardError => e
+    Rails.logger.error(
+      "Could not delete handwriting transcript for work #{@work.friendlier_id}: #{e.class}: #{e.message}\n#{e.backtrace&.first(10)&.join("\n")}"
+    )
+
+    redirect_to(
+      admin_work_path(@work, anchor: "tab=nav-ocr"),
+      flash: { error: "We were unable to delete the transcript. Please check the logs for more information." }
+    )
   end
 
   private
