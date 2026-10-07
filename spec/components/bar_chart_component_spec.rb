@@ -24,11 +24,16 @@ describe BarChartComponent, type: :component do
     expect(page.css(".bar-chart__group-label").map(&:text)).to eq ["July 2026", "August 2026", "Sep 2026"]
   end
 
+  it "applies caption_class to the caption title" do
+    html = render_inline(described_class.new(groups: groups, caption: "Title", caption_class: "h2"))
+    expect(html.at_css("figcaption .bar-chart__caption-title.h2").text).to eq "Title"
+  end
+
   it "renders optional hint in the figcaption, only when given" do
-    expect(page).not_to have_selector(".bar-chart__hint")
+    expect(page).not_to have_selector(".text-muted")
 
     hinted = render_inline(described_class.new(groups: groups, hint: "Some explanation"))
-    expect(hinted.at_css("figcaption .bar-chart__hint").text).to eq "Some explanation"
+    expect(hinted.at_css("figcaption .text-muted").text).to eq "Some explanation"
     expect(hinted).not_to have_selector(".bar-chart__caption-title")
   end
 
