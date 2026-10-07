@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_06_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -202,6 +202,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
     t.string "friendlier_id", default: -> { "kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint)" }, null: false
     t.jsonb "json_attributes"
     t.integer "kithe_model_type", null: false
+    t.bigint "last_published_by_id"
     t.uuid "leaf_representative_id"
     t.uuid "parent_id"
     t.integer "position"
@@ -215,6 +216,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
     t.index ["created_by_id"], name: "index_kithe_models_on_created_by_id"
     t.index ["file_data"], name: "index_kithe_models_on_file_data", using: :gin
     t.index ["friendlier_id"], name: "index_kithe_models_on_friendlier_id", unique: true
+    t.index ["last_published_by_id"], name: "index_kithe_models_on_last_published_by_id"
     t.index ["leaf_representative_id"], name: "index_kithe_models_on_leaf_representative_id"
     t.index ["parent_id"], name: "index_kithe_models_on_parent_id"
     t.index ["representative_id"], name: "index_kithe_models_on_representative_id"
@@ -377,6 +379,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_10_06_120000) do
   add_foreign_key "kithe_models", "kithe_models", column: "parent_id"
   add_foreign_key "kithe_models", "kithe_models", column: "representative_id"
   add_foreign_key "kithe_models", "users", column: "created_by_id"
+  add_foreign_key "kithe_models", "users", column: "last_published_by_id"
   add_foreign_key "on_demand_derivatives", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "oral_history_requester_emails"
