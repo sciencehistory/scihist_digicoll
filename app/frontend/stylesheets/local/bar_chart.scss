@@ -1,0 +1,91 @@
+// CSS for BarChartComponent. Bars are drawn with ::before pseudo-elements sized from
+// the --bar-chart-value / --bar-chart-max custom properties the component sets inline;
+// all the text (values, series labels, group labels) is real, visible content.
+//
+// Customize by overriding these custom properties on .bar-chart or an ancestor:
+//
+//   --bar-chart-height       height of the bar area
+//   --bar-chart-bar-width    width of each bar
+//   --bar-chart-bar-gap      space between bars within a group
+//   --bar-chart-group-gap    space between groups
+//   --bar-chart-color-1 ... 4  colors of 1st-4th series, cycling after that
+.bar-chart {
+  --bar-chart-height: 12rem;
+  --bar-chart-bar-width: 4.5rem;
+  --bar-chart-bar-gap: 0.25rem;
+  --bar-chart-group-gap: 2rem;
+  --bar-chart-color-1: #{$shi-teal-4};
+  --bar-chart-color-2: #{$shi-chartreuse-4};
+  --bar-chart-color-3: #{$shi-red-4};
+  --bar-chart-color-4: #{$shi-blackish};
+
+  margin: 1rem 0;
+  overflow-x: auto; // many groups scroll rather than breaking the page layout
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+.bar-chart__caption {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.bar-chart__groups {
+  display: flex;
+  gap: var(--bar-chart-group-gap);
+  align-items: flex-start;
+  width: max-content;
+  min-width: 100%;
+}
+
+// group: bars on top, group label underneath, even though label comes first in the source
+.bar-chart__group {
+  display: grid;
+  grid-template-rows: auto auto;
+  text-align: center;
+}
+.bar-chart__group-label {
+  grid-row: 2;
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+.bar-chart__bars {
+  grid-row: 1;
+  display: flex;
+  gap: var(--bar-chart-bar-gap);
+}
+
+// bar: pseudo-element graphic, then value, then series label underneath
+.bar-chart__bar {
+  display: grid;
+  grid-template-rows: var(--bar-chart-height) auto auto;
+  width: var(--bar-chart-bar-width);
+  --bar-chart-color: var(--bar-chart-color-1);
+  // baseline rule under the bar area
+  background: linear-gradient(currentColor, currentColor) 0 var(--bar-chart-height) / 100% 1px no-repeat;
+
+  &:nth-child(4n + 2) { --bar-chart-color: var(--bar-chart-color-2); }
+  &:nth-child(4n + 3) { --bar-chart-color: var(--bar-chart-color-3); }
+  &:nth-child(4n + 4) { --bar-chart-color: var(--bar-chart-color-4); }
+
+  &::before {
+    content: "";
+    grid-row: 1;
+    align-self: end;
+    background: var(--bar-chart-color);
+    // no --bar-chart-value (nil data) means no bar
+    height: calc(100% * var(--bar-chart-value, 0) / var(--bar-chart-max, 1));
+  }
+}
+.bar-chart__bar-value {
+  grid-row: 2;
+  font-variant-numeric: tabular-nums;
+}
+.bar-chart__bar-label {
+  grid-row: 3;
+  font-size: 0.85em;
+}
