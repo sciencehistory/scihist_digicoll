@@ -23,15 +23,19 @@ describe WorkCountReport do
       create(:work, created_at: Time.zone.local(2026, 8, 1, 0, 0),    published_at: Time.zone.local(2026, 8, 31, 23, 59, 59))
       create(:work, created_at: Time.zone.local(2026, 8, 20),         published_at: Time.zone.local(2026, 9, 1, 0, 0))
       create(:work, created_at: Time.zone.local(2026, 10, 2),         published_at: Time.zone.local(2026, 10, 3)) # current month: excluded
+      # published before we tracked published_at; earliest known published_at is 2026-08-31
+      # (kithe sets published_at on save, so clear it afterwards)
+      create_list(:work, 2, :published, created_at: Time.zone.local(2026, 2, 1)).each { |w| w.update_column(:published_at, nil) }
     end
 
     it "counts cumulative totals and per-month values" do
       months = report.months_with_counts.index_by { |month| month.starts_on.month }
 
-      expect(counts_for(months[4])).to eq [1, 0, 0, 0]
-      expect(counts_for(months[7])).to eq [1, 0, 0, 0]
-      expect(counts_for(months[8])).to eq [3, 2, 1, 1]
-      expect(counts_for(months[9])).to eq [3, 0, 2, 1]
+      expect(counts_for(months[4])).to eq [3, 0, 0, 0]
+      expect(counts_for(months[7])).to eq [3, 0, 0, 0]
+      # undated published works count only from the month containing the earliest published_at
+      expect(counts_for(months[8])).to eq [5, 2, 3, 1]
+      expect(counts_for(months[9])).to eq [5, 0, 4, 1]
     end
   end
 end

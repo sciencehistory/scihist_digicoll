@@ -4,6 +4,10 @@
 #
 #   total   = works with the date on or before the end of that month
 #   current = works with the date within that month
+#
+# Works published before we tracked published_at have published = true but no
+# published_at. We don't know when, so they are added to the Published total
+# of every month ending after the earliest known published_at.
 class WorkCountReport
   # Cumulative totals, and counts within just that one month, for each date column.
   class MonthCounts
@@ -29,10 +33,11 @@ class WorkCountReport
 
   # @return [Array<MonthCounts>] oldest first
   def months_with_counts
-    counts = Work.pick(*aggregates.map { |sql| Arel.sql(sql) })
+    *counts, min_published_at, undated_published_count = Work.pick(*aggregates.map { |sql| Arel.sql(sql) })
 
     month_starts.zip(counts.each_slice(COLUMNS.size * 2)).map do |month_start, month_counts|
       created_total, created_current, published_total, published_current = month_counts
+      published_total += undated_published_count if min_published_at && month_start.next_month > min_published_at
       MonthCounts.new(starts_on: month_start.to_date, created_total:, created_current:, published_total:, published_current:)
     end
   end
@@ -44,8 +49,16 @@ class WorkCountReport
     @month_starts ||= (1..month_count).map { |n| today.beginning_of_month.prev_month(n).in_time_zone }.reverse
   end
 
-  # Flat list: for each month, for each column, total then current.
+  # Flat list: for each month, for each column, total then current; then the
+  # earliest published_at, then the count of published works without published_at.
   def aggregates
+    month_aggregates + [
+      "MIN(published_at)",
+      "COUNT(*) FILTER (WHERE published AND published_at IS NULL)"
+    ]
+  end
+
+  def month_aggregates
     month_starts.flat_map do |month_start|
       month_end = month_start.next_month
       COLUMNS.values.flat_map do |column|
