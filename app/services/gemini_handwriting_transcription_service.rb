@@ -53,12 +53,13 @@ class GeminiHandwritingTranscriptionService
   # once per asset.
   def remove_transcription!
     Kithe::Indexable.index_with(disable_callbacks: true) do
-      work.members.each do |member|
-        next unless member.is_a?(Asset) && member.handwriting_transcription.present?
+      Asset.transaction do
+        work.members.each do |member|
+          next unless member.is_a?(Asset) && member.handwriting_transcription.present?
 
-        member.update!(handwriting_transcription: nil)
+          member.update!(handwriting_transcription: nil)
+        end
       end
-
       work.handwriting_transcription_request = nil
       work.save!
     end
