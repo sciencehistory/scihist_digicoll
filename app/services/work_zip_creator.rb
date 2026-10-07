@@ -32,32 +32,30 @@ class WorkZipCreator
     comment_file = tmp_comment_file!
     tmp_zipfile = tmp_zipfile!
 
-    derivative_files = []
-
-    Zip::File.open(tmp_zipfile.path, create: true) do |zipfile|
-      # Add attribution as file and zip comment text
-      zipfile.comment = comment_text
-      zipfile.add("about.txt", comment_file)
+    # Stream entries into the zip one at a time with Zip::OutputStream, deleting each
+    # downloaded file right after it's written, and reusing one read buffer.
+    #
+    # This is an attempt to reduce memory allocations and RAM usage compared to
+    # Zip::File.open API.
+    Zip::OutputStream.open(tmp_zipfile.path) do |zos|
+      zos.comment = comment_text
+      add_entry(zos, "about.txt", comment_file, compression_method: ::Zip::Entry::DEFLATED)
 
       members_to_include.each_with_index do |member, index|
         filename = "#{format '%03d', index+1}-#{DownloadFilenameHelper.filename_base_from_parent(member)}.jpg"
 
         uploaded_file = file_to_include(member.leaf_representative)
 
-        # While it would be nice to stream directly from remote storage into the zip, we couldn't
-        # get this to work with the combo of ruby-zip and shrine api's without downloading it
-        # to local disk first. There may be a way we haven't figured out. May be able
-        # to pass derivative.file.open to it instead for slightly better perf
-        # once https://github.com/janko/down/issues/26
+        # Download to local disk first; we couldn't get streaming straight from remote storage
+        # working with shrine api's.
         file_obj = uploaded_file.download
-        derivative_files << file_obj
-
-
-        # We want to add to zip as "STORED", not "DEFLATE", since our JPGs
-        # won't compress under DEFLATE anyway, save the CPU. Using legacy API could
-        # be using convenience add_stored but this is fine.
-        entry = ::Zip::Entry.new(zipfile.name, filename, compression_method: ::Zip::Entry::STORED)
-        zipfile.add(entry, file_obj)
+        begin
+          # "STORED", not "DEFLATE", since our JPGs won't compress anyway, save the CPU.
+          add_entry(zos, filename, file_obj, compression_method: ::Zip::Entry::STORED)
+        ensure
+          file_obj.close
+          file_obj.unlink
+        end
 
         # We don't really need to update on every page, the front-end is only polling every two seconds anyway
         if callback && (index % 3 == 0 || index >= members_to_include.count - 1)
@@ -71,11 +69,6 @@ class WorkZipCreator
 
     return tmp_zipfile
   ensure
-    (derivative_files || []).each do |tmp_file|
-      tmp_file.close
-      tmp_file.unlink
-    end
-
     if comment_file
       comment_file.close
       comment_file.unlink
@@ -83,6 +76,19 @@ class WorkZipCreator
   end
 
   private
+
+  READ_BUFFER_SIZE = 128 * 1024
+
+  # Written to re-use a single string buffer per-call, to try to reduce
+  # ruby allocations and thus RAM usage before the GC can get it.
+  def add_entry(zos, name, io, compression_method:)
+    zos.put_next_entry(name, '', ::Zip::ExtraField.new, compression_method)
+    io.rewind
+    buffer = String.new(capacity: READ_BUFFER_SIZE)
+    while io.read(READ_BUFFER_SIZE, buffer)
+      zos << buffer
+    end
+  end
 
   # @returns [Shrine::UploadedFile]
   def file_to_include(asset)
