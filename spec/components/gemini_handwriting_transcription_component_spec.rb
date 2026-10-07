@@ -82,6 +82,37 @@ describe GeminiHandwritingTranscriptionComponent, type: :component do
     end
   end
 
+  describe "delete button" do
+    def delete_link(result)
+      result.css("a").find { |a| a.text.strip == "Delete transcript" }
+    end
+
+    it "is offered, with a confirmation, when there is a transcript" do
+      store_request(status: "success", start_time: start_time)
+
+      expect(component.transcript_exists?).to be true
+
+      link = delete_link(render_inline(component))
+      expect(link["href"]).to eq("/admin/works/delete_handwriting_transcription/#{work.friendlier_id}")
+      expect(link["data-method"]).to eq("delete")
+      expect(link["data-confirm"]).to eq("Are you sure you want to delete this transcript?")
+    end
+
+    it "is not offered when no request has been made" do
+      expect(component.transcript_exists?).to be false
+      expect(delete_link(render_inline(component))).to be_nil
+    end
+
+    %w{started requested received failure}.each do |status|
+      it "is not offered when the request is #{status}" do
+        store_request(status: status, start_time: start_time)
+
+        expect(component.transcript_exists?).to be false
+        expect(delete_link(render_inline(component))).to be_nil
+      end
+    end
+  end
+
   describe "when the work isn't eligible" do
     it "explains why, rather than offering a button" do
       allow_any_instance_of(GeminiHandwritingTranscriptionService)

@@ -13,6 +13,14 @@
     <% elsif !request_pending? %>
       <%= link_to(request_button_label, admin_request_handwriting_transcription_path(work_id: work.friendlier_id), class: "btn btn-outline-secondary my-3") %>
     <% end %>
+
+    <% if transcript_exists? %>
+      <%= link_to("Delete transcript",
+            admin_delete_handwriting_transcription_path(work_id: work.friendlier_id),
+            method: :delete,
+            class: "btn btn-outline-danger my-3",
+            data: { confirm: "Are you sure you want to delete this transcript?" }) %>
+    <% end %>
     <hr/>
     <p>Debug info (temporary):</p>
     <pre><%= transcript_request_json %></pre>

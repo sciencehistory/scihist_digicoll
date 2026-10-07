@@ -17,6 +17,15 @@ class Admin::HandwritingTranscriptionController < AdminController
     )
   end
 
+  def delete_handwriting_transcription
+    GeminiHandwritingTranscriptionService.new(work: @work).remove_transcription!
+
+    redirect_to(
+      admin_work_path(@work, anchor: "tab=nav-ocr"),
+      flash: { notice: "Transcript successfully deleted" }
+    )
+  end
+
   private
 
   def set_work

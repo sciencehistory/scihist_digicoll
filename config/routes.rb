@@ -337,6 +337,7 @@ Rails.application.routes.draw do
     put "/asset_files/:id/submit_hocr_and_textonly_pdf",            to: "assets#submit_hocr_and_textonly_pdf"
 
     get "works/request_handwriting_transcription/:work_id", to: "handwriting_transcription#request_handwriting_transcription", as: 'request_handwriting_transcription'
+    delete "works/delete_handwriting_transcription/:work_id", to: "handwriting_transcription#delete_handwriting_transcription", as: 'delete_handwriting_transcription'
 
     resources :collections do
       member do

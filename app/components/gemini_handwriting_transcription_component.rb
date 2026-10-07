@@ -57,6 +57,11 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
     end
   end
 
+  # True if there's a transcript for this work, so we can offer to delete it.
+  def transcript_exists?
+    current_request&.success? || false
+  end
+
   # True if the current request hasn't reached a final status yet -- we don't
   # want to let the admin fire off a second, concurrent request while one is
   # still in progress.

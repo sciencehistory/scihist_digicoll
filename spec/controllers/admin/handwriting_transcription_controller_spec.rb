@@ -44,4 +44,26 @@ RSpec.describe Admin::HandwritingTranscriptionController, :logged_in_user, type:
       end
     end
   end
+
+  describe "delete_handwriting_transcription" do
+    let(:asset) { create(:asset, handwriting_transcription: "some handwriting", transcription: "by a person") }
+    let(:work) { create(:public_work, members: [asset]) }
+
+    before do
+      work.update!(handwriting_transcription_request: Work::HandwritingTranscriptionRequest.new(status: "success"))
+    end
+
+    it "removes the transcript, reindexes, and redirects back to the nav-ocr tab with a message" do
+      expect {
+        delete :delete_handwriting_transcription, params: { work_id: work.friendlier_id }
+      }.to have_enqueued_job(ReindexWorksJob).with([work.id])
+
+      expect(asset.reload.handwriting_transcription).to be_nil
+      expect(asset.transcription).to eq("by a person")
+      expect(work.reload.handwriting_transcription_request).to be_nil
+
+      expect(response).to redirect_to("#{admin_work_path(work)}#tab=nav-ocr")
+      expect(flash[:notice]).to eq("Transcript successfully deleted")
+    end
+  end
 end
