@@ -59,14 +59,19 @@
   gap: var(--bar-chart-bar-gap);
 }
 
-// bar: pseudo-element graphic, then value, then series label underneath
+// bar: pseudo-element graphic with total sitting on top of it, then current number and series
+// label underneath
 .bar-chart__bar {
   display: grid;
-  grid-template-rows: var(--bar-chart-height) auto auto;
+  // extra room above the full-height bar for its value
+  --bar-chart-value-room: 1.5em;
+  grid-template-columns: 100%;
+  grid-template-rows: calc(var(--bar-chart-height) + var(--bar-chart-value-room)) auto auto;
+  --bar-chart-bar-height: calc(var(--bar-chart-height) * var(--bar-chart-value, 0) / var(--bar-chart-max, 1));
   width: var(--bar-chart-bar-width);
   --bar-chart-color: var(--bar-chart-color-1);
   // baseline rule under the bar area
-  background: linear-gradient(currentColor, currentColor) 0 var(--bar-chart-height) / 100% 1px no-repeat;
+  background: linear-gradient(currentColor, currentColor) 0 calc(var(--bar-chart-height) + var(--bar-chart-value-room)) / 100% 1px no-repeat;
 
   &:nth-child(4n + 2) { --bar-chart-color: var(--bar-chart-color-2); }
   &:nth-child(4n + 3) { --bar-chart-color: var(--bar-chart-color-3); }
@@ -74,18 +79,25 @@
 
   &::before {
     content: "";
-    grid-row: 1;
+    grid-area: 1 / 1;
     align-self: end;
     background: var(--bar-chart-color);
     // no --bar-chart-value (nil data) means no bar
-    height: calc(100% * var(--bar-chart-value, 0) / var(--bar-chart-max, 1));
+    height: var(--bar-chart-bar-height);
   }
 }
-.bar-chart__bar-value {
-  grid-row: 2;
+.bar-chart__bar-total {
+  grid-area: 1 / 1; // same cell as the bar, painted over it
+  text-align: center;
+  align-self: end;
+  margin-bottom: var(--bar-chart-bar-height);
+  font-variant-numeric: tabular-nums;
+}
+.bar-chart__bar-current {
+  grid-area: 2 / 1;
   font-variant-numeric: tabular-nums;
 }
 .bar-chart__bar-label {
-  grid-row: 3;
+  grid-area: 3 / 1;
   font-size: 0.85em;
 }

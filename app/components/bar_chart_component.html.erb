@@ -4,14 +4,16 @@
     <figcaption class="bar-chart__caption"><%= caption %></figcaption>
   <% end %>
   <ul class="bar-chart__groups">
-    <% groups.each do |group_label, values| %>
+    <% groups.each do |group_label, cells| %>
       <li class="bar-chart__group">
         <span class="bar-chart__group-label"><%= group_label %></span>
         <ul class="bar-chart__bars">
-          <% series.each_with_index do |series_label, i| %>
-            <li class="bar-chart__bar" style="<%= style_for_value(values[i]) %>">
+          <% series.each do |series_label| %>
+            <% cell = cells[series_label] %>
+            <li class="bar-chart__bar" style="<%= style_for_total(cell) %>">
               <span class="bar-chart__bar-label"><%= series_label %></span>
-              <span class="bar-chart__bar-value"><%= display_value(values[i]) %></span>
+              <span class="bar-chart__bar-total" data-bs-toggle="tooltip" title="Total"><span class="visually-hidden">Total: </span><%= display_number(cell&.total) %></span>
+              <span class="bar-chart__bar-current" data-bs-toggle="tooltip" title="Current"><span class="visually-hidden">Current: </span><%= display_number(cell&.current) %></span>
             </li>
           <% end %>
         </ul>

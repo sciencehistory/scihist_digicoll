@@ -7,15 +7,22 @@
 #
 #     <%= render BarChartComponent.new(
 #           caption: "Items per month",
-#           series: ["Created", "Published"],
 #           groups: {
-#             "July 2026"   => [210, 220],
-#             "August 2026" => [240, 275]
+#             "July 2026" => {
+#               "Created"   => { total: 210, current: 12 },
+#               "Published" => { total: 220, current: 8 }
+#             },
+#             "August 2026" => {
+#               "Created"   => { total: 240, current: 30 },
+#               "Published" => { total: 275, current: 55 }
+#             }
 #           }
 #         ) %>
 #
 # Each group (eg month) gets one bar per series, side by side, with space before the next
-# group. Values are shown below the bar, then the series label, then the group label.
+# group. Bar height is the `total`, which is shown above the bar. The `current` is shown
+# below the bar, then the series label, then the group label. Both numbers have
+# visually-hidden labels for screen readers, and Bootstrap tooltips on hover.
 #
 # Styles are in app/frontend/stylesheets/local/bar_chart.scss, customizable with
 # `--bar-chart-*` CSS custom properties.
@@ -24,42 +31,59 @@
 # Content-Security-Policy that forbids inline style attributes would prevent the bars
 # from displaying (the text data would remain).
 class BarChartComponent < ApplicationComponent
-  attr_reader :series, :groups, :caption
+  Cell = Struct.new(:total, :current)
 
-  # @param series [Array<String>] names of the bars within each group, eg ["Created", "Published"]
-  # @param groups [Hash{String => Array<Numeric,nil>}] group label => one value per series, in
-  #   series order. nil value means "no data" (no bar, shown as an en dash).
+  CELL_KEYS = Cell.members.freeze
+
+  attr_reader :groups, :caption
+
+  # @param groups [Hash{String => Hash{String => Hash,nil}}] group label => series label =>
+  #   `{ total:, current: }`. Series are in order of first appearance across groups; a group
+  #   can leave out a series or give nil for it, as can either number (shown as an en dash).
+  #   A nil total means no bar.
   # @param caption [String] optional title for the chart, rendered as figcaption.
-  # @param max [Numeric] optional value that equals a full-height bar; defaults to the
-  #   largest value in the data. Pass the same max to multiple charts to make them comparable.
-  def initialize(series:, groups:, caption: nil, max: nil)
-    @series = series.to_a
-    @groups = groups.to_h
+  # @param max [Numeric] optional total that equals a full-height bar; defaults to the
+  #   largest total in the data. Pass the same max to multiple charts to make them comparable.
+  def initialize(groups:, caption: nil, max: nil)
+    @groups = groups.to_h.transform_values { |series_hash| normalize_group(series_hash) }
     @caption = caption
     @max = max
+  end
 
-    @groups.each do |label, values|
-      unless values.is_a?(Array) && values.length == @series.length
-        raise ArgumentError, "group #{label.inspect} needs #{@series.length} values (one per series), got #{values.inspect}"
-      end
-    end
+  # series labels, in order of first appearance
+  def series
+    @series ||= groups.values.flat_map(&:keys).uniq
   end
 
   # value that corresponds to a full-height bar
   def max
-    @max || groups.values.flatten.compact.max || 0
+    @max || groups.values.flat_map { |g| g.values.map { |cell| cell&.total } }.compact.max || 0
   end
 
   def style_for_chart
     "--bar-chart-max: #{max.to_f};"
   end
 
-  # nil value gets no bar
-  def style_for_value(value)
-    "--bar-chart-value: #{value.to_f};" unless value.nil?
+  # nil total gets no bar
+  def style_for_total(cell)
+    "--bar-chart-value: #{cell.total.to_f};" unless cell.nil? || cell.total.nil?
   end
 
-  def display_value(value)
+  def display_number(value)
     value.nil? ? "–" : helpers.number_with_delimiter(value)
+  end
+
+  private
+
+  def normalize_group(series_hash)
+    series_hash.to_h.transform_values do |cell|
+      next nil if cell.nil?
+
+      unless cell.is_a?(Hash) && (cell.keys - CELL_KEYS).empty?
+        raise ArgumentError, "expected nil or a hash with only keys #{CELL_KEYS.inspect}, got #{cell.inspect}"
+      end
+
+      Cell.new(cell[:total], cell[:current])
+    end
   end
 end
