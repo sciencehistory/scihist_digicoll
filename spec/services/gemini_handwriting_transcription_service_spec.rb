@@ -52,7 +52,7 @@ describe GeminiHandwritingTranscriptionService do
     end
   end
 
-  describe "#call" do
+  describe "#add_transcription!" do
     it "stages the work, sends it to the adapter, and attaches returned transcripts" do
       allow(service).to receive(:request_transcription) do |images|
         filenames = images.map { |image| image.fetch(:filename) }
@@ -60,7 +60,7 @@ describe GeminiHandwritingTranscriptionService do
         gemini_response(text: JSON.generate("pages" => pages_for(filenames)))
       end
 
-      service.call
+      service.add_transcription!
 
       expect(service).to have_received(:request_transcription).once
 
@@ -68,6 +68,44 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
         .to eq(sample_transcripts)
+    end
+  end
+
+  describe "#remove_transcription!" do
+    let(:child_work) { create(:public_work) }
+    let(:work) do
+      create(
+        :public_work,
+        description: "A three-page handwritten family letter.",
+        members: assets + [child_work]
+      )
+    end
+
+    before do
+      assets.each_with_index do |asset, index|
+        asset.update!(handwriting_transcription: sample_transcripts[index], transcription: "by a person #{index}")
+      end
+      work.update!(handwriting_transcription_request: Work::HandwritingTranscriptionRequest.new(status: "success"))
+    end
+
+    it "removes the handwriting transcription from every asset, and nothing else", queue_adapter: :test do
+      service.remove_transcription!
+
+      expect(assets.map { |asset| asset.reload.handwriting_transcription }).to all(be_nil)
+      expect(assets.map { |asset| asset.reload.transcription }).to eq(["by a person 0", "by a person 1", "by a person 2"])
+      expect(child_work.reload).to be_present
+    end
+
+    it "forgets the state of the request", queue_adapter: :test do
+      service.remove_transcription!
+
+      expect(work.reload.handwriting_transcription_request).to be_nil
+    end
+
+    it "enqueues a single reindex of the work", queue_adapter: :test do
+      expect {
+        service.remove_transcription!
+      }.to have_enqueued_job(ReindexWorksJob).with([work.id]).once
     end
   end
 
@@ -354,14 +392,14 @@ describe GeminiHandwritingTranscriptionService do
     end
   end
 
-  describe "#call eligibility regression cases" do
+  describe "#add_transcription! eligibility regression cases" do
     it "rejects a work with no eligible assets before invoking the adapter" do
       allow(service).to receive(:eligible_assets).and_return([])
 
       expect(service).not_to receive(:request_transcription)
 
       expect {
-        service.call
+        service.add_transcription!
       }.to raise_error(
         described_class::IneligibleWorkError,
         /no usable images were found/
