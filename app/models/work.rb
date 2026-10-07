@@ -51,6 +51,18 @@ class Work < Kithe::Work
     work.validates_presence_of :rights
   end
 
+  # to publish, we need rights_holder if rights statement is in list
+  validates_presence_of :rights_holder,
+    message: "can't be blank if rights statement is a copyright status",
+    if: -> {
+      published? && rights && rights.in?(%w{
+        http://rightsstatements.org/vocab/InC/1.0/
+        http://rightsstatements.org/vocab/InC-EDU/1.0/
+        https://creativecommons.org/licenses/by-nc-nd/4.0/
+        https://creativecommons.org/licenses/by/4.0/
+    })
+  }
+
   attr_json :review_requested, :boolean
   attr_json :review_requested_at, :datetime
   attr_json :review_requested_by, :string

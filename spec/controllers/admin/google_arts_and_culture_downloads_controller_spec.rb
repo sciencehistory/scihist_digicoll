@@ -13,6 +13,7 @@ RSpec.describe Admin::GoogleArtsAndCultureDownloadsController, :logged_in_user, 
       department: "Museum",
       format: ['physical_object'],
       rights: 'https://creativecommons.org/licenses/by/4.0/',
+      rights_holder: 'Science History Institute',
       created_at: Time.parse("2020-01-01"),
       updated_at: Time.parse("2021-01-01"),
       members: default_members
@@ -144,7 +145,8 @@ RSpec.describe Admin::GoogleArtsAndCultureDownloadsController, :logged_in_user, 
       let(:candidate_attrs) do
         library_work_attrs.merge(
           title: "Wrong library rights",
-          rights: 'https://creativecommons.org/licenses/by/4.0/'
+          rights: 'https://creativecommons.org/licenses/by/4.0/',
+          rights_holder: "I don't know"
         )
       end
 
@@ -263,6 +265,7 @@ RSpec.describe Admin::GoogleArtsAndCultureDownloadsController, :logged_in_user, 
           library_work_attrs.merge(
             title: "In range wrong library rights",
             rights: 'https://creativecommons.org/licenses/by/4.0/',
+            rights_holder: "I don't know",
             created_at: Time.parse("2022-06-01"),
             updated_at: Time.parse("2023-06-01")
           )
