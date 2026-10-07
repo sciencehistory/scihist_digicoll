@@ -45,10 +45,10 @@ jobs:
         - name: Install python and pip package dependencies with uv
           run: uv sync --frozen
 
-        - name: Install apt dependencies
-          run: |
-            sudo apt-get update
-            sudo apt-get -y install libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool poppler-utils ghostscript
+        - name: Install (and cache) apt dependencies
+          uses: gerlero/apt-install@v1
+          with:
+            packages: libvips-tools ffmpeg mediainfo tesseract-ocr qpdf imagemagick exiftool poppler-utils ghostscript
 
         - name: Setup pnpm for JS dependencies
           uses: pnpm/action-setup@v4
