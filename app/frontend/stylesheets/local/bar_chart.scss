@@ -30,8 +30,16 @@
 }
 
 .bar-chart__caption {
-  font-weight: bold;
   margin-bottom: 0.5rem;
+}
+.bar-chart__caption-title {
+  display: block;
+  font-weight: bold;
+}
+.bar-chart__hint {
+  display: block;
+  font-size: 0.85em;
+  color: $text-muted;
 }
 
 .bar-chart__groups {

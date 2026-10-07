@@ -6,6 +6,7 @@ class BarChartComponentPreview < ViewComponent::Preview
   def default
     render BarChartComponent.new(
       caption: "Items per month",
+      hint: "Total is cumulative; current is what was added that month.",
       groups: {
         "July 2026" => {
           "Created"   => { total: 210, current: 12 },

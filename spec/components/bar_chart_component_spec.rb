@@ -20,8 +20,16 @@ describe BarChartComponent, type: :component do
   let(:page) { render_inline(component) }
 
   it "renders a figure with caption and a list item per group" do
-    expect(page.at_css("figure.bar-chart > figcaption").text).to eq "Items per month"
+    expect(page.at_css("figure.bar-chart > figcaption .bar-chart__caption-title").text).to eq "Items per month"
     expect(page.css(".bar-chart__group-label").map(&:text)).to eq ["July 2026", "August 2026", "Sep 2026"]
+  end
+
+  it "renders optional hint in the figcaption, only when given" do
+    expect(page).not_to have_selector(".bar-chart__hint")
+
+    hinted = render_inline(described_class.new(groups: groups, hint: "Some explanation"))
+    expect(hinted.at_css("figcaption .bar-chart__hint").text).to eq "Some explanation"
+    expect(hinted).not_to have_selector(".bar-chart__caption-title")
   end
 
   it "renders series labels in order of first appearance, in every group" do

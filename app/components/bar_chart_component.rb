@@ -35,18 +35,20 @@ class BarChartComponent < ApplicationComponent
 
   CELL_KEYS = Cell.members.freeze
 
-  attr_reader :groups, :caption
+  attr_reader :groups, :caption, :hint
 
   # @param groups [Hash{String => Hash{String => Hash,nil}}] group label => series label =>
   #   `{ total:, current: }`. Series are in order of first appearance across groups; a group
   #   can leave out a series or give nil for it, as can either number (shown as an en dash).
   #   A nil total means no bar.
   # @param caption [String] optional title for the chart, rendered as figcaption.
+  # @param hint [String] optional explanatory text shown under the caption, in the same figcaption.
   # @param max [Numeric] optional total that equals a full-height bar; defaults to the
   #   largest total in the data. Pass the same max to multiple charts to make them comparable.
-  def initialize(groups:, caption: nil, max: nil)
+  def initialize(groups:, caption: nil, hint: nil, max: nil)
     @groups = groups.to_h.transform_values { |series_hash| normalize_group(series_hash) }
     @caption = caption
+    @hint = hint
     @max = max
   end
 
