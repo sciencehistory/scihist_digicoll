@@ -1,6 +1,6 @@
 require 'http'
 
-# GeminiHandwritingTranscriptionService.new(work: work).call
+# GeminiHandwritingTranscriptionService.new(work: work).add_transcription!
 #
 # will ask Gemini for a transcript for each image asset on the work, then
 # attach a transcript to the :handwriting_transcription attribute for each image asset in the work.
@@ -26,8 +26,8 @@ class GeminiHandwritingTranscriptionService
     @work = work
   end
 
-  # Main method to invoke this class.
-  def call
+  # Asks Gemini to transcribe the work's images, and attaches the transcripts to them.
+  def add_transcription!
     if work_eligibility_problems.present?
       raise IneligibleWorkError,
         "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
@@ -44,6 +44,26 @@ class GeminiHandwritingTranscriptionService
       process_results(response: response, staged_images: staged_images)
     end
     update_handwriting_transcription_request(status: 'success')
+  end
+
+  # Removes the handwriting transcriptions from all of the work's assets, forgets
+  # the state of the request that created them, and reindexes the work.
+  #
+  # A rare operation, so we keep it simple: reindex once at the end, instead of
+  # once per asset.
+  def remove_transcription!
+    Kithe::Indexable.index_with(disable_callbacks: true) do
+      work.members.each do |member|
+        next unless member.is_a?(Asset) && member.handwriting_transcription.present?
+
+        member.update!(handwriting_transcription: nil)
+      end
+
+      work.handwriting_transcription_request = nil
+      work.save!
+    end
+
+    ReindexWorksJob.perform_later([work.id])
   end
 
   # Any and all reasons to exclude a work from receiving a transcript.
@@ -237,21 +257,25 @@ class GeminiHandwritingTranscriptionService
     pages
   end
 
-  # Attach the transcript of each page to its asset
+  # Attach the transcript of each page to its asset. Saving an asset with a new
+  # handwriting_transcription re-indexes its parent work, so we batch to send
+  # all those updates to Solr together.
   def attach_transcripts!(pages, staged_images:)
     pages_by_filename =
       pages.index_by { |page| page.fetch("filename") }
 
-    Asset.transaction do
-      staged_images.each do |image|
-        asset = image.fetch(:asset)
-        filename = image.fetch(:filename)
-        transcript = pages_by_filename.fetch(filename).fetch("transcript")
+    Kithe::Indexable.index_with(batching: true) do
+      Asset.transaction do
+        staged_images.each do |image|
+          asset = image.fetch(:asset)
+          filename = image.fetch(:filename)
+          transcript = pages_by_filename.fetch(filename).fetch("transcript")
 
-        Rails.logger.info(
-          "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
-        )
-        asset.update!(handwriting_transcription: transcript)
+          Rails.logger.info(
+            "Attaching Gemini HTR transcript to #{asset.friendlier_id}"
+          )
+          asset.update!(handwriting_transcription: transcript)
+        end
       end
     end
   end
