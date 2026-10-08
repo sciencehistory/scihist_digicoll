@@ -26,7 +26,7 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
 
     if request.success?
       if time
-        "An automatic transcript exists; it was created on #{time} #{transcript_link}.".html_safe
+        "An automatic transcript was created on #{time}.".html_safe
       else
         "An automatic transcript exists #{transcript_link}.".html_safe
       end
@@ -51,9 +51,9 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
   # successful transcript already exists, since a new request would replace it.
   def request_button_label
     if current_request&.success?
-      "Request a new transcription to replace the current one"
+      "Request a new transcript from Google Gemini"
     else
-      "Request transcription"
+      "Request a transcript from Google Gemini"
     end
   end
 
