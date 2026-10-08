@@ -307,6 +307,7 @@ class GeminiHandwritingTranscriptionService
   # Takes any attributes of Work::HandwritingTranscriptionRequest (status:, error:, start_time:, ...).
   def update_handwriting_transcription_request(**attributes)
     (work.handwriting_transcription_request ||= Work::HandwritingTranscriptionRequest.new).assign_attributes(attributes)
-    work.save!
+    # this metadata isn't indexed, so no need to talk to Solr here
+    Kithe::Indexable.index_with(disable_callbacks: true) { work.save! }
   end
 end
