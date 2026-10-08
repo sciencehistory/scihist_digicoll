@@ -15,7 +15,7 @@ describe WorkCountByUserReport do
 
   it "has [ALL] rows of zeros for months with no works" do
     expect(row_values(report.rows)).to eq [
-      [10, "[ALL]", 0, 0], [9, "[ALL]", 0, 0], [8, "[ALL]", 0, 0]
+      [8, "[ALL]", 0, 0], [9, "[ALL]", 0, 0], [10, "[ALL]", 0, 0]
     ]
   end
 
@@ -24,7 +24,7 @@ describe WorkCountByUserReport do
     create(:work, created_by: alice, created_at: Time.zone.local(2026, 11, 1, 0, 0))
 
     expect(row_values(report.rows)).to include([10, "[ALL]", 1, 0])
-    expect(report.rows.map { |r| r.month.month }.uniq).to eq [10, 9, 8]
+    expect(report.rows.map { |r| r.month.month }.uniq).to eq [8, 9, 10]
   end
 
   describe "with works" do
@@ -52,10 +52,10 @@ describe WorkCountByUserReport do
       ]
     end
 
-    it "lists newest month first and includes accounts that only created or published" do
+    it "lists oldest month first and includes accounts that only created or published" do
       aug = row_values(report.rows).select { |month, *| month == 8 }
 
-      expect(row_values(report.rows).map(&:first).uniq).to eq [10, 9, 8]
+      expect(row_values(report.rows).map(&:first).uniq).to eq [8, 9, 10]
       expect(aug).to eq [[8, "[ALL]", 2, 0], [8, "Alice Smith", 2, 0]]
     end
   end
