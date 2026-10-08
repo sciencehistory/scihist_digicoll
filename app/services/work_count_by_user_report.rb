@@ -29,14 +29,12 @@ class WorkCountByUserReport
     @to_month_end = to_month.end_of_month.end_of_day
   end
 
-  # @return [Array<Row>] newest month first; within a month [ALL], then {UNRECORDED}, then names
+  # @return [Array<Row>] oldest month first; within a month [ALL], then {UNRECORDED}, then names
   def rows
     created_counts = counts(:created_at, :created_by)
     published_counts = counts(:published_at, :last_published_by)
 
-    newest_first = start_days_of_included_months.reverse
-
-    newest_first.flat_map do |month|
+    start_days_of_included_months.flat_map do |month|
       accounts = accounts_for_month(month, created_counts, published_counts)
 
       accounts.map do |account|
