@@ -1,0 +1,38 @@
+// Work Count Report table.
+.work-count-report {
+  --work-count-report-border-width: 3px;
+
+  // Thick box around the label column and each month's columns (column group borders collapse into the cells).
+  colgroup {
+    border: var(--work-count-report-border-width) solid var(--bs-secondary-border-subtle);
+  }
+
+  // The sticky label column's left and right edges (and the first month's left edge, which is its right edge)
+  // are drawn by the ::after below instead, so they aren't doubled when the table is scrolled fully left.
+  colgroup:first-of-type {
+    border-inline: 0;
+  }
+  colgroup:nth-of-type(2) {
+    border-inline-start: 0;
+  }
+
+  // No cell borders where the ::after edges are, or they'd add to them when the table is scrolled fully left.
+  tr > :nth-child(-n+2) {
+    border-left-width: 0;
+  }
+
+  // Row-label column stays fixed while the rest of the table scrolls. Collapsed borders belong
+  // to the table and scroll away from a sticky cell, so the ::after redraws its left and right.
+  tr > :first-child {
+    --bs-table-bg: var(--bs-info-bg-subtle);
+    position: sticky;
+    left: 0;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-inline: var(--work-count-report-border-width) solid var(--bs-secondary-border-subtle);
+    }
+  }
+}
