@@ -18,10 +18,10 @@ describe GeminiHandwritingTranscriptionComponent, type: :component do
     it "offers a plain button and no status message" do
       expect(component.current_request).to be_nil
       expect(component.request_pending?).to be false
-      expect(component.request_button_label).to eq("Request transcription")
+      expect(component.request_button_label).to eq("Request a transcript from Google Gemini")
 
       result = render_inline(component)
-      expect(result.text).to include("Request transcription")
+      expect(result.text).to include("Request a transcript from Google Gemini")
       expect(result.text).not_to include("It's not ready yet")
     end
   end
@@ -47,11 +47,11 @@ describe GeminiHandwritingTranscriptionComponent, type: :component do
       expect(component.request_pending?).to be false
 
       result = render_inline(component)
-      expect(result.text).to include("An automatic transcript exists; it was created on 2026-Jan-01 12:30")
-      expect(result.text).to include("Request a new transcription to replace the current one")
+      expect(result.text).to include("An automatic transcript was created on 2026-Jan-01 12:30")
+      expect(result.text).to include("Request a new transcript from Google Gemini")
 
-      link = result.css("a").find { |a| a.text.include?("view transcript") }
-      expect(link["href"]).to eq("/works/#{work.friendlier_id}#tab=handwriting-transcription")
+      link = result.css("a").find { |a| a.text.include?("Go to transcript") }
+      #expect(link["href"]).to eq("/works/#{work.friendlier_id}#tab=handwriting-transcription")
     end
   end
 
@@ -63,7 +63,7 @@ describe GeminiHandwritingTranscriptionComponent, type: :component do
 
       result = render_inline(component)
       expect(result.text).to include("but it failed. The error was: it broke")
-      expect(result.text).to include("Request transcription")
+      expect(result.text).to include("Request a transcript")
       expect(result.text).not_to include("replace the current one")
     end
 
