@@ -77,10 +77,6 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
 
   private
 
-  # Link to the handwriting-transcription tab of the work's public-facing view.
-  def transcript_link
-    link_to("(view transcript)", work_path(work, anchor: "tab=handwriting-transcription"))
-  end
 
   def formatted_start_time(request)
     return nil if request.start_time.blank?

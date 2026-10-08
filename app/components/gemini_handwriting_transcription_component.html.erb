@@ -15,7 +15,7 @@
 
       <% if transcript_exists? %>
         <%= link_to("Go to transcript",
-              transcript_link,
+              work_path(work, anchor: "tab=handwriting-transcription"),
               class: "btn btn-outline-success my-3")
         %>
         <br />
