@@ -47,3 +47,19 @@
     </tfoot>
   </table>
 </div>
+
+<h2 class="mt-5">CSV export including 'by user account'</h2>
+
+<%= form_with url: admin_export_work_count_by_user_path, method: :get, class: "row row-cols-lg-auto g-3 align-items-end" do |f| %>
+  <div class="col-12">
+    <%= f.label :from_month, "First month", class: "form-label" %>
+    <%= f.text_field :from_month, value: params[:from_month], placeholder: "yyyy-mm", pattern: '\d{4}-\d{2}', required: true, class: "form-control" %>
+  </div>
+  <div class="col-12">
+    <%= f.label :to_month, "Last month (inclusive)", class: "form-label" %>
+    <%= f.text_field :to_month, value: params[:to_month], placeholder: "yyyy-mm", pattern: '\d{4}-\d{2}', required: true, class: "form-control" %>
+  </div>
+  <div class="col-12">
+    <%= f.submit "Export", class: "btn btn-primary" %>
+  </div>
+<% end %>

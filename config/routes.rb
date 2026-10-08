@@ -369,6 +369,7 @@ Rails.application.routes.draw do
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
     get "/work_count_report", to: "work_count_report#index", as: "work_count_report"
+    get "/work_count_report/export_work_count_by_user", to: "work_count_report#export_work_count_by_user", as: "export_work_count_by_user"
     get "/orphan_report", to: "orphan_report#index", as: "orphan_report"
 
     resources :oral_history_requests, only: [:index, :show] do
