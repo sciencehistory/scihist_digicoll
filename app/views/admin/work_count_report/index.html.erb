@@ -60,6 +60,6 @@
     <%= f.text_field :to_month, value: params[:to_month], placeholder: "yyyy-mm", pattern: '\d{4}-\d{2}', required: true, class: "form-control" %>
   </div>
   <div class="col-12">
-    <%= f.submit "Export", class: "btn btn-primary" %>
+    <%= f.submit "Export", class: "btn btn-primary", data: { disable_with: false } %>
   </div>
 <% end %>
