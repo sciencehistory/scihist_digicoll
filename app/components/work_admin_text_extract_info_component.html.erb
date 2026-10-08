@@ -1,3 +1,11 @@
+<p class="alert alert-info">
+  <i class="fa fa-info-circle" aria-hidden="true"></i>
+  This panel only reports on automatic transcripts of images that have printed or handwritten text (photographic OCR and PDF extraction, as well as Gemini transcripts).<br/>
+  It does not cover audio or video transcription, or  manual transcripts authored by people.
+</p>
+
+<%= render(GeminiHandwritingTranscriptionComponent.new(@work)) %>
+
 <p>
   Text extraction mode:
   <% if @work.text_extraction_mode.present? %>
@@ -57,10 +65,4 @@
       </li>
     <% end %>
   </ul>
-</p>
-
-
-<p class="alert alert-info">
-  <i class="fa fa-info-circle" aria-hidden="true"></i>
-  This panel only reports on photographic OCR and PDF extraction, it does not cover Audio or Visual transcription, or "Bredig-collection-style" manual transcript entry.
 </p>
