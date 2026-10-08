@@ -52,15 +52,15 @@ class GeminiHandwritingTranscriptionService
   # A rare operation, so we keep it simple: reindex once at the end, instead of
   # once per asset.
   def remove_transcription!
-    Kithe::Indexable.index_with(disable_callbacks: true) do
-      work.members.each do |member|
-        next unless member.is_a?(Asset) && member.handwriting_transcription.present?
-
-        member.update!(handwriting_transcription: nil)
+    ActiveRecord::Base.transaction do
+      Kithe::Indexable.index_with(disable_callbacks: true) do
+          work.members.each do |member|
+            next unless member.is_a?(Asset) && member.handwriting_transcription.present?
+            member.update!(handwriting_transcription: nil)
+        end
+        work.handwriting_transcription_request = nil
+        work.save!
       end
-
-      work.handwriting_transcription_request = nil
-      work.save!
     end
 
     ReindexWorksJob.perform_later([work.id])

@@ -23,6 +23,11 @@ class Work < Kithe::Work
 
   belongs_to :digitization_queue_item, optional: true, class_name: "Admin::DigitizationQueueItem"
 
+  belongs_to :created_by, optional: true, class_name: "User"
+  before_create { self.created_by ||= Current.user }
+  belongs_to :last_published_by, optional: true, class_name: "User"
+  before_validation { self.last_published_by = Current.user if published? && published_changed? }
+
   has_many :on_demand_derivatives, inverse_of: :work, dependent: :destroy
   has_many :oral_history_requests, inverse_of: :work, dependent: :destroy
 
