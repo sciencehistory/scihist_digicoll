@@ -1,0 +1,49 @@
+<h1 class="mb-4">Work Count Report</h1>
+
+<% series = { created: "Created", published: "Published" } %>
+
+<%# Month headers are in the tfoot so they display below the numbers; cells point to their headers explicitly via id/headers. %>
+<div class="mb-2">
+  <h2 id="wcr-title">Creation and Publication Dates by Month</h2>
+  <p id="wcr-hint" class="small text-muted">This report uses current (latest) publication dates, we don't have historical records.</p>
+</div>
+
+<%# Only the table scrolls horizontally; rtl on the wrapper starts it scrolled right. The row-label column stays put (see work_count_report.scss). %>
+<div dir="rtl" class="table-responsive">
+  <table dir="ltr" class="work-count-report table table-bordered border-secondary-subtle text-center w-auto me-auto" aria-labelledby="wcr-title" aria-describedby="wcr-hint">
+    <colgroup></colgroup>
+    <% @months.each do %>
+      <colgroup span="<%= series.size %>"></colgroup>
+    <% end %>
+    <thead class="table-light">
+      <tr>
+        <td></td>
+        <% @months.each_index do |month_index| %>
+          <% series.each_value.with_index do |label, series_index| %>
+            <th scope="col" id="wcr-month-<%= month_index %>-series-<%= series_index %>" class="fw-normal small"><%= label %></th>
+          <% end %>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% { total: "Cumulative", current: "This month" }.each do |row_key, row_label| %>
+        <tr>
+          <th scope="row" id="wcr-row-<%= row_key %>" class="text-start"><%= row_label %></th>
+          <% @months.each_with_index do |month, month_index| %>
+            <% series.each_key.with_index do |series_key, series_index| %>
+              <td headers="wcr-month-<%= month_index %> wcr-month-<%= month_index %>-series-<%= series_index %> wcr-row-<%= row_key %>"><%= number_with_delimiter month.public_send(:"#{series_key}_#{row_key}") %></td>
+            <% end %>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+    <tfoot class="table-light">
+      <tr>
+        <td></td>
+        <% @months.each_with_index do |month, month_index| %>
+          <th scope="colgroup" id="wcr-month-<%= month_index %>" colspan="<%= series.size %>"><%= l month.starts_on, format: "%b %Y" %></th>
+        <% end %>
+      </tr>
+    </tfoot>
+  </table>
+</div>
