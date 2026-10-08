@@ -48,7 +48,9 @@
   </table>
 </div>
 
-<h2 class="mt-5">CSV export including 'by user account'</h2>
+<h2 class="mt-5">CSV export including 'by staff account'</h2>
+<p id="wcr-hint" class="small text-muted"><code>{UNRECORDED}</code> rows could have been created by a batch or developer process not through a logged-in staff account. Also prior to Oct 2026 we did not yet record staff accounts in this way.</p>
+
 
 <%= form_with url: admin_export_work_count_by_user_path, method: :get, class: "row row-cols-lg-auto g-3 align-items-end" do |f| %>
   <div class="col-12">
