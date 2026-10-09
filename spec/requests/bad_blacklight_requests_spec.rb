@@ -93,6 +93,31 @@ describe CatalogController do
     end
   end
 
+  describe "paging too deep into results" do
+    let(:max) { CatalogController::MAX_RESULTS_DEPTH }
+
+    it "responds with a 400 past the max depth at default per_page" do
+      get "/catalog?page=#{(max / 25) + 1}"
+      expect(response.code).to eq "400"
+      expect(response.body).to match(/can't show results past/)
+    end
+
+    it "takes per_page into account" do
+      get "/catalog?page=#{(max / 100) + 1}&per_page=100"
+      expect(response.code).to eq "400"
+    end
+
+    it "allows the last page within the max depth" do
+      get "/catalog?page=#{max / 25}"
+      expect(response.code).to eq "200"
+    end
+
+    it "does not apply to facet value pagination" do
+      get "/catalog/facet/subject_facet?page=#{max}"
+      expect(response.code).not_to eq "400"
+    end
+  end
+
   describe "attempt to use an array for q" do
     it "responds with a 400" do
       get "/catalog?page=1&q[]=1"
