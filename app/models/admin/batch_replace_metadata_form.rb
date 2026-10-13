@@ -40,7 +40,10 @@ class Admin::BatchReplaceMetadataForm
     additional_credit:   :name,
     digitization_funder: nil,
     file_creator:        nil,
-    admin_note:          nil
+    admin_note:          nil,
+    genre:               nil,
+    format:              nil,
+    rights:              nil
   }.freeze
 
   attr_accessor :field_name, :old_value, :new_value
@@ -59,6 +62,15 @@ class Admin::BatchReplaceMetadataForm
   # `options_for_select` in the field-selection form.
   def self.field_options
     ALLOWED_FIELDS.keys.map { |name| [Work.human_attribute_name(name), name] }.sort_by(&:first)
+  end
+
+  # Fields with a short controlled list, as { field_name => [[label, value], ...] }; the form shows select menus for these.
+  def self.controlled_values
+    {
+      genre:  Work::ControlledLists::GENRE.map { |v| [v, v] },
+      format: Work::ControlledLists::FORMAT.map { |v| [Work.human_attribute_name("format.#{v}"), v] },
+      rights: RightsTerm.collection_for_select
+    }
   end
 
   # Human-readable label for the currently-selected field.
@@ -154,7 +166,7 @@ class Admin::BatchReplaceMetadataForm
     else
       value = work.public_send(field_name)
       if value.is_a?(Array)
-        value.map! { |v| v == old_value ? new_value : v }
+        value.map! { |v| v == old_value ? new_value : v }.uniq!
       else
         work.public_send("#{field_name}=", new_value) if value == old_value
       end

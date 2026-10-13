@@ -12,6 +12,23 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
     end
   end
 
+  describe ".controlled_values" do
+    it "has [label, value] pairs, only for allow-listed fields" do
+      described_class.controlled_values.each do |field_name, options|
+        expect(described_class::ALLOWED_FIELDS).to have_key(field_name)
+        expect(options).to all(match([a_kind_of(String), a_kind_of(String)]))
+      end
+    end
+
+    it "has the Work's valid values, with human labels" do
+      values = described_class.controlled_values
+
+      expect(values[:format]).to include(["Mixed Material", "mixed_material"])
+      expect(values[:genre].map(&:last)).to match_array(Work::ControlledLists::GENRE)
+      expect(values[:rights].map(&:last)).to match_array(RightsTerm.all_ids)
+    end
+  end
+
   describe "validations" do
     it "requires old_value" do
       form = described_class.new(current_user: current_user, form_params: { field_name: "description", old_value: "", new_value: "x" })
@@ -20,7 +37,7 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
     end
 
     it "rejects a real Work attribute that isn't on the allow-list" do
-      form = described_class.new(current_user: current_user, form_params: { field_name: "format", old_value: "x", new_value: "y" })
+      form = described_class.new(current_user: current_user, form_params: { field_name: "department", old_value: "x", new_value: "y" })
       expect(form.valid?).to be false
       expect(form.errors[:field_name]).to be_present
     end
@@ -136,6 +153,23 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
 
       expect(form.replace!).to be true
       expect(work.reload.medium).to eq(["Glass", "Dye"])
+    end
+
+    it "replaces a controlled-list value in an array field without leaving duplicates" do
+      work.update!(genre: ["Prints", "Engravings"])
+      form = described_class.new(current_user: current_user, form_params: { field_name: "genre", old_value: "Engravings", new_value: "Prints" })
+
+      expect(form.replace!).to be true
+      expect(work.reload.genre).to eq(["Prints"])
+    end
+
+    it "replaces a scalar controlled-list value" do
+      work.update!(rights: "http://rightsstatements.org/vocab/NoC-US/1.0/")
+      new_rights = "http://creativecommons.org/publicdomain/mark/1.0/"
+      form = described_class.new(current_user: current_user, form_params: { field_name: "rights", old_value: work.rights, new_value: new_rights })
+
+      expect(form.replace!).to be true
+      expect(work.reload.rights).to eq(new_rights)
     end
 
     it "replaces only the key_path attribute of a matching element of a nested-model field" do

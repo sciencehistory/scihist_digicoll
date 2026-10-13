@@ -17,7 +17,13 @@
   </div>
 <% end %>
 
-<%= form_with url: admin_preview_batch_replace_metadata_path, method: :get, local: true do |f| %>
+<%# batch_replace_form.js swaps old/new value text inputs for selects, using these lists
+
+  in data-controlled-values we have options_for_select values for certain fields that
+  aren't free entry but need a select box. JS in batch_replace_form.js will use.
+-%>
+<%= form_with url: admin_preview_batch_replace_metadata_path, method: :get, local: true,
+      data: { controlled_values: Admin::BatchReplaceMetadataForm.controlled_values } do |f| %>
   <div class="row mb-3">
     <div class="col-md-4">
       <%= f.label :field_name, "Attribute", class: "form-label" %>
