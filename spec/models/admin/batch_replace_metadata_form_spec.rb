@@ -7,15 +7,23 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
     it "includes exactly the allow-listed fields, as [label, name] pairs sorted by label" do
       options = described_class.field_options
 
-      expect(options.map(&:last)).to match_array(described_class::ALLOWED_FIELDS.keys)
+      expect(options.map(&:last)).to match_array(described_class::ALLOWED_FIELDS)
       expect(options.map(&:first)).to eq(options.map(&:first).sort)
+    end
+
+    it "labels a nested field by its attribute, unless several of its sub-attributes are allowed" do
+      options = described_class.field_options.to_h.invert
+
+      expect(options["creator.value"]).to eq("Creator")
+      expect(options["physical_container.box"]).to eq("Physical container: Box")
+      expect(options["physical_container.folder"]).to eq("Physical container: Folder")
     end
   end
 
   describe ".controlled_values" do
     it "has [label, value] pairs, only for allow-listed fields" do
       described_class.controlled_values.each do |field_name, options|
-        expect(described_class::ALLOWED_FIELDS).to have_key(field_name)
+        expect(described_class::ALLOWED_FIELDS).to include(field_name.to_s)
         expect(options).to all(match([a_kind_of(String), a_kind_of(String)]))
       end
     end
@@ -40,6 +48,13 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
       form = described_class.new(current_user: current_user, form_params: { field_name: "department", old_value: "x", new_value: "y" })
       expect(form.valid?).to be false
       expect(form.errors[:field_name]).to be_present
+    end
+
+    it "rejects a nested attribute without an allowed sub-attribute" do
+      ["creator", "physical_container", "physical_container.volume", "creator.category"].each do |field_name|
+        form = described_class.new(current_user: current_user, form_params: { field_name: field_name, old_value: "x", new_value: "y" })
+        expect(form.valid?).to be(false), "expected #{field_name} to be invalid"
+      end
     end
 
     it "requires new_value" do
@@ -104,13 +119,13 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
       expect(described_class.new(current_user: current_user, form_params: { field_name: "medium", old_value: "Cellu", new_value: "x" }).matching_works).not_to include(work)
     end
 
-    it "matches a nested-model field's exact key_path value" do
+    it "matches a nested-model field's exact sub-attribute value" do
       work = create(:work, creator: [Work::Creator.new(value: "Foo Bar", category: "author")])
       current_user.works_in_cart << work
 
-      expect(described_class.new(current_user: current_user, form_params: { field_name: "creator", old_value: "Foo Bar", new_value: "x" }).matching_works).to include(work)
+      expect(described_class.new(current_user: current_user, form_params: { field_name: "creator.value", old_value: "Foo Bar", new_value: "x" }).matching_works).to include(work)
       # category isn't searched, only value
-      expect(described_class.new(current_user: current_user, form_params: { field_name: "creator", old_value: "author", new_value: "x" }).matching_works).not_to include(work)
+      expect(described_class.new(current_user: current_user, form_params: { field_name: "creator.value", old_value: "author", new_value: "x" }).matching_works).not_to include(work)
     end
   end
 
@@ -155,6 +170,21 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
       expect(work.reload.medium).to eq(["Glass", "Dye"])
     end
 
+    it "replaces box or folder on the single nested physical_container, leaving its other sub-attributes alone" do
+      work.update!(physical_container: Work::PhysicalContainer.new(box: "12", folder: "3"))
+
+      expect(described_class.new(current_user: current_user, form_params: { field_name: "physical_container.box", old_value: "3", new_value: "x" }).matching_works).to be_empty
+
+      form = described_class.new(current_user: current_user, form_params: { field_name: "physical_container.box", old_value: "12", new_value: "13" })
+      expect(form.replace!).to be true
+      expect(work.reload.physical_container.box).to eq("13")
+      expect(work.physical_container.folder).to eq("3")
+
+      form = described_class.new(current_user: current_user, form_params: { field_name: "physical_container.folder", old_value: "3", new_value: "4" })
+      expect(form.replace!).to be true
+      expect(work.reload.physical_container.attributes).to include("box" => "13", "folder" => "4")
+    end
+
     it "replaces a controlled-list value in an array field without leaving duplicates" do
       work.update!(genre: ["Prints", "Engravings"])
       form = described_class.new(current_user: current_user, form_params: { field_name: "genre", old_value: "Engravings", new_value: "Prints" })
@@ -172,12 +202,12 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
       expect(work.reload.rights).to eq(new_rights)
     end
 
-    it "replaces only the key_path attribute of a matching element of a nested-model field" do
+    it "replaces only the sub-attribute of a matching element of a nested-model field" do
       work.update!(creator: [
         Work::Creator.new(value: "Foo Bar", category: "author"),
         Work::Creator.new(value: "Someone Else", category: "photographer")
       ])
-      form = described_class.new(current_user: current_user, form_params: { field_name: "creator", old_value: "Foo Bar", new_value: "New Name" })
+      form = described_class.new(current_user: current_user, form_params: { field_name: "creator.value", old_value: "Foo Bar", new_value: "New Name" })
 
       expect(form.replace!).to be true
       work.reload
@@ -191,7 +221,7 @@ RSpec.describe Admin::BatchReplaceMetadataForm, queue_adapter: :test do
         Work::Creator.new(value: "Someone Else", category: "photographer"),
         Work::Creator.new(value: "Foo Bar", category: "editor") # same value as the first, different category
       ])
-      form = described_class.new(current_user: current_user, form_params: { field_name: "creator", old_value: "Foo Bar", new_value: "New Name" })
+      form = described_class.new(current_user: current_user, form_params: { field_name: "creator.value", old_value: "Foo Bar", new_value: "New Name" })
 
       expect(form.replace!).to be true
 

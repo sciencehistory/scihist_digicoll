@@ -5,7 +5,7 @@
 #
 # Scoped to a current_user's cart.
 #
-#     form = Admin::BatchReplaceMetadataForm.new(current_user: current_user, form_params: { field_name: "creator", old_value: "Foo Bar", new_value: "Baz" })
+#     form = Admin::BatchReplaceMetadataForm.new(current_user: current_user, form_params: { field_name: "creator.value", old_value: "Foo Bar", new_value: "Baz" })
 #     form.matching_works        # => #<ActiveRecord::Relation [#<Work ...>, ...]>, works in current_user's Cart only
 #     form.matching_work_count   # => 12
 #     form.replace!              # => true, and all matching works are now saved with the replacement made
@@ -18,33 +18,33 @@ class Admin::BatchReplaceMetadataForm
   # The Work metadata fields available for this feature. For safety, field only
   # allowed if it's listed here. If new fields are added to work, add them here.
   #
-  # If a field is not a simple scalar but a nested/compound field, the value is the
-  # key to look up in sub-record. We can only choose ONE of them as the target, tool
-  # not sophisticated enough to do more than that at present.
-  ALLOWED_FIELDS = {
-    additional_title:    nil,
-    external_id:         :value,
-    creator:             :value,
-    place:               :value,
-    medium:              nil,
-    extent:              nil,
-    language:            nil,
-    description:         nil,
-    provenance:          nil,
-    inscription:         :text,
-    subject:             nil,
-    series_arrangement:  nil,
-    related_url:         nil,
-    related_link:        :url,
-    rights_holder:       nil,
-    additional_credit:   :name,
-    digitization_funder: nil,
-    file_creator:        nil,
-    admin_note:          nil,
-    genre:               nil,
-    format:              nil,
-    rights:              nil
-  }.freeze
+  # A nested/compound field is "attribute.sub_attribute" (as in jsonb_contains), and only that sub-attribute is searched/replaced.
+  ALLOWED_FIELDS = %w[
+    additional_title
+    external_id.value
+    creator.value
+    place.value
+    medium
+    extent
+    language
+    description
+    provenance
+    inscription.text
+    subject
+    series_arrangement
+    related_url
+    related_link.url
+    rights_holder
+    additional_credit.name
+    digitization_funder
+    file_creator
+    admin_note
+    genre
+    format
+    rights
+    physical_container.box
+    physical_container.folder
+  ].freeze
 
   attr_accessor :field_name, :old_value, :new_value
   attr_reader :current_user
@@ -61,7 +61,16 @@ class Admin::BatchReplaceMetadataForm
   # ALLOWED_FIELDS as [label, name] pairs sorted by label, ready for use with
   # `options_for_select` in the field-selection form.
   def self.field_options
-    ALLOWED_FIELDS.keys.map { |name| [Work.human_attribute_name(name), name] }.sort_by(&:first)
+    ALLOWED_FIELDS.map { |name| [field_label(name), name] }.sort_by(&:first)
+  end
+
+  # The attribute's label. We add a sub-attribute to label only if main attribute
+  # was in our list more than once!
+  def self.field_label(field_name)
+    attribute, sub_attribute = field_name.to_s.split(".")
+    attribute_used_count = ALLOWED_FIELDS.count { |name| name.split(".").first == attribute }
+
+    attribute_used_count > 1 ? "#{Work.human_attribute_name(attribute)}: #{sub_attribute.humanize}" : Work.human_attribute_name(attribute)
   end
 
   # Fields with a short controlled list, as { field_name => [[label, value], ...] }; the form shows select menus for these.
@@ -75,7 +84,7 @@ class Admin::BatchReplaceMetadataForm
 
   # Human-readable label for the currently-selected field.
   def field_label
-    Work.human_attribute_name(field_name)
+    self.class.field_label(field_name)
   end
 
   # How many Works are in current_user's Cart in total -- the universe this feature
@@ -91,7 +100,7 @@ class Admin::BatchReplaceMetadataForm
   # @return [ActiveRecord::Relation<Work>]
   def matching_works
     return Work.none unless valid?
-    @matching_works ||= current_user.works_in_cart.jsonb_contains(contains_key => old_value)
+    @matching_works ||= current_user.works_in_cart.jsonb_contains(field_name => old_value)
   end
 
   def matching_work_count
@@ -137,22 +146,18 @@ class Admin::BatchReplaceMetadataForm
 
   private
 
-  # nil for a plain field, or the sub-attribute name to search/replace within, for a
-  # field whose value is (an array of) AttrJson::Model.
-  def key_path
-    ALLOWED_FIELDS[field_name.to_sym]
+  # the Work attribute, eg "creator" for "creator.value", or for just "creator"
+  def attribute_name
+    field_name.split(".").first
+  end
+
+  # the sub-attribute of a nested model to search/replace, eg "value" for "creator.value"; nil for a plain field
+  def sub_attribute
+    field_name.split(".")[1]
   end
 
   def nested_model?
-    key_path.present?
-  end
-
-  # The `jsonb_contains` attribute key for the selected field (see
-  # AttrJson::Record::QueryScopes#jsonb_contains) -- just the field name, or, for a
-  # nested-model field, "field_name.key_path" so we can match on the nested key_path
-  # attribute's value, wherever it is in an array of those nested models.
-  def contains_key
-    nested_model? ? "#{field_name}.#{key_path}" : field_name.to_s
+    sub_attribute.present?
   end
 
   # Mutates (does not save) `work`, replacing an exact old_value match with new_value
@@ -160,20 +165,21 @@ class Admin::BatchReplaceMetadataForm
   # just fine, so there's no need to re-assign the attribute after mutating it.
   def replace_value!(work)
     if nested_model?
-      Array(work.public_send(field_name)).each do |element|
-        element.public_send("#{key_path}=", new_value) if element.public_send(key_path) == old_value
+      # a single nested model (eg physical_container) gets wrapped into an array here
+      Array(work.public_send(attribute_name)).each do |element|
+        element.public_send("#{sub_attribute}=", new_value) if element.public_send(sub_attribute) == old_value
       end
     else
-      value = work.public_send(field_name)
+      value = work.public_send(attribute_name)
       if value.is_a?(Array)
         value.map! { |v| v == old_value ? new_value : v }.uniq!
       else
-        work.public_send("#{field_name}=", new_value) if value == old_value
+        work.public_send("#{attribute_name}=", new_value) if value == old_value
       end
     end
   end
 
   def field_name_must_be_a_known_field
-    errors.add(:field_name, "is not a recognized field") unless field_name.present? && ALLOWED_FIELDS.key?(field_name.to_sym)
+    errors.add(:field_name, "is not a recognized field") unless ALLOWED_FIELDS.include?(field_name)
   end
 end
