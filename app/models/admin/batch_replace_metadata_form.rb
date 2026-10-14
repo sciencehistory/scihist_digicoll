@@ -114,6 +114,8 @@ class Admin::BatchReplaceMetadataForm
 
     return false if errors.present?
 
+    Rails.logger.info("#{self.class.name}: #{current_user.email} changed field `#{field_name}` from `#{old_value}` to `#{new_value}` in #{updated_work_ids.count} works: #{updated_work_ids.join(',')}")
+
     updated_work_ids.each_slice(Kithe.indexable_settings.batching_mode_batch_size) do |ids|
       ReindexWorksJob.perform_later(ids)
     end
