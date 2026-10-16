@@ -155,7 +155,7 @@ describe CatalogController, solr: true, indexable_callbacks: true do
     let!(:published_and_public_domain_but_too_recent) { create(:public_work, title: title_for_search, rights: cc_public_domain, date_of_work: too_recent) }
 
     let!(:unpublished_but_public_domain)  { create(:public_work, title: title_for_search, rights: cc_public_domain) }
-    let!(:published_but_copyrighted)  { create(:public_work, title: title_for_search, date_of_work: matching_date, rights: in_copyright) }
+    let!(:published_but_copyrighted)  { create(:public_work, title: title_for_search, date_of_work: matching_date, rights: in_copyright, rights_holder: "Science History Institute") }
 
     it "can use limits to find works we consider copyright free" do
       visit search_catalog_path
