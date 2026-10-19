@@ -5,13 +5,16 @@ require 'fileutils'
 # to stick around forever.
 #
 # https://github.com/sciencehistory/scihist_digicoll/issues/3640
+#
+#     MpCoralExporter.new.export_all_zip_and_upload
+#
 class MpCoralExporter
   attr_reader :base_dir
 
   def initialize(base_dir: nil)
     if base_dir.nil?
       @internal_tmp_base_dir = true
-      base_dir = Dir.mktmpdir(self.class.name.underscore)
+      base_dir = Dir.mktmpdir(self.class.name.underscore + "_")
     end
 
     @base_dir = File.expand_path(base_dir)
