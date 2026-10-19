@@ -6,23 +6,30 @@ require 'fileutils'
 #
 # https://github.com/sciencehistory/scihist_digicoll/issues/3640
 class MpCoralExporter
-  attr_reader :work
+  attr_reader :base_dir
+
+  def initialize(base_dir: nil)
+    if base_dir.nil?
+      @internal_tmp_base_dir = true
+      base_dir = Dir.mktmpdir(self.class.name.underscore)
+    end
+
+    @base_dir = File.expand_path(base_dir)
+  end
 
 
-  def self.export_all_zip_and_upload
-    tmp_dir_path = Dir.mktmpdir("coral_export")
-
-    export_all(base_dir: tmp_dir_path)
+  def export_all_zip_and_upload
+    export_all
 
     $stderr.puts
     $stderr.puts "Zipping..."
-    zip_file_path = zip_directory(tmp_dir_path)
+    zip_file_path = zip_directory
 
     $stderr.puts "Uploading to S3...."
-    destination_path = "#{self.name.underscore}_#{ScihistDigicoll::Env.lookup(:service_level) || "UNK"}_#{Time.now.strftime('%Y%m%d_%H%M%S')}.zip"
+    destination_path = "#{self.class.name.underscore}_#{ScihistDigicoll::Env.lookup(:service_level) || "UNK"}_#{Time.now.strftime('%Y%m%d_%H%M%S')}.zip"
     upload_to_cache_storage(source_path: zip_file_path, destination_path: destination_path)
   ensure
-    FileUtils.rm_rf(tmp_dir_path) if tmp_dir_path
+    FileUtils.rm_rf(base_dir) if @internal_tmp_base_dir
     FileUtils.rm_rf(zip_file_path) if zip_file_path
   end
 
@@ -32,7 +39,7 @@ class MpCoralExporter
   # Will export inside base_dir, with one sub dir for each OH, the subdir name
   # being friendly ID.  In that subdir is a `metadata.json` file, and possibly
   # other transcript files as mentioned in the metadata.json.
-  def self.export_all(base_dir:)
+  def export_all
     scope = Work.strict_loading.
           where("kithe_models.json_attributes -> 'genre' ?  'Oral histories'").
           includes("contained_by", "oral_history_content", "members").
@@ -51,7 +58,7 @@ class MpCoralExporter
       dir = "#{base_dir}/#{work.friendlier_id}"
       FileUtils.mkdir_p(dir)
 
-      work_exporter = self.new(work)
+      work_exporter = Entry.new(work)
 
       File.write("#{dir}/metadata.json", JSON.pretty_generate(work_exporter.metadata))
 
@@ -78,8 +85,8 @@ class MpCoralExporter
     end
   end
 
-  def self.zip_directory(dir)
-    dir = File.expand_path(dir)
+  def zip_directory
+    dir = base_dir
 
     tmp_file = Tempfile.new(["coral_export_#{Time.now.strftime('%Y%m%d_%H%M%S')}", ".zip"])
 
@@ -99,7 +106,7 @@ class MpCoralExporter
     return tmp_file.path
   end
 
-  def self.upload_to_cache_storage(source_path:, destination_path:)
+  def upload_to_cache_storage(source_path:, destination_path:)
     storage = ScihistDigicoll::Env.shrine_cache_storage
 
     File.open(source_path, "rb") { |io| storage.upload(io, destination_path) }
@@ -111,67 +118,71 @@ class MpCoralExporter
     end
   end
 
-  def initialize(work)
-    unless work.genre.include?("Oral histories")
-      raise ArgumentError.new("This is only meant for use with oral histories")
-    end
+  class Entry
+    attr_reader :work
 
-    @work = work
-  end
-
-  def metadata
-    {
-      title: work.title,
-      id: work.friendlier_id,
-      permalink: "https://digital.sciencehistory.org/works/#{work.friendlier_id}",
-      description: work.description,
-      subjects: work.subject, # array
-      media_type: work.format, # array
-      interviewer: work.creator.find_all {|c| c.category == "interviewer" }.collect(&:value),
-      interviewee: work.creator.find_all {|c| c.category == "interviewee" }.collect(&:value),
-      place_of_interview: work.place.find_all { |p| p.category == "place_of_interview"}.collect(&:value),
-      language: work.language, # array
-      in_sub_collections: in_sub_collections, # array
-      access_availability_mode: work.oral_history_content.availability_mode, # 'direct' is public on web, others are not
-      rights_statement: work.rights,
-      rights_holder: work.rights_holder,
-      pdf_transcript_filename: pdf_transcript&.original_filename,
-      audio_recording_filenames: audio_files.collect { |a| a.original_filename },
-      ohms_transcript_filename: ohms_transcript_filename,
-      auto_extracted_text_filename: auto_extracted_text_filename
-    }
-  end
-
-  def in_sub_collections
-    work.contained_by.
-      find_all { |c| c.title.downcase != "oral history collection"}.
-      collect do |col|
-        {
-          title: col.title,
-          id: col.friendlier_id
-        }
+    def initialize(work)
+      unless work.genre.include?("Oral histories")
+        raise ArgumentError.new("This is only meant for use with oral histories")
       end
-  end
 
-  def pdf_transcript
-    work.members.find { |m| m.role == "transcript" }
-  end
-
-  def audio_files
-    work.members.find_all  { |m| m.content_type.start_with?("audio/") }.sort_by(&:position)
-  end
-
-  # this is only in db it doesn't have it's own filename, we make one up
-  def ohms_transcript_filename
-    if work.oral_history_content.has_ohms_transcript?
-      "#{work.friendlier_id}_ohms_transcript.txt"
+      @work = work
     end
-  end
 
-  # this is only in db it doesn't have it's own filename, we make one up
-  def auto_extracted_text_filename
-    if work.oral_history_content.extracted_paragraph_container.present?
-      "#{work.friendlier_id}_auto_extracted_text.json"
+    def metadata
+      {
+        title: work.title,
+        id: work.friendlier_id,
+        permalink: "https://digital.sciencehistory.org/works/#{work.friendlier_id}",
+        description: work.description,
+        subjects: work.subject, # array
+        media_type: work.format, # array
+        interviewer: work.creator.find_all {|c| c.category == "interviewer" }.collect(&:value),
+        interviewee: work.creator.find_all {|c| c.category == "interviewee" }.collect(&:value),
+        place_of_interview: work.place.find_all { |p| p.category == "place_of_interview"}.collect(&:value),
+        language: work.language, # array
+        in_sub_collections: in_sub_collections, # array
+        access_availability_mode: work.oral_history_content.availability_mode, # 'direct' is public on web, others are not
+        rights_statement: work.rights,
+        rights_holder: work.rights_holder,
+        pdf_transcript_filename: pdf_transcript&.original_filename,
+        audio_recording_filenames: audio_files.collect { |a| a.original_filename },
+        ohms_transcript_filename: ohms_transcript_filename,
+        auto_extracted_text_filename: auto_extracted_text_filename
+      }
+    end
+
+    def in_sub_collections
+      work.contained_by.
+        find_all { |c| c.title.downcase != "oral history collection"}.
+        collect do |col|
+          {
+            title: col.title,
+            id: col.friendlier_id
+          }
+        end
+    end
+
+    def pdf_transcript
+      work.members.find { |m| m.role == "transcript" }
+    end
+
+    def audio_files
+      work.members.find_all  { |m| m.content_type.start_with?("audio/") }.sort_by(&:position)
+    end
+
+    # this is only in db it doesn't have it's own filename, we make one up
+    def ohms_transcript_filename
+      if work.oral_history_content.has_ohms_transcript?
+        "#{work.friendlier_id}_ohms_transcript.txt"
+      end
+    end
+
+    # this is only in db it doesn't have it's own filename, we make one up
+    def auto_extracted_text_filename
+      if work.oral_history_content.extracted_paragraph_container.present?
+        "#{work.friendlier_id}_auto_extracted_text.json"
+      end
     end
   end
 
