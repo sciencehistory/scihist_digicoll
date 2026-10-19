@@ -8,6 +8,24 @@ require 'fileutils'
 class MpCoralExporter
   attr_reader :work
 
+
+  def self.export_all_zip_and_upload
+    tmp_dir_path = Dir.mktmpdir("coral_export")
+
+    export_all(base_dir: tmp_dir_path)
+
+    $stderr.puts
+    $stderr.puts "Zipping..."
+    zip_file_path = zip_directory(tmp_dir_path)
+
+    $stderr.puts "Uploading to S3...."
+    destination_path = "#{self.name.underscore}_#{ScihistDigicoll::Env.lookup(:service_level) || "UNK"}_#{Time.now.strftime('%Y%m%d_%H%M%S')}.zip"
+    upload_to_cache_storage(source_path: zip_file_path, destination_path: destination_path)
+  ensure
+    FileUtils.rm_rf(tmp_dir_path) if tmp_dir_path
+    FileUtils.rm_rf(zip_file_path) if zip_file_path
+  end
+
   # fetch all oral histories and export them, with PDF and transcript files.
   # Will take a while.
   #
@@ -57,6 +75,39 @@ class MpCoralExporter
       else
         print "."
       end
+    end
+  end
+
+  def self.zip_directory(dir)
+    dir = File.expand_path(dir)
+
+    tmp_file = Tempfile.new(["coral_export_#{Time.now.strftime('%Y%m%d_%H%M%S')}", ".zip"])
+
+    Zip::File.open(tmp_file.path, create: true) do |zip|
+      Dir.glob("**/*", File::FNM_DOTMATCH, base: dir).each do |relative|
+        next if relative == "." || relative.end_with?("/.")
+
+        full = File.join(dir, relative)
+        if File.directory?(full)
+          zip.mkdir(relative)
+        else
+          zip.add(relative, full)
+        end
+      end
+    end
+
+    return tmp_file.path
+  end
+
+  def self.upload_to_cache_storage(source_path:, destination_path:)
+    storage = ScihistDigicoll::Env.shrine_cache_storage
+
+    File.open(source_path, "rb") { |io| storage.upload(io, destination_path) }
+
+    if storage.respond_to?(:bucket)
+      $stderr.puts "Uploaded s3://#{storage.bucket.name}/#{storage.object(destination_path).key}"
+    else
+      $stderr.puts "Uploaded #{zip_name} to #{storage}"
     end
   end
 
