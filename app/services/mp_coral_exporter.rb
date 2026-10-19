@@ -16,8 +16,12 @@ class MpCoralExporter
   # other transcript files as mentioned in the metadata.json.
   def self.export_all(base_dir:)
     scope = Work.strict_loading.
-          where("json_attributes -> 'genre' ?  'Oral histories'").
-          includes("contained_by", "oral_history_content", "members")
+          where("kithe_models.json_attributes -> 'genre' ?  'Oral histories'").
+          includes("contained_by", "oral_history_content", "members").
+          joins(:oral_history_content).
+          # everything but embarboed, but with some additional exclusions
+          where("oral_history_content.availability_mode != 'embargoed'").
+          where.not(friendlier_id: EXCLUDED_FRIENDLIER_IDS)
 
     puts "exporting #{scope.count} in #{base_dir}"
 
@@ -89,7 +93,7 @@ class MpCoralExporter
 
   def in_sub_collections
     work.contained_by.
-      find_all { |c| c.title != "Oral History Collection"}.
+      find_all { |c| c.title.downcase != "oral history collection"}.
       collect do |col|
         {
           title: col.title,
@@ -119,5 +123,53 @@ class MpCoralExporter
       "#{work.friendlier_id}_auto_extracted_text.json"
     end
   end
+
+
+  # list of 42 friendlier ID's to be excluded from export, per
+  # https://github.com/sciencehistory/scihist_digicoll/issues/3640#issuecomment-6270462088
+  EXCLUDED_FRIENDLIER_IDS = %w{
+    bkxtllo
+    80u8jkw
+    yhw3xmt
+    vlbd155
+    gldoidp
+    49j2s7t
+    8l5lv0f
+    1oqu7tu
+    uthde6e
+    pihpigh
+    nt3xy69
+    bjw01wt
+    8o6ohiw
+    9jg58qw
+    z7ywtug
+    dk3bga5
+    nmciejn
+    ln6wfev
+    33iy8by
+    owj874z
+    13g67ah
+    bwv8gvz
+    2y5oqt1
+    cb8liyu
+    c8mmpws
+    rwg0whl
+    uwitvhe
+    xz0icab
+    fz55iu8
+    ckikh2w
+    z9ml4ow
+    t8n11bc
+    kp1aay6
+    o89oyep
+    7rucjam
+    t89tifg
+    5hzc2z1
+    79q4gwv
+    9y9exj9
+    3umab6c
+    uu5l29a
+    pwm7ovn
+  }
 
 end
