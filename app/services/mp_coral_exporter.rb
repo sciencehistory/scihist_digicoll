@@ -36,6 +36,16 @@ class MpCoralExporter
     FileUtils.rm_rf(zip_file_path) if zip_file_path
   end
 
+  def scope
+    Work.strict_loading.
+      where("kithe_models.json_attributes -> 'genre' ?  'Oral histories'").
+      includes("contained_by", "oral_history_content", "members").
+      joins(:oral_history_content).
+      # everything exccepting: embarboed AND excepting some additional exclusions
+      where("oral_history_content.availability_mode != 'embargoed'").
+      where.not(friendlier_id: EXCLUDED_FRIENDLIER_IDS)
+  end
+
   # fetch all oral histories and export them, with PDF and transcript files.
   # Will take a while.
   #
@@ -43,14 +53,6 @@ class MpCoralExporter
   # being friendly ID.  In that subdir is a `metadata.json` file, and possibly
   # other transcript files as mentioned in the metadata.json.
   def export_all
-    scope = Work.strict_loading.
-          where("kithe_models.json_attributes -> 'genre' ?  'Oral histories'").
-          includes("contained_by", "oral_history_content", "members").
-          joins(:oral_history_content).
-          # everything but embarboed, but with some additional exclusions
-          where("oral_history_content.availability_mode != 'embargoed'").
-          where.not(friendlier_id: EXCLUDED_FRIENDLIER_IDS)
-
     puts "exporting #{scope.count} in #{base_dir}"
 
     i = 0
