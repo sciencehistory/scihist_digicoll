@@ -69,6 +69,19 @@ describe GeminiHandwritingTranscriptionService do
       expect(assets.map { |asset| asset.reload.public_send(asset_attribute_for_transcript) })
         .to eq(sample_transcripts)
     end
+
+    it "records start_time when the request is started" do
+      allow(service).to receive(:request_transcription) do |images|
+        gemini_response(text: JSON.generate("pages" => pages_for(images.map { |image| image.fetch(:filename) })))
+      end
+
+      now = Time.current
+      travel_to(now) do
+        service.add_transcription!
+      end
+
+      expect(work.reload.handwriting_transcription_request.start_time).to be_within(1.second).of(now)
+    end
   end
 
   describe "#remove_transcription!" do
@@ -134,6 +147,19 @@ describe GeminiHandwritingTranscriptionService do
         expect(image.fetch(:mime_type)).to eq("image/jpeg")
       end
     end
+
+    it "records failure, and re-raises, if an image can't be downloaded" do
+      allow_any_instance_of(Shrine::UploadedFile).to receive(:to_io).and_raise(Errno::ENOENT, "missing file")
+
+      expect {
+        staged_images
+      }.to raise_error(Errno::ENOENT)
+
+      expect(work.reload.handwriting_transcription_request).to have_attributes(
+        status: "failure",
+        error: a_string_including("Could not stage images to send to Gemini")
+      )
+    end
   end
 
   describe "#gemini_client" do
@@ -162,18 +188,12 @@ describe GeminiHandwritingTranscriptionService do
       ).to eq(response)
     end
 
-    it "records status and start_time on the work before invoking the adapter" do
+    it "records status on the work before invoking the adapter" do
       allow(service.send(:gemini_client)).to receive(:post).and_return(gemini_response(text: "{}"))
 
-      now = Time.current
-      travel_to(now) do
-        service.send(:request_transcription, staged_images)
-      end
+      service.send(:request_transcription, staged_images)
 
-      request_state = work.reload.handwriting_transcription_request
-
-      expect(request_state.status).to eq("requested")
-      expect(request_state.start_time).to be_within(1.second).of(now)
+      expect(work.reload.handwriting_transcription_request.status).to eq("requested")
     end
 
     it "raises AdapterError when Gemini can't be reached at all" do
@@ -307,14 +327,21 @@ describe GeminiHandwritingTranscriptionService do
   end
 
   describe "#eligible_assets" do
-    it "returns the three published TIFF assets in position order" do
+    it "returns the three TIFF assets in position order" do
       expect(assets.map(&:content_type))
         .to eq(["image/tiff"] * 3)
 
-      expect(assets).to all(be_published)
-
       expect(service.send(:eligible_assets))
         .to eq(assets)
+    end
+
+    describe "with an unpublished asset" do
+      let(:asset2) { build_tiff_asset(position: 2).tap { |a| a.update!(published: false) } }
+
+      it "includes it" do
+        expect(service.send(:eligible_assets))
+          .to eq(assets)
+      end
     end
   end
 
@@ -404,6 +431,26 @@ describe GeminiHandwritingTranscriptionService do
         described_class::IneligibleWorkError,
         /no usable images were found/
       )
+
+      expect(work.reload.handwriting_transcription_request).to have_attributes(
+        status: "failure",
+        error: a_string_including("no usable images were found")
+      )
+    end
+
+    it "rejects a work with too many eligible assets before invoking the adapter" do
+      stub_const("#{described_class}::MAX_FILES_TO_TRANSCRIBE", 2)
+
+      expect(service).not_to receive(:request_transcription)
+
+      expect {
+        service.add_transcription!
+      }.to raise_error(
+        described_class::IneligibleWorkError,
+        /limiting the number of requested pages to transcribe to 2/
+      )
+
+      expect(work.reload.handwriting_transcription_request).to have_attributes(status: "failure")
     end
   end
 

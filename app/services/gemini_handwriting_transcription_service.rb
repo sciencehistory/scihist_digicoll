@@ -29,11 +29,12 @@ class GeminiHandwritingTranscriptionService
   # Asks Gemini to transcribe the work's images, and attaches the transcripts to them.
   def add_transcription!
     if work_eligibility_problems.present?
-      raise IneligibleWorkError,
-        "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
+      msg = "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
+      update_handwriting_transcription_request(status: 'failure', error: msg)
+      raise IneligibleWorkError, msg
     end
 
-    update_handwriting_transcription_request(status: 'started')
+    update_handwriting_transcription_request(status: 'started', start_time: Time.current)
 
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
@@ -111,6 +112,11 @@ class GeminiHandwritingTranscriptionService
         mime_type: image_derivative.mime_type
       }
     end
+  rescue StandardError => e
+    # If we can't stage the images, the whole request has failed.
+    msg = "Could not stage images to send to Gemini: #{e.class}: #{e.message}"
+    update_handwriting_transcription_request(status: 'failure', error: msg)
+    raise
   end
 
   def gemini_client
@@ -127,7 +133,7 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    update_handwriting_transcription_request(status: 'requested', start_time: Time.current)
+    update_handwriting_transcription_request(status: 'requested')
 
     model = ScihistDigicoll::Env.lookup("gemini_model")
 
@@ -280,12 +286,13 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
-  # Published IMAGE assets with a derivative we consider high-res enough to use.
+  # IMAGE assets with a derivative we consider high-res enough to use. Unpublished assets
+  # are included: publishing an asset will also publish its transcription.
   def eligible_assets
     @eligible_assets ||= work.
       members.
       includes(:leaf_representative).
-      where(published: true, type: Asset.sti_name).
+      where(type: Asset.sti_name).
       order(:position).
       select do |asset|
         representative = asset.leaf_representative
