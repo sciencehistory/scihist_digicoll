@@ -30,42 +30,42 @@ namespace :scihist do
         cmd.run("heroku maintenance:on --app", STAGING_APP_NAME)
       end
 
-      # if USE_BACKUP == 'true'
-      #   Dir.mktmpdir do |tmpdir|
-      #     puts "\nDownloading backup."
-      #     cmd.run("aws s3 cp --no-progress s3://#{BACKUP_BUCKET}/#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.sql.gz  #{tmpdir}/#{BACKUP_FILENAME}.sql.gz")
+      if USE_BACKUP == 'true'
+        Dir.mktmpdir do |tmpdir|
+          puts "\nDownloading backup."
+          cmd.run("aws s3 cp --no-progress s3://#{BACKUP_BUCKET}/#{BACKUP_FOLDER}/#{BACKUP_FILENAME}.sql.gz  #{tmpdir}/#{BACKUP_FILENAME}.sql.gz")
 
-      #     puts "\nDecompressing backup."
-      #     cmd.run("#{UNZIP_CMD} #{tmpdir}/#{BACKUP_FILENAME}.sql.gz > #{tmpdir}/#{BACKUP_FILENAME}.sql")
-      #     abort("Unable to get unzipped backup file!") unless File.exist?("#{tmpdir}/#{BACKUP_FILENAME}.sql")
+          puts "\nDecompressing backup."
+          cmd.run("#{UNZIP_CMD} #{tmpdir}/#{BACKUP_FILENAME}.sql.gz > #{tmpdir}/#{BACKUP_FILENAME}.sql")
+          abort("Unable to get unzipped backup file!") unless File.exist?("#{tmpdir}/#{BACKUP_FILENAME}.sql")
 
-      #     puts "\nRestoring backup to staging DB."
+          puts "\nRestoring backup to staging DB."
 
-      #     # This pg:psql load has a LOT of output, we suppress it. We could send to
-      #     # a log file or something instead if we wanted it.
-      #     cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{tmpdir}/#{BACKUP_FILENAME}.sql", out: "/dev/null", err: "/dev/null")
-      #   end
-      # else
-      #   puts "\nCopying backup from prod to staging."
-      #   # heroku CLI 11.9.0+ wants the attachment name to confirm, older wants the app name
-      #   # https://github.com/sciencehistory/scihist_digicoll/issues/3613
-      #   heroku_version = Gem::Version.new(cmd.run("heroku --version", only_output_on_error: true).out[%r{heroku/(\d+\.\d+\.\d+)}, 1])
-      #   confirm_value = heroku_version >= Gem::Version.new("11.9.0") ? "DATABASE" : STAGING_APP_NAME
+          # This pg:psql load has a LOT of output, we suppress it. We could send to
+          # a log file or something instead if we wanted it.
+          cmd.run("heroku pg:psql --app", STAGING_APP_NAME, in: "#{tmpdir}/#{BACKUP_FILENAME}.sql", out: "/dev/null", err: "/dev/null")
+        end
+      else
+        puts "\nCopying backup from prod to staging."
+        # heroku CLI 11.9.0+ wants the attachment name to confirm, older wants the app name
+        # https://github.com/sciencehistory/scihist_digicoll/issues/3613
+        heroku_version = Gem::Version.new(cmd.run("heroku --version", only_output_on_error: true).out[%r{heroku/(\d+\.\d+\.\d+)}, 1])
+        confirm_value = heroku_version >= Gem::Version.new("11.9.0") ? "DATABASE" : STAGING_APP_NAME
 
-      #   cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{confirm_value}")
-      # end
+        cmd.run("heroku pg:copy scihist-digicoll-production::DATABASE_URL DATABASE_URL -a #{STAGING_APP_NAME}  --confirm #{confirm_value}")
+      end
 
-      # puts "\nSyncing S3 non-video originals"
-      # SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-originals", "scihist-digicoll-staging-originals")
+      puts "\nSyncing S3 non-video originals"
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-originals", "scihist-digicoll-staging-originals")
 
-      # puts "\nSyncing S3 video originals"
-      # SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-originals-video", "scihist-digicoll-staging-originals-video")
+      puts "\nSyncing S3 video originals"
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-originals-video", "scihist-digicoll-staging-originals-video")
 
-      # puts "\nSyncing S3 derivatives"
-      # SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-derivatives", "scihist-digicoll-staging-derivatives")
+      puts "\nSyncing S3 derivatives"
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-derivatives", "scihist-digicoll-staging-derivatives")
 
-      # puts "\nSyncing S3 video derivatives"
-      # SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-derivatives-video", "scihist-digicoll-staging-derivatives-video")
+      puts "\nSyncing S3 video derivatives"
+      SyncProdToStagingUtil.aws_sync(cmd, "scihist-digicoll-production-derivatives-video", "scihist-digicoll-staging-derivatives-video")
 
       # indexing now refers to files on s3 (derivatives mostly, transcripts etc), so we need to reindex AFTER
       # s3 sync
