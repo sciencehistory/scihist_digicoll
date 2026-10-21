@@ -102,6 +102,8 @@ class OpenaiAudioTranscribe
         return transcribe_file_to_vtt(opus_file, lang_code: lang_code, whisper_prompt: prompt)
       end
 
+      Rails.logger.info("#{self.class.name}: Splitting Asset #{asset.friendlier_id} into segments: #{duration_seconds.round}s long, greater than #{SEGMENT_IF_LONGER_THAN}, splitting into ~#{SEGMENT_TARGET_LENGTH.to_i}s segments")
+
       joiner = VttJoiner.new
 
       AudioSilenceSplitter.new(segment_target_length: SEGMENT_TARGET_LENGTH, log_label: "Asset #{asset.friendlier_id}").split(opus_file.path, duration_seconds: duration_seconds) do |file:, start_seconds:, **|

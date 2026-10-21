@@ -87,6 +87,9 @@ describe OpenaiAudioTranscribe do
       end
 
       it "merges segments with shifted timestamps" do
+        allow(Rails.logger).to receive(:info).and_call_original
+        expect(Rails.logger).to receive(:info).with(/OpenaiAudioTranscribe: Splitting Asset #{asset.friendlier_id} into segments/)
+
         prompts = []
         expect(service.client.audio).to receive(:transcribe).twice do |args|
           prompts << args[:parameters][:prompt]
