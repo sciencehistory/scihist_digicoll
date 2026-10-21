@@ -24,11 +24,13 @@ class AudioSilenceSplitter
 
   class_attribute :ffmpeg_command, default: "ffmpeg"
 
-  attr_reader :segment_target_length, :cut_point_seek_window
+  attr_reader :segment_target_length, :cut_point_seek_window, :log_label
 
   # @param segment_target_length [Numeric] target segment length in seconds (ActiveSupport durations ok)
   # @param cut_point_seek_window [Numeric] how far either side of the target cut point to look for silence
-  def initialize(segment_target_length:, cut_point_seek_window: nil)
+  # @param log_label [String] optional, identifies the audio in log messages, eg "Asset abc123"
+  def initialize(segment_target_length:, cut_point_seek_window: nil, log_label: nil)
+    @log_label = log_label
     @segment_target_length = segment_target_length.to_f
     @cut_point_seek_window = cut_point_seek_window ? cut_point_seek_window.to_f : (@segment_target_length / 10)
   end
@@ -65,7 +67,13 @@ class AudioSilenceSplitter
     while total_duration - start > segment_target_length
       target = start + segment_target_length
       nearby = silences.select { |s| (s - target).abs <= cut_point_seek_window && s > start }
-      cut = nearby.min_by { |s| (s - target).abs } || target
+      cut = nearby.min_by { |s| (s - target).abs }
+
+      unless cut
+        cut = target
+        Rails.logger.warn("#{self.class}: #{log_label}: no silence within #{cut_point_seek_window.round}s of #{target.round(1)}s, cutting at exact time")
+      end
+
       cuts << cut
       start = cut
     end

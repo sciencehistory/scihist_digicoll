@@ -27,7 +27,9 @@ describe AudioSilenceSplitter do
   end
 
   it "cuts at target when no silence nearby" do
-    cuts = described_class.new(segment_target_length: 3, cut_point_seek_window: 0.5).cut_points(audio_file.path, 10)
+    expect(Rails.logger).to receive(:warn).with(/Asset abc123.*no silence/).at_least(:once)
+
+    cuts = described_class.new(segment_target_length: 3, cut_point_seek_window: 0.5, log_label: "Asset abc123").cut_points(audio_file.path, 10)
     expect(cuts.first).to eq 3
   end
 

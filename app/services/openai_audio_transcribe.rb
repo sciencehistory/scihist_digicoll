@@ -104,7 +104,7 @@ class OpenaiAudioTranscribe
 
       joiner = VttJoiner.new
 
-      AudioSilenceSplitter.new(segment_target_length: SEGMENT_TARGET_LENGTH).split(opus_file.path, duration_seconds: duration_seconds) do |file:, start_seconds:, **|
+      AudioSilenceSplitter.new(segment_target_length: SEGMENT_TARGET_LENGTH, log_label: "Asset #{asset.friendlier_id}").split(opus_file.path, duration_seconds: duration_seconds) do |file:, start_seconds:, **|
         segment_vtt = transcribe_file_to_vtt(file, lang_code: lang_code, whisper_prompt: prompt)
         joiner.add(segment_vtt, offset_seconds: start_seconds)
       end
