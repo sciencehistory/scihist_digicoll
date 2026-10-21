@@ -1,20 +1,20 @@
-# Splits an audio file into chunks of roughly `chunk_size`, preferring to cut in the
-# middle of a silence so that no word is split. Chunks are copied without re-encoding.
+# Splits an audio file into segments of roughly `segment_target_length`, preferring to cut in the
+# middle of a silence so that no word is split. Segments are copied without re-encoding.
 #
 # We use ffmpeg to identify silent moments, and try to split on a silent moment.
 #
 # This is used for splitting long audio recordings before whisper transcription.
 #
-# Each chunk is yielded successively.
+# Each segment is yielded successively.
 #
 # All times are in seconds, as Floats with fractional (millisecond-ish) precision, as
 # reported by ffmpeg -- not whole seconds.
 #
 # @example
-#     AudioSilenceSplitter.new.split("path/to/audio.oga", duration_seconds: 7200) do |file:, start_seconds:, index:|
+#     AudioSilenceSplitter.new(segment_target_length: 45.minutes).split("path/to/audio.oga", duration_seconds: 7200) do |file:, start_seconds:, index:|
 #       file          # => Tempfile, deleted after the block
-#       start_seconds # => offset of chunk in original, in (fractional) seconds, eg 2701.337
-#       index         # => 0-based chunk number
+#       start_seconds # => offset of segment in original, in (fractional) seconds, eg 2701.337
+#       index         # => 0-based segment number
 #     end
 class AudioSilenceSplitter
   SILENCE_NOISE = "-35dB"
@@ -24,25 +24,25 @@ class AudioSilenceSplitter
 
   class_attribute :ffmpeg_command, default: "ffmpeg"
 
-  attr_reader :chunk_size, :cut_point_seek_window
+  attr_reader :segment_target_length, :cut_point_seek_window
 
-  # @param chunk_size [Numeric] target chunk length in seconds (ActiveSupport durations ok)
+  # @param segment_target_length [Numeric] target segment length in seconds (ActiveSupport durations ok)
   # @param cut_point_seek_window [Numeric] how far either side of the target cut point to look for silence
-  def initialize(chunk_size: OpenaiAudioTranscribe::CHUNK_SIZE, cut_point_seek_window: nil)
-    @chunk_size = chunk_size.to_f
-    @cut_point_seek_window = cut_point_seek_window ? cut_point_seek_window.to_f : (chunk_size / 10)
+  def initialize(segment_target_length:, cut_point_seek_window: nil)
+    @segment_target_length = segment_target_length.to_f
+    @cut_point_seek_window = cut_point_seek_window ? cut_point_seek_window.to_f : (@segment_target_length / 10)
   end
 
-  # Yields each chunk (keywords file:, start_seconds:, index:) in order; the Tempfile is deleted after its block returns.
+  # Yields each segment (keywords file:, start_seconds:, index:) in order; the Tempfile is deleted after its block returns.
   def split(path, duration_seconds:, &block)
     cuts = cut_points(path, duration_seconds)
     starts = [0.0] + cuts
     ends = cuts + [nil]
 
     starts.zip(ends).each_with_index do |(start, finish), index|
-      tempfile = Tempfile.new(["audio_chunk", FILE_SUFFIX])
+      tempfile = Tempfile.new(["audio_segment", FILE_SUFFIX])
       begin
-        extract_chunk(path, tempfile.path, start: start, length: (finish - start if finish))
+        extract_segment(path, tempfile.path, start: start, length: (finish - start if finish))
         block.call(file: tempfile, start_seconds: start, index: index)
       ensure
         tempfile.close!
@@ -50,20 +50,20 @@ class AudioSilenceSplitter
     end
   end
 
-  # Times in fractional seconds (Floats) at which to cut, aiming for every chunk_size, empty if it all fits in one chunk.
+  # Times in fractional seconds (Floats) at which to cut, aiming for every segment_target_length, empty if it all fits in one segment.
   #
-  # There are many silences in an audio file, we only want a few cuts: for each chunk_size
+  # There are many silences in an audio file, we only want a few cuts: for each segment_target_length
   # target, we choose the silence closest to it (within cut_point_seek_window), or the
   # target itself if there is none.
   def cut_points(path, total_duration)
-    return [] if total_duration <= chunk_size
+    return [] if total_duration <= segment_target_length
 
     silences = candidate_cut_points(path)
     cuts = []
     start = 0.0
 
-    while total_duration - start > chunk_size
-      target = start + chunk_size
+    while total_duration - start > segment_target_length
+      target = start + segment_target_length
       nearby = silences.select { |s| (s - target).abs <= cut_point_seek_window && s > start }
       cut = nearby.min_by { |s| (s - target).abs } || target
       cuts << cut
@@ -91,7 +91,7 @@ class AudioSilenceSplitter
   end
 
   # copy `length` seconds (to the end if nil) from `start` into output_path, without re-encoding
-  def extract_chunk(path, output_path, start:, length:)
+  def extract_segment(path, output_path, start:, length:)
     args = [ffmpeg_command, "-nostdin", "-y", "-ss", start.to_s, "-i", path.to_s]
     args += ["-t", length.to_s] if length
     args += ["-vn", "-c", "copy", output_path]
