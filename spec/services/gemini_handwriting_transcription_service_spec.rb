@@ -84,6 +84,14 @@ describe GeminiHandwritingTranscriptionService do
     end
   end
 
+  describe "#update_handwriting_transcription_request" do
+    it "creates the request if needed, and saves it on the work" do
+      service.update_handwriting_transcription_request(status: "queued")
+
+      expect(work.reload.handwriting_transcription_request).to have_attributes(status: "queued", pending?: true)
+    end
+  end
+
   describe "#remove_transcription!" do
     let(:child_work) { create(:public_work) }
     let(:work) do

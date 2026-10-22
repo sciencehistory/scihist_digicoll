@@ -1,8 +1,11 @@
-# Ensures that a work's OCR data is consistent with it's Work#ocr_requested boolean value
+# Ensures that a work's OCR data is consistent with its Work#ocr_requested? boolean value
+# Ensures that a work's handwriting transcriptiuon data is consistent with its Work#handwriting_transcription_mode? boolean value
 #
 # Will add OCR data if ocr_requested? but ocr data is missing
-#
 # Will remove OCR data is !ocr_requested? but present.
+#
+# If the gemini_htr_transcripts_feature_flag is on, does the same for Gemini handwriting
+# transcriptions, based on Work#handwriting_transcription_mode?. See #process_handwriting_transcription.
 #
 # Some work may be done asynchronously by queing background jobs, as OCR is slow.
 #
@@ -25,6 +28,16 @@ class WorkOcrCreatorRemover
   end
 
   def process
+    process_ocr
+    
+    if ScihistDigicoll::Env.lookup(:gemini_htr_transcripts_feature_flag)
+      process_handwriting_transcription 
+    end
+  end
+
+  private
+
+  def process_ocr
     if @work.ocr_requested?
       unless AssetOcrCreator.suitable_language?(work)
         Rails.logger.warn("#{self.class}: OCR enabled for work #{work.friendlier_id}, but it does not have suitable languages: #{work.language.inspect}")
@@ -33,19 +46,44 @@ class WorkOcrCreatorRemover
 
       image_assets.each do |a|
         if a.suppress_ocr
-          maybe_remove(a)
+          maybe_remove_ocr(a)
         else
-          maybe_add(a)
+          maybe_add_ocr(a)
         end
       end
     elsif @work.text_extraction_mode.blank? # not PDF extraction either
-      image_assets.each { |a| maybe_remove(a) }
+      image_assets.each { |a| maybe_remove_ocr(a) }
     end
   end
 
-  private
+  # Unlike OCR, a Gemini transcription costs money, so we only ever request one if this work
+  # has never had a request -- not even a failed one. Failed or outdated transcriptions have to
+  # be dealt with separately.
+  #
+  # Transcriptions are removed (and the request forgotten) once the work is no longer in
+  # handwriting_transcription mode.
+  def process_handwriting_transcription
+    if @work.handwriting_transcription_mode?
+      maybe_request_handwriting_transcription
+    else
+      maybe_remove_handwriting_transcription
+    end
+  end
 
-  def maybe_add(asset)
+  def maybe_request_handwriting_transcription
+    return if @work.handwriting_transcription_request.present?
+    GeminiHandwritingTranscriptionService.new(work: @work).update_handwriting_transcription_request(status: 'queued')
+    HandwritingTranscriptionJob.perform_later(@work)
+  end
+
+  # Only works that have had a request need cleaning up; checking that first also means
+  # we don't reindex every other work.
+  def maybe_remove_handwriting_transcription
+    return if @work.handwriting_transcription_request.blank?
+    GeminiHandwritingTranscriptionService.new(work: @work).remove_transcription!
+  end
+
+  def maybe_add_ocr(asset)
     return if @ignore_missing_files && !asset.file.exists?
 
     # we need both of em!
@@ -58,7 +96,7 @@ class WorkOcrCreatorRemover
   # still open and close a transaction, which takes some time
   # and load on DB, don't do it unless we actually have things to remove.
   #
-  def maybe_remove(asset)
+  def maybe_remove_ocr(asset)
     # don't need it if we already don't have hocr or textonly_pdf
     return if !asset.hocr && !asset.file_derivatives[:textonly_pdf]
 
