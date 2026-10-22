@@ -4,7 +4,7 @@ describe OpenaiAudioTranscribe do
   let(:opus_path) { (Rails.root + "spec/test_support/audio/short_opus.oga").to_s}
   let(:service) { described_class.new }
 
-  describe "#get_vtt" do
+  describe "#transcribe_file_to_vtt" do
     it "submits API request" do
       expect(service.client.audio).to receive(:transcribe) do |args|
         expect(args.keys).to eq [:parameters]
@@ -17,7 +17,7 @@ describe OpenaiAudioTranscribe do
       end.and_return(sample_webvtt)
 
       file = File.open(opus_path)
-      output = service.get_vtt(file)
+      output = service.transcribe_file_to_vtt(file)
 
       expect(output).to be_kind_of(String)
       expect(output).to start_with("WEBVTT")
@@ -32,7 +32,7 @@ describe OpenaiAudioTranscribe do
 
       file = File.open(opus_path)
       expect {
-        output = service.get_vtt(file)
+        output = service.transcribe_file_to_vtt(file)
       }.to raise_error(described_class::Error)
     ensure
       file.close if file
@@ -59,6 +59,65 @@ describe OpenaiAudioTranscribe do
 
       expect(webvtt).to be_kind_of(String)
       expect(webvtt).to start_with("WEBVTT")
+    end
+
+    describe "over segmenting threshold" do
+      let(:segment_vtt) do
+        <<~EOS
+        WEBVTT
+
+        00:01.000 --> 00:02.000
+        First words.
+
+        01:02:03.500 --> 01:02:04.000
+        Last words.
+        EOS
+      end
+
+      before do
+        stub_const("OpenaiAudioTranscribe::SEGMENT_IF_LONGER_THAN", 1.second)
+
+        # splitter is tested separately, stub it to hand back two segments
+        splitter = instance_double(AudioSilenceSplitter)
+        allow(splitter).to receive(:split) do |*, &block|
+          block.call(file: File.open(opus_path), start_seconds: 0.0, index: 0)
+          block.call(file: File.open(opus_path), start_seconds: 90.5, index: 1)
+        end
+        allow(AudioSilenceSplitter).to receive(:new).with(segment_target_length: OpenaiAudioTranscribe::SEGMENT_TARGET_LENGTH, log_label: "Asset #{asset.friendlier_id}").and_return(splitter)
+      end
+
+      it "merges segments with shifted timestamps" do
+        allow(Rails.logger).to receive(:info).and_call_original
+        expect(Rails.logger).to receive(:info).with(/OpenaiAudioTranscribe: Splitting Asset #{asset.friendlier_id} into segments/)
+
+        prompts = []
+        expect(service.client.audio).to receive(:transcribe).twice do |args|
+          prompts << args[:parameters][:prompt]
+          segment_vtt
+        end
+
+        merged = service.get_vtt_for_asset(asset)
+
+        expect(prompts).to eq ["This is a video described"] * 2
+
+        expect(merged).to eq <<~EOS
+        WEBVTT
+
+        00:00:01.000 --> 00:00:02.000
+        First words.
+
+        01:02:03.500 --> 01:02:04.000
+        Last words.
+
+        00:01:31.500 --> 00:01:32.500
+        First words.
+
+        01:03:34.000 --> 01:03:34.500
+        Last words.
+        EOS
+
+        WebVTT.from_blob(merged)
+      end
     end
 
     describe "filtered transcript for known hallucinations" do
