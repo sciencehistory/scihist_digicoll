@@ -136,7 +136,7 @@ class Work < Kithe::Work
   # But we often want to know without fetching children, so text_extraction_mode at the work
   # level is used as an expression of intent, that can also be used for triggering extraction routines
   # etc.
-  def has_text_extraction?
+  def hocr_expected?
     ocr_requested? || pdf_text_extraction?
   end
 

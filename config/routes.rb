@@ -371,6 +371,8 @@ Rails.application.routes.draw do
 
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
+    get "/work_count_report", to: "work_count_report#index", as: "work_count_report"
+    get "/work_count_report/export_work_count_by_user", to: "work_count_report#export_work_count_by_user", as: "export_work_count_by_user"
     get "/orphan_report", to: "orphan_report#index", as: "orphan_report"
 
     resources :oral_history_requests, only: [:index, :show] do
@@ -385,6 +387,10 @@ Rails.application.routes.draw do
     get "/batch_create", to: "batch_create#new", as: "batch_create" # step 1
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
+
+    get  "/batch_replace_metadata", to: "batch_replace_metadata#new", as: "batch_replace_metadata"
+    get  "/batch_replace_metadata/preview", to: "batch_replace_metadata#preview", as: "preview_batch_replace_metadata"
+    post "/batch_replace_metadata", to: "batch_replace_metadata#create"
 
     resources :digitization_queue_items do
       member do
