@@ -101,7 +101,7 @@ class Work < Kithe::Work
   # actual OCR extraction; pdf_extraction is more of a signal that we plan for it to be there, may not
   # automatically trigger it.
   attr_json :text_extraction_mode, :string
-  validates :text_extraction_mode, inclusion: { in: ["ocr", "pdf_extraction"], allow_nil: true }
+  validates :text_extraction_mode, inclusion: { in: ["ocr", "pdf_extraction", "handwriting_transcription"], allow_nil: true }
   normalizes :text_extraction_mode, with: -> text_extraction { text_extraction.presence }
 
 
@@ -130,6 +130,10 @@ class Work < Kithe::Work
 
   def pdf_text_extraction?
     text_extraction_mode == "pdf_extraction"
+  end
+
+  def handwriting_transcription_mode?
+    text_extraction_mode == "handwriting_transcription"
   end
 
   # to know if we REALLY have text, we'd have to look at the children to see if they contain hocr

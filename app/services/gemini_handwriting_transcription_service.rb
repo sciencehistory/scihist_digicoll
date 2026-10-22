@@ -79,6 +79,15 @@ class GeminiHandwritingTranscriptionService
     problems
   end
 
+  # Keep track of the state of the transcription request.
+  # Takes any attributes of Work::HandwritingTranscriptionRequest (status:, error:, start_time:, ...).
+  #
+  # Public so that whoever enqueues a HandwritingTranscriptionJob can record status 'queued'.
+  def update_handwriting_transcription_request(**attributes)
+    (work.handwriting_transcription_request ||= Work::HandwritingTranscriptionRequest.new).assign_attributes(attributes)
+    work.save!
+  end
+
   private
 
   attr_reader :work
@@ -308,12 +317,5 @@ class GeminiHandwritingTranscriptionService
         UnsupportedImageTypeError,
         "Unknown MIME type: #{image_derivative.mime_type}"
       )
-  end
-
-  # Keep track of the state of the transcription request.
-  # Takes any attributes of Work::HandwritingTranscriptionRequest (status:, error:, start_time:, ...).
-  def update_handwriting_transcription_request(**attributes)
-    (work.handwriting_transcription_request ||= Work::HandwritingTranscriptionRequest.new).assign_attributes(attributes)
-    work.save!
   end
 end
