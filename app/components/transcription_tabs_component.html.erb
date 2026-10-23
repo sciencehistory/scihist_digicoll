@@ -13,11 +13,18 @@
       Description
     </a>
   </li>
-
   <% if transcription_texts.present? %>
     <li class="nav-item" role="presentation">
       <a class="nav-link" id="transcription-tab" data-bs-toggle="tab" href="#transcription" role="tab" aria-controls="transcription">
         Transcription
+      </a>
+    </li>
+  <% end %>
+
+  <% if handwriting_transcription_texts.present? %>
+    <li class="nav-item" role="presentation">
+      <a class="nav-link" id="handwriting-transcription-tab" data-bs-toggle="tab" href="#handwriting-transcription" role="tab" aria-controls="handwriting-transcription">
+        AI Transcription
       </a>
     </li>
   <% end %>
@@ -72,6 +79,36 @@
       <% end %>
     </div>
   <% end %>
+
+
+  <% if handwriting_transcription_texts.present? %>
+    <div class="tab-pane" id="handwriting-transcription" role="tabpanel" aria-labelledby="handwriting-transcription-tab">
+      <p class="alert alert-warning" role="alert">
+        PLACEHOLDER AI DISCLAIMER
+      </p>
+      <% handwriting_transcription_texts.each do |text_obj| %>
+        <% if handwriting_transcription_texts.length > 1 %>
+          <h3 class="textual-separator text-page-separator">
+          <%= link_to(
+            viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
+            data: MemberImageComponent.viewer_trigger_data_attrs(
+                member_id: text_obj.friendlier_id, work_id: text_obj.asset.parent&.friendlier_id
+          )) do %>
+              <i class="fa fa-window-maximize" aria-hidden="true"></i>
+              <%= text_obj.page_label %>
+            <% end %>
+          </h3>
+        <% end %>
+        <div class="text-pages">
+          <%= simple_format text_obj.text %>
+        </div>
+      <% end %>
+
+
+
+    </div>
+  <% end %>
+
 
   <% if translation_texts.present? %>
     <div class="tab-pane" id="translation" role="tabpanel" aria-labelledby="translation-tab">
