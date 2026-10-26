@@ -9,13 +9,22 @@
 # But this is the record that logins (really one-time magic link logins)
 # are attached to, that DO confirm the user has access to the email specified!
 class Patron < ApplicationRecord
-  # longer table name for legacy reasons, cumbersome to change table name
-  # without downtime, good enough. eg https://docs.gitlab.com/ee/development/database/rename_database_tables.html
+  # old legacy table name, cumbersome to change table name
+  # without downtime, but we should do it at some point to avoid confusion
+  # eg https://docs.gitlab.com/ee/development/database/rename_database_tables.html
   self.table_name = "oral_history_requester_emails"
 
   normalizes :email, with: -> email { email.downcase.strip }
 
   LOGIN_LINK_EXPIRE = 7.days
+  SESSION_EXPIRE_PERIOD = 30.days
+
+  # Login is via magic link in OralHistorySessionsController, devise handles the session.
+  devise :rememberable, :timeoutable,
+    remember_for: SESSION_EXPIRE_PERIOD,
+    extend_remember_period: true,
+    expire_all_remember_me_on_sign_out: false,
+    timeout_in: SESSION_EXPIRE_PERIOD
 
   # we don't have uniqueness validation cause it's incompatible with using create_or_find_by which
   # we want to.
@@ -30,6 +39,16 @@ class Patron < ApplicationRecord
     # or single-user or what have you, whatever you put in here has to remain
     # constant for token to be good.
     email
+  end
+
+  # No password, so devise session and remember-me cookies are validated against session_token;
+  # rotate it to log a patron out everywhere.
+  def authenticatable_salt
+    session_token
+  end
+
+  def rememberable_value
+    session_token
   end
 
   # @param [Asset]
