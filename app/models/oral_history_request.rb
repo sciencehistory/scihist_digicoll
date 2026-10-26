@@ -3,14 +3,14 @@ class OralHistoryRequest < ApplicationRecord
   # without downtime, good enough. eg https://docs.gitlab.com/ee/development/database/rename_database_tables.html
   self.table_name = "oral_history_access_requests"
 
-  belongs_to :oral_history_requester, optional: true, foreign_key: "oral_history_requester_email_id"
-  validates :oral_history_requester, presence: true
-  accepts_nested_attributes_for :oral_history_requester
+  belongs_to :patron, optional: true, foreign_key: "oral_history_requester_email_id"
+  validates :patron, presence: true
+  accepts_nested_attributes_for :patron
 
   has_encrypted :patron_name, :patron_institution, :intended_use
   belongs_to :work
   validates :patron_name, presence: true
-  validates :oral_history_requester, presence: true
+  validates :patron, presence: true
 
   validates :intended_use, presence: true, if: -> {
     work&.oral_history_content&.availability_reviewed_request?
@@ -28,9 +28,8 @@ class OralHistoryRequest < ApplicationRecord
     self.work.oral_history_number
   end
 
-  # delegate to oral_history_requester, or while we're migrating default to
-  # local attributes
-  def requester_email
-    oral_history_requester&.email
+  # delegate to patron
+  def patron_email
+    patron&.email
   end
 end

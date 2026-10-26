@@ -6,7 +6,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
   before do
     # mock the link to test it ends up in email? Since it's dynamic and different
     # every time you call it, I guess this works?
-    allow_any_instance_of(OralHistoryRequester).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
+    allow_any_instance_of(Patron).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
   end
 
   describe "#approved_with_session_link_email" do
@@ -19,7 +19,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     end
 
     it "it has good metadata" do
-      expect(mail.to).to eq ([access_request.requester_email])
+      expect(mail.to).to eq ([access_request.patron_email])
       expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
       expect(mail.subject).to eq "Science History Institute Oral History Request: Approved: #{access_request.work.title}"
     end
@@ -35,7 +35,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
       let(:access_request) { create(:oral_history_request, delivery_status: "automatic") }
 
       it "also works" do
-        expect(mail.to).to eq ([access_request.requester_email])
+        expect(mail.to).to eq ([access_request.patron_email])
         expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
         expect(mail.subject).to eq "Science History Institute Oral History Request: Approved: #{access_request.work.title}"
 
@@ -56,7 +56,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     end
 
     it "it has good metadata" do
-      expect(mail.to).to eq ([access_request.requester_email])
+      expect(mail.to).to eq ([access_request.patron_email])
       expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
       expect(mail.subject).to eq "Science History Institute Oral History Request: #{access_request.work.title}"
     end
