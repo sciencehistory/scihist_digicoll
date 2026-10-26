@@ -243,18 +243,8 @@ private
     work
   end
 
-  def current_patron
-    unless defined?(@current_patron)
-      @current_patron = OralHistorySessionsController.fetch_current_patron(request: request, reset_expiration_window: true)
-    end
-    @current_patron
-  end
-  helper_method :current_patron
-
-
   def add_patron_email_to_honeybadger_context
     # Get this info either from the session (via current_patron) or from the :patron_email parameter.
-    # Note: this method has the side effect of resetting the expiration window of the OH request.
     email = current_patron&.email || params[:patron_email]
     Honeybadger.context({ patron_email: email })
   end
