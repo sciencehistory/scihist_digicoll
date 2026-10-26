@@ -48,9 +48,7 @@ describe OralHistoryRequestsController, type: :controller do
 
     describe "wrong authorized user" do
       before do
-        allow(session).to receive(:[]).and_call_original
-        allow(session).to receive(:[]).with(OralHistorySessionsController::SESSION_KEY).
-          and_return(Patron.create!(email: "example#{rand(999999)}@example.com").id)
+        sign_in Patron.create!(email: "example#{rand(999999)}@example.com")
       end
 
       it "404s" do
