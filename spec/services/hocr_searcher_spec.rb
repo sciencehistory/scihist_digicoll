@@ -68,6 +68,18 @@ describe HocrSearcher do
     end
   end
 
+  describe "regex metacharacters in query" do
+    let(:asset) { create(:asset_with_faked_file, hocr: HOCR_2_TXT, published: true, faked_width: 3348, faked_height: 4580) }
+    let(:work) { create(:public_work, members: [ asset ])}
+
+    ["foo(bar", "a.b|c", "the'||DBMS_PIPE.RECEIVE_MESSAGE(CHR(98),15)||'", "x[y", "a\\b"].each do |query|
+      it "does not raise for #{query.inspect}" do
+        searcher = HocrSearcher.new(work, query: query)
+        expect(searcher.results_for_osd_viewer).to eq([])
+      end
+    end
+  end
+
   # cheaper tests
   describe "#normalize_query" do
     it "ignores extra spaces" do
