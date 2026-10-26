@@ -47,7 +47,7 @@ describe DownloadsController do
 
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: approved_request.oral_history_requester)
+          OralHistorySessionsController.store_current_patron(request: request, patron: approved_request.patron)
         end
 
         it "returns redirect to file" do
@@ -59,10 +59,10 @@ describe DownloadsController do
       end
 
       describe "logged in, but no request" do
-        let(:oral_history_requester) { OralHistoryRequester.new(email: "example#{rand(999999)}@example.com") }
+        let(:patron) { Patron.new(email: "example#{rand(999999)}@example.com") }
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: oral_history_requester)
+          OralHistorySessionsController.store_current_patron(request: request, patron: patron)
         end
 
         it "redirects to login page" do
@@ -158,7 +158,7 @@ describe DownloadsController do
 
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: approved_request.oral_history_requester)
+          OralHistorySessionsController.store_current_patron(request: request, patron: approved_request.patron)
         end
 
         it "returns redirect to file" do
@@ -170,10 +170,10 @@ describe DownloadsController do
       end
 
       describe "logged in, but no request" do
-        let(:oral_history_requester) { OralHistoryRequester.new(email: "example#{rand(999999)}@example.com") }
+        let(:patron) { Patron.new(email: "example#{rand(999999)}@example.com") }
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_oral_history_current_requester(request: request, oral_history_requester: oral_history_requester)
+          OralHistorySessionsController.store_current_patron(request: request, patron: patron)
         end
 
         it "redirects to login page" do

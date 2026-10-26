@@ -11,7 +11,7 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
             patron_name: "Patron #{i}",
             patron_institution: "Institution #{i}",
             intended_use: "I will write #{i} books.",
-            oral_history_requester: OralHistoryRequester.new(email: "patron@institution_#{i}.com"),
+            patron: Patron.new(email: "patron@institution_#{i}.com"),
             work: work,
             delivery_status: delivery_status
           )
@@ -78,7 +78,7 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
           oral_history_request_approval: { notes_from_staff: message }
         }
 
-        expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
+        expect(flash[:notice]).to match /Approve email was sent to #{Regexp.escape oral_history_access_request.patron_email}/
         expect(response).to redirect_to(admin_oral_history_requests_path)
 
         oral_history_access_request.reload
@@ -99,7 +99,7 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
         }
 
 
-        expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.requester_email}/
+        expect(flash[:notice]).to match /Reject email was sent to #{Regexp.escape oral_history_access_request.patron_email}/
         expect(response).to redirect_to(admin_oral_history_requests_path)
 
         oral_history_access_request.reload
@@ -119,7 +119,7 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
           disposition: "dismiss",
           oral_history_request_approval: { notes_from_staff: message }
         }
-        expect(flash[:notice]).to match /#{Regexp.escape oral_history_access_request.requester_email}'s request for .* has been dismissed./
+        expect(flash[:notice]).to match /#{Regexp.escape oral_history_access_request.patron_email}'s request for .* has been dismissed./
         expect(response).to redirect_to(admin_oral_history_requests_path)
         expect(oral_history_access_request.reload.delivery_status).to eq "dismissed"
         # email should not be sent.

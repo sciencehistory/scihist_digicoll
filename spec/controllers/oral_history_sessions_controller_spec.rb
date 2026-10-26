@@ -1,27 +1,27 @@
 require "rails_helper"
 
 describe OralHistorySessionsController, type: :controller, queue_adapter: :inline do
-  let(:requester_email) { OralHistoryRequester.create(email: "nobody@example.com" ) }
+  let(:patron) { Patron.create(email: "nobody@example.com" ) }
 
   describe "#create" do
     it "sends a login link" do
-      get :create, params: { email: requester_email.email }
+      get :create, params: { email: patron.email }
 
       expect(response).to redirect_to root_path
-      expect(flash[:notice]).to eq "A sign-in link for your Oral Histories requests has been emailed to #{requester_email.email}"
+      expect(flash[:notice]).to eq "A sign-in link for your Oral Histories requests has been emailed to #{patron.email}"
 
       email_delivery = ActionMailer::Base.deliveries.first
-      expect(email_delivery.to).to eq [requester_email.email]
+      expect(email_delivery.to).to eq [patron.email]
     end
 
     it "normalizes entry to send a login link" do
-      get :create, params: { email: " #{requester_email.email.upcase} " }
+      get :create, params: { email: " #{patron.email.upcase} " }
 
       expect(response).to redirect_to root_path
-      expect(flash[:notice]).to eq "A sign-in link for your Oral Histories requests has been emailed to #{requester_email.email}"
+      expect(flash[:notice]).to eq "A sign-in link for your Oral Histories requests has been emailed to #{patron.email}"
 
       email_delivery = ActionMailer::Base.deliveries.first
-      expect(email_delivery.to).to eq [requester_email.email]
+      expect(email_delivery.to).to eq [patron.email]
     end
 
     describe "for unknown email" do
@@ -35,12 +35,12 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
   end
 
   describe "#login" do
-    let(:auto_login_link) { requester_email.generate_token_for(:auto_login) }
+    let(:auto_login_link) { patron.generate_token_for(:auto_login) }
 
     it "authenticates and stores login" do
       get :login, params: { token: auto_login_link}
 
-      expect(OralHistorySessionsController.fetch_oral_history_current_requester(request: request)&.id).to eq requester_email.id
+      expect(OralHistorySessionsController.fetch_current_patron(request: request)&.id).to eq patron.id
 
       expect(response).to redirect_to(oral_history_requests_path)
     end
@@ -49,7 +49,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       it "does not authenticate" do
         get :login, params: { token: "bad token"}
 
-        expect(session[:oral_history_requester_id]).to be nil
+        expect(session[:patron_id]).to be nil
 
         expect(response).to redirect_to(new_oral_history_session_path)
         expect(flash[:auto_link_message]).to eq "Sorry, your link has expired or is not valid. Please enter your email, and we'll send you a new one."
@@ -72,10 +72,10 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
 
   describe "#destroy" do
     it "signs out" do
-      session[:oral_history_requester_id] = requester_email.id
+      session[:patron_id] = patron.id
       delete :destroy
 
-      expect(OralHistorySessionsController.fetch_oral_history_current_requester(request: request)).to be nil
+      expect(OralHistorySessionsController.fetch_current_patron(request: request)).to be nil
       expect(response).to have_http_status(:redirect)
       expect(flash[:success]).to include("signed out")
     end
