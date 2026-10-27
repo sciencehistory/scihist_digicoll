@@ -1,10 +1,8 @@
 <p class="alert alert-info">
   <i class="fa fa-info-circle" aria-hidden="true"></i>
-  This panel only reports on automatic text extraction from images: photographic OCR, PDF extraction, and Gemini handwriting transcription.
-  It does not cover audio or video transcription, or "Bredig-collection-style" manual transcript entry.
+  This panel only reports on automatic text extraction from images: photographic OCR, PDF extraction, and handwriting transcripts.
+  It does not cover audio or video transcription, or transcripts written by staff.
 </p>
-
-<%= render GeminiHandwritingTranscriptionComponent.new(@work) %>
 
 <p>
   Text extraction mode:
@@ -18,6 +16,8 @@
     </span>
   <% end %>
 </p>
+
+<%= render GeminiHandwritingTranscriptionComponent.new(@work) %>
 
 <% if work_language_warning? %>
   <p>
