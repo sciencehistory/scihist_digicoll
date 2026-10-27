@@ -37,6 +37,30 @@ describe Work::HandwritingTranscriptionRequest do
     end
   end
 
+  describe "#status_message" do
+    it "is nil with no status" do
+      expect(described_class.new.status_message).to be_nil
+    end
+
+    it "describes a request in progress" do
+      expect(described_class.new(status: "queued").status_message).to eq("A handwriting transcription is in progress (status: queued).")
+    end
+
+    it "describes success" do
+      expect(described_class.new(status: "success").status_message).to eq("A handwriting transcription exists for this work.")
+    end
+
+    it "includes the error on failure" do
+      expect(described_class.new(status: "failure", error: "it broke").status_message).to eq(
+        "The most recent handwriting transcription request failed: it broke"
+      )
+    end
+
+    it "copes with a failure that has no error" do
+      expect(described_class.new(status: "failure").status_message).to end_with("failed: unknown error")
+    end
+  end
+
   describe "stored on a work" do
     let(:work) { create(:work) }
 

@@ -1,0 +1,34 @@
+<div class="card my-3">
+  <h5 class="card-header">Automatic handwriting transcription</h5>
+
+  <div class="card-body">
+    <p><%= status_message %></p>
+
+    <% if formatted_start_time %>
+      <p>Requested: <%= formatted_start_time %></p>
+    <% end %>
+
+    <% if eligibility_warning %>
+      <p>
+        <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
+        <%= eligibility_warning %>
+      </p>
+    <% end %>
+
+    <% if offer_new_request? %>
+      <%= link_to "Request a new transcript",
+            request_new_handwriting_transcription_admin_work_path(work),
+            method: :post,
+            class: "btn btn-outline-secondary #{'disabled' unless can?(:update, work)}",
+            data: { confirm: new_request_confirm_message } %>
+    <% end %>
+
+    <% if offer_delete? %>
+      <%= link_to "Delete transcript",
+            delete_handwriting_transcription_admin_work_path(work),
+            method: :delete,
+            class: "btn btn-outline-danger #{'disabled' unless can?(:update, work)}",
+            data: { confirm: "This will delete the transcript, and set the text extraction mode to none. Are you sure?" } %>
+    <% end %>
+  </div>
+</div>

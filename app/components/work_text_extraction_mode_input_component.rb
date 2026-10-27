@@ -69,15 +69,7 @@ class WorkTextExtractionModeInputComponent < ApplicationComponent
   end
 
   def request_status_message
-    return nil unless transcription_request&.status.present?
-
-    if transcription_request.success?
-      "A handwriting transcription exists for this work."
-    elsif transcription_request.failure?
-      "The most recent handwriting transcription request failed: #{transcription_request.error.presence || 'unknown error'}"
-    else
-      "A handwriting transcription is in progress (status: #{transcription_request.status})."
-    end
+    transcription_request&.status_message
   end
 
   # Once a request has been made, its status says what happened, so we only warn beforehand.

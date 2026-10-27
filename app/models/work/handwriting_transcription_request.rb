@@ -38,5 +38,18 @@ class Work
     def pending?
       status.present? && !finished?
     end
+
+    # A sentence for staff describing this request's status, or nil if it has none.
+    def status_message
+      return nil if status.blank?
+
+      if success?
+        "A handwriting transcription exists for this work."
+      elsif failure?
+        "The most recent handwriting transcription request failed: #{error.presence || 'unknown error'}"
+      else
+        "A handwriting transcription is in progress (status: #{status})."
+      end
+    end
   end
 end
