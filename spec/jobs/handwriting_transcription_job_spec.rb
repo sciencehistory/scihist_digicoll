@@ -19,9 +19,13 @@ describe HandwritingTranscriptionJob do
   describe "work no longer in handwriting_transcription mode" do
     let(:work) { create(:work, text_extraction_mode: "ocr") }
 
-    it "does nothing" do
+    it "does nothing, but logs why" do
+      allow(Rails.logger).to receive(:info)
+
       HandwritingTranscriptionJob.perform_now(work)
+
       expect(service).not_to have_received(:add_transcription!)
+      expect(Rails.logger).to have_received(:info).with(/not transcribing work #{work.friendlier_id}/)
     end
   end
 end

@@ -79,13 +79,16 @@ class GeminiHandwritingTranscriptionService
     problems
   end
 
-  # Keep track of the state of the transcription request.
-  # Takes any attributes of Work::HandwritingTranscriptionRequest (status:, error:, start_time:, ...).
+  # Starts a fresh request, with status 'queued' -- forgetting anything about any previous
+  # request, such as its error -- and enqueues the job that will carry it out.
   #
-  # Public so that whoever enqueues a HandwritingTranscriptionJob can record status 'queued'.
-  def update_handwriting_transcription_request(**attributes)
-    (work.handwriting_transcription_request ||= Work::HandwritingTranscriptionRequest.new).assign_attributes(attributes)
+  # Always use this, rather than enqueuing HandwritingTranscriptionJob directly, so that
+  # the work shows the request is underway.
+  def queue_transcription!
+    work.handwriting_transcription_request = Work::HandwritingTranscriptionRequest.new(status: 'queued')
     work.save!
+
+    HandwritingTranscriptionJob.perform_later(work)
   end
 
   private
@@ -317,5 +320,12 @@ class GeminiHandwritingTranscriptionService
         UnsupportedImageTypeError,
         "Unknown MIME type: #{image_derivative.mime_type}"
       )
+  end
+
+  # Keep track of the state of the transcription request.
+  # Takes any attributes of Work::HandwritingTranscriptionRequest (status:, error:, start_time:, ...).
+  def update_handwriting_transcription_request(**attributes)
+    (work.handwriting_transcription_request ||= Work::HandwritingTranscriptionRequest.new).assign_attributes(attributes)
+    work.save!
   end
 end

@@ -64,23 +64,13 @@ class WorkOcrCreatorRemover
   # handwriting_transcription mode.
   def process_handwriting_transcription
     if @work.handwriting_transcription_mode?
-      maybe_request_handwriting_transcription
-    else
-      maybe_remove_handwriting_transcription
+      return if @work.handwriting_transcription_request.present?
+
+      GeminiHandwritingTranscriptionService.new(work: @work).queue_transcription!
+    elsif @work.handwriting_transcription_request.present?
+      # Checking for a request first means we don't reindex every other work.
+      GeminiHandwritingTranscriptionService.new(work: @work).remove_transcription!
     end
-  end
-
-  def maybe_request_handwriting_transcription
-    return if @work.handwriting_transcription_request.present?
-    GeminiHandwritingTranscriptionService.new(work: @work).update_handwriting_transcription_request(status: 'queued')
-    HandwritingTranscriptionJob.perform_later(@work)
-  end
-
-  # Only works that have had a request need cleaning up; checking that first also means
-  # we don't reindex every other work.
-  def maybe_remove_handwriting_transcription
-    return if @work.handwriting_transcription_request.blank?
-    GeminiHandwritingTranscriptionService.new(work: @work).remove_transcription!
   end
 
   def maybe_add_ocr(asset)
