@@ -14,10 +14,10 @@
 #
 # @example
 #
-#    WorkOcrCreatorRemover.new(work).process
+#    WorkTranscriptionCreatorRemover.new(work).process
 #
 #
-class WorkOcrCreatorRemover
+class WorkTranscriptionCreatorRemover
   attr_reader :work
 
   # @param work [Work] Work to look at

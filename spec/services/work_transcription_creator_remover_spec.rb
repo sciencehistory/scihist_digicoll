@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe WorkOcrCreatorRemover, queue_adapter: :test do
+describe WorkTranscriptionCreatorRemover, queue_adapter: :test do
   let(:image_asset_without_hocr) { create(:asset_with_faked_file) }
   let(:image_asset_with_ocr_suppressed) { create(:asset_with_faked_file, :suppress_ocr, title: "Asset with OCR suppressed") }
   let(:image_asset_with_ocr_suppressed_but_with_derivs) do
@@ -50,7 +50,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
     let(:ocr_requested) { true }
 
     it "enqueues an ocr creation job for assets that need it; removes OCR and textonly_pdf from works that don't" do
-      WorkOcrCreatorRemover.new(work).process
+      WorkTranscriptionCreatorRemover.new(work).process
       expect(CreateAssetOcrJob).to have_been_enqueued.with(image_asset_without_hocr)
       expect(CreateAssetOcrJob).not_to have_been_enqueued.with(image_asset_with_hocr)
       expect(CreateAssetOcrJob).not_to have_been_enqueued.with(sound_asset)
@@ -77,7 +77,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
       end
 
       it "does not enqueue CreateAssetOcrJob" do
-        WorkOcrCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(work).process
         expect(CreateAssetOcrJob).not_to have_been_enqueued
       end
     end
@@ -93,7 +93,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
       end
 
       it "does not enqueue CreateAssetOcrJob" do
-        WorkOcrCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(work).process
         expect(CreateAssetOcrJob).not_to have_been_enqueued
       end
     end
@@ -102,7 +102,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
   context "work does not need OCR" do
     let(:ocr_requested) { false }
     it "removes OCR" do
-      WorkOcrCreatorRemover.new(work).process
+      WorkTranscriptionCreatorRemover.new(work).process
       work.reload
       work.members.each do |m|
         expect(CreateAssetOcrJob).not_to have_been_enqueued.with(m)
@@ -121,7 +121,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
       end
 
       it "leaves hocr alone" do
-        WorkOcrCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(work).process
 
         expect(asset.reload.hocr).to eq "test hocr"
       end
@@ -148,15 +148,15 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
 
     context "work in handwriting_transcription mode, never requested" do
       it "records status queued and enqueues a request" do
-        WorkOcrCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(work).process
 
         expect(work.reload.handwriting_transcription_request.status).to eq "queued"
         expect(HandwritingTranscriptionJob).to have_been_enqueued.with(work).once
       end
 
       it "does not enqueue a second request when run again" do
-        WorkOcrCreatorRemover.new(work).process
-        WorkOcrCreatorRemover.new(Work.find(work.id)).process
+        WorkTranscriptionCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(Work.find(work.id)).process
 
         expect(HandwritingTranscriptionJob).to have_been_enqueued.once
       end
@@ -165,7 +165,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
         let(:feature_flag) { false }
 
         it "does nothing" do
-          WorkOcrCreatorRemover.new(work).process
+          WorkTranscriptionCreatorRemover.new(work).process
 
           expect(work.reload.handwriting_transcription_request).to be_nil
           expect(HandwritingTranscriptionJob).not_to have_been_enqueued
@@ -177,7 +177,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
       let(:existing_request) { { status: "failure", error: "Gemini was not available" } }
 
       it "does not request again" do
-        WorkOcrCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(work).process
 
         expect(work.reload.handwriting_transcription_request.status).to eq "failure"
         expect(HandwritingTranscriptionJob).not_to have_been_enqueued
@@ -189,7 +189,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
       let(:existing_request) { { status: "success" } }
 
       it "removes the transcription and forgets the request" do
-        WorkOcrCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(work).process
 
         expect(asset.reload.handwriting_transcription).to be_nil
         expect(work.reload.handwriting_transcription_request).to be_nil
@@ -200,7 +200,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
         let(:feature_flag) { false }
 
         it "leaves the transcription alone" do
-          WorkOcrCreatorRemover.new(work).process
+          WorkTranscriptionCreatorRemover.new(work).process
 
           expect(asset.reload.handwriting_transcription).to eq "Dear Cousin James"
           expect(work.reload.handwriting_transcription_request.status).to eq "success"
@@ -212,7 +212,7 @@ describe WorkOcrCreatorRemover, queue_adapter: :test do
       let(:text_extraction_mode) { nil }
 
       it "does not reindex the work" do
-        WorkOcrCreatorRemover.new(work).process
+        WorkTranscriptionCreatorRemover.new(work).process
 
         expect(ReindexWorksJob).not_to have_been_enqueued
       end
