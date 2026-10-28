@@ -7,7 +7,7 @@
 # without being sent to Gemini.
 #
 # Saving the form with this option doesn't request the transcription directly; that's done
-# by WorkOcrCreatorRemover.
+# by WorkTranscriptionCreatorRemover.
 #
 # Meant for use inside an existing simple_form form:
 #
