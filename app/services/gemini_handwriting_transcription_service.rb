@@ -79,6 +79,18 @@ class GeminiHandwritingTranscriptionService
     problems
   end
 
+  # Starts a fresh request, with status 'queued' -- forgetting anything about any previous
+  # request, such as its error -- and enqueues the job that will carry it out.
+  #
+  # Always use this, rather than enqueuing HandwritingTranscriptionJob directly, so that
+  # the work shows the request is underway.
+  def queue_transcription!
+    work.handwriting_transcription_request = Work::HandwritingTranscriptionRequest.new(status: 'queued')
+    work.save!
+
+    HandwritingTranscriptionJob.perform_later(work)
+  end
+
   private
 
   attr_reader :work

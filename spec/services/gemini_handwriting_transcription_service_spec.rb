@@ -84,6 +84,26 @@ describe GeminiHandwritingTranscriptionService do
     end
   end
 
+  describe "#queue_transcription!", queue_adapter: :test do
+    it "records a queued request, and enqueues the job" do
+      service.queue_transcription!
+
+      expect(work.reload.handwriting_transcription_request).to have_attributes(status: "queued", pending?: true)
+      expect(HandwritingTranscriptionJob).to have_been_enqueued.with(work)
+    end
+
+    it "replaces any previous request, forgetting its error and start_time" do
+      work.update!(handwriting_transcription_request: { status: "failure", error: "Gemini was down", start_time: 1.day.ago })
+
+      service.queue_transcription!
+
+      request = work.reload.handwriting_transcription_request
+      expect(request.status).to eq "queued"
+      expect(request.error).to be_nil
+      expect(request.start_time).to be_nil
+    end
+  end
+
   describe "#remove_transcription!" do
     let(:child_work) { create(:public_work) }
     let(:work) do
