@@ -1,51 +1,16 @@
 # We let OH requesters log in with magic links, using tokens
-# generated from Patron#generates_token_for(:auto_login)
+# generated from Patron#generates_token_for(:auto_login), then devise handles the session.
 class OralHistorySessionsController < ApplicationController
-  SESSION_COOKIE_NAME = "scihist_oh_user"
-  SESSION_KEY = "patron_id"
-  SESSION_EXPIRE_PERIOD = 30.days
-
-
-  # @param request [ActionDispatch::Request]
-  # @param patron [Patron]
-  def self.store_current_patron(request:, patron:)
-    request.cookie_jar.encrypted[SESSION_COOKIE_NAME] = {
-      value: JSON.generate({ SESSION_KEY => patron.id }),
-      expires: SESSION_EXPIRE_PERIOD
-    }
-  end
-
-  # @param request [ActionDispatch::Request]
-  # @return [Patron, nil]
-  def self.fetch_current_patron(request:, reset_expiration_window: false)
-    if request.cookie_jar.encrypted[SESSION_COOKIE_NAME].present?
-      id = JSON.parse(request.cookie_jar.encrypted[SESSION_COOKIE_NAME])[SESSION_KEY]
-      Patron.find_by(id: id).tap do |patron|
-        if patron && reset_expiration_window
-          # push expiration to be further back
-          store_current_patron(request: request, patron: patron)
-        end
-      end
-    else
-      nil
-    end
-  rescue JSON::ParserError => e
-    Rails.logger.error("#{self.name}: #{e}")
-    return nil
-  end
-
-  # @param request [ActionDispatch::Request]
-  def self.sign_out_current_patron(request:)
-    request.cookie_jar.delete SESSION_COOKIE_NAME
-  end
-
   # GET /oral_history_session/login/$TOKEN
   #
   # Actually logs someone in
   def login
     patron = Patron.find_by_token_for(:auto_login, params[:token])
     if patron.present?
-      self.class.store_current_patron(request: request, patron: patron)
+      # don't let an old timed-out session abort a fresh login
+      request.env["devise.skip_timeout"] = true
+      patron.remember_me = true
+      sign_in(:patron, patron)
       redirect_to oral_history_requests_path
     else
       # invalid/expired/missing token
@@ -79,7 +44,7 @@ class OralHistorySessionsController < ApplicationController
   #
   # Log out!
   def destroy
-    self.class.sign_out_current_patron(request: request)
+    sign_out(:patron)
 
     redirect_to helpers.root_path, :flash => { :success => "You have been signed out of your Oral History requests. You can sign in again from the link in your email, or by making another request." }
   end

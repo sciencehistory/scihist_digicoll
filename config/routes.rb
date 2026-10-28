@@ -93,6 +93,9 @@ Rails.application.routes.draw do
   get "oral_history_requests", to: "oral_history_requests#index", as: "oral_history_requests"
   get "oral_history_requests/:id", to: "oral_history_requests#show", as: "oral_history_request"
 
+  # devise session management only, login routes are in oral_history_session
+  devise_for :patrons, skip: :all
+
   resource :oral_history_session, only: [:new, :create, :destroy] do
     member do
       get 'login/:token', action: :login, as: :login

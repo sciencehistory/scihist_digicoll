@@ -40,7 +40,8 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
     it "authenticates and stores login" do
       get :login, params: { token: auto_login_link}
 
-      expect(OralHistorySessionsController.fetch_current_patron(request: request)&.id).to eq patron.id
+      expect(controller.current_patron).to eq patron
+      expect(response.cookies["remember_patron_token"]).to be_present
 
       expect(response).to redirect_to(oral_history_requests_path)
     end
@@ -49,7 +50,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       it "does not authenticate" do
         get :login, params: { token: "bad token"}
 
-        expect(session[:patron_id]).to be nil
+        expect(controller.current_patron).to be nil
 
         expect(response).to redirect_to(new_oral_history_session_path)
         expect(flash[:auto_link_message]).to eq "Sorry, your link has expired or is not valid. Please enter your email, and we'll send you a new one."
@@ -72,10 +73,10 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
 
   describe "#destroy" do
     it "signs out" do
-      session[:patron_id] = patron.id
+      sign_in patron
       delete :destroy
 
-      expect(OralHistorySessionsController.fetch_current_patron(request: request)).to be nil
+      expect(controller.current_patron).to be nil
       expect(response).to have_http_status(:redirect)
       expect(flash[:success]).to include("signed out")
     end
