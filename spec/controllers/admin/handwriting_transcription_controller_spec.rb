@@ -100,7 +100,7 @@ RSpec.describe Admin::HandwritingTranscriptionController, logged_in_user: :edito
     it "does not lead to a new request" do
       do_request
 
-      WorkOcrCreatorRemover.new(work.reload).process
+      WorkTranscriptionCreatorRemover.new(work.reload).process
       expect(HandwritingTranscriptionJob).not_to have_been_enqueued
     end
 

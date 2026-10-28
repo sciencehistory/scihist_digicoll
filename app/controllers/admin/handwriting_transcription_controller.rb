@@ -1,12 +1,12 @@
 # Less frequent handwriting transcription actions for a single work, beyond what the work
 # metadata form does. (Choosing "handwriting transcription" as a work's text_extraction_mode
-# is what normally requests a transcription; see WorkOcrCreatorRemover.)
+# is what normally requests a transcription; see WorkTranscriptionCreatorRemover.)
 #
 # * request_new_transcription: replaces a finished request -- whether it succeeded or failed --
 #   with a fresh one. Removes any existing transcription first.
 #
 # * delete_transcription: removes the transcription and the request, and sets the work's
-#   text_extraction_mode back to none (otherwise WorkOcrCreatorRemover would just request
+#   text_extraction_mode back to none (otherwise WorkTranscriptionCreatorRemover would just request
 #   a new transcription).
 class Admin::HandwritingTranscriptionController < AdminController
   before_action :set_work
