@@ -9,7 +9,7 @@ namespace :scihist do
     ignore_missing_files = (ENV['ignore_missing_files'] == 'true')
 
     Work.find_each(batch_size: 10) do |work|
-      WorkOcrCreatorRemover.new(work, ignore_missing_files:ignore_missing_files).process
+      WorkTranscriptionCreatorRemover.new(work, ignore_missing_files:ignore_missing_files).process
       progress_bar.increment unless progress_bar.nil?
     end
   end
