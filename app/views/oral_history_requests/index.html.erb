@@ -6,7 +6,7 @@
           <%= link_to "Oral History Requests", oral_history_requests_path %>
         </h2>
         <div class="requester-email">
-          <%= current_oral_history_requester.email %>
+          <%= current_patron.email %>
         </div>
       </div>
       <%= link_to "Sign out", oral_history_session_path, method: :delete, class: "btn btn-brand-main signout" %>
