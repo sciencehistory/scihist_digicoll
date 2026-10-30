@@ -322,6 +322,9 @@ Rails.application.routes.draw do
         patch "update_oral_history_content"
         put "store_input_docx_transcript"
         get "get_output_sequenced_docx_transcript"
+
+        post "request_new_handwriting_transcription", to: "handwriting_transcription#request_new_transcription"
+        delete "delete_handwriting_transcription", to: "handwriting_transcription#delete_transcription"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
