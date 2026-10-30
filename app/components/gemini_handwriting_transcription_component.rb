@@ -56,7 +56,7 @@ class GeminiHandwritingTranscriptionComponent < ApplicationComponent
   end
 
   def offer_delete?
-    transcription_request.present?
+    transcription_request&.finished?
   end
 
   # Replacing a successful transcription throws it away, and costs money.
