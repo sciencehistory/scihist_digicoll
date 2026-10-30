@@ -52,13 +52,13 @@ describe GeminiHandwritingTranscriptionComponent, type: :component, logged_in_us
   describe "with a request in progress" do
     let(:request_attributes) { { status: "requested", start_time: Time.zone.parse("2026-01-01 12:30:00") } }
 
-    it "shows the status and start time, and only offers to delete" do
+    it "shows the status and start time, and offers no buttons" do
       render_inline described_class.new(work)
 
       expect(page).to have_text("A handwriting transcription is in progress (status: requested).")
       expect(page).to have_text("Requested: 2026-Jan-01 12:30")
       expect(page).not_to have_link("Request a new transcript")
-      expect(page).to have_link("Delete transcript")
+      expect(page).not_to have_link("Delete transcript")
     end
   end
 

@@ -30,40 +30,46 @@
   </ul>
 <% end %>
 
-<% if @work.pdf_text_extraction? %>
+<%#
+  This section only concerns PDF text extraction and OCR.
+  Don't display these counts if they're all zero AND the work isn’t in OCR or PDF extraction mode.
+%>
+
+<% if @work.pdf_text_extraction? || @work.ocr_requested? || assets_with_ocr_count > 0 || assets_with_extracted_pdf_page_role_count > 0 || assets_with_source_pdf_role_count > 0 || assets_with_ocr_suppressed_count > 0 %>
+  <% if @work.pdf_text_extraction? %>
+    <p>
+      <b>Source PDF page count:</b> <%= source_pdf_page_count || '<i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i>UNKNOWN'.html_safe %>
+    </p>
+  <% end %>
   <p>
-    <b>Source PDF page count:</b> <%= source_pdf_page_count || '<i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i>UNKNOWN'.html_safe %>
+    <% if asset_ocr_count_warning? || pdf_extraction_count_warning?  %>
+      <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i>
+    <% end %>
+    Out of <b><%= total_assets_count %></b> assets,
+    <ul>
+      <% if @work.pdf_text_extraction? || assets_with_source_pdf_role_count > 0 %>
+        <li>
+          <b><%= assets_with_source_pdf_role_count %></b> <%= 'asset'.pluralize(assets_with_source_pdf_role_count) %> with <code>role</code> <span class="badge text-bg-info"><%= PdfToPageImages::SOURCE_PDF_ROLE.humanize.downcase %></span>
+        </li>
+      <% end %>
+      <% if @work.pdf_text_extraction? || assets_with_extracted_pdf_page_role_count > 0 %>
+        <li>
+          <b><%= assets_with_extracted_pdf_page_role_count %></b> <%= 'asset'.pluralize(assets_with_extracted_pdf_page_role_count) %> with <code>role</code> <span class="badge text-bg-info"><%= PdfToPageImages::EXTRACTED_PAGE_ROLE.humanize.downcase %></span>
+        </li>
+      <% end %>
+
+      <li>
+        <b><%= assets_with_ocr_count %></b>
+        <%= 'asset'.pluralize(assets_with_ocr_count) %>
+        currently
+        <%= (assets_with_ocr_count == 1) ? 'has' : 'have' %>
+        extracted <code>hocr</code> text
+      </li>
+      <% if assets_with_ocr_suppressed_count > 0 %>
+        <li>
+          <b><%=  assets_with_ocr_suppressed_count %></b> <%= 'asset'.pluralize(assets_with_ocr_suppressed_count) %> <%= (assets_with_ocr_suppressed_count == 1) ? 'has' : 'have' %> OCR suppressed.
+        </li>
+      <% end %>
+    </ul>
   </p>
 <% end %>
-
-<p>
-  <% if asset_ocr_count_warning? || pdf_extraction_count_warning?  %>
-    <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i>
-  <% end %>
-  Out of <b><%= total_assets_count %></b> assets,
-  <ul>
-    <% if @work.pdf_text_extraction? || assets_with_source_pdf_role_count > 0 %>
-      <li>
-        <b><%= assets_with_source_pdf_role_count %></b> </b> <%= 'asset'.pluralize(assets_with_source_pdf_role_count) %> with <code>role</code> <span class="badge text-bg-info"><%= PdfToPageImages::SOURCE_PDF_ROLE.humanize.downcase %></span>
-      </li>
-    <% end %>
-    <% if @work.pdf_text_extraction? || assets_with_extracted_pdf_page_role_count > 0 %>
-      <li>
-        <b><%= assets_with_extracted_pdf_page_role_count %></b> </b> <%= 'asset'.pluralize(assets_with_extracted_pdf_page_role_count) %> with <code>role</code> <span class="badge text-bg-info"><%= PdfToPageImages::EXTRACTED_PAGE_ROLE.humanize.downcase %></span>
-      </li>
-    <% end %>
-    <li>
-      <b><%= assets_with_ocr_count %></b>
-      <%= 'asset'.pluralize(assets_with_ocr_count) %>
-      currently
-      <%= (assets_with_ocr_count == 1) ? 'has' : 'have' %>
-      extracted <code>hocr</code> text
-    </li>
-    <% if assets_with_ocr_suppressed_count > 0 %>
-      <li>
-        <b><%=  assets_with_ocr_suppressed_count %></b> <%= 'asset'.pluralize(assets_with_ocr_suppressed_count) %> <%= (assets_with_ocr_suppressed_count == 1) ? 'has' : 'have' %> OCR suppressed.
-      </li>
-    <% end %>
-  </ul>
-</p>
-
