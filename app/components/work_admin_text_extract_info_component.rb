@@ -15,6 +15,8 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
       "OCR"
     elsif @work.pdf_text_extraction?
       "PDF Text"
+    elsif @work.handwriting_transcription_mode?
+      "Handwriting"
     else
       "Text extraction"
     end
