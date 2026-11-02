@@ -1,13 +1,10 @@
-# Sort of represents an Oral History Requester (for non-public OH's), but really
-# just the email
+# A public patron, identified by email, who registers for or requests non-public Oral Histories.
 #
-# -- we let people request without authenticating, so all we know is the
-# email they specified -- names and other things are attached to individual requests,
-# becuase we don't know they are authorized to overwrite OR SEE any existing info
-# at time of request!
+# We let people register/request without authenticating, so name/institution from an
+# unauthenticated form are only ever used to fill in a NEW patron, never to overwrite an
+# existing one -- see .find_or_create_from_form.
 #
-# But this is the record that logins (really one-time magic link logins)
-# are attached to, that DO confirm the user has access to the email specified!
+# Logins are via emailed magic links, which also confirm the patron owns the email.
 class Patron < ApplicationRecord
   # old legacy table name, cumbersome to change table name
   # without downtime, but we should do it at some point to avoid confusion
@@ -26,6 +23,8 @@ class Patron < ApplicationRecord
     expire_all_remember_me_on_sign_out: false,
     timeout_in: SESSION_EXPIRE_PERIOD
 
+  has_encrypted :name, :institution, :registration_reason
+
   # we don't have uniqueness validation cause it's incompatible with using create_or_find_by which
   # we want to.
   validates :email, presence: true
@@ -39,6 +38,30 @@ class Patron < ApplicationRecord
     # or single-user or what have you, whatever you put in here has to remain
     # constant for token to be good.
     email
+  end
+
+  # Finds patron by email, or creates one with the other attributes. An existing patron's
+  # attributes are never changed, since the form is unauthenticated.
+  #
+  # @return [Patron] persisted, or new record with validation errors if it couldn't be created
+  def self.find_or_create_from_form(email:, **attributes)
+    patron = find_by(email: normalize_value_for(:email, email))
+    return patron if patron
+
+    patron = new(email: email, **attributes)
+    return patron unless patron.valid?
+
+    create_or_find_by!(email: patron.email) { |p| p.assign_attributes(attributes) }
+  end
+
+  # Same names as devise :confirmable, in case we switch to it. We confirm on magic-link login,
+  # since clicking an emailed link proves the patron owns the email.
+  def confirmed?
+    confirmed_at.present?
+  end
+
+  def confirm!
+    update!(confirmed_at: Time.current)
   end
 
   # No password, so devise session and remember-me cookies are validated against session_token;
