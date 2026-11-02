@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :oral_history_request, class: OralHistoryRequest do
-    patron { Patron.new(email: "example#{rand(999999)}@example.com") }
+    patron { build(:patron, name: patron_name) }
     patron_name { "Emily Torres" }
     work { build(:oral_history_work, :available_by_request) }
     delivery_status { "approved" }

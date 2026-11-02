@@ -10,8 +10,14 @@ describe Patron, type: :model do
       expect(patron.institution).to eq "U"
     end
 
+    it "returns unsaved patron with errors when name missing" do
+      patron = Patron.find_or_create_from_form(email: "new@example.com", name: "")
+      expect(patron).not_to be_persisted
+      expect(patron.errors[:name]).to be_present
+    end
+
     it "returns existing patron unchanged" do
-      existing = Patron.create!(email: "old@example.com", name: "Old")
+      existing = create(:patron, email: "old@example.com", name: "Old")
       patron = Patron.find_or_create_from_form(email: "OLD@example.com", name: "Attacker", institution: "Evil")
       expect(patron).to eq existing
       expect(patron.reload.name).to eq "Old"
@@ -21,14 +27,14 @@ describe Patron, type: :model do
 
   describe "#confirm!" do
     it "confirms" do
-      patron = Patron.create!(email: "x@example.com", name: "Test Patron")
+      patron = create(:patron)
       expect(patron).not_to be_confirmed
       patron.confirm!
       expect(patron.reload).to be_confirmed
     end
   end
 
-  let(:patron) { Patron.new(email: "example#{rand(999999)}@example.com", name: "Test Patron") }
+  let(:patron) { build(:patron) }
   describe "#has_approved_request?" do
     describe "with no request" do
       let(:asset) { create(:asset) }
