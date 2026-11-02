@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe OralHistorySessionsController, type: :controller, queue_adapter: :inline do
-  let(:patron) { Patron.create(email: "nobody@example.com" ) }
+  let(:patron) { Patron.create(email: "nobody@example.com", name: "Test Patron") }
 
   describe "#create" do
     it "sends a login link" do
@@ -44,6 +44,17 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       expect(response.cookies["remember_patron_token"]).to be_present
 
       expect(response).to redirect_to(oral_history_requests_path)
+    end
+
+    it "confirms an unconfirmed patron" do
+      expect(patron).not_to be_confirmed
+      get :login, params: { token: auto_login_link}
+      expect(patron.reload).to be_confirmed
+    end
+
+    it "redirects to local return_to" do
+      get :login, params: { token: auto_login_link, return_to: "/works/abc" }
+      expect(response).to redirect_to("/works/abc")
     end
 
     describe "with bad token" do
