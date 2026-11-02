@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe OralHistorySessionsController, type: :controller, queue_adapter: :inline do
-  let(:patron) { Patron.create(email: "nobody@example.com", name: "Test Patron") }
+  let(:patron) { create(:patron) }
 
   describe "#create" do
     it "sends a login link" do

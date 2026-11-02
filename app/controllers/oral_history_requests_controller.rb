@@ -93,7 +93,7 @@ class OralHistoryRequestsController < ApplicationController
         return # abort further processing
     end
 
-    @oral_history_request = OralHistoryRequest.new(work: @work)
+    @oral_history_request = OralHistoryRequest.new(work: @work, patron: current_patron)
   end
 
   before_action :setup_create_request, only: :create
@@ -104,14 +104,27 @@ class OralHistoryRequestsController < ApplicationController
   def create
     # write entries to a cookie to pre-fill form next time; every time we write
     # it will bump the TTL expiration too, so they get another day until it expires.
-    # Make sure to include the separate patron_eamil
-    oral_history_request_form_entry_write(
-      oral_history_request_params.merge(patron_email: patron_email_param).to_h
-    )
+    unless current_patron
+      oral_history_request_form_entry_write(
+        form_params.merge(patron_email: patron_email_param).to_h
+      )
+    end
 
-    saved_valid = @oral_history_request.save
+    patron = @oral_history_request.patron
+    unless patron.persisted?
+      # show patron validation errors on the request form fields; copy first, since validating
+      # the request re-validates the patron and clears them.
+      patron_errors = patron.errors.dup
+      @oral_history_request.valid?
+      patron_errors.each do |error|
+        attribute = { name: :patron_name, institution: :patron_institution }.fetch(error.attribute, :patron)
+        @oral_history_request.errors.add(attribute, error.message)
+      end
+      render :new
+      return
+    end
 
-    unless saved_valid
+    unless @oral_history_request.save
       render :new
       return
     end
@@ -182,16 +195,19 @@ private
   def setup_create_request
     @work = load_work(params['oral_history_request'].delete('work_friendlier_id'))
 
-    # note `create_or_find_by` is the version with fewer race conditions, to make
-    # this record if it doesn't already exist.
-    patron = (Patron.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
-
+    # A signed-in patron's own details are used as is. Otherwise, form details only ever
+    # fill in a new patron, never change an existing one.
+    patron = current_patron || Patron.find_or_create_from_form(
+      email: patron_email_param,
+      name: form_params[:patron_name],
+      institution: form_params[:patron_institution]
+    )
 
     # Check to see if request already exists,
-    if patron && OralHistoryRequest.where(work: @work, patron: patron).exists?
+    if patron.persisted? && OralHistoryRequest.where(work: @work, patron: patron).exists?
       # If they are already authenticated, we can just direct them there,
       # otherwise we send them a sign-in link
-      if current_patron.present? && current_patron.email == patron.email
+      if current_patron.present?
         return_status(
           oral_history_requests_path,
           "You have already requested this Oral History: #{@work.title}",
@@ -210,20 +226,18 @@ private
 
 
     @oral_history_request = OralHistoryRequest.new(
-      oral_history_request_params.merge(
-        work: @work,
-        patron: patron
-      )
+      intended_use: form_params[:intended_use],
+      work: @work,
+      patron: patron
     )
 
     return true
   end
 
 
-  def oral_history_request_params
-    params.require(:oral_history_request).permit(
-      :work_friendlier_id, :patron_name,
-      :patron_institution, :intended_use)
+  # patron_name and patron_institution are stored on the patron, not the request
+  def form_params
+    params.require(:oral_history_request).permit(:intended_use, :patron_name, :patron_institution)
   end
 
   def patron_email_param
