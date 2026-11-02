@@ -28,6 +28,7 @@ class Patron < ApplicationRecord
   # we don't have uniqueness validation cause it's incompatible with using create_or_find_by which
   # we want to.
   validates :email, presence: true
+  validates :name, presence: true, on: :create
 
   # legacy foreign key name, sorry
   has_many :oral_history_requests, foreign_key: "oral_history_requester_email_id"
