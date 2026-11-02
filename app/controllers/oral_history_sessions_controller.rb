@@ -1,17 +1,19 @@
 # We let OH requesters log in with magic links, using tokens
 # generated from Patron#generates_token_for(:auto_login), then devise handles the session.
 class OralHistorySessionsController < ApplicationController
-  # GET /oral_history_session/login/$TOKEN
+  # GET /oral_history_session/login/$TOKEN(?return_to=/local/path)
   #
-  # Actually logs someone in
+  # Actually logs someone in, and confirms them, since they clicked an emailed link.
   def login
     patron = Patron.find_by_token_for(:auto_login, params[:token])
     if patron.present?
+      patron.confirm! unless patron.confirmed?
+
       # don't let an old timed-out session abort a fresh login
       request.env["devise.skip_timeout"] = true
       patron.remember_me = true
       sign_in(:patron, patron)
-      redirect_to oral_history_requests_path
+      redirect_to (safe_return_to || oral_history_requests_path), allow_other_host: false
     else
       # invalid/expired/missing token
       redirect_to new_oral_history_session_path, flash: { auto_link_message: "Sorry, your link has expired or is not valid. Please enter your email, and we'll send you a new one."}
@@ -53,6 +55,12 @@ class OralHistorySessionsController < ApplicationController
 
   def email_param
     params.dig(:email) or raise ActionController::ParameterMissing.new(:email)
+  end
+
+  # only a local path, so the link can't be used to redirect off-site
+  def safe_return_to
+    path = params[:return_to]
+    path if path.is_a?(String) && path.start_with?("/") && !path.start_with?("//") && !path.include?("\\")
   end
 
 end
