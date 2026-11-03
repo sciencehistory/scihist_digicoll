@@ -92,7 +92,7 @@ class WorkTextExtractionModeInputComponent < ApplicationComponent
     work.handwriting_transcription_request
   end
 
-    def work
+  def work
     form.object
   end
 
