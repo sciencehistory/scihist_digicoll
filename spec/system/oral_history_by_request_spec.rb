@@ -58,35 +58,32 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
         expect(page).to have_selector(:link_or_button, "Download")
       end
 
-      expect(page).to have_text("Fill out a brief form to receive immediate access to these files.")
+      expect(page).to have_text("Register and confirm your email address to receive immediate access to these files.")
 
       click_on 'Get Access'
 
       expect(page).to have_selector(".modal") # now in modal
-                                              #
-      pr = '#oral_history_request_'
 
-      all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
-      all("#{pr}patron").first.fill_in with: 'patron@library.org'
-      all("#{pr}patron_institution").first.fill_in with: 'Some Library'
-      # leave out intended use, because not required for this request type, make sure it goes through
+      pr = '#patron_'
 
-      expect(OralHistoryRequest.count).to eq 0
+      all("#{pr}name").first.fill_in with: 'Joe Schmo'
+      all("#{pr}email").first.fill_in with: 'patron@library.org'
+      all("#{pr}institution").first.fill_in with: 'Some Library'
+      # leave out reason, because not required, make sure it goes through
 
-      click_on 'Submit request'
+      expect(Patron.count).to eq 0
 
+      click_on 'Register'
 
       expect(page).to have_selector(".modal") # now in modal
-      expect(page).to have_text("The files you have requested are immediately available")
-      expect(OralHistoryRequest.count).to eq 1
+      expect(page).to have_text("We've sent an email to patron@library.org")
 
-      new_req = OralHistoryRequest.last
-      expect(new_req.patron_name).to eq "Joe Schmo"
-      expect(new_req.patron_email).to eq "patron@library.org"
-      expect(new_req.patron_institution).to eq "Some Library"
-      expect(new_req.delivery_status_automatic?).to be(true)
-
-      expect(page).to have_text("We've sent an email to patron@library.org with a sign-in link")
+      patron = Patron.last
+      expect(patron.name).to eq "Joe Schmo"
+      expect(patron.email).to eq "patron@library.org"
+      expect(patron.institution).to eq "Some Library"
+      expect(patron).not_to be_confirmed
+      expect(OralHistoryRequest.count).to eq 0
 
       expect(ActionMailer::MailDeliveryJob).to have_been_enqueued
     end
