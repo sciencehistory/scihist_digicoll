@@ -1,6 +1,6 @@
 # The text_extraction_mode radio buttons on the admin work form.
 #
-# When the gemini_htr_transcripts_htr_feature_flag is on, also offers the option to request a
+# When the gemini_htr_transcripts_feature_flag is on, also offers the option to request a
 # handwriting transcription from Gemini -- including on the batch create and batch edit forms --
 # and shows the status of any existing request. Works that aren't eligible for transcription can
 # still choose the option, but get a warning: a request for them will be recorded as failed
@@ -15,6 +15,7 @@
 #
 class WorkTextExtractionModeInputComponent < ApplicationComponent
   HANDWRITING_MODE = "handwriting_transcription"
+
   attr_reader :form
 
   def initialize(form:)
@@ -95,5 +96,4 @@ class WorkTextExtractionModeInputComponent < ApplicationComponent
   def work
     form.object
   end
-
 end
