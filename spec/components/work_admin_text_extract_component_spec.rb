@@ -144,4 +144,20 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
       expect(component.warnings?).to eq false
     end
   end
+
+  describe "work in handwriting transcription mode" do
+    let(:work) { create(:work, text_extraction_mode: "handwriting_transcription") }
+
+    it "has a Handwriting heading" do
+      expect(component.heading_label).to eq "Handwriting"
+    end
+
+    it "renders the transcription management card, with the feature flag on" do
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:gemini_htr_transcripts_feature_flag).and_return(true)
+
+      render_inline(component)
+      expect(page).to have_text("Automatic handwriting transcription")
+    end
+  end
 end
