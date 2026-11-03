@@ -41,7 +41,7 @@ class WorkTextExtractionModeInputComponent < ApplicationComponent
   end
 
   def htr_request_status_message
-    return nil unless htr_transcription_request&.status.present?
+    htr_transcription_request&.status_message
   end
 
   # Offer a warning if a work is not eligible for handwriting transcription
