@@ -1,13 +1,15 @@
-# Less frequent handwriting transcription actions for a single work, beyond what the work
-# metadata form does. (Choosing "handwriting transcription" as a work's text_extraction_mode
-# is what normally requests a transcription; see WorkTranscriptionCreatorRemover.)
+# Conveniences for less frequent handwriting transcription actions on a single work.
+# (Choosing "handwriting transcription" as a work's text_extraction_mode is what normally
+# requests a transcription; see WorkTranscriptionCreatorRemover.)
+#
+# * delete_transcription: a shortcut for setting the work's text_extraction_mode to none,
+#   which would also remove the transcription and request, but in a background job.
+#   This does it immediately.
 #
 # * request_new_transcription: replaces a finished request -- whether it succeeded or failed --
-#   with a fresh one. Removes any existing transcription first.
-#
-# * delete_transcription: removes the transcription and the request, and sets the work's
-#   text_extraction_mode back to none (otherwise WorkTranscriptionCreatorRemover would just request
-#   a new transcription).
+#   with a fresh one, removing any existing transcription first. Toggling the mode away from
+#   handwriting and back in the work form has the same effect, but takes two saves and does
+#   nothing if the second save happens before the first background job has run.
 class Admin::HandwritingTranscriptionController < AdminController
   before_action :set_work
   before_action :check_feature_flag
