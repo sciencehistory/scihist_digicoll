@@ -79,6 +79,12 @@ class OralHistoryRequestsController < ApplicationController
   def new
     @work = load_work(params['work_friendlier_id'])
 
+    # automatic_request oral histories use registration instead
+    if @work.oral_history_content.availability_automatic_request?
+      redirect_to oral_history_registration_form_path(@work.friendlier_id)
+      return
+    end
+
     # In new mode, check to see if the are logged in, and request already exists,
     # just send them to their requests!
     if current_patron &&
@@ -129,36 +135,15 @@ class OralHistoryRequestsController < ApplicationController
       return
     end
 
-    if @work.oral_history_content.availability_automatic_request?
-      @oral_history_request.update!(delivery_status: "automatic")
+    OralHistoryRequestNotificationMailer.
+      with(request: @oral_history_request).
+      notification_email.
+      deliver_later
 
-      # If they are already logged in, they can just be directed to see this
-      # automatically-approved request. Either way they should get an email,
-      # per specs from OH team.
-      OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
-
-      if current_patron.present? && current_patron.email == @oral_history_request.patron_email
-        return_status(oral_history_requests_path,
-          "The files you requested from '#{@work.title}' are immediately available and can be viewed now",
-          add_view_requests_link: true
-        )
-      else
-        return_status(
-          work_path(@work.friendlier_id),
-          "The files you have requested are immediately available. We've sent an email to #{patron_email_param} with a sign-in link."
-        )
-      end
-    else # manual review
-      OralHistoryRequestNotificationMailer.
-        with(request: @oral_history_request).
-        notification_email.
-        deliver_later
-
-      return_status(
-        work_path(@work.friendlier_id),
-        "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.patron_email}"
-      )
-    end
+    return_status(
+      work_path(@work.friendlier_id),
+      "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.patron_email}"
+    )
   end
 
 private
@@ -195,6 +180,12 @@ private
   def setup_create_request
     @work = load_work(params['oral_history_request'].delete('work_friendlier_id'))
 
+    # automatic_request oral histories use registration instead
+    if @work.oral_history_content.availability_automatic_request?
+      redirect_to oral_history_registration_form_path(@work.friendlier_id)
+      return false
+    end
+
     # A signed-in patron's own details are used as is. Otherwise, form details only ever
     # fill in a new patron, never change an existing one.
     patron = current_patron || Patron.find_or_create_from_form(
@@ -214,7 +205,7 @@ private
           add_view_requests_link: true
         )
       else
-        OhSessionMailer.with(patron: patron).link_email.deliver_later
+        OhSessionMailer.with(patron: patron).sign_in_email.deliver_later
         return_status(
           work_path(@work.friendlier_id),
           "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests."

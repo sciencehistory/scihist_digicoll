@@ -8,7 +8,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       get :create, params: { email: patron.email }
 
       expect(response).to redirect_to root_path
-      expect(flash[:notice]).to eq "A sign-in link for your Oral Histories requests has been emailed to #{patron.email}"
+      expect(flash[:notice]).to eq "A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}"
 
       email_delivery = ActionMailer::Base.deliveries.first
       expect(email_delivery.to).to eq [patron.email]
@@ -18,7 +18,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       get :create, params: { email: " #{patron.email.upcase} " }
 
       expect(response).to redirect_to root_path
-      expect(flash[:notice]).to eq "A sign-in link for your Oral Histories requests has been emailed to #{patron.email}"
+      expect(flash[:notice]).to eq "A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}"
 
       email_delivery = ActionMailer::Base.deliveries.first
       expect(email_delivery.to).to eq [patron.email]

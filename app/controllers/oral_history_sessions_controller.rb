@@ -34,9 +34,9 @@ class OralHistorySessionsController < ApplicationController
     patron = Patron.find_by(email: email_param)
 
     if patron.present?
-      OhSessionMailer.with(patron: patron).link_email.deliver_later
+      OhSessionMailer.with(patron: patron).sign_in_email.deliver_later
 
-      redirect_to helpers.root_path, notice: "A sign-in link for your Oral Histories requests has been emailed to #{patron.email}"
+      redirect_to helpers.root_path, notice: "A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}"
     else
       redirect_to new_oral_history_session_path, flash: { auto_link_message: "Sorry, we have no email on record for #{params[:email]}. Please check your entry."}
     end
@@ -48,7 +48,7 @@ class OralHistorySessionsController < ApplicationController
   def destroy
     sign_out(:patron)
 
-    redirect_to helpers.root_path, :flash => { :success => "You have been signed out of your Oral History requests. You can sign in again from the link in your email, or by making another request." }
+    redirect_to helpers.root_path, :flash => { :success => "You have been signed out of Oral Histories. You can sign in again from the link in any email we have sent you." }
   end
 
   private
