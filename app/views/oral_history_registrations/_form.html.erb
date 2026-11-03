@@ -1,0 +1,81 @@
+<%= simple_form_for @patron, url: register_oral_history_path, method: :post, html: { data: { blacklight_modal: "preserve" } } do |f| %>
+
+  <% remembered_form_values = oral_history_request_form_entry_read %>
+
+  <div>
+    <p>
+      Register to get access to "<%= @work.title %>" and other oral histories available to registered patrons.
+
+      <span class="text-danger">We'll email you a link to confirm your email address. Once you click it, you'll have immediate access.</span>
+    </p>
+
+    <p>Accessing this oral history requires registration due to privacy restrictions stipulated by the interviewee.</p>
+  </div>
+
+  <% if @patron.errors.any? %>
+    <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
+      <h2 class="h4" class="alert-heading"><%= pluralize(@patron.errors.count, "error") %></h2>
+      <ol class="mb-0">
+        <% @patron.errors.full_messages.each do |msg| %>
+          <li><%= msg %></li>
+        <% end %>
+      </ol>
+    </div>
+  <% end %>
+
+  <div class="form-inputs">
+    <div class="row">
+      <div class="col">
+        <%= f.input :name,
+          label: "Your name",
+          required: true,
+          input_html: { value: @patron.name.presence || remembered_form_values["patron_name"] } %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :email,
+          as: :email,
+          required: true,
+          hint: "We'll email you a link to confirm this address",
+          input_html: { value: @patron.email.presence || remembered_form_values["patron_email"] },
+          label: "Your email address" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :institution,
+          input_html: { value: @patron.institution.presence || remembered_form_values["patron_institution"] },
+          label: "Your institution", hint: "Optional" %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <%= f.input :registration_reason,
+          as: :text,
+          label: "Reason for registering",
+          hint: "So that we can better understand our audience, please tell us how you plan to use our oral histories.",
+          input_html: { value: @patron.registration_reason.presence || remembered_form_values["registration_reason"] } %>
+      </div>
+    </div>
+
+    <%= hidden_field_tag :work_friendlier_id, @work.friendlier_id %>
+
+    <div class="form-actions mt-3 d-flex justify-content-end">
+      <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary me-3", data: { bl_dismiss: "modal" } %>
+      <%= f.button :submit, value: "Register", class: "btn btn-brand-main" %>
+    </div>
+  </div>
+
+  <div class="alert alert-info mt-4" role="alert">
+    <p>We consider your personal information confidential. We will only use it for our records, and we will not share it with anyone outside the Science History Institute.
+    </p>
+
+    <p class="mb-0">
+      If you have any questions about transcripts, recordings, or usage permissions, please contact the Center for Oral History at <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
+    </p>
+  </div>
+<% end %>

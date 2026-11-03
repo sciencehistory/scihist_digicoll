@@ -1,0 +1,12 @@
+<p><b>Science History Institute Oral Histories</b></p>
+
+<p>
+  Here is your sign-in link for oral histories in the Science History Institute’s Digital Collections.
+</p>
+
+<p>Use this special sign-in link to access oral histories available to you, and to view the status of any oral history requests:
+    <%= link_to "Sign in to Science History Institute Oral Histories", login_magic_link(return_to: @return_to), data: { auto_login_link: true}  %></p>
+
+<p>Please do not share this link with anyone. Please save this e-mail so that you can sign in again in the future.</p>
+
+<p>If you have any questions, please reply to this email, or write to <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>
