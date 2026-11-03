@@ -15,6 +15,12 @@
       </p>
     <% end %>
 
+    <% if transcription_request&.success? %>
+      <%= link_to "Go to transcript",
+            work_path(work, anchor: "tab=handwriting-transcription"),
+            class: "btn btn-outline-success" %>
+    <% end %>
+
     <% if offer_new_request? %>
       <%= link_to "Request a new transcript",
             request_new_handwriting_transcription_admin_work_path(work),
