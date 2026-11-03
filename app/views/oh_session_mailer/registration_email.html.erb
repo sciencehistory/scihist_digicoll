@@ -1,0 +1,18 @@
+<p><b>Science History Institute Oral History Registration</b></p>
+
+<p>
+  Thank you for registering with the Science History Institute’s Digital Collections.
+</p>
+
+<p>
+  Please confirm your email address with this link, which will also take you back to <i><%= @work.title %></i>:
+  <%= link_to "Confirm and view the oral history", login_magic_link(return_to: work_url(@work.friendlier_id, only_path: true)), data: { auto_login_link: true } %>
+</p>
+
+<p>
+  Once confirmed, you'll have access to <%= registered_oral_history_count %> oral histories available to registered patrons.
+</p>
+
+<p>Please do not share this link with anyone.</p>
+
+<p>If you have any questions, please reply to this email, or write to <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}" %>.<p>

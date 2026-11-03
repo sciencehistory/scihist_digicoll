@@ -11,7 +11,7 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
     fill_in :email, with: patron.email
     click_on "Send me a sign-in link"
 
-    expect(page).to have_text("A sign-in link for your Oral Histories requests has been emailed to #{patron.email}")
+    expect(page).to have_text("A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}")
 
     mail = ActionMailer::Base.deliveries.find { |m| m.to == [patron.email] }
     expect(mail).to be_present
