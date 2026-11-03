@@ -92,6 +92,8 @@ Rails.application.routes.draw do
   post "request_oral_history", to: "oral_history_requests#create", as: 'request_oral_history'
   get "oral_history_requests", to: "oral_history_requests#index", as: "oral_history_requests"
   get "oral_history_requests/:id", to: "oral_history_requests#show", as: "oral_history_request"
+  get "works/:work_friendlier_id/register_oral_history", to: "oral_history_registrations#new", as: 'oral_history_registration_form'
+  post "register_oral_history", to: "oral_history_registrations#create", as: 'register_oral_history'
 
   # devise session management only, login routes are in oral_history_session
   devise_for :patrons, skip: :all
