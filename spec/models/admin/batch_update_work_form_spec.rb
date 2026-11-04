@@ -26,4 +26,14 @@ describe Admin::BatchUpdateWorkForm, queue_adapter: :test do
     end
   end
 
+  describe "text_extraction_mode" do
+    let(:works) { [create(:work, text_extraction_mode: "ocr"), create(:work, text_extraction_mode: nil)] }
+
+    it "can set handwriting_transcription on every work" do
+      expect(described_class.new(text_extraction_mode: "handwriting_transcription").update_works(works)).to be true
+      works.each do |w|
+        expect(w.reload.text_extraction_mode).to eq "handwriting_transcription"
+      end
+    end
+  end
 end

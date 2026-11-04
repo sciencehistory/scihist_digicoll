@@ -125,9 +125,9 @@ class Admin::WorksController < AdminController
     authorize! :update, @work
     respond_to do |format|
       if @work.update(work_params)
-        # If this update also just switched ocr_requested, queue up a job to update its OCR
-        # data accordingly. If for some reason this is missed, we still have a nightly rake
-        # task to restore consistent state, but let's try to do it sooner.
+        # If this update also just switched text_extraction_mode, queue up a job to update its OCR
+        # (and handwriting transcription) data accordingly. If for some reason this is missed, we
+        # still have a nightly rake task to restore consistent state, but let's try to do it sooner.
         if @work.text_extraction_mode_previously_changed?
           WorkOcrCreatorRemoverJob.perform_later(@work)
         end
