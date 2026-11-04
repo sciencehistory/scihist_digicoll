@@ -627,6 +627,15 @@ module ScihistDigicoll
                                     })
     end
 
+    # Combined audio for non-direct oral histories, in a sub-dir of restricted derivatives
+    def self.shrine_restricted_combined_audio_derivatives_storage
+      @shrine_restricted_combined_audio_derivatives_storage ||=
+        appropriate_shrine_storage( bucket_key: :s3_bucket_originals,
+                                    host: lookup(:s3_bucket_originals_host),
+                                    public: false,
+                                    prefix: "restricted_derivatives/combined_audio_derivatives")
+    end
+
     def self.shrine_dzi_storage
       @shrine_dzi_storage ||=
         appropriate_shrine_storage( bucket_key: :s3_bucket_dzi,

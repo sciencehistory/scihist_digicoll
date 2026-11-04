@@ -78,7 +78,7 @@ class CombinedAudioDerivativeCreator
   # The durations are obtained from stored characterization metadata, we count on that
   # being present and correct!
   def calculate_start_times
-    duration_map = published_audio_members.collect do |audio_asset|
+    duration_map = available_audio_members.collect do |audio_asset|
       [audio_asset.id, audio_asset.file&.metadata&.dig("duration_seconds")]
     end.to_h
 
@@ -152,21 +152,21 @@ class CombinedAudioDerivativeCreator
   end
 
   def available_members?
-    published_audio_members.present?
+    available_audio_members.present?
   end
 
   def available_members_count
-    published_audio_members.count
+    available_audio_members.count
   end
 
   def audio_member_files
-    published_audio_members.map { |asset| asset.file }
+    available_audio_members.map { |asset| asset.file }
   end
 
   def audio_metadata_errors
     @audio_metadata_errors ||= begin
       errors = []
-      published_audio_members.each do |mem|
+      available_audio_members.each do |mem|
         file = mem.file
         filename = mem.file_data['metadata']['filename']
         errors << "#{filename}: empty file" if file.size == 0
@@ -184,9 +184,9 @@ class CombinedAudioDerivativeCreator
   # If this checksum changes, you need to regenerate the audio
   def fingerprint
     @fingerprint ||= begin
-      digests = published_audio_members.map(&:sha512).compact
-      uuids   = published_audio_members.pluck(:id)
-      unless digests.length == published_audio_members.length
+      digests = available_audio_members.map(&:sha512).compact
+      uuids   = available_audio_members.pluck(:id)
+      unless digests.length == available_audio_members.length
         raise RuntimeError, 'This item is missing a sha512'
       end
       Digest::MD5.hexdigest((
@@ -196,11 +196,20 @@ class CombinedAudioDerivativeCreator
   end
 
   private
-    # Filters out non-audio and unpublished items
-    def published_audio_members
-      @published_audio_members ||= begin
-        work.members.order(:position, :id).select do |member|
-          (member.is_a? Asset) && member.published? && member.stored? && member.content_type && member.content_type.start_with?("audio/")
+    # Published audio, plus unpublished audio marked available by request on by-request works.
+    # Never anything for embargoed works.
+    def available_audio_members
+      @available_audio_members ||= begin
+        oh_content = work.oral_history_content
+        if oh_content&.availability_embargoed?
+          []
+        else
+          include_by_request = oh_content&.available_by_request?
+
+          work.members.order(:position, :id).select do |member|
+            (member.is_a? Asset) && member.stored? && member.content_type&.start_with?("audio/") &&
+              (member.published? || (include_by_request && member.oh_available_by_request?))
+          end
         end
       end
     end

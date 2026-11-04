@@ -7,6 +7,44 @@ describe OralHistoryContent do
 
   let(:m4a_path) { Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a" }
 
+  describe "combined audio storage" do
+    it "stores public for direct" do
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      expect(oral_history_content.combined_audio_m4a.storage_key).to eq :combined_audio_derivatives
+      expect(oral_history_content.combined_audio_in_correct_storage?).to be true
+    end
+
+    it "stores restricted for non-direct" do
+      oral_history_content.update!(availability_mode: "automatic_request")
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      expect(oral_history_content.combined_audio_m4a.storage_key).to eq :restricted_combined_audio_derivatives
+      expect(oral_history_content.combined_audio_in_correct_storage?).to be true
+    end
+
+    it "enqueues storage fix when availability_mode change makes storage wrong" do
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      expect {
+        oral_history_content.update!(availability_mode: "automatic_request")
+      }.to have_enqueued_job(EnsureCorrectCombinedAudioStorageJob).with(oral_history_content)
+    end
+
+    it "does not enqueue when storage is still right" do
+      oral_history_content.update!(availability_mode: "automatic_request")
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      expect {
+        oral_history_content.update!(availability_mode: "reviewed_request")
+      }.not_to have_enqueued_job(EnsureCorrectCombinedAudioStorageJob)
+    end
+
+    it "enqueues when changed to embargoed" do
+      oral_history_content.update!(availability_mode: "automatic_request")
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      expect {
+        oral_history_content.update!(availability_mode: "embargoed")
+      }.to have_enqueued_job(EnsureCorrectCombinedAudioStorageJob).with(oral_history_content)
+    end
+  end
+
   describe "#set_combined_audio_m4a!" do
     it "can set" do
       oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
