@@ -288,7 +288,7 @@ class Admin::WorksController < AdminController
     deriv_creator = CombinedAudioDerivativeCreator.new(@work)
     unless deriv_creator.available_members?
       redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
-        error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
+        error: "Combined audio derivatives cannot be created, because this oral history does not have any available audio segments."
       }
       return
     end

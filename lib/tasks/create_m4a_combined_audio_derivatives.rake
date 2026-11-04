@@ -27,12 +27,12 @@ namespace :scihist do
         next
       end
 
-      # Let's not enqueue the job unless there are published audio assets to re-encode.
+      # Let's not enqueue the job unless there are available audio assets to re-encode.
       # This step will be executed twice for jobs that *are* added to the queue,
       # but it makes even less sense to muddy the queue with hundreds of trivial
       # jobs that will only take a fraction of a second to execute.
       unless CombinedAudioDerivativeCreator.new(w).available_members?
-        progress_bar.log("INFO: SKIP.#{w.title}. No published audio segments.")
+        progress_bar.log("INFO: SKIP.#{w.title}. No available audio segments.")
         next
       end
 
