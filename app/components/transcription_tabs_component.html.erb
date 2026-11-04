@@ -90,7 +90,7 @@
 
 
       <% translation_texts.each do |text_obj| %>
-        <% if transcription_texts.length > 1 %>
+        <% if translation_texts.length > 1 %>
           <h3 class="textual-separator text-page-separator">
             <%= link_to(
                 viewer_path(text_obj.asset.parent.friendlier_id, text_obj.asset.friendlier_id),
