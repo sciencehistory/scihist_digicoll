@@ -147,6 +147,27 @@ describe OralHistory::TranscriptChunker do
         end
       end
     end
+
+    describe "#create_db_records with existing_embeddings" do
+      let(:ohms_xml_path) { Rails.root + "spec/test_support/ohms_xml/legacy/duarte_OH0344.xml"}
+      let(:reused_embedding) { [0.5] * 3072 }
+      let(:first_chunk_text) { described_class.new(oral_history_content: oral_history_content).then { |c| c.build_chunk_record(c.split_chunks.first).text } }
+      let(:chunker) { described_class.new(oral_history_content: oral_history_content, existing_embeddings: { first_chunk_text => reused_embedding }) }
+
+      it "reuses embedding for matching text, and fetches the rest" do
+        expect(OralHistoryChunk).to receive(:get_openai_embeddings) do |*texts|
+          expect(texts).not_to include(first_chunk_text)
+          [OralHistoryChunk::FAKE_EMBEDDING] * texts.count
+        end
+
+        chunker.create_db_records
+
+        chunks = oral_history_content.reload.oral_history_chunks.order(:start_paragraph_number)
+        expect(chunks.first.text).to eq first_chunk_text
+        expect(chunks.first.embedding.to_a).to eq reused_embedding
+        expect(chunks.second.embedding.to_a).to eq OralHistoryChunk::FAKE_EMBEDDING
+      end
+    end
   end
 
   describe "new-style OHMS vtt transcript" do
