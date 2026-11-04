@@ -13,7 +13,7 @@ namespace :scihist do
 
       oral_histories.find_each do |oral_history_work|
         deriv_creator = CombinedAudioDerivativeCreator.new(oral_history_work)
-        eligible_members = deriv_creator.send(:published_audio_members)
+        eligible_members = deriv_creator.send(:available_audio_members)
 
         expected_duration = eligible_members.inject(0) do |sum, asset|
           sum + asset.file_metadata["duration_seconds"].to_f
