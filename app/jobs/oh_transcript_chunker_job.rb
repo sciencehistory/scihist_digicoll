@@ -49,7 +49,11 @@ class OhTranscriptChunkerJob < ApplicationJob
   # @param refresh_extracted_pdf_paragraphs [Boolean]. default false. If true, will first
   #    create fresh extracted_paragraph_container if it is possible and paragraphs are missing
   #    or not fresh.
-  def perform(oral_history_content:nil, work:nil, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false)
+  #
+  # @param reuse_embeddings [Boolean] default true. With delete_existing, new chunks with exactly the same
+  #    text as a deleted chunk reuse its embedding instead of fetching from OpenAI. Set false if
+  #    embedding model has changed.
+  def perform(oral_history_content:nil, work:nil, delete_existing: false, use_dummy_embedding: false, only_if_invalid: false, refresh_extracted_pdf_paragraphs: false, reuse_embeddings: true)
     unless (!!work) ^ (!!oral_history_content)
       raise ArgumentError.new("Exactly one of work:#{work} and oral_history_content#{oral_history_content} must be provided")
     end
@@ -84,8 +88,10 @@ class OhTranscriptChunkerJob < ApplicationJob
       end
     end
 
+    existing_embeddings = {}
     if oral_history_content.oral_history_chunks.exists?
       if delete_existing
+        existing_embeddings = existing_embeddings_by_text(oral_history_content) if reuse_embeddings
         oral_history_content.oral_history_chunks.delete_all
         oral_history_content.oral_history_chunks.reset # make sure we don't have cached old association
       else
@@ -93,7 +99,20 @@ class OhTranscriptChunkerJob < ApplicationJob
       end
     end
 
-    CHUNKER_CLASS.new(oral_history_content: oral_history_content, allow_embedding_wait_seconds: 10).create_db_records(use_dummy_embedding: use_dummy_embedding)
+    CHUNKER_CLASS.new(
+      oral_history_content: oral_history_content,
+      allow_embedding_wait_seconds: 10,
+      existing_embeddings: existing_embeddings
+    ).create_db_records(use_dummy_embedding: use_dummy_embedding)
+  end
+
+  private
+
+  # Hash of chunk text => embedding, skipping fake embeddings so we don't reuse those as real
+  def existing_embeddings_by_text(oral_history_content)
+    oral_history_content.oral_history_chunks.pluck(:text, :embedding).
+      reject { |_text, embedding| embedding.to_a == OralHistoryChunk::FAKE_EMBEDDING }.
+      to_h
   end
 
 end
