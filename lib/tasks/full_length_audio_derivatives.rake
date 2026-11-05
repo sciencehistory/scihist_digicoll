@@ -10,8 +10,7 @@ namespace :scihist do
     progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each(batch_size: 10) do |w|
       progress_bar.log("INFO: Starting #{w.title}")
-      existing_fingerprint = w.oral_history_content!.combined_audio_fingerprint
-      if existing_fingerprint && existing_fingerprint == CombinedAudioDerivativeCreator.new(w).fingerprint
+      if w.oral_history_content!.combined_audio_up_to_date?
         progress_bar.log("INFO: #{w.title} is already up to date.")
         progress_bar.increment
         next
