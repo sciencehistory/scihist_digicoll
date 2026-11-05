@@ -5,7 +5,7 @@
 #
 # Only shown when the gemini_htr_transcripts_feature_flag is on, and the work is in
 # handwriting transcription mode or still has a request.
-class GeminiHandwritingTranscriptionComponent < ApplicationComponent
+class WorkAdminHandwritingTranscriptionComponent < ApplicationComponent
   attr_reader :work
 
   delegate :can?, to: :helpers

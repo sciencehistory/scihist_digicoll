@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe GeminiHandwritingTranscriptionComponent, type: :component, logged_in_user: :editor do
+describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in_user: :editor do
   let(:feature_flag) { true }
   let(:eligibility_problems) { [] }
   let(:text_extraction_mode) { "handwriting_transcription" }
