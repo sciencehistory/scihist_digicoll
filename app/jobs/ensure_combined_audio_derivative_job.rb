@@ -1,11 +1,21 @@
-class CreateCombinedAudioDerivativesJob < ApplicationJob
+# Normally does nothing unless the combined audio derivative is stale or in the wrong
+# storage location; then deletes it, and re-creates it if there is any available audio.
+#
+# force: true always deletes and re-creates, even if the existing one looks current.
+class EnsureCombinedAudioDerivativeJob < ApplicationJob
 
-  def perform(work)
+  def perform(work, force: false)
     logger.info("#{self.class}: Starting #{work.title}.")
+
+    @sidecar = work.oral_history_content!
+    return if !force && @sidecar.combined_audio_good?
+
+    # delete first, so stale or wrongly-stored audio doesn't linger during re-create
+    @sidecar.remove_combined_audio!
 
     deriv_creator = CombinedAudioDerivativeCreator.new(work, logger: logger)
     return unless deriv_creator.available_members?
-    @sidecar = work.oral_history_content!
+
     @sidecar.combined_audio_derivatives_job_status = 'started'
     @sidecar.save!
     # Generate the derivatives:
@@ -29,8 +39,10 @@ class CreateCombinedAudioDerivativesJob < ApplicationJob
   end
 
   rescue_from(StandardError) do |exception|
-    @sidecar.combined_audio_derivatives_job_status = 'failed'
-    @sidecar.save!
+    if @sidecar
+      @sidecar.combined_audio_derivatives_job_status = 'failed'
+      @sidecar.save!
+    end
     raise
   end
 end

@@ -26,7 +26,7 @@ describe "Oral history work", logged_in_user: :editor, js: false, queue_adapter:
         click_on "Generate combined audio derivatives"
         expect(page).to have_text("audio derivative job has been added ")
 
-        expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
+        expect(EnsureCombinedAudioDerivativeJob).to have_been_enqueued.with(work, force: true)
         expect(page).to have_text("Attempting to create combined audio derivatives. Job status: queued")
       end
     end
