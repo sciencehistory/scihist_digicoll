@@ -41,15 +41,7 @@ class WorkTextExtractionModeInputComponent < ApplicationComponent
   end
 
   def htr_request_status_message
-    return nil unless htr_transcription_request&.status.present?
-
-    if htr_transcription_request.success?
-      "A handwriting transcription exists for this work."
-    elsif htr_transcription_request.failure?
-      "The most recent handwriting transcription request failed: #{htr_transcription_request.error.presence || 'unknown error'}"
-    else
-      "A handwriting transcription is in progress (status: #{htr_transcription_request.status})."
-    end
+    htr_transcription_request&.status_message
   end
 
   # Offer a warning if a work is not eligible for handwriting transcription
