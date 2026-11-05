@@ -40,7 +40,7 @@ module OralHistory
       end
 
       def derivatives_up_to_date?
-        current_required_fingerprint == combined_audio_fingerprint
+        !!work&.oral_history_content&.combined_audio_up_to_date?
       end
 
       def job_status_time
