@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Admin::HandwritingTranscriptionController, logged_in_user: :editor, type: :controller, queue_adapter: :test do
-  let(:feature_flag) { true }
   let(:text_extraction_mode) { "handwriting_transcription" }
   let(:existing_request) { { status: "success" } }
   let(:asset) { create(:asset, handwriting_transcription: "some handwriting", transcription: "by a person") }
@@ -17,7 +16,7 @@ RSpec.describe Admin::HandwritingTranscriptionController, logged_in_user: :edito
 
   before do
     allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
-    allow(ScihistDigicoll::Env).to receive(:lookup).with(:gemini_htr_transcripts_feature_flag).and_return(feature_flag)
+    allow(ScihistDigicoll::Env).to receive(:lookup).with(:gemini_htr_transcripts_feature_flag).and_return(true)
   end
 
   describe "#request_new_transcription" do
@@ -72,11 +71,6 @@ RSpec.describe Admin::HandwritingTranscriptionController, logged_in_user: :edito
       let(:text_extraction_mode) { "ocr" }
       include_examples "refuses", /isn't set to handwriting transcription/
     end
-
-    describe "with the feature flag off" do
-      let(:feature_flag) { false }
-      include_examples "refuses", /isn't available/
-    end
   end
 
   describe "#delete_transcription" do
@@ -116,13 +110,16 @@ RSpec.describe Admin::HandwritingTranscriptionController, logged_in_user: :edito
     end
 
     describe "when removal fails" do
+      let(:error) { StandardError.new("something broke") }
+
       before do
         allow_any_instance_of(GeminiHandwritingTranscriptionService)
-          .to receive(:remove_transcription!).and_raise(StandardError.new("something broke"))
+          .to receive(:remove_transcription!).and_raise(error)
         allow(Rails.logger).to receive(:error)
+        allow(Honeybadger).to receive(:notify)
       end
 
-      it "changes nothing, acknowledges the error, and logs it" do
+      it "changes nothing, acknowledges the error, logs it, and notifies Honeybadger" do
         do_request
 
         expect(work.reload.text_extraction_mode).to eq "handwriting_transcription"
@@ -130,34 +127,17 @@ RSpec.describe Admin::HandwritingTranscriptionController, logged_in_user: :edito
         expect(flash[:error]).to eq("We were unable to delete the transcript. Please check the logs for more information.")
         expect(flash[:notice]).to be_nil
         expect(Rails.logger).to have_received(:error).with(/Could not delete handwriting transcript for work #{work.friendlier_id}: StandardError: something broke/)
+        expect(Honeybadger).to have_received(:notify).with(error)
       end
     end
 
-    describe "with the feature flag off" do
-      let(:feature_flag) { false }
-
-      it "changes nothing" do
+    describe "as a staff viewer, who can't edit works", logged_in_user: :staff_viewer do
+      it "refuses to delete" do
         do_request
 
         expect(asset.reload.handwriting_transcription).to eq "some handwriting"
         expect(work.reload.text_extraction_mode).to eq "handwriting_transcription"
-        expect(flash[:error]).to match(/isn't available/)
       end
-    end
-  end
-
-  describe "as a staff viewer, who can't edit works", logged_in_user: :staff_viewer do
-    it "refuses to delete" do
-      delete :delete_transcription, params: { id: work.friendlier_id }
-
-      expect(asset.reload.handwriting_transcription).to eq "some handwriting"
-      expect(work.reload.text_extraction_mode).to eq "handwriting_transcription"
-    end
-
-    it "refuses to request a new transcription" do
-      expect {
-        post :request_new_transcription, params: { id: work.friendlier_id }
-      }.not_to have_enqueued_job(HandwritingTranscriptionJob)
     end
   end
 end

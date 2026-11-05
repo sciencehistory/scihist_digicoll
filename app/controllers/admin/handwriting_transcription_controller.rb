@@ -41,10 +41,10 @@ class Admin::HandwritingTranscriptionController < AdminController
 
     redirect_to_work(flash: { notice: "Transcript deleted, and text extraction mode set to none." })
   rescue StandardError => e
+    Honeybadger.notify(e)
     Rails.logger.error(
       "Could not delete handwriting transcript for work #{@work.friendlier_id}: #{e.class}: #{e.message}\n#{e.backtrace&.first(10)&.join("\n")}"
     )
-
     redirect_to_work(flash: { error: "We were unable to delete the transcript. Please check the logs for more information." })
   end
 
