@@ -45,6 +45,24 @@ describe OralHistoryContent do
     end
   end
 
+  describe "#combined_audio_up_to_date?" do
+    let(:oral_history_content) { create(:oral_history_work, :combined_derivative).oral_history_content }
+
+    it "is true when fingerprint matches" do
+      expect(oral_history_content.combined_audio_up_to_date?).to be true
+    end
+
+    it "is false when fingerprint does not match" do
+      oral_history_content.combined_audio_fingerprint = "stale"
+      expect(oral_history_content.combined_audio_up_to_date?).to be false
+    end
+
+    it "is false when file is missing" do
+      oral_history_content.combined_audio_m4a = nil
+      expect(oral_history_content.combined_audio_up_to_date?).to be false
+    end
+  end
+
   describe "#set_combined_audio_m4a!" do
     it "can set" do
       oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))

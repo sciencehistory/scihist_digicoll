@@ -24,12 +24,8 @@ class CombinedAudioDerivatives
     end
   end
 
-  def audio_fingerprint
-    work&.oral_history_content&.combined_audio_fingerprint
-  end
-
   def derivatives_up_to_date?
-    CombinedAudioDerivativeCreator.new(work).fingerprint == audio_fingerprint
+    !!work&.oral_history_content&.combined_audio_up_to_date?
   end
 
   def m4a_audio_download_filename
