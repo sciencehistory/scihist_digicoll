@@ -36,7 +36,7 @@ namespace :scihist do
         next
       end
 
-      CreateCombinedAudioDerivativesJob.set(queue: queue).perform_later(w)
+      EnsureCombinedAudioDerivativeJob.set(queue: queue).perform_later(w)
     end
   end
 

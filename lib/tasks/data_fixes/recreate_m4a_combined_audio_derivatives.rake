@@ -48,7 +48,7 @@ namespace :scihist do
         next
       end
       progress_bar.log "ADD #{w.title} to queue. Current derivative was from #{w.oral_history_content.combined_audio_derivatives_job_status_changed_at}"
-      CreateCombinedAudioDerivativesJob.set(queue: queue).perform_later(w)
+      EnsureCombinedAudioDerivativeJob.set(queue: queue).perform_later(w, force: true)
       jobs_enqueued = jobs_enqueued + 1
 
     end
