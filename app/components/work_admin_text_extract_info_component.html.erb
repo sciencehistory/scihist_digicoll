@@ -59,6 +59,11 @@
   Not shown if the work isn't in OCR mode and all the counts are zero.
 %>
 <% elsif show_ocr_info? %>
+  <% if extra_ocr_warning? %>
+    <p>
+      <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i> Text extraction mode is none, but some assets still have OCR text.
+    </p>
+  <% end %>
   <% if work_language_warning? %>
     <p>
       <i class="fa fa-exclamation-triangle text-danger" aria-label="WARNING"></i> OCR enabled, but work does not include languages

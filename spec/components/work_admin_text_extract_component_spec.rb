@@ -145,6 +145,22 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
     end
   end
 
+  describe "work with no text extraction set, but leftover OCR" do
+    let(:work) do
+      create(:work, text_extraction_mode: nil, language: ["English"], members: [
+        create(:asset, :with_ocr),
+        create(:asset)
+      ])
+    end
+
+    it "has extra_ocr_warning?, and explains it in the panel" do
+      expect(component.extra_ocr_warning?).to be true
+
+      render_inline(component)
+      expect(page).to have_text("Text extraction mode is none, but some assets still have OCR text.")
+    end
+  end
+
   describe "work in handwriting transcription mode" do
     let(:work) { create(:work, text_extraction_mode: "handwriting_transcription") }
 

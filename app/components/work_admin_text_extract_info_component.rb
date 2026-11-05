@@ -104,7 +104,6 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
   end
 
   # With no text extraction mode: warn if assets still have OCR text left over.
-  # Only affects the tab's warning icon (see #warnings?); the panel doesn't mention it.
   def extra_ocr_warning?
     (work.text_extraction_mode.nil? && (assets_with_ocr_count > 0))
   end
