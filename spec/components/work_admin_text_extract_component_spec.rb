@@ -30,6 +30,7 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
 
     it "renders" do
       render_inline(component)
+      expect(page).to have_text("Out of 3 assets")
     end
   end
 
@@ -96,6 +97,7 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
 
     it "renders" do
       render_inline(component)
+      expect(page).to have_text("Source PDF page count: 1")
     end
   end
 
