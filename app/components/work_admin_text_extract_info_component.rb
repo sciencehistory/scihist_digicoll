@@ -82,8 +82,10 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
 
 
 
-  # For works not in PDF extraction mode: show OCR info if the work is in OCR mode,
-  # or has any OCR-related leftovers.
+  # For works not in PDF extraction mode:
+  # show OCR info if
+  #   the work is in OCR mode,
+  #   or if it has any OCR-related leftovers.
   def show_ocr_info?
     @work.ocr_requested? ||
       assets_with_ocr_count > 0 ||
