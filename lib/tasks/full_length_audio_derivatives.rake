@@ -10,12 +10,12 @@ namespace :scihist do
     progress_bar = ProgressBar.create(total: Work.where("json_attributes -> 'genre' ?  'Oral histories'").count, format: "%a %t: |%B| %R/s %c/%u %p%% %e")
     Work.where("json_attributes -> 'genre' ?  'Oral histories'").find_each(batch_size: 10) do |w|
       progress_bar.log("INFO: Starting #{w.title}")
-      if w.oral_history_content!.combined_audio_up_to_date?
+      if w.oral_history_content!.combined_audio_good?
         progress_bar.log("INFO: #{w.title} is already up to date.")
         progress_bar.increment
         next
       end
-      CreateCombinedAudioDerivativesJob.perform_now(w)
+      EnsureCombinedAudioDerivativeJob.perform_now(w)
       progress_bar.log("INFO: Done with #{w.title}")
       progress_bar.increment
     end

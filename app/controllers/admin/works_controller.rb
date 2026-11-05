@@ -301,7 +301,7 @@ class Admin::WorksController < AdminController
       return
     end
 
-    CreateCombinedAudioDerivativesJob.perform_later(@work)
+    EnsureCombinedAudioDerivativeJob.perform_later(@work, force: true)
     sidecar = @work.oral_history_content!
     sidecar.combined_audio_derivatives_job_status = 'queued'
     sidecar.save!

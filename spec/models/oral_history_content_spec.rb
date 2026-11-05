@@ -21,27 +21,38 @@ describe OralHistoryContent do
       expect(oral_history_content.combined_audio_in_correct_storage?).to be true
     end
 
-    it "enqueues storage fix when availability_mode change makes storage wrong" do
-      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+    it "enqueues ensure job when availability_mode changes" do
       expect {
         oral_history_content.update!(availability_mode: "automatic_request")
-      }.to have_enqueued_job(EnsureCorrectCombinedAudioStorageJob).with(oral_history_content)
+      }.to have_enqueued_job(EnsureCombinedAudioDerivativeJob).with(work)
     end
 
-    it "does not enqueue when storage is still right" do
-      oral_history_content.update!(availability_mode: "automatic_request")
-      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+    it "does not enqueue on other changes" do
       expect {
-        oral_history_content.update!(availability_mode: "reviewed_request")
-      }.not_to have_enqueued_job(EnsureCorrectCombinedAudioStorageJob)
+        oral_history_content.update!(searchable_transcript_source: "changed")
+      }.not_to have_enqueued_job(EnsureCombinedAudioDerivativeJob)
     end
 
-    it "enqueues when changed to embargoed" do
-      oral_history_content.update!(availability_mode: "automatic_request")
+    it "combined_audio_good? requires correct storage" do
       oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
-      expect {
-        oral_history_content.update!(availability_mode: "embargoed")
-      }.to have_enqueued_job(EnsureCorrectCombinedAudioStorageJob).with(oral_history_content)
+      allow(oral_history_content).to receive(:combined_audio_up_to_date?).and_return(true)
+      expect(oral_history_content.combined_audio_good?).to be true
+
+      oral_history_content.update_columns(availability_mode: "automatic_request")
+      expect(oral_history_content.combined_audio_good?).to be false
+    end
+
+    it "remove_combined_audio! deletes file and clears metadata" do
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      oral_history_content.update!(combined_audio_fingerprint: "x", combined_audio_component_metadata: { start_times: [] })
+      file = oral_history_content.combined_audio_m4a
+
+      oral_history_content.remove_combined_audio!
+      oral_history_content.reload
+      expect(oral_history_content.combined_audio_m4a).to be_nil
+      expect(oral_history_content.combined_audio_fingerprint).to be_nil
+      expect(oral_history_content.combined_audio_component_metadata).to be_nil
+      expect(file.exists?).to be false
     end
   end
 

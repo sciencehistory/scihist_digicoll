@@ -53,7 +53,7 @@ class OralHistoryContent < ApplicationRecord
 
   include CombinedAudioUploader::Attachment.new(:combined_audio_m4a)
 
-  after_update_commit :ensure_correct_combined_audio_storage_after_change
+  after_update_commit :ensure_combined_audio_after_change
 
   # Generic attachment with with no custom uploader behavior at all
   include GenericActiveRecordUploader::Attachment.new(:input_docx_transcript)
@@ -119,6 +119,19 @@ class OralHistoryContent < ApplicationRecord
   def combined_audio_in_correct_storage?
     combined_audio_m4a.nil? ||
       (!availability_embargoed? && combined_audio_m4a.storage_key.to_sym == combined_audio_store_key)
+  end
+
+  # Up to date and in correct storage. Fetches work members.
+  def combined_audio_good?
+    combined_audio_in_correct_storage? && combined_audio_up_to_date?
+  end
+
+  # shrine deletes the old file on save
+  def remove_combined_audio!
+    self.combined_audio_m4a = nil
+    self.combined_audio_fingerprint = nil
+    self.combined_audio_component_metadata = nil
+    save!
   end
 
   # scopes for finding certain kinds of OH's. We add ".distinct" to them all to make them all composable,
@@ -220,9 +233,10 @@ class OralHistoryContent < ApplicationRecord
     raise e
   end
 
-  def ensure_correct_combined_audio_storage_after_change
-    if saved_change_to_availability_mode? && !combined_audio_in_correct_storage?
-      EnsureCorrectCombinedAudioStorageJob.perform_later(self)
+  # mode change can change storage location and which audio is available
+  def ensure_combined_audio_after_change
+    if saved_change_to_availability_mode?
+      EnsureCombinedAudioDerivativeJob.perform_later(work)
     end
   end
 
