@@ -362,7 +362,7 @@ GEM
       actionview (>= 7.0.0)
       activesupport (>= 7.0.0)
     jmespath (1.6.2)
-    json (3.1.0)
+    json (2.21.2)
     json_schemer (2.5.0)
       bigdecimal
       hana (~> 1.3)
@@ -888,6 +888,7 @@ DEPENDENCIES
   http (~> 6.0)
   irb (>= 1.3.1)
   jbuilder (~> 2.5)
+  json (< 3)
   json_schemer (~> 2.5.0)
   kaminari (~> 1.2)
   kithe (~> 2.19, >= 2.19.1)
