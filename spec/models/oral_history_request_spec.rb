@@ -5,7 +5,7 @@ describe OralHistoryRequest, type: :model do
   let(:access_request) do
     OralHistoryRequest.create!(
       patron_name: "Patron",
-      patron: Patron.create_or_find_by(email: "patron@institution.com"),
+      patron: create(:patron),
       intended_use: "I will write 10 books.",
       work: create(:oral_history_work)
     )

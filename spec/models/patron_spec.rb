@@ -1,7 +1,40 @@
 require 'rails_helper'
 
 describe Patron, type: :model do
-  let(:patron) { Patron.new(email: "example#{rand(999999)}@example.com") }
+  describe ".find_or_create_from_form" do
+    it "creates a new patron with attributes" do
+      patron = Patron.find_or_create_from_form(email: " New@Example.com ", name: "New", institution: "U")
+      expect(patron).to be_persisted
+      expect(patron.email).to eq "new@example.com"
+      expect(patron.name).to eq "New"
+      expect(patron.institution).to eq "U"
+    end
+
+    it "returns unsaved patron with errors when name missing" do
+      patron = Patron.find_or_create_from_form(email: "new@example.com", name: "")
+      expect(patron).not_to be_persisted
+      expect(patron.errors[:name]).to be_present
+    end
+
+    it "returns existing patron unchanged" do
+      existing = create(:patron, email: "old@example.com", name: "Old")
+      patron = Patron.find_or_create_from_form(email: "OLD@example.com", name: "Attacker", institution: "Evil")
+      expect(patron).to eq existing
+      expect(patron.reload.name).to eq "Old"
+      expect(patron.institution).to be_nil
+    end
+  end
+
+  describe "#confirm!" do
+    it "confirms" do
+      patron = create(:patron)
+      expect(patron).not_to be_confirmed
+      patron.confirm!
+      expect(patron.reload).to be_confirmed
+    end
+  end
+
+  let(:patron) { build(:patron) }
   describe "#has_approved_request?" do
     describe "with no request" do
       let(:asset) { create(:asset) }

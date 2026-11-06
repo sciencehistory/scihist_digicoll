@@ -28,9 +28,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
     let(:request) { OralHistoryRequest.create!(
         created_at: Time.parse("2020-10-01 12:00:00 +0000"),
-        patron_name: "Patron name",
-        patron: Patron.create_or_find_by(email: "patron@institution.com"),
-        patron_institution: "Institution",
+        patron: create(:patron),
         intended_use: "I will write so many books.",
         work: work
       )
@@ -44,14 +42,14 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
 
     it "renders the headers" do
       expect(mail.subject).to eq("Science History Institute: files from Oral history interview with William John Bailey")
-      expect(mail.to).to eq(["patron@institution.com"])
+      expect(mail.to).to eq([request.patron.email])
       expect(mail.from).to eq(["oralhistory@sciencehistory.org"])
     end
 
     it "renders the body; does not send items that are already publicly accessible" do
       body = mail.body.encoded
 
-      expect(body).to match "Dear Patron name"
+      expect(body).to match "Dear #{request.patron.name}"
       expect(body).to match /files from.*Bailey/
 
       expect(body).to match /Protected mp3.*MP3.*Protected PDF.*PDF/m

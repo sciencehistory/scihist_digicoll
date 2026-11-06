@@ -8,10 +8,8 @@ RSpec.describe Admin::OralHistoryRequestsController, :logged_in_user, type: :con
           delivery_status = ['automatic', 'approved', 'rejected', 'pending', nil][i % 5]
           OralHistoryRequest.create!(
             created_at: latest_date - 100000 * i,
-            patron_name: "Patron #{i}",
-            patron_institution: "Institution #{i}",
             intended_use: "I will write #{i} books.",
-            patron: Patron.new(email: "patron@institution_#{i}.com"),
+            patron: build(:patron, email: "patron@institution_#{i}.com", name: "Patron #{i}", institution: "Institution #{i}"),
             work: work,
             delivery_status: delivery_status
           )
