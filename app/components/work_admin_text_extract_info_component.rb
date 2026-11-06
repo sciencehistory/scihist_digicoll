@@ -1,8 +1,8 @@
-# Display stats about extracted `hocr` text in work's members, for either OCR or PDF extraction.
+# Display stats about extracted transcriptions in work's members, for OCR or PDF extraction or handwriting transcriptions
 #
-# Identify mismatches betweene expected `hocr` text and actual
+# Identify mismatches between expected `hocr` text and actual
 #
-# Displayed in a tab on work admin page?
+#
 class WorkAdminTextExtractInfoComponent < ApplicationComponent
   attr_reader :work
 
@@ -15,6 +15,8 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
       "OCR"
     elsif @work.pdf_text_extraction?
       "PDF Text"
+    elsif @work.handwriting_transcription_mode?
+      "Handwriting"
     else
       "Text extraction"
     end
@@ -80,6 +82,20 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
 
 
 
+  # For works not in PDF extraction mode:
+  # show OCR info if
+  #   the work is in OCR mode,
+  #   or if it has any OCR-related leftovers.
+  def show_ocr_info?
+    @work.ocr_requested? ||
+      assets_with_ocr_count > 0 ||
+      assets_with_ocr_suppressed_count > 0 ||
+      assets_with_extracted_pdf_page_role_count > 0 ||
+      assets_with_source_pdf_role_count > 0
+  end
+
+  # In OCR mode: warn if some assets lack OCR (and aren't suppressed), or if any assets
+  # have PDF roles, which don't belong in an OCR work.
   def asset_ocr_count_warning?
     work.ocr_requested? &&
     (
@@ -89,14 +105,18 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
     )
   end
 
+  # With no text extraction mode: warn if assets still have OCR text left over.
   def extra_ocr_warning?
     (work.text_extraction_mode.nil? && (assets_with_ocr_count > 0))
   end
 
+  # In OCR mode: warn if none of the work's languages can be OCRed.
   def work_language_warning?
     @work.ocr_requested? && ! AssetOcrCreator.suitable_language?(work)
   end
 
+  # In PDF extraction mode: warn unless there is exactly one source PDF, its page count is known,
+  # and the number of extracted pages and of assets with OCR text both match it.
   def pdf_extraction_count_warning?
     return false unless @work.pdf_text_extraction?
 
@@ -107,6 +127,7 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
     !(source_pdf_page_count.present? && source_pdf_page_count > 0 && assets_with_extracted_pdf_page_role_count == source_pdf_page_count)
   end
 
+  # Whether any warning applies. Used to show a warning icon on the admin work page's text extraction tab.
   def warnings?
     asset_ocr_count_warning? || work_language_warning? || extra_ocr_warning? || pdf_extraction_count_warning?
   end
