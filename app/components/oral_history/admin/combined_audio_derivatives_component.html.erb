@@ -5,7 +5,7 @@
     <% if derivatives_up_to_date? %>
         <p class="alert-success p-3">
           <i class="fa fa fa-thumbs-up pe-1" aria-hidden="true"></i>
-            The combined audio derivatives, created from <%= work_available_members_count %> published audio segments, are up to date. Their fingerprint is <code class="border"><%= combined_audio_fingerprint%></code>.
+            The combined audio derivatives, created from <%= work_available_members_count %> available audio segments, are up to date. Their fingerprint is <code class="border"><%= combined_audio_fingerprint%></code>.
         </p>
         <ul>
           <% if combined_m4a_audio.present? %>
@@ -19,13 +19,13 @@
         </ul>
     <% elsif ! work_available_members? %>
       <p class="alert-info p-3">
-        This oral history doesn't have any published audio segments associated with it, so has no combined audio derivatives.
+        This oral history doesn't have any available audio segments associated with it, so has no combined audio derivatives.
       </p>
     <% else %>
       <div class="alert-danger p-3 mb-2">
         <p>
           <i class="fa fa fa-thumbs-down pe-1" aria-hidden="true"></i>
-          This oral history does not have up to date combined audio derivatives for the <%= work_available_members_count %> published audio segment(s).
+          This oral history does not have up to date combined audio derivatives for the <%= work_available_members_count %> available audio segment(s).
           No combined audio player can be shown!
         </p>
         <% if combined_audio_fingerprint %>
