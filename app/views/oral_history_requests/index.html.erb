@@ -20,6 +20,10 @@
     <%= link_to ScihistDigicoll::Env.lookup!(:oral_history_email_address), "mailto:#{ScihistDigicoll::Env.lookup!(:oral_history_email_address)}", class: "alert-link" %>.
   </p>
 
+  <% if @pending_requests.blank? && @approved_requests.blank? && @rejected_requests.blank? %>
+    <p>You have no oral history requests.</p>
+  <% end %>
+
   <% if @pending_requests.present? %>
     <h3 class="attribute-sub-head">Pending</h3>
     <ul class="show-sub-head-body list-unstyled">
