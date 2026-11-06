@@ -9,7 +9,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
 
   def oral_history_delivery_email
     raise ArgumentError.new("Required params[:request] missing") unless oh_request.present?
-    raise ArgumentError.new("Required patron email missing") unless oh_request.requester_email.present?
+    raise ArgumentError.new("Required patron email missing") unless oh_request.patron_email.present?
     mail(to: to_address, subject: "Science History Institute: files from #{work.title}", content_type: "text/html")
   end
 
@@ -17,7 +17,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   # links to files
   def approved_with_session_link_email
     raise ArgumentError.new("Required params[:request] missing") unless oh_request.present?
-    raise ArgumentError.new("Required request.oral_history_requester missing") unless oh_request.oral_history_requester.present?
+    raise ArgumentError.new("Required request.patron missing") unless oh_request.patron.present?
     raise ArgumentError.new("params[:request] must be approved or automatic but was #{oh_request.delivery_status}") unless oh_request.delivery_status_approved? || oh_request.delivery_status_automatic?
 
     mail(to: to_address, subject: "Science History Institute Oral History Request: Approved: #{work.title}", content_type: "text/html")
@@ -25,7 +25,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
 
   def rejected_with_session_link_email
     raise ArgumentError.new("Required params[:request] missing") unless oh_request.present?
-    raise ArgumentError.new("Required request.oral_history_requester missing") unless oh_request.oral_history_requester.present?
+    raise ArgumentError.new("Required request.patron missing") unless oh_request.patron.present?
     raise ArgumentError.new("params[:request] must be rejected but was #{oh_request.delivery_status}") unless oh_request.delivery_status_rejected?
 
     mail(to: to_address, subject: "Science History Institute Oral History Request: #{work.title}", content_type: "text/html")
@@ -44,7 +44,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def to_address
-    oh_request.requester_email
+    oh_request.patron_email
   end
 
   def download_by_human_readable
@@ -72,7 +72,7 @@ class OralHistoryDeliveryMailer < ApplicationMailer
   end
 
   def login_magic_link
-    token = oh_request.oral_history_requester.generate_token_for(:auto_login)
+    token = oh_request.patron.generate_token_for(:auto_login)
 
     login_oral_history_session_url(token)
   end

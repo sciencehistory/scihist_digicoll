@@ -67,7 +67,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       pr = '#oral_history_request_'
 
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
-      all("#{pr}oral_history_requester").first.fill_in with: 'patron@library.org'
+      all("#{pr}patron").first.fill_in with: 'patron@library.org'
       all("#{pr}patron_institution").first.fill_in with: 'Some Library'
       # leave out intended use, because not required for this request type, make sure it goes through
 
@@ -82,7 +82,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       new_req = OralHistoryRequest.last
       expect(new_req.patron_name).to eq "Joe Schmo"
-      expect(new_req.requester_email).to eq "patron@library.org"
+      expect(new_req.patron_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.delivery_status_automatic?).to be(true)
 
@@ -122,7 +122,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_text("After your request is received, you will receive an email response, usually within 3 business days. ")
 
       all("#{pr}patron_name").first.fill_in  with: 'Joe Schmo'
-      all("#{pr}oral_history_requester").first.fill_in with: 'patron@library.org'
+      all("#{pr}patron").first.fill_in with: 'patron@library.org'
       all("#{pr}patron_institution").first.fill_in with: 'Some Library'
       all("#{pr}intended_use").first.fill_in with: 'Fun & games'
 
@@ -135,7 +135,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       new_req = OralHistoryRequest.last
       expect(new_req.patron_name).to eq "Joe Schmo"
-      expect(new_req.requester_email).to eq "patron@library.org"
+      expect(new_req.patron_email).to eq "patron@library.org"
       expect(new_req.patron_institution).to eq "Some Library"
       expect(new_req.intended_use).to eq "Fun & games"
       expect(new_req.delivery_status_pending?).to be(true)
@@ -178,7 +178,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       pr = '#oral_history_request_'
 
       find("#{pr}patron_name").fill_in  with: patron_name
-      find("#{pr}oral_history_requester").fill_in with: patron_email
+      find("#{pr}patron").fill_in with: patron_email
       find("#{pr}patron_institution").fill_in with: patron_institution
       find("#{pr}intended_use").fill_in with: intended_use
 
@@ -191,7 +191,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       # by saving and restoring from cookie, the form should be pre-filled
       visit oral_history_request_form_path(work2.friendlier_id)
       expect(find("#{pr}patron_name").value).to eq patron_name
-      expect(find("#{pr}oral_history_requester").value).to eq patron_email
+      expect(find("#{pr}patron").value).to eq patron_email
       expect(find("#{pr}patron_institution").value).to eq patron_institution
       expect(find("#{pr}intended_use").value).to eq intended_use
     end
