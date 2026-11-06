@@ -47,7 +47,7 @@ describe DownloadsController do
 
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_current_patron(request: request, patron: approved_request.patron)
+          sign_in approved_request.patron
         end
 
         it "returns redirect to file" do
@@ -59,10 +59,10 @@ describe DownloadsController do
       end
 
       describe "logged in, but no request" do
-        let(:patron) { Patron.new(email: "example#{rand(999999)}@example.com") }
+        let(:patron) { Patron.create!(email: "example#{rand(999999)}@example.com") }
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_current_patron(request: request, patron: patron)
+          sign_in patron
         end
 
         it "redirects to login page" do
@@ -158,7 +158,7 @@ describe DownloadsController do
 
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_current_patron(request: request, patron: approved_request.patron)
+          sign_in approved_request.patron
         end
 
         it "returns redirect to file" do
@@ -170,10 +170,10 @@ describe DownloadsController do
       end
 
       describe "logged in, but no request" do
-        let(:patron) { Patron.new(email: "example#{rand(999999)}@example.com") }
+        let(:patron) { Patron.create!(email: "example#{rand(999999)}@example.com") }
         before do
           # mock signed-in OH requester
-          OralHistorySessionsController.store_current_patron(request: request, patron: patron)
+          sign_in patron
         end
 
         it "redirects to login page" do
