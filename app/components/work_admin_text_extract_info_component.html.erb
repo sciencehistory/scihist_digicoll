@@ -1,3 +1,9 @@
+<p class="alert alert-info">
+  <i class="fa fa-info-circle" aria-hidden="true"></i>
+  This panel only reports on automatic text extraction from images: photographic OCR, PDF extraction, and handwriting transcripts.
+  It does not cover audio or video transcription, or transcripts written by staff.
+</p>
+
 <p>
   Text extraction mode:
   <% if @work.text_extraction_mode.present? %>
@@ -11,6 +17,8 @@
   <% end %>
 </p>
 
+<%= render WorkAdminHandwritingTranscriptionComponent.new(@work) %>
+
 <% if @work.pdf_text_extraction? %>
   <%= render "admin/works/text_extract_pdf_info", component: self %>
 
@@ -21,8 +29,3 @@
   %>
   <%= render "admin/works/text_extract_ocr_info", component: self %>
 <% end %>
-
-<p class="alert alert-info">
-  <i class="fa fa-info-circle" aria-hidden="true"></i>
-  This panel only reports on photographic OCR and PDF extraction, it does not cover Audio or Visual transcription, or "Bredig-collection-style" manual transcript entry.
-</p>
