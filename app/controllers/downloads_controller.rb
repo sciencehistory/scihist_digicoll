@@ -101,7 +101,10 @@ class DownloadsController < ApplicationController
 
     @only_fragment = params[:fragment] == "true"
 
-    render layout: !@only_fragment
+    # explicit respond_to so non-html formats (eg bots sending Accept: text/markdown) get a 406, not a 500 MissingTemplate
+    respond_to do |format|
+      format.html { render layout: !@only_fragment }
+    end
   end
 
   # For OH, we redirect to transcript PDF if present, looking up from work id
