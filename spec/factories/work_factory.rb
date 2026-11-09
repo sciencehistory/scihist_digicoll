@@ -278,34 +278,36 @@ FactoryBot.define do
         }
       end
 
+      # only really works for saved persisted work with :create at present, we need files
+      # to be saved to work properly. Has some internal saves even if you call with 'build'
       trait :combined_derivative do
         transient do
           num_audio_files { 2 }
         end
 
-
         members {[
-          build(:asset_with_faked_file, :pdf, published: true, title: 'transcript', role: "transcript"),
+          create(:asset_with_faked_file, :pdf, published: true, title: 'transcript', role: "transcript"),
         ]}
 
-        after(:build) do |work, evaluator|
-          evaluator.num_audio_files.times do |i|
-            work.members << build(:asset_with_faked_file, :flac,
-                              title: "audio_recording#{i}.flac",
-                              published: true,
-                              faked_filename: "#{generate(:oh_filename)}.mp3",
-                              faked_size: 10.megabytes,
-                              faked_derivatives: {} )
+        after(:create) do |work, evaluator|
+          ActiveRecord::Base.transaction do
+            evaluator.num_audio_files.times do |i|
+              work.members << create(:asset_with_faked_file, :flac,
+                                title: "audio_recording#{i}.flac",
+                                published: true,
+                                faked_filename: "#{generate(:oh_filename)}.mp3",
+                                faked_size: 10.megabytes,
+                                faked_derivatives: {} )
+            end
+            work.oral_history_content!.set_combined_audio_m4a!(File.open(Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a"))
+
+            service = CombinedAudioDerivativeCreator.new(work)
+            work.oral_history_content.combined_audio_fingerprint = service.fingerprint
+            work.oral_history_content.combined_audio_derivatives_job_status = "succeeded"
+
+            work.oral_history_content.combined_audio_component_metadata = { start_times: service.generate.start_times }
+            work.oral_history_content.save!
           end
-
-          work.save! # don't know why, annoying for performance, but our code requires it to be saved
-          work.oral_history_content!.set_combined_audio_m4a!(File.open(Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a"))
-
-          service = CombinedAudioDerivativeCreator.new(work)
-          work.oral_history_content.combined_audio_fingerprint = service.fingerprint
-          work.oral_history_content.combined_audio_derivatives_job_status = "succeeded"
-
-          work.oral_history_content.combined_audio_component_metadata = { start_times: service.generate.start_times }
         end
       end
 
