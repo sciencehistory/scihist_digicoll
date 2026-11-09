@@ -20,10 +20,11 @@ class OpenaiAudioTranscribe
   REQUEST_TIMEOUT = 360 # seconds. default may be 120. In some cases not long enough?
   MODEL = "whisper-1"
 
-  # Very long audio gets 500 errors or timeouts from OpenAI, so over SEGMENT_IF_LONGER_THAN we split
-  # into SEGMENT_TARGET_LENGTH pieces (at silences) and transcribe separately.
-  SEGMENT_IF_LONGER_THAN = 90.minutes
-  SEGMENT_TARGET_LENGTH = 45.minutes
+  # Very long audio gets 500 errors or timeouts from OpenAI. Even below that,
+  # accuracy (esp of timestamps) starts to diminish 20-30 minutes.
+  # so over SEGMENT_MAX_LENGTH we split into equal pieces no longer than this,
+  # cutting at silences if can be detected, and transcribe separately.
+  SEGMENT_MAX_LENGTH = 21.minutes
 
   # some known hallucinations that very unlikely to be correct in our corpus, we
   # will just remove them.
@@ -74,7 +75,7 @@ class OpenaiAudioTranscribe
   # Given an Asset with audio or video, extract audio as lowfi
   # Opus OGG, and contact OpenAI API to get a webvtt transcript.
   #
-  # Audio longer than SEGMENT_IF_LONGER_THAN is split at silences into SEGMENT_TARGET_LENGTH pieces, each
+  # Audio longer than SEGMENT_MAX_LENGTH is split at silences into equal pieces of at most that length, each
   # transcribed separately and the webvtt merged with timestamps shifted to be relative
   # to the whole.
   def get_vtt_for_asset(asset, lang_code: nil)
@@ -98,15 +99,15 @@ class OpenaiAudioTranscribe
       prompt = (whisper_prompt(asset) if use_prompt)
       duration_seconds = asset.file_metadata.fetch("duration_seconds")
 
-      if duration_seconds <= SEGMENT_IF_LONGER_THAN
+      if duration_seconds <= SEGMENT_MAX_LENGTH
         return transcribe_file_to_vtt(opus_file, lang_code: lang_code, whisper_prompt: prompt)
       end
 
-      Rails.logger.info("#{self.class.name}: Splitting Asset #{asset.friendlier_id} into segments: #{duration_seconds.round}s long, greater than #{SEGMENT_IF_LONGER_THAN}, splitting into ~#{SEGMENT_TARGET_LENGTH.to_i}s segments")
+      Rails.logger.info("#{self.class.name}: Splitting Asset #{asset.friendlier_id} into segments: #{duration_seconds.round}s long, greater than #{SEGMENT_MAX_LENGTH.to_i}s max segment length")
 
       joiner = VttJoiner.new
 
-      AudioSilenceSplitter.new(segment_target_length: SEGMENT_TARGET_LENGTH, log_label: "Asset #{asset.friendlier_id}").split(opus_file.path, duration_seconds: duration_seconds) do |file:, start_seconds:, **|
+      AudioSilenceSplitter.new(max_segment_length: SEGMENT_MAX_LENGTH, log_label: "Asset #{asset.friendlier_id}").split(opus_file.path, duration_seconds: duration_seconds) do |file:, start_seconds:, **|
         segment_vtt = transcribe_file_to_vtt(file, lang_code: lang_code, whisper_prompt: prompt)
         joiner.add(segment_vtt, offset_seconds: start_seconds)
       end
