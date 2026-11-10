@@ -57,6 +57,7 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
 
       expect(page).to have_text("A handwriting transcription is in progress (status: requested).")
       expect(page).to have_text("Started: 2026-Jan-01 12:30")
+      expect(page).not_to have_link("Go to transcript")
       expect(page).not_to have_link("Request a new transcript")
       expect(page).not_to have_link("Delete transcript")
     end
@@ -72,6 +73,12 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       expect(new_request_link["href"]).to eq("/admin/works/#{work.friendlier_id}/request_new_handwriting_transcription")
       expect(new_request_link["data-method"]).to eq("post")
       expect(new_request_link["data-confirm"]).to match(/delete the current transcript/)
+    end
+
+    it "links to the transcript on the public work page" do
+      render_inline described_class.new(work)
+
+      expect(page).to have_link("Go to transcript", href: "/works/#{work.friendlier_id}#tab=handwriting-transcription")
     end
 
     it "offers to delete the transcript, with a confirmation" do
@@ -102,6 +109,7 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       expect(page).to have_text("The most recent handwriting transcription request failed: <b>Gemini</b> returned HTTP 500")
       expect(page).not_to have_css("b")
       expect(new_request_link["data-confirm"]).to be_nil
+      expect(page).not_to have_link("Go to transcript")
     end
   end
 
