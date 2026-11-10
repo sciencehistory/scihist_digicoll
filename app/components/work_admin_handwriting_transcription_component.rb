@@ -55,8 +55,10 @@ class WorkAdminHandwritingTranscriptionComponent < ApplicationComponent
     work.handwriting_transcription_mode? && transcription_request&.finished?
   end
 
+  # Deleting also sets the mode to none, so it's only offered in handwriting mode. (A work moved
+  # to another mode has its transcription removed by WorkTranscriptionCreatorRemover.)
   def offer_delete?
-    transcription_request&.finished?
+    work.handwriting_transcription_mode? && transcription_request&.finished?
   end
 
   # Replacing a successful transcription throws it away, and costs money.
