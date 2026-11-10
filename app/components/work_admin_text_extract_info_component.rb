@@ -1,6 +1,6 @@
-# Display stats about extracted `hocr` text in work's members, for either OCR or PDF extraction.
-#
-# Identify mismatches between expected `hocr` text and actual
+# Where appropriate, display stats about extracted transcriptions in work's members, for OCR or PDF extraction.
+# For handwriting transcriptions, show the handwriting transcription card.
+# Identify mismatches between expected `hocr` text and actual.
 class WorkAdminTextExtractInfoComponent < ApplicationComponent
   attr_reader :work
 
@@ -13,6 +13,8 @@ class WorkAdminTextExtractInfoComponent < ApplicationComponent
       "OCR"
     elsif @work.pdf_text_extraction?
       "PDF Text"
+    elsif @work.handwriting_transcription_mode?
+      "Handwriting"
     else
       "Text extraction"
     end
