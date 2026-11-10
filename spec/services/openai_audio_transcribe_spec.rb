@@ -75,7 +75,7 @@ describe OpenaiAudioTranscribe do
       end
 
       before do
-        stub_const("OpenaiAudioTranscribe::SEGMENT_IF_LONGER_THAN", 1.second)
+        stub_const("OpenaiAudioTranscribe::SEGMENT_MAX_LENGTH", 1.second)
 
         # splitter is tested separately, stub it to hand back two segments
         splitter = instance_double(AudioSilenceSplitter)
@@ -83,7 +83,7 @@ describe OpenaiAudioTranscribe do
           block.call(file: File.open(opus_path), start_seconds: 0.0, index: 0)
           block.call(file: File.open(opus_path), start_seconds: 90.5, index: 1)
         end
-        allow(AudioSilenceSplitter).to receive(:new).with(segment_target_length: OpenaiAudioTranscribe::SEGMENT_TARGET_LENGTH, log_label: "Asset #{asset.friendlier_id}").and_return(splitter)
+        allow(AudioSilenceSplitter).to receive(:new).with(max_segment_length: OpenaiAudioTranscribe::SEGMENT_MAX_LENGTH, log_label: "Asset #{asset.friendlier_id}").and_return(splitter)
       end
 
       it "merges segments with shifted timestamps" do

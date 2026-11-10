@@ -1,5 +1,5 @@
-# Splits an audio file into segments of roughly `segment_target_length`, preferring to cut in the
-# middle of a silence so that no word is split. Segments are copied without re-encoding.
+# Splits an audio file into roughly equal segments, none longer than `max_segment_length`, preferring
+# to cut in the middle of a silence so that no word is split. Segments are copied without re-encoding.
 #
 # We use ffmpeg to identify silent moments, and try to split on a silent moment.
 #
@@ -11,7 +11,7 @@
 # reported by ffmpeg -- not whole seconds.
 #
 # @example
-#     AudioSilenceSplitter.new(segment_target_length: 45.minutes).split("path/to/audio.oga", duration_seconds: 7200) do |file:, start_seconds:, index:|
+#     AudioSilenceSplitter.new(max_segment_length: 24.minutes).split("path/to/audio.oga", duration_seconds: 7200) do |file:, start_seconds:, index:|
 #       file          # => Tempfile, deleted after the block
 #       start_seconds # => offset of segment in original, in (fractional) seconds, eg 2701.337
 #       index         # => 0-based segment number
@@ -20,19 +20,23 @@ class AudioSilenceSplitter
   SILENCE_NOISE = "-35dB"
   SILENCE_MIN_DURATION = 0.5 # seconds
 
+  # always leave at least this much slack below the max to search for silence (smaller for tiny max lengths)
+  MIN_SEEK_WINDOW = 30 # seconds
+
   FILE_SUFFIX = FfmpegExtractOpusAudio::DEFAULT_FILE_SUFFIX
 
   class_attribute :ffmpeg_command, default: "ffmpeg"
 
-  attr_reader :segment_target_length, :cut_point_seek_window, :log_label
+  attr_reader :max_segment_length, :cut_point_seek_window, :log_label
 
-  # @param segment_target_length [Numeric] target segment length in seconds (ActiveSupport durations ok)
-  # @param cut_point_seek_window [Numeric] how far either side of the target cut point to look for silence
+  # @param max_segment_length [Numeric] hard maximum segment length in seconds (ActiveSupport durations ok)
+  # @param cut_point_seek_window [Numeric] optional, how far either side of an ideal cut point to look for
+  #   silence. Default 10% of segment length; always capped so no segment can exceed max_segment_length.
   # @param log_label [String] optional, identifies the audio in log messages, eg "Asset abc123"
-  def initialize(segment_target_length:, cut_point_seek_window: nil, log_label: nil)
+  def initialize(max_segment_length:, cut_point_seek_window: nil, log_label: nil)
     @log_label = log_label
-    @segment_target_length = segment_target_length.to_f
-    @cut_point_seek_window = cut_point_seek_window ? cut_point_seek_window.to_f : (@segment_target_length / 10)
+    @max_segment_length = max_segment_length.to_f
+    @cut_point_seek_window = cut_point_seek_window&.to_f
   end
 
   # Yields each segment (keywords file:, start_seconds:, index:) in order; the Tempfile is deleted after its block returns.
@@ -52,33 +56,38 @@ class AudioSilenceSplitter
     end
   end
 
-  # Times in fractional seconds (Floats) at which to cut, aiming for every segment_target_length, empty if it all fits in one segment.
+  # Times in fractional seconds (Floats) at which to cut, empty if it all fits in one segment.
   #
-  # There are many silences in an audio file, we only want a few cuts: for each segment_target_length
-  # target, we choose the silence closest to it (within cut_point_seek_window), or the
-  # target itself if there is none.
+  # Audio is divided into the fewest equal segments that fit in max_segment_length, with enough slack
+  # under the max to search for silence (so an exact multiple of max gets one more segment, not hard cuts).
+  # For each ideal cut point we choose the nearest silence within the seek window, or the ideal point itself if none.
   def cut_points(path, total_duration)
-    return [] if total_duration <= segment_target_length
+    total_duration = total_duration.to_f
+    return [] if total_duration <= max_segment_length
+
+    min_window = [MIN_SEEK_WINDOW, max_segment_length / 20, cut_point_seek_window].compact.min
+
+    count = (total_duration / max_segment_length).ceil
+    count += 1 while (max_segment_length - total_duration / count) / 2 < min_window
+
+    target = total_duration / count
+
+    # window capped so adjacent cuts can drift apart by at most (max - target), keeping every segment <= max
+    window = [cut_point_seek_window || (target / 10), (max_segment_length - target) / 2].min
 
     silences = candidate_cut_points(path)
-    cuts = []
-    start = 0.0
 
-    while total_duration - start > segment_target_length
-      target = start + segment_target_length
-      nearby = silences.select { |s| (s - target).abs <= cut_point_seek_window && s > start }
-      cut = nearby.min_by { |s| (s - target).abs }
+    (1...count).map do |i|
+      ideal = target * i
+      cut = silences.select { |s| (s - ideal).abs <= window }.min_by { |s| (s - ideal).abs }
 
       unless cut
-        cut = target
-        Rails.logger.warn("#{self.class}: #{log_label}: no silence within #{cut_point_seek_window.round}s of #{target.round(1)}s, cutting at exact time")
+        cut = ideal
+        Rails.logger.warn("#{self.class}: #{log_label}: no silence within #{window.round(1)}s of #{ideal.round(1)}s, cutting at exact time")
       end
 
-      cuts << cut
-      start = cut
+      cut
     end
-
-    cuts
   end
 
   private
