@@ -56,7 +56,7 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       render_inline described_class.new(work)
 
       expect(page).to have_text("A handwriting transcription is in progress (status: requested).")
-      expect(page).to have_text("Requested: 2026-Jan-01 12:30")
+      expect(page).to have_text("Started: 2026-Jan-01 12:30")
       expect(page).not_to have_link("Request a new transcript")
       expect(page).not_to have_link("Delete transcript")
     end
@@ -82,13 +82,14 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       expect(delete_link["data-confirm"]).to match(/set the text extraction mode to none/)
     end
 
-    it "doesn't warn about eligibility, even if the work is no longer eligible" do
-      allow(GeminiHandwritingTranscriptionService).to receive(:new).and_return(
-        instance_double(GeminiHandwritingTranscriptionService, work_eligibility_problems: ["no usable images were found"])
-      )
-      render_inline described_class.new(work)
+    describe "for a work that is no longer eligible" do
+      let(:eligibility_problems) { ["no usable images were found"] }
 
-      expect(page).not_to have_text("isn't eligible")
+      it "doesn't warn about eligibility" do
+        render_inline described_class.new(work)
+
+        expect(page).not_to have_text("isn't eligible")
+      end
     end
   end
 
@@ -108,10 +109,10 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
     let(:text_extraction_mode) { "ocr" }
     let(:request_attributes) { { status: "success" } }
 
-    it "offers to delete, but not to request a new transcript" do
+    it "offers no buttons, leaving the removal to the background job" do
       render_inline described_class.new(work)
 
-      expect(page).to have_link("Delete transcript")
+      expect(page).not_to have_link("Delete transcript")
       expect(page).not_to have_link("Request a new transcript")
     end
   end
