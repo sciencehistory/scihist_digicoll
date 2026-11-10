@@ -111,4 +111,33 @@ describe WorkImageShowComponent, type: :component do
       end
     end
   end
+
+  describe "#has_transcription_or_translation?" do
+    let(:work) do
+      create(:public_work, members: [create(:asset_with_faked_file, handwriting_transcription: "some handwriting")])
+    end
+    let(:component) { described_class.new(work) }
+
+    before do
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:gemini_htr_transcripts_feature_flag).and_return(feature_flag)
+      render_inline component
+    end
+
+    describe "with the feature flag on" do
+      let(:feature_flag) { true }
+
+      it "counts a handwriting transcription" do
+        expect(component.has_transcription_or_translation?).to be true
+      end
+    end
+
+    describe "with the feature flag off" do
+      let(:feature_flag) { false }
+
+      it "ignores a handwriting transcription" do
+        expect(component.has_transcription_or_translation?).to be false
+      end
+    end
+  end
 end
