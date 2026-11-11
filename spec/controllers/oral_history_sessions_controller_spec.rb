@@ -1,7 +1,7 @@
 require "rails_helper"
 
 describe OralHistorySessionsController, type: :controller, queue_adapter: :inline do
-  let(:patron) { create(:patron) }
+  let(:patron) { create(:patron, :unconfirmed) }
 
   describe "#create" do
     it "sends a login link" do
