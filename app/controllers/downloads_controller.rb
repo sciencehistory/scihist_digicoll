@@ -144,11 +144,9 @@ class DownloadsController < ApplicationController
   end
 
   def is_requestable_oral_history_asset?(asset)
-    return false unless asset.oh_available_by_request?
-
-    return false unless current_patron
-
-    current_patron.has_approved_request_for_asset?(asset)
+    asset.oh_available_by_request? &&
+      asset.parent&.oral_history_content&.available_by_request? &&
+      current_patron&.can_access_oral_history?(asset.parent)
   end
 
   # sets @derivative (for derivatives action), raises RecordNotFound if we can't find it.

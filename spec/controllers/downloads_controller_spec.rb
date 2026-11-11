@@ -39,7 +39,7 @@ describe DownloadsController do
     end
 
     describe "by-request only asset" do
-      let(:work) { create(:oral_history_work, :available_by_request) }
+      let(:work) { create(:oral_history_work, :available_by_request, published: true) }
       let(:asset) { work.members.find { |m| m.oh_available_by_request? } }
 
       describe "with permission, when logged in" do
@@ -66,6 +66,33 @@ describe DownloadsController do
         end
 
         it "redirects to login page" do
+          get :original, params: { asset_id: asset, file_category: file_category }
+          expect(response).to redirect_to root_path
+        end
+      end
+
+      describe "automatic_request work, logged in with no request" do
+        let(:work) { create(:oral_history_work, :available_by_request, published: true, availability_mode: :automatic_request) }
+        let(:patron) { create(:patron) }
+        before { sign_in patron }
+
+        it "returns redirect to file" do
+          get :original, params: { asset_id: asset, file_category: file_category }
+          expect(response.location).to eq faked_download_url
+        end
+
+        it "refuses unconfirmed patron" do
+          patron.update!(confirmed_at: nil)
+          get :original, params: { asset_id: asset, file_category: file_category }
+          expect(response).to redirect_to root_path
+        end
+      end
+
+      describe "direct work, by-request flagged asset" do
+        let(:work) { create(:oral_history_work, :available_by_request, published: true, availability_mode: :direct) }
+        before { sign_in create(:patron) }
+
+        it "refuses unpublished asset with stale by-request flag" do
           get :original, params: { asset_id: asset, file_category: file_category }
           expect(response).to redirect_to root_path
         end
@@ -150,7 +177,7 @@ describe DownloadsController do
     end
 
     describe "by-request only asset" do
-      let(:work) { create(:oral_history_work, :available_by_request_flac) }
+      let(:work) { create(:oral_history_work, :available_by_request_flac, published: true) }
       let!(:asset) { work.members.find { |m| m.oh_available_by_request? && m.content_type == "audio/flac" } }
 
       describe "with permission, when logged in" do
