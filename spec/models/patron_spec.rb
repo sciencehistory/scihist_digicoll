@@ -71,4 +71,78 @@ describe Patron, type: :model do
       end
     end
   end
+
+  describe "#can_access_oral_history?" do
+    let(:patron) { create(:patron, confirmed_at: Time.current) }
+    let(:work) { create(:oral_history_work, :available_by_request, published: true, availability_mode: availability_mode) }
+
+    describe("automatic_request") do
+      let(:availability_mode) { :automatic_request }
+
+      it "is true for automatic_request" do
+        expect(patron.can_access_oral_history?(work)).to be true
+      end
+
+      it "is false when not confirmed" do
+        patron.update!(confirmed_at: nil)
+        expect(patron.can_access_oral_history?(work)).to be false
+      end
+
+      it "is false when work unpublished" do
+        work.update!(published: false)
+        expect(patron.can_access_oral_history?(work)).to be false
+      end
+
+      it "is true without oral_history_content, even unconfirmed" do
+        patron.update!(confirmed_at: nil)
+        expect(patron.can_access_oral_history?(create(:public_work))).to be true
+      end
+    end
+
+    describe "direct" do
+      let(:availability_mode) { :direct }
+
+      it "is true even when not confirmed" do
+        patron.update!(confirmed_at: nil)
+        expect(patron.can_access_oral_history?(work)).to be true
+      end
+
+      it "is false when work unpublished" do
+        work.update!(published: false)
+        expect(patron.can_access_oral_history?(work)).to be false
+      end
+    end
+
+    describe "embargoed" do
+      let(:availability_mode) { :embargoed }
+
+      it "is false always, even with approved request" do
+        create(:oral_history_request, patron: patron, work: work, delivery_status: "approved")
+        expect(patron.can_access_oral_history?(work)).to be false
+      end
+    end
+
+    describe "reviewed_request" do
+      let(:availability_mode) { :reviewed_request }
+
+      it "is false with no request" do
+        expect(patron.can_access_oral_history?(work)).to be false
+      end
+
+      it "is false with pending request" do
+        create(:oral_history_request, patron: patron, work: work, delivery_status: "pending")
+        expect(patron.can_access_oral_history?(work)).to be false
+      end
+
+      it "is false with someone else's approved request" do
+        create(:oral_history_request, work: work, delivery_status: "approved")
+        expect(patron.can_access_oral_history?(work)).to be false
+      end
+
+      it "is true with approved request" do
+        create(:oral_history_request, patron: patron, work: work, delivery_status: "approved")
+        expect(patron.can_access_oral_history?(work)).to be true
+      end
+    end
+  end
 end
