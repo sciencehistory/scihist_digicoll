@@ -79,4 +79,17 @@ class Patron < ApplicationRecord
   def has_approved_request_for_asset?(asset)
     OralHistoryRequest.where(work: asset.parent, patron: self, delivery_status: ["approved", "automatic"]).exists?
   end
+
+  # Can see this OH and it's assets in full: direct to anyone; by-request if confirmed and automatic or approved.
+  # @param [Work]
+  def can_access_oral_history?(work)
+    return false unless work.published?
+
+    oh = work.oral_history_content
+    return true if oh.nil? || oh.availability_direct? # no sidecar means direct
+    return false unless confirmed? && oh.available_by_request?
+
+    oh.availability_automatic_request? ||
+      OralHistoryRequest.where(work: work, patron: self, delivery_status: ["approved", "automatic"]).exists?
+  end
 end
