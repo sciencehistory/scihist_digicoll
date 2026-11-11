@@ -36,7 +36,7 @@ class GeminiHandwritingTranscriptionService
 
     update_handwriting_transcription_request(status: 'started', start_time: Time.current)
 
-    Dir.mktmpdir do |dir|
+    notes = Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
 
       response = request_transcription(staged_images)
@@ -44,7 +44,7 @@ class GeminiHandwritingTranscriptionService
 
       process_results(response: response, staged_images: staged_images)
     end
-    update_handwriting_transcription_request(status: 'success')
+    update_handwriting_transcription_request(status: 'success', **notes)
   end
 
   # Removes the handwriting transcriptions from all of the work's assets, forgets
@@ -165,7 +165,8 @@ class GeminiHandwritingTranscriptionService
 
   # The transcript, and notes about the transcription process,
   # should come in via the response body. This method attaches each page's
-  # transcript to the corresponding asset.
+  # transcript to the corresponding asset, and returns Gemini's notes, as
+  # attributes for the request (general_feedback:, page_notes:).
   def process_results(response:, staged_images:)
     validate_adapter_result!(response)
 
@@ -189,6 +190,14 @@ class GeminiHandwritingTranscriptionService
     Rails.logger.info(
       "Gemini handwriting transcription completed for work #{work.friendlier_id}"
     )
+
+    # Gemini's notes about the transcription, with each page's notes keyed by its asset.
+    pages_by_filename = pages.index_by { |page| page.fetch("filename") }
+    page_notes = staged_images.each_with_object({}) do |image, notes|
+      note = pages_by_filename.fetch(image.fetch(:filename))["page_notes"]
+      notes[image.fetch(:asset).friendlier_id] = note if note.present?
+    end
+    { general_feedback: data["general_feedback"].presence, page_notes: page_notes.presence }
   end
 
   # Alert the Rails log of any problems coming back from the Gemini API itself
