@@ -170,7 +170,7 @@
         <% end %>
 
         <div class="tab-pane downloads" id="ohDownloads" role="tabpanel" aria-labelledby="ohDownloadsTab">
-          <%= render OralHistory::DownloadsListComponent.new(work: work, decorator: self) %>
+          <%= render OralHistory::DownloadsListComponent.new(work: work, members_list: all_members) %>
         </div>
       </div>
   </div>
