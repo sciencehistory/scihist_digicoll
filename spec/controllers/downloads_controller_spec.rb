@@ -59,7 +59,7 @@ describe DownloadsController do
       end
 
       describe "logged in, but no request" do
-        let(:patron) { Patron.create!(email: "example#{rand(999999)}@example.com") }
+        let(:patron) { create(:patron) }
         before do
           # mock signed-in OH requester
           sign_in patron
@@ -170,7 +170,7 @@ describe DownloadsController do
       end
 
       describe "logged in, but no request" do
-        let(:patron) { Patron.create!(email: "example#{rand(999999)}@example.com") }
+        let(:patron) { create(:patron) }
         before do
           # mock signed-in OH requester
           sign_in patron
