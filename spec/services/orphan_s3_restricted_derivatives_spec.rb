@@ -127,4 +127,42 @@ describe OrphanS3RestrictedDerivatives do
       expect(orphan_checker.delete_count).to eq 4
     end
   end
+
+  describe "combined audio" do
+    let(:oh_work) do
+      create(:oral_history_work).tap do |w|
+        w.oral_history_content!.update!(availability_mode: "automatic_request")
+        w.oral_history_content.set_combined_audio_m4a!(File.open(Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a"))
+      end
+    end
+
+    describe "good derivative" do
+      let(:file_paths) do
+        ["restricted_derivatives/combined_audio_derivatives/#{oh_work.oral_history_content.combined_audio_m4a.id}"]
+      end
+      it "is not an orphan" do
+        orphan_checker.report_orphans
+        expect(orphan_checker.files_checked).to eq 1
+        expect(orphan_checker.orphans_found).to eq 0
+      end
+      it "doesn't delete it" do
+        orphan_checker.delete_orphans
+        expect(orphan_checker.delete_count).to eq 0
+      end
+    end
+
+    describe "stale or missing-work derivatives" do
+      let(:file_paths) do
+        [
+          "restricted_derivatives/combined_audio_derivatives/#{oh_work.id}/combined_stale.m4a",
+          "restricted_derivatives/combined_audio_derivatives/missing_work_id/combined_stale.m4a"
+        ]
+      end
+      it "are orphans" do
+        orphan_checker.report_orphans
+        expect(orphan_checker.files_checked).to eq 2
+        expect(orphan_checker.orphans_found).to eq 2
+      end
+    end
+  end
 end

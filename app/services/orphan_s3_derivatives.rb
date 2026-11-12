@@ -158,8 +158,9 @@ class OrphanS3Derivatives
     work = Work.where(id: work_id).first
     return true unless work.present? && work.is_oral_history?
 
-    deriv = work.oral_history_content!.combined_audio_m4a
-    return false if deriv.present? && deriv.url.end_with?(shrine_path)
+    deriv = work.oral_history_content&.combined_audio_m4a
+    return false if deriv.present? && deriv.storage_key.to_sym == :combined_audio_derivatives &&
+      shrine_path.end_with?("/#{deriv.id}")
 
     # ok, this is an orphaned combined audio deriv.
     true

@@ -11,7 +11,7 @@ describe "Oral history work", logged_in_user: :editor, js: false, queue_adapter:
 
     describe "with no public audio sources" do
       it "says can't create" do
-        expect(page).to have_text("This oral history doesn't have any published audio segments associated with it, so has no combined audio derivatives.")
+        expect(page).to have_text("This oral history doesn't have any available audio segments associated with it, so has no combined audio derivatives.")
         expect(page).not_to have_css("a", text: /Generate combined audio derivatives/)
       end
     end
@@ -20,7 +20,7 @@ describe "Oral history work", logged_in_user: :editor, js: false, queue_adapter:
       let(:work) { FactoryBot.create(:work, :with_complete_metadata, genre: ["Oral histories"], members: [create(:asset_with_faked_file, :mp3, published: true)]) }
 
       it "says no up to date combined derivative, can create one" do
-        expect(page).to have_text("This oral history does not have up to date combined audio derivatives for the 1 published audio segment")
+        expect(page).to have_text("This oral history does not have up to date combined audio derivatives for the 1 available audio segment")
         expect(page).to have_css("a", text: /Generate combined audio derivatives/)
 
         click_on "Generate combined audio derivatives"
@@ -43,7 +43,7 @@ describe "Oral history work", logged_in_user: :editor, js: false, queue_adapter:
       end
 
       it "says no up to date combined derivative" do
-        expect(page).to have_text("This oral history does not have up to date combined audio derivatives for the 1 published audio segment")
+        expect(page).to have_text("This oral history does not have up to date combined audio derivatives for the 1 available audio segment")
         expect(page).to have_css("a", text: /Generate combined audio derivatives/)
       end
     end
@@ -61,7 +61,7 @@ describe "Oral history work", logged_in_user: :editor, js: false, queue_adapter:
       end
 
       it "says up to date" do
-        expect(page).to have_text("The combined audio derivatives, created from 1 published audio segments, are up to date")
+        expect(page).to have_text("The combined audio derivatives, created from 1 available audio segments, are up to date")
       end
     end
   end
