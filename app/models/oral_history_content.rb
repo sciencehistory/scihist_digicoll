@@ -109,6 +109,12 @@ class OralHistoryContent < ApplicationRecord
     availability_direct? ? :combined_audio_derivatives : :restricted_combined_audio_derivatives
   end
 
+  # Has a file, and stored fingerprint matches current available audio. Fetches work members.
+  def combined_audio_up_to_date?
+    combined_audio_m4a.present? &&
+      combined_audio_fingerprint == CombinedAudioDerivativeCreator.new(work).fingerprint
+  end
+
   # embargoed OHs should have no combined audio at all
   def combined_audio_in_correct_storage?
     combined_audio_m4a.nil? ||
