@@ -8,38 +8,26 @@ module OralHistory
       :m4a_audio_download_filename, :display_m4a_audio_size,
       to: :combined_audio_derivatives, prefix: "combined"
 
-    attr_reader :decorator, :work, :combined_audio_derivatives
+    attr_reader :work, :members_list, :combined_audio_derivatives
 
-    # TODO decorator is a WIP on the path to a refactor
-    def initialize(work:, decorator:)
+    # @param members_list [Array<Kithe::Model>] members the viewer can see, that we will prepare the downloads list from
+    def initialize(work:, members_list:)
       @work = work
-      @decorator = decorator
+      @members_list = members_list
 
       # some helper methods for working with our derived combined audio file(s)
       @combined_audio_derivatives = CombinedAudioDerivatives.new(work)
     end
 
-    # Cache the total list of published members, in other methods we'll search
-    # through this in-memory to get members for various spots on the page.
-    def all_members
-      @all_members ||= begin
-        members = work.members.includes(:leaf_representative)
-        unless can_see_unpublished_records?
-           members = members.where(published: true)
-        end
-        members.order(:position).to_a
-      end
-    end
-
     def file_list_members
-      @file_list_members ||= all_members.select do |m|
+      @file_list_members ||= members_list.select do |m|
          !m.leaf_representative&.content_type&.start_with?("audio/") && # exclude audio
          !m.try(:role_portrait?)  # exclude portrait role
        end
     end
 
     def audio_members
-      @audio_members ||= all_members.select { |m| m.asset? && m.leaf_representative&.content_type&.start_with?("audio/") }
+      @audio_members ||= members_list.select { |m| m.asset? && m.leaf_representative&.content_type&.start_with?("audio/") }
     end
 
     # An array of start times for each audio member.
