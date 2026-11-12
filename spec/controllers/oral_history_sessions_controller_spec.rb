@@ -43,7 +43,7 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       expect(controller.current_patron).to eq patron
       expect(response.cookies["remember_patron_token"]).to be_present
 
-      expect(response).to redirect_to(oral_history_requests_path)
+      expect(response).to redirect_to(patron_account_path)
     end
 
     it "confirms an unconfirmed patron" do

@@ -46,11 +46,11 @@ describe "Login with Oral Histories magic link", queue_adapter: :inline do
     end
 
     # logout
-    visit oral_history_requests_path
+    visit patron_account_path
     click_on "Sign out"
     # make sure we're really signed out
     expect(page).to have_text("You have been signed out")
-    visit oral_history_requests_path
+    visit patron_account_path
     expect(page).not_to have_selector("h2", text: "Oral History Requests")
     expect(page).to have_content("Please fill out your email address, and you will be emailed a sign-in link")
   end

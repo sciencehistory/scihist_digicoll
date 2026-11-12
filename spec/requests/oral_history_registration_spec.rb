@@ -111,7 +111,7 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
 
     it "ignores a non-local return_to" do
       get login_oral_history_session_path(token, return_to: "//evil.example.com/")
-      expect(response).to redirect_to(oral_history_requests_path)
+      expect(response).to redirect_to(patron_account_path)
     end
   end
 end

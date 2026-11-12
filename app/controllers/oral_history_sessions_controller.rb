@@ -13,7 +13,7 @@ class OralHistorySessionsController < ApplicationController
       request.env["devise.skip_timeout"] = true
       patron.remember_me = true
       sign_in(:patron, patron)
-      redirect_to (safe_return_to || oral_history_requests_path), allow_other_host: false
+      redirect_to (safe_return_to || patron_account_path), allow_other_host: false
     else
       # invalid/expired/missing token
       redirect_to new_oral_history_session_path, flash: { auto_link_message: "Sorry, your link has expired or is not valid. Please enter your email, and we'll send you a new one."}
