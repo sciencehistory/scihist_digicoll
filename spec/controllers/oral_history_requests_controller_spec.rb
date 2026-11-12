@@ -114,7 +114,7 @@ describe OralHistoryRequestsController, type: :controller do
       it "redirects to dashboard" do
         get :new, params: { work_friendlier_id: work.friendlier_id }
 
-        expect(response).to redirect_to(oral_history_requests_path)
+        expect(response).to redirect_to(patron_account_path)
         expect(flash[:success]).to match /You have already requested this Oral History/
         expect(Honeybadger.get_context[:patron_email]).to eq patron.email
       end
@@ -246,7 +246,7 @@ describe OralHistoryRequestsController, type: :controller do
               post :create, params: full_create_params
             }.not_to have_enqueued_job
 
-            expect(response).to redirect_to(oral_history_requests_path)
+            expect(response).to redirect_to(patron_account_path)
             expect(flash[:success]).to match /You have already requested this Oral History/
             expect(Honeybadger.get_context[:patron_email]).to eq full_create_params[:patron_email]
           end
