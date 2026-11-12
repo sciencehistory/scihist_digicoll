@@ -362,7 +362,7 @@ RSpec.describe Admin::WorksController, :logged_in_user, type: :controller, queue
         expect(oral_history.members.map(&:stored?)).to match([true, true])
         put :create_combined_audio_derivatives, params: { id: oral_history.friendlier_id }
         expect(response).to redirect_to(admin_work_path(oral_history, anchor: "tab=nav-oral-histories"))
-        expect(CreateCombinedAudioDerivativesJob).to have_been_enqueued
+        expect(EnsureCombinedAudioDerivativeJob).to have_been_enqueued.with(oral_history, force: true)
       end
     end
 

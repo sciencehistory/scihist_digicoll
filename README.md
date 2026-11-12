@@ -335,9 +335,9 @@ Or to force-create DZI for specific assets named by friendlier_id:
 
     ./bin/rake scihist:create_dzi_for[11tdi3v,2eh2i28]
 
-Another exception is combined audio derivatives for oral histories. To create those (lazily):
+Another exception is combined audio derivatives for oral histories. To enqueue jobs to create, fix or delete those where needed (lazily, suitable for running nightly):
 
-    ./bin/rake rake scihist:create_full_length_audio_derivatives
+    ./bin/rake scihist:oral_history:ensure_combined_audio_derivatives
 
 ### Dev/test solr
 
