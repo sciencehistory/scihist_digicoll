@@ -72,7 +72,7 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
   end
 
   describe "existing unconfirmed patron" do
-    let!(:patron) { create(:patron, email: email, name: "Original") }
+    let!(:patron) { create(:patron, :unconfirmed, email: email, name: "Original") }
 
     it "sends registration email without changing stored details" do
       expect {
@@ -85,7 +85,7 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
   end
 
   describe "existing confirmed patron" do
-    let!(:patron) { create(:patron, email: email, name: "Original", confirmed_at: Time.current) }
+    let!(:patron) { create(:patron, email: email, name: "Original") }
 
     it "sends a sign-in link without changing stored details" do
       expect {
