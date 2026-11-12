@@ -141,4 +141,31 @@ describe OhTranscriptChunkerJob, type: :job do
       end
     end
   end
+
+  describe "reuse_embeddings with delete_existing" do
+    let(:work) { create(:oral_history_work, :published) }
+    let(:real_embedding) { [0.5] * 3072 }
+
+    before do
+      oral_history_content.oral_history_chunks.create!(attributes_for(:oral_history_chunk, text: "real text", embedding: real_embedding))
+      oral_history_content.oral_history_chunks.create!(attributes_for(:oral_history_chunk, text: "fake text"))
+    end
+
+    it "passes existing real embeddings by text to chunker" do
+      expect(mock_chunker_class).to receive(:new) do |**kwargs|
+        expect(kwargs[:existing_embeddings].keys).to eq ["real text"]
+        expect(kwargs[:existing_embeddings]["real text"].to_a).to eq real_embedding
+        mock_chunker
+      end
+
+      described_class.perform_now(oral_history_content: oral_history_content, delete_existing: true)
+      expect(oral_history_content.oral_history_chunks.reload).to be_empty
+    end
+
+    it "passes none with reuse_embeddings: false" do
+      expect(mock_chunker_class).to receive(:new).with(hash_including(existing_embeddings: {})).and_return(mock_chunker)
+
+      described_class.perform_now(oral_history_content: oral_history_content, delete_existing: true, reuse_embeddings: false)
+    end
+  end
 end
