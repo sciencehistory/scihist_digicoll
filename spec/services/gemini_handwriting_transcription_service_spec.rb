@@ -216,6 +216,38 @@ describe GeminiHandwritingTranscriptionService do
       expect(work.reload.handwriting_transcription_request.status).to eq("requested")
     end
 
+    describe "provenance" do
+      before do
+        allow(service.send(:gemini_client)).to receive(:post).and_return(gemini_response(text: "{}"))
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("SOURCE_VERSION").and_return(source_version)
+      end
+
+      describe "with SOURCE_VERSION set" do
+        let(:source_version) { "mock_git_sha" }
+
+        it "records the Gemini model and the source version" do
+          service.send(:request_transcription, staged_images)
+
+          request = work.reload.handwriting_transcription_request
+          expect(request.gemini_model).to eq "gemini-test-model"
+          expect(request.source_version).to eq "mock_git_sha"
+        end
+      end
+
+      describe "without SOURCE_VERSION" do
+        let(:source_version) { nil }
+
+        it "records the Gemini model, and leaves out the source version" do
+          service.send(:request_transcription, staged_images)
+
+          request = work.reload.handwriting_transcription_request
+          expect(request.gemini_model).to eq "gemini-test-model"
+          expect(request.attributes).not_to have_key("source_version")
+        end
+      end
+    end
+
     it "raises AdapterError when Gemini can't be reached at all" do
       allow(service.send(:gemini_client)).to receive(:post).and_raise(HTTP::TimeoutError.new("timed out"))
 

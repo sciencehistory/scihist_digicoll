@@ -21,6 +21,11 @@ class Work
     attr_json :error, :string
     attr_json :start_time, :datetime
 
+    # Provenance, recorded when the request is sent: the Gemini model we asked, and the git
+    # sha of our code that asked (Heroku's SOURCE_VERSION; not recorded where it's unset, as in dev).
+    attr_json :gemini_model, :string
+    attr_json :source_version, :string
+
     def success?
       status == "success"
     end
