@@ -90,7 +90,8 @@ Rails.application.routes.draw do
   # By-request oral history stuff
   get "works/:work_friendlier_id/request_oral_history", to: "oral_history_requests#new", as: 'oral_history_request_form'
   post "request_oral_history", to: "oral_history_requests#create", as: 'request_oral_history'
-  get "oral_history_requests", to: "oral_history_requests#index", as: "oral_history_requests"
+  get "patron-account", to: "oral_history_requests#index", as: "patron_account"
+  get "oral_history_requests", to: redirect("/patron-account", status: 301)
   get "oral_history_requests/:id", to: "oral_history_requests#show", as: "oral_history_request"
   get "works/:work_friendlier_id/register_oral_history", to: "oral_history_registrations#new", as: 'oral_history_registration_form'
   post "register_oral_history", to: "oral_history_registrations#create", as: 'register_oral_history'
