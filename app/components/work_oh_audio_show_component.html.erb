@@ -6,6 +6,12 @@
 
 <div class="work-show work-show-audio" data-role="audio-playlist-wrapper" itemscope itemtype="http://schema.org/CreativeWork" class="row">
 
+  <% if can_view_only_as_registered_patron? %>
+    <div class="alert alert-warning  full-x-bleed border-start-0 border-end-0" role="alert" data-role="registered-patron-access">
+      <i class="fa fa-exclamation-circle text-secondary me-1" aria-hidden="true"></i>
+      This interview may only be accessed online by registered patrons of the Science History Institute Digital Collections. You are registered as <strong><%= current_patron.name %> &lt;<%= current_patron.email %>&gt;</strong>. Please do not share or distribute.
+    </div>
+  <% end %>
 
   <section class="top-matter">
     <% if portrait_asset.present? %>
@@ -170,7 +176,7 @@
         <% end %>
 
         <div class="tab-pane downloads" id="ohDownloads" role="tabpanel" aria-labelledby="ohDownloadsTab">
-          <%= render OralHistory::DownloadsListComponent.new(work: work, members_list: all_members) %>
+          <%= render OralHistory::DownloadsListComponent.new(work: work, members_list: viewable_members) %>
         </div>
       </div>
   </div>

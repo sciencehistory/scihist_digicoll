@@ -7,6 +7,7 @@
       <% file_list_members.each_with_index do |member, index| %>
         <%= render FileListItemComponent.new(member,
               index: index,
+              show_private_badge: can_see_unpublished_records?,
               view_link_attributes: {
                 'data-analytics-category' => 'Work',
                 'data-analytics-action' => "view_oral_history_transcript_pdf",
@@ -99,13 +100,13 @@
             <div class="start-time">
               starts at <%= format_ohms_timestamp(start_time_for(track))%>
             </div>
-            <% unless track.published? %>
+            <% if !track.published? && can_see_unpublished_records? %>
               <span title="Private" class="badge text-bg-warning">Private</span>
             <% end %>
           </a>
         <% else %>
             <%= track.title %>
-            <% unless track.published? %>
+            <% if !track.published? && can_see_unpublished_records? %>
               <span title="Private" class="badge text-bg-warning">Private</span>
             <% end %>
         <% end %>
