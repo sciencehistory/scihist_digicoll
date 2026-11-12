@@ -5,7 +5,7 @@
 # Staff-facing actions are in app/controllers/admin/oral_history_requests_controller.rb
 class OralHistoryRequestsController < ApplicationController
 
-  before_action :add_requester_email_to_honeybadger_context
+  before_action :add_patron_email_to_honeybadger_context
 
   # message is publicly visible please
   class AccessDenied < StandardError
@@ -24,12 +24,12 @@ class OralHistoryRequestsController < ApplicationController
   #
   # List of this user's oral history requests. Protected from login.
   def index
-    unless current_oral_history_requester.present?
+    unless current_patron.present?
       raise AccessDenied.new
     end
 
 
-    all_requests = current_oral_history_requester.oral_history_requests.
+    all_requests = current_patron.oral_history_requests.
       includes(:work => [:leaf_representative, { :oral_history_content => :interviewee_biographies } ]).
       order(created_at: :asc).
       strict_loading
@@ -55,7 +55,7 @@ class OralHistoryRequestsController < ApplicationController
     @access_request = OralHistoryRequest.find(params[:id])
 
     # If they can't see it for any reason, just 404 as if it was not there.
-    unless current_oral_history_requester == @access_request.oral_history_requester &&
+    unless current_patron == @access_request.patron &&
           (@access_request.delivery_status_approved? || @access_request.delivery_status_automatic?)
       raise ActionController::RoutingError.new("Not found.")
     end
@@ -81,8 +81,8 @@ class OralHistoryRequestsController < ApplicationController
 
     # In new mode, check to see if the are logged in, and request already exists,
     # just send them to their requests!
-    if current_oral_history_requester &&
-          OralHistoryRequest.where(work: @work, oral_history_requester: current_oral_history_requester).exists?
+    if current_patron &&
+          OralHistoryRequest.where(work: @work, patron: current_patron).exists?
 
         return_status(
           oral_history_requests_path,
@@ -124,7 +124,7 @@ class OralHistoryRequestsController < ApplicationController
       # per specs from OH team.
       OralHistoryDeliveryMailer.with(request: @oral_history_request).approved_with_session_link_email.deliver_later
 
-      if current_oral_history_requester.present? && current_oral_history_requester.email == @oral_history_request.requester_email
+      if current_patron.present? && current_patron.email == @oral_history_request.patron_email
         return_status(oral_history_requests_path,
           "The files you requested from '#{@work.title}' are immediately available and can be viewed now",
           add_view_requests_link: true
@@ -143,7 +143,7 @@ class OralHistoryRequestsController < ApplicationController
 
       return_status(
         work_path(@work.friendlier_id),
-        "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.requester_email}"
+        "Thank you for your interest. Your request will be reviewed, usually within 3 business days, and we'll email you at #{@oral_history_request.patron_email}"
       )
     end
   end
@@ -184,21 +184,21 @@ private
 
     # note `create_or_find_by` is the version with fewer race conditions, to make
     # this record if it doesn't already exist.
-    requester_email = (OralHistoryRequester.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
+    patron = (Patron.create_or_find_by!(email: patron_email_param) if patron_email_param.present?)
 
 
     # Check to see if request already exists,
-    if requester_email && OralHistoryRequest.where(work: @work, oral_history_requester: requester_email).exists?
+    if patron && OralHistoryRequest.where(work: @work, patron: patron).exists?
       # If they are already authenticated, we can just direct them there,
       # otherwise we send them a sign-in link
-      if current_oral_history_requester.present? && current_oral_history_requester.email == requester_email.email
+      if current_patron.present? && current_patron.email == patron.email
         return_status(
           oral_history_requests_path,
           "You have already requested this Oral History: #{@work.title}",
           add_view_requests_link: true
         )
       else
-        OhSessionMailer.with(requester_email: requester_email).link_email.deliver_later
+        OhSessionMailer.with(patron: patron).link_email.deliver_later
         return_status(
           work_path(@work.friendlier_id),
           "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests."
@@ -212,7 +212,7 @@ private
     @oral_history_request = OralHistoryRequest.new(
       oral_history_request_params.merge(
         work: @work,
-        oral_history_requester: requester_email
+        patron: patron
       )
     )
 
@@ -243,20 +243,20 @@ private
     work
   end
 
-  def current_oral_history_requester
-    unless defined?(@current_oral_history_requester)
-      @current_oral_history_requester = OralHistorySessionsController.fetch_oral_history_current_requester(request: request, reset_expiration_window: true)
+  def current_patron
+    unless defined?(@current_patron)
+      @current_patron = OralHistorySessionsController.fetch_current_patron(request: request, reset_expiration_window: true)
     end
-    @current_oral_history_requester
+    @current_patron
   end
-  helper_method :current_oral_history_requester
+  helper_method :current_patron
 
 
-  def add_requester_email_to_honeybadger_context
-    # Get this info either from the session (via current_oral_history_requester) or from the :patron_email parameter.
+  def add_patron_email_to_honeybadger_context
+    # Get this info either from the session (via current_patron) or from the :patron_email parameter.
     # Note: this method has the side effect of resetting the expiration window of the OH request.
-    email = current_oral_history_requester&.email || params[:patron_email]
-    Honeybadger.context({ oral_history_requester_email: email  })
+    email = current_patron&.email || params[:patron_email]
+    Honeybadger.context({ patron_email: email })
   end
 
 end
