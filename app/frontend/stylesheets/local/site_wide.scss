@@ -379,3 +379,16 @@ hr.brand {
 .alert-danger {
   color: $body-color !important;
 }
+
+.full-x-bleed {
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: $grid-gutter-width * 0.5;
+  padding-right: $grid-gutter-width * 0.5;
+
+  @include media-breakpoint-up(md) {
+    padding-left: $grid-gutter-width;
+    padding-right: $grid-gutter-width;
+  }
+
+}
