@@ -61,11 +61,11 @@ describe "Oral history work page for patrons", type: :request do
       expect_file_list_page
     end
 
-    it "shows audio page to patron with approved request" do
+    it "shows file list even to patron with approved request" do
       create(:oral_history_request, patron: patron, work: work, delivery_status: "approved")
       sign_in patron
       get work_path(work.friendlier_id)
-      expect_audio_page_with_by_request_files
+      expect(page.at_css(".work-show-file-list")).to be_present
     end
   end
 end
