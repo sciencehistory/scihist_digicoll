@@ -1,7 +1,7 @@
 <div class="shi-breadcrumbs">
   <ul class="shi-breadcrumbs__list">
     <li class="shi-breadcrumbs__list-item">
-      <%= link_to "Oral History Requests", oral_history_requests_path, class: "shi-breadcrumbs__link" %>
+      <%= link_to "Oral History Requests", patron_account_path, class: "shi-breadcrumbs__link" %>
     </li>
   </ul>
 </div>
@@ -11,7 +11,7 @@
   <div class="oral-history-request-dashboard-header-block">
     <div class="flex-grow-1">
       <h2 class="brand-alt-h2">
-        <%= link_to "Oral History Requests", oral_history_requests_path %>
+        <%= link_to "Oral History Requests", patron_account_path %>
       </h2>
       <p class="requester-email">
         <%= current_patron.email %>

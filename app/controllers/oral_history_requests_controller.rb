@@ -20,7 +20,7 @@ class OralHistoryRequestsController < ApplicationController
     redirect_to new_oral_history_session_path, flash: { auto_link_message: exception.message }
   end
 
-  # GET /oral_history_requests
+  # GET /patron-account
   #
   # List of this user's oral history requests. Protected from login.
   def index
@@ -91,7 +91,7 @@ class OralHistoryRequestsController < ApplicationController
           OralHistoryRequest.where(work: @work, patron: current_patron).exists?
 
         return_status(
-          oral_history_requests_path,
+          patron_account_path,
           "You have already requested this Oral History: #{@work.title}",
           add_view_requests_link: true
         )
@@ -162,7 +162,7 @@ private
           <p>#{ERB::Util.html_escape message}</p>
           <p>
             <i class="fa fa-external-link" aria-hidden="true"></i>
-            <a href="#{oral_history_requests_path}" target="_blank">View your requests here</a>
+            <a href="#{patron_account_path}" target="_blank">View your requests here</a>
           </p>
         EOS
       end
@@ -200,7 +200,7 @@ private
       # otherwise we send them a sign-in link
       if current_patron.present?
         return_status(
-          oral_history_requests_path,
+          patron_account_path,
           "You have already requested this Oral History: #{@work.title}",
           add_view_requests_link: true
         )
