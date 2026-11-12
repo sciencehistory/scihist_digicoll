@@ -136,44 +136,15 @@ describe OralHistoryRequestsController, type: :controller do
 
     describe "email functionality" do
       let(:work) { create(:oral_history_work, :available_by_request)}
-      describe "automatic delivery" do
+      describe "automatic_request work" do
         let(:work) { create(:oral_history_work, :available_by_request, availability_mode: :automatic_request)}
 
-        describe "already logged in" do
-          let(:patron) { create(:patron, email: full_create_params[:patron_email]) }
+        it "redirects to registration, creating nothing" do
+          expect {
+            post :create, params: full_create_params
+          }.not_to change { OralHistoryRequest.count + Patron.count }
 
-          before do
-            allow(controller).to receive(:current_patron).and_return(patron)
-          end
-
-          it "redirects to dashboard" do
-            expect {
-              post :create, params: full_create_params
-            }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
-                expect(class_name).to eq "OralHistoryDeliveryMailer"
-                expect(action).to eq "approved_with_session_link_email"
-            }
-
-            expect(response).to redirect_to(oral_history_requests_path)
-            expect(flash[:success]).to match /The files you requested from '#{Regexp.escape work.title}' are immediately available./
-            expect(Honeybadger.get_context[:patron_email]).to eq patron.email
-
-          end
-        end
-
-        describe "not already logged in" do
-          it "emails a link" do
-            expect {
-              post :create, params: full_create_params
-            }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
-                expect(class_name).to eq "OralHistoryDeliveryMailer"
-                expect(action).to eq "approved_with_session_link_email"
-            }
-
-            expect(Honeybadger.get_context[:patron_email]).to eq full_create_params[:patron_email]
-            expect(response).to redirect_to(work_path(work.friendlier_id))
-            expect(flash[:success]).to match /The files you have requested are immediately available. We've sent an email to #{Regexp.escape full_create_params[:patron_email]} with a sign-in link/
-          end
+          expect(response).to redirect_to(oral_history_registration_form_path(work.friendlier_id))
         end
       end
 
@@ -257,7 +228,7 @@ describe OralHistoryRequestsController, type: :controller do
               post :create, params: full_create_params
             }.to have_enqueued_job(ActionMailer::MailDeliveryJob).with { |class_name, action|
               expect(class_name).to eq "OhSessionMailer"
-              expect(action).to eq "link_email"
+              expect(action).to eq "sign_in_email"
             }
 
             expect(response).to redirect_to(work_path(work.friendlier_id))

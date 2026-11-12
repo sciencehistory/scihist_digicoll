@@ -75,7 +75,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   protected
 
   def sample_patron
-    Patron.create_or_find_by!(email: "smith@example.com")
+    Patron.create_or_find_by!(email: "smith@example.com") { |p| p.name = "Test Patron" }
   end
 
   def sample_work_title(file_type:)

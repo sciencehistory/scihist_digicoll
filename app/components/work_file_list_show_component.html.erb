@@ -34,7 +34,7 @@
 
           <% if @work.oral_history_content&.availability_automatic_request? %>
             <p>
-              Fill out a brief form to <span class="text-danger">receive immediate access</span> to these files.
+              <span class="text-danger">Register and confirm your email address to receive immediate access to these files.</span>
             </p>
           <% else %>
             <p>Fill out a brief form and a staff member will review your request for these files.
@@ -48,7 +48,7 @@
 
           <div class="text-nowrap mt-4 mb-3 text-center">
             <%= link_to request_button_name,
-              oral_history_request_form_path(@work.friendlier_id),
+              request_button_path,
               class: "btn btn-brand-main mb-2",
               id: "oh-request-trigger",
               data: {
