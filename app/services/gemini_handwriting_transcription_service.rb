@@ -212,8 +212,12 @@ class GeminiHandwritingTranscriptionService
     envelope = JSON.parse(response.body.to_s)
     text = envelope.dig("candidates", 0, "content", "parts", 0, "text")
 
+    # Gemini may decline to transcribe -- for instance, if it blocks the prompt, it sends no
+    # candidates at all. Report its reason, if any, and the (small) response itself.
     if text.blank?
-      msg = "Gemini returned an empty response"
+      reason = envelope.dig("candidates", 0, "finishReason") || envelope.dig("promptFeedback", "blockReason")
+      msg = "Gemini returned no transcript (reason: #{reason || 'none given'}). " \
+        "Response: #{JSON.generate(envelope).truncate(1000)}"
       update_handwriting_transcription_request(status: 'failure', error: msg)
       raise InvalidResponseError, msg
     end
