@@ -314,6 +314,7 @@ class GeminiHandwritingTranscriptionService
       members.
       includes(:leaf_representative).
       where(type: Asset.sti_name).
+      where("role is null").
       order(:position).
       select do |asset|
         representative = asset.leaf_representative
