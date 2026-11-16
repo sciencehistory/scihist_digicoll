@@ -34,11 +34,11 @@ class OralHistorySessionsController < ApplicationController
     patron = Patron.find_by(email: email_param)
 
     if patron.present?
-      OhSessionMailer.with(patron: patron).sign_in_email.deliver_later
+      OhSessionMailer.with(patron: patron, return_to: safe_return_to).sign_in_email.deliver_later
 
-      redirect_to helpers.root_path, notice: "A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}"
+      redirect_to (safe_return_to || helpers.root_path), notice: "A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}"
     else
-      redirect_to new_oral_history_session_path, flash: { auto_link_message: "Sorry, we have no email on record for #{params[:email]}. Please check your entry."}
+      redirect_to new_oral_history_session_path(return_to: safe_return_to), flash: { auto_link_message: "Sorry, we have no email on record for #{params[:email]}. Please check your entry."}
     end
   end
 
@@ -62,5 +62,6 @@ class OralHistorySessionsController < ApplicationController
     path = params[:return_to]
     path if path.is_a?(String) && path.start_with?("/") && !path.start_with?("//") && !path.include?("\\")
   end
+  helper_method :safe_return_to
 
 end
