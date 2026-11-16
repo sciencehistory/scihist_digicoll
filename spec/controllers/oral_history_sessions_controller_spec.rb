@@ -24,6 +24,14 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
       expect(email_delivery.to).to eq [patron.email]
     end
 
+    it "redirects to return_to param" do
+      get :create, params: { email: patron.email, return_to: "/works/abc" }
+
+      expect(response).to redirect_to("/works/abc")
+      link = Nokogiri::HTML(ActionMailer::Base.deliveries.first.body.decoded).at_css("a[data-auto-login-link]")["href"]
+      expect(Rack::Utils.parse_query(URI(link).query)["return_to"]).to eq "/works/abc"
+    end
+
     describe "for unknown email" do
       it "redirects to email entry form" do
         get :create, params: { email: "no_such_email@example.com" }
