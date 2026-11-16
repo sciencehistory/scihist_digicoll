@@ -238,12 +238,12 @@ describe GeminiHandwritingTranscriptionService do
       describe "without SOURCE_VERSION" do
         let(:source_version) { nil }
 
-        it "records the Gemini model, and leaves out the source version" do
+        it "records the Gemini model, and no source version" do
           service.send(:request_transcription, staged_images)
 
           request = work.reload.handwriting_transcription_request
           expect(request.gemini_model).to eq "gemini-test-model"
-          expect(request.attributes).not_to have_key("source_version")
+          expect(request.source_version).to be_nil
         end
       end
     end

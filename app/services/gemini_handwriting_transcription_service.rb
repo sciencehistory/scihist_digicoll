@@ -148,7 +148,9 @@ class GeminiHandwritingTranscriptionService
     model = ScihistDigicoll::Env.lookup("gemini_model")
 
     update_handwriting_transcription_request(
-      **{ status: 'requested', gemini_model: model, source_version: ENV['SOURCE_VERSION'].presence }.compact
+      status: 'requested',
+      gemini_model: model,
+      source_version: ENV['SOURCE_VERSION'].presence
     )
 
     gemini_client.post(
