@@ -1,0 +1,16 @@
+<%# html fragment for JS replacement in modal, after emailing a sign-in link and code %>
+<%# locals: (message:, return_to: nil) %>
+
+<%= render Blacklight::System::ModalComponent.new do |component| %>
+  <% component.with_title do %>
+    Check Your Email
+  <% end %>
+
+  <% component.with_body do %>
+    <div class="modal-body">
+      <div class="alert alert-success" role="alert"><%= message %></div>
+
+      <%= render "oral_history_sessions/code_form", return_to: return_to %>
+    </div>
+  <% end %>
+<% end %>

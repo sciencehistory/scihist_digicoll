@@ -102,6 +102,8 @@ Rails.application.routes.draw do
   resource :oral_history_session, only: [:new, :create, :destroy] do
     member do
       get 'login/:token', action: :login, as: :login
+      get 'code', action: :code_form, as: :code
+      post 'code', action: :verify_code
     end
   end
 

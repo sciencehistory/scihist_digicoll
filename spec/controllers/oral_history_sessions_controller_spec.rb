@@ -7,8 +7,8 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
     it "sends a login link" do
       get :create, params: { email: patron.email }
 
-      expect(response).to redirect_to root_path
-      expect(flash[:notice]).to eq "A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}"
+      expect(response).to redirect_to code_oral_history_session_path
+      expect(flash[:success]).to eq "We've emailed a sign-in link and code to #{patron.email}."
 
       email_delivery = ActionMailer::Base.deliveries.first
       expect(email_delivery.to).to eq [patron.email]
@@ -17,17 +17,17 @@ describe OralHistorySessionsController, type: :controller, queue_adapter: :inlin
     it "normalizes entry to send a login link" do
       get :create, params: { email: " #{patron.email.upcase} " }
 
-      expect(response).to redirect_to root_path
-      expect(flash[:notice]).to eq "A sign-in link for Science History Institute Oral Histories has been emailed to #{patron.email}"
+      expect(response).to redirect_to code_oral_history_session_path
+      expect(flash[:success]).to eq "We've emailed a sign-in link and code to #{patron.email}."
 
       email_delivery = ActionMailer::Base.deliveries.first
       expect(email_delivery.to).to eq [patron.email]
     end
 
-    it "redirects to return_to param" do
+    it "passes return_to param to code form and email link" do
       get :create, params: { email: patron.email, return_to: "/works/abc" }
 
-      expect(response).to redirect_to("/works/abc")
+      expect(response).to redirect_to(code_oral_history_session_path(return_to: "/works/abc"))
       link = Nokogiri::HTML(ActionMailer::Base.deliveries.first.body.decoded).at_css("a[data-auto-login-link]")["href"]
       expect(Rack::Utils.parse_query(URI(link).query)["return_to"]).to eq "/works/abc"
     end
