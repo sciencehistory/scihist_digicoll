@@ -285,7 +285,8 @@ class GeminiHandwritingTranscriptionService
     # Each asset save reindexes its parent, which is our in-memory `work`. Earlier saves of
     # the work (such as status updates) may have loaded and cached its members, without the
     # new transcripts -- and that stale list would be what gets indexed.
-    # So reload the work's assets here.
+    # So we clear the in-memory cache for work.members.
+    # See https://api.rubyonrails.org/classes/ActiveRecord/Associations/CollectionProxy.html#method-i-reset
     work.members.reset
 
     Kithe::Indexable.index_with(batching: true) do
