@@ -27,7 +27,8 @@ class OralHistorySessionsController < ApplicationController
   #
   # Form to request an emailed link
   def new
-
+    # fix a stale signed-in flag, eg after session_token rotation; patron-only pages redirect here
+    cookies.delete(Patron::SIGNED_IN_FLAG_COOKIE) unless current_patron
   end
 
   # POST /oral_history_session/create

@@ -82,6 +82,16 @@ describe "Patron login sessions", type: :request do
     end
   end
 
+  it "sets JS-readable signed-in flag cookie, cleared on sign out" do
+    get login_oral_history_session_path(token)
+    expect(cookies[Patron::SIGNED_IN_FLAG_COOKIE]).to eq "1"
+    flag_set_cookie = Array(response.headers["Set-Cookie"]).find { |c| c.start_with?("#{Patron::SIGNED_IN_FLAG_COOKIE}=") }
+    expect(flag_set_cookie).not_to match(/httponly/i)
+
+    delete oral_history_session_path
+    expect(cookies[Patron::SIGNED_IN_FLAG_COOKIE]).to be_blank
+  end
+
   it "rotating session_token logs out everywhere" do
     get login_oral_history_session_path(token)
     patron.update!(session_token: SecureRandom.uuid)

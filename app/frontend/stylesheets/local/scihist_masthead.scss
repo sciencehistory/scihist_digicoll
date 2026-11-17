@@ -62,7 +62,6 @@
 
     .shi-top-bar {
         width: 100%;
-        padding: 0 4em;
         background-color: $shi-blackish;
         color: #fff;
         overflow: hidden
@@ -74,10 +73,9 @@
     }
 
     .shi-top-bar__container {
-        width: 100%;
+        // same max-width and side margins as main content, so edges line up
+        @include shi-full-width-inner-mixin;
         height: 100%;
-        max-width: 1280px;
-        margin: 0 auto;
         position: relative;
         display: flex;
         justify-content: flex-end;
@@ -146,13 +144,25 @@
             display: none;
         }
 
-        .shi-top-bar {
-            padding-left: 1rem;
-            padding-right: 1rem;
+        // patron status left of hours, wrapping above it only if too narrow
+        .shi-top-bar__container {
+            flex-wrap: wrap;
+        }
+
+        // patron status and hours split the row 50/50, both centered
+        .shi-top-bar__patron {
+            flex: 1 1 0;
+            text-align: center;
+
+            .shi-top-bar-nav__item {
+                padding-left: 0;
+                padding-right: 0;
+            }
         }
 
         .shi-top-bar .shi-top-bar__hours {
-            width: 100%;
+            flex: 1 1 0;
+            align-self: stretch;
             font-size: .89375em;
             padding: .7692307692em 0;
             line-height: 146%;
@@ -163,7 +173,6 @@
         .shi-top-bar .shi-top-bar__hours::before {
             top: 0;
             bottom: 0;
-            left: -9999px
         }
     }
 
