@@ -19,7 +19,7 @@ describe GeminiContentRequestBuilder do
       body = builder.call
 
       expect(body[:system_instruction][:parts].first[:text])
-        .to include(work_description)
+        .to include(%Q{You are provided with some context about the images, as follows: "#{work_description}"})
 
       expect(
         body.dig(:generation_config, :response_schema, :properties, :pages, :items, :required)
