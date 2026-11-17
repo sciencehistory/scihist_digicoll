@@ -9,6 +9,8 @@
   <%= link_to "Confirm and view the oral history", login_magic_link(return_to: work_url(@work.friendlier_id, only_path: true)), data: { auto_login_link: true } %>
 </p>
 
+<%= render "sign_in_code", code: @sign_in_code %>
+
 <p>
   Once confirmed, you'll have access to <%= registered_oral_history_count %> oral histories available to registered patrons.
 </p>

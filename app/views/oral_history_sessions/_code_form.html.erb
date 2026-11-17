@@ -1,0 +1,20 @@
+<%# locals: (return_to: nil) %>
+<%# a plain form, not blacklight modal, so success is a full page redirect %>
+<%= form_tag code_oral_history_session_path, method: :post, class: "mb-3" do %>
+  <%= hidden_field_tag :return_to, return_to if return_to %>
+
+  <div class="mb-3">
+    <%= label_tag :code, "Sign-in code from the email", class: "form-label" %>
+    <%= text_field_tag :code, nil,
+          class: "form-control", required: true, size: 10,
+          autocomplete: "one-time-code", inputmode: "numeric",
+          data: { role: "sign-in-code-input" } %>
+  </div>
+
+  <%= submit_tag "Sign in", class: "btn btn-brand-main" %>
+<% end %>
+
+<p class="small">
+  Or click the link in the email. Didn't get it? Check your spam folder, or
+  <%= link_to "send a new email", new_oral_history_session_path(return_to: return_to) %>.
+</p>

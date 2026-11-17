@@ -47,7 +47,7 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
   describe "new patron" do
     it "creates unconfirmed patron, and emailed link confirms and returns to work", queue_adapter: :inline do
       post register_oral_history_path, params: registration_params
-      expect(response).to redirect_to(work_path(work.friendlier_id))
+      expect(response).to redirect_to(code_oral_history_session_path(return_to: work_path(work.friendlier_id)))
       expect(flash[:success]).to include("We've sent an email to #{email}")
 
       patron = Patron.find_by!(email: email)

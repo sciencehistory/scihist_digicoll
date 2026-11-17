@@ -15,6 +15,8 @@ class Patron < ApplicationRecord
 
   LOGIN_LINK_EXPIRE = 7.days
   SESSION_EXPIRE_PERIOD = 30.days
+  SIGN_IN_CODE_EXPIRE = 15.minutes
+  SIGN_IN_CODE_MAX_FAILED_ATTEMPTS = 5
 
   # Login is via magic link in OralHistorySessionsController, devise handles the session.
   devise :rememberable, :timeoutable,
@@ -63,6 +65,42 @@ class Patron < ApplicationRecord
 
   def confirm!
     update!(confirmed_at: Time.current)
+  end
+
+  # Emailed alternative to the magic link. Replaces any earlier code; only a digest is stored.
+  # @return [String] 6-digit code
+  def generate_sign_in_code!
+    code = format("%06d", SecureRandom.random_number(1_000_000))
+    update_columns(
+      sign_in_code_digest: self.class.sign_in_code_digest(code),
+      sign_in_code_sent_at: Time.current,
+      sign_in_code_failed_attempts: 0
+    )
+    code
+  end
+
+  # Single-use: consumes the code on success, counts failures, and discards the code
+  # after too many.
+  # @return [Boolean]
+  def consume_sign_in_code!(code)
+    code = code.to_s.gsub(/\D/, "")
+    return false if code.length != 6 || sign_in_code_sent_at.nil? || sign_in_code_sent_at < SIGN_IN_CODE_EXPIRE.ago
+
+    # atomic, so only one concurrent request can consume it
+    consumed = self.class.where(id: id, sign_in_code_digest: self.class.sign_in_code_digest(code)).
+      update_all(sign_in_code_digest: nil, sign_in_code_sent_at: nil, sign_in_code_failed_attempts: 0) == 1
+    return true if consumed
+
+    self.class.where(id: id).update_counters(sign_in_code_failed_attempts: 1)
+    self.class.where(id: id).where("sign_in_code_failed_attempts >= ?", SIGN_IN_CODE_MAX_FAILED_ATTEMPTS).
+      update_all(sign_in_code_digest: nil, sign_in_code_sent_at: nil)
+    false
+  end
+
+  # HMAC with a server secret, so a leaked digest can't be brute-forced offline
+  def self.sign_in_code_digest(code)
+    key = Rails.application.key_generator.generate_key("patron sign-in code")
+    OpenSSL::HMAC.hexdigest("SHA256", key, code)
   end
 
   # No password, so devise session and remember-me cookies are validated against session_token;
