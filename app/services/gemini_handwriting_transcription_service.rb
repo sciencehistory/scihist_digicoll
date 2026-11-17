@@ -282,6 +282,12 @@ class GeminiHandwritingTranscriptionService
     pages_by_filename =
       pages.index_by { |page| page.fetch("filename") }
 
+    # Each asset save reindexes its parent, which is our in-memory `work`. Earlier saves of
+    # the work (such as status updates) may have loaded and cached its members, without the
+    # new transcripts -- and that stale list would be what gets indexed.
+    # So reload the work's assets here.
+    work.members.reset
+
     Kithe::Indexable.index_with(batching: true) do
       Asset.transaction do
         staged_images.each do |image|
