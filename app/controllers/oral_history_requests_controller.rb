@@ -4,8 +4,10 @@
 #
 # Staff-facing actions are in app/controllers/admin/oral_history_requests_controller.rb
 class OralHistoryRequestsController < ApplicationController
-
   before_action :add_patron_email_to_honeybadger_context
+
+  # full HTML pages for list of requests, and request delivery. just in case.
+  bot_challenge only: [:index, :show]
 
   # message is publicly visible please
   class AccessDenied < StandardError
