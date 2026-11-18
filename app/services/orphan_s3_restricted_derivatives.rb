@@ -54,7 +54,11 @@ class OrphanS3RestrictedDerivatives
           s3_iterator.log "Reported max #{max_reports} orphans. Not listing subsequent.\n"
         elsif orphans_found < max_reports
           @sample << s3_url_for_path(s3_path)
-          report_orphaned_derivative(asset_id, derivative_key, shrine_path, s3_path)
+          if combined_audio_derivative?(asset_id)
+            s3_iterator.log "orphaned combined audio derivative: #{bucket_name}: #{s3_path}"
+          else
+            report_orphaned_derivative(asset_id, derivative_key, shrine_path, s3_path)
+          end
           s3_iterator.log ""
         end
       end
@@ -107,8 +111,22 @@ class OrphanS3RestrictedDerivatives
     return [asset_pk, derivative_key, shrine_path]
   end
 
+  # Restricted combined audio sub-dir; otherwise its files look like orphaned Asset derivatives
+  def combined_audio_derivative?(first_part_of_s3_path)
+    first_part_of_s3_path == "combined_audio_derivatives"
+  end
+
+  # Compare shrine id, not URL, since restricted URLs are signed
+  def orphaned_combined_audio_derivative?(work_id, shrine_path)
+    deriv = Work.where(id: work_id).first&.oral_history_content&.combined_audio_m4a
+
+    !(deriv.present? && deriv.storage_key.to_sym == :restricted_combined_audio_derivatives &&
+      shrine_path.end_with?("/#{deriv.id}"))
+  end
+
   def orphaned?(asset_pk, derivative_key, shrine_path)
     return true unless asset_pk.present? && derivative_key.present?
+    return orphaned_combined_audio_derivative?(derivative_key, shrine_path) if combined_audio_derivative?(asset_pk)
     asset_exists = Kithe::Asset.where(id: asset_pk).where("file_data -> 'derivatives' -> ? ->> 'id' = ?", derivative_key, shrine_path).exists?
     ! asset_exists
   end

@@ -9,27 +9,22 @@ describe OralHistoryRequestsController, type: :controller do
     end
 
     describe "null values in delivery_status_changed_at" do
-      let!(:req_1) { create(:oral_history_request, delivery_status: "pending") }
-      let(:requester) { req_1.oral_history_requester }
-
-      let!(:req_2) { create(:oral_history_request, delivery_status: "approved",
-          oral_history_requester:requester) }
-      let!(:req_3) { create(:oral_history_request, delivery_status: "automatic",
-          oral_history_requester:requester) }
-      let!(:req_4) { create(:oral_history_request, delivery_status: "rejected",
-          oral_history_requester:requester) }
-      let!(:req_5) { create(:oral_history_request, delivery_status: "rejected",
-          oral_history_requester:requester) }
+      let(:patron) { create(:patron) }
 
       before do
-        allow(controller).to receive(:current_oral_history_requester).and_return(requester)
-        req_3.update(delivery_status_changed_at:nil)
-        req_4.update(delivery_status_changed_at:nil)
+        %w[pending approved rejected].each do |status|
+          create(:oral_history_request, patron:, delivery_status: status)
+        end
+        # before_save sets delivery_status_changed_at, so blank it afterwards
+        %w[automatic rejected].each do |status|
+          create(:oral_history_request, patron:, delivery_status: status).update!(delivery_status_changed_at: nil)
+        end
+        allow(controller).to receive(:current_patron).and_return(patron)
       end
 
       it "does not throw an error" do
         get :index
-        expect(Honeybadger.get_context[:oral_history_requester_email]).to eq req_1.oral_history_requester.email
+        expect(Honeybadger.get_context[:patron_email]).to eq patron.email
       end
     end
   end
@@ -48,9 +43,7 @@ describe OralHistoryRequestsController, type: :controller do
 
     describe "wrong authorized user" do
       before do
-        allow(session).to receive(:[]).and_call_original
-        allow(session).to receive(:[]).with(OralHistorySessionsController::SESSION_KEY).
-          and_return(OralHistoryRequester.create!(email: "example#{rand(999999)}@example.com").id)
+        sign_in create(:patron)
       end
 
       it "404s" do
@@ -62,7 +55,7 @@ describe OralHistoryRequestsController, type: :controller do
 
     describe "authorized user" do
       before do
-        allow(controller).to receive(:current_oral_history_requester).and_return(oh_request.oral_history_requester)
+        allow(controller).to receive(:current_patron).and_return(oh_request.patron)
       end
 
       describe "unapproved request" do
@@ -81,7 +74,7 @@ describe OralHistoryRequestsController, type: :controller do
         it "shows" do
           get :show, params: { id: oh_request.id }
           expect(response).to have_http_status(:success)
-          expect(Honeybadger.get_context[:oral_history_requester_email]).to eq oh_request.oral_history_requester.email
+          expect(Honeybadger.get_context[:patron_email]).to eq oh_request.patron.email
         end
       end
 
@@ -91,7 +84,7 @@ describe OralHistoryRequestsController, type: :controller do
         it "shows" do
           get :show, params: { id: oh_request.id }
           expect(response).to have_http_status(:success)
-          expect(Honeybadger.get_context[:oral_history_requester_email]).to eq oh_request.oral_history_requester.email
+          expect(Honeybadger.get_context[:patron_email]).to eq oh_request.patron.email
         end
       end
     end
@@ -106,17 +99,16 @@ describe OralHistoryRequestsController, type: :controller do
     end
 
     describe "logged in, already has made request" do
-      let(:patron_email) { "somebody@example.com" }
-      let(:requester_email) { OralHistoryRequester.new(email: patron_email) }
+      let(:patron) { build(:patron) }
       let!(:existing_request) {
         create(:oral_history_request,
           work: work,
-          oral_history_requester: requester_email
+          patron: patron
         )
       }
 
       before do
-        allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
+        allow(controller).to receive(:current_patron).and_return(patron)
       end
 
       it "redirects to dashboard" do
@@ -124,7 +116,7 @@ describe OralHistoryRequestsController, type: :controller do
 
         expect(response).to redirect_to(oral_history_requests_path)
         expect(flash[:success]).to match /You have already requested this Oral History/
-        expect(Honeybadger.get_context[:oral_history_requester_email]).to eq requester_email.email
+        expect(Honeybadger.get_context[:patron_email]).to eq patron.email
       end
     end
   end
@@ -148,10 +140,10 @@ describe OralHistoryRequestsController, type: :controller do
         let(:work) { create(:oral_history_work, :available_by_request, availability_mode: :automatic_request)}
 
         describe "already logged in" do
-          let(:requester_email) { OralHistoryRequester.new(email: full_create_params[:patron_email]) }
+          let(:patron) { create(:patron, email: full_create_params[:patron_email]) }
 
           before do
-            allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
+            allow(controller).to receive(:current_patron).and_return(patron)
           end
 
           it "redirects to dashboard" do
@@ -164,7 +156,7 @@ describe OralHistoryRequestsController, type: :controller do
 
             expect(response).to redirect_to(oral_history_requests_path)
             expect(flash[:success]).to match /The files you requested from '#{Regexp.escape work.title}' are immediately available./
-            expect(Honeybadger.get_context[:oral_history_requester_email]).to eq requester_email.email
+            expect(Honeybadger.get_context[:patron_email]).to eq patron.email
 
           end
         end
@@ -178,9 +170,55 @@ describe OralHistoryRequestsController, type: :controller do
                 expect(action).to eq "approved_with_session_link_email"
             }
 
-            expect(Honeybadger.get_context[:oral_history_requester_email]).to eq full_create_params[:patron_email]
+            expect(Honeybadger.get_context[:patron_email]).to eq full_create_params[:patron_email]
             expect(response).to redirect_to(work_path(work.friendlier_id))
             expect(flash[:success]).to match /The files you have requested are immediately available. We've sent an email to #{Regexp.escape full_create_params[:patron_email]} with a sign-in link/
+          end
+        end
+      end
+
+      describe "patron details" do
+        let(:work) { create(:oral_history_work, :available_by_request, availability_mode: :reviewed_request)}
+
+        it "stores name and institution on a new patron" do
+          post :create, params: full_create_params
+
+          patron = Patron.find_by!(email: full_create_params[:patron_email])
+          expect(patron.name).to eq "joe"
+          expect(patron.institution).to eq "university of somewhere"
+          expect(patron).not_to be_confirmed
+        end
+
+        it "does not change an existing patron's details" do
+          existing = create(:patron, email: full_create_params[:patron_email], name: "Original", institution: "Original U")
+
+          post :create, params: full_create_params
+
+          existing.reload
+          expect(existing.name).to eq "Original"
+          expect(existing.institution).to eq "Original U"
+          expect(OralHistoryRequest.last.patron).to eq existing
+        end
+
+        it "shows error for missing name on a new patron" do
+          params = full_create_params.deep_merge(oral_history_request: { patron_name: "" })
+          expect {
+            post :create, params: params
+          }.not_to change { Patron.count }
+          expect(response).to have_http_status(:success) # re-rendered form
+          expect(assigns(:oral_history_request).errors[:patron_name]).to be_present
+        end
+
+        describe "signed in" do
+          let(:patron) { create(:patron, name: "Signed In") }
+          before { sign_in patron }
+
+          it "uses signed-in patron, ignoring submitted details" do
+            post :create, params: full_create_params.except(:patron_email)
+
+            request = OralHistoryRequest.last
+            expect(request.patron).to eq patron
+            expect(patron.reload.name).to eq "Signed In"
           end
         end
       end
@@ -199,17 +237,17 @@ describe OralHistoryRequestsController, type: :controller do
 
           expect(response).to redirect_to(work_path(work.friendlier_id))
           expect(flash[:success]).to match /Your request will be reviewed/
-          expect(Honeybadger.get_context[:oral_history_requester_email]).to eq full_create_params[:patron_email]
+          expect(Honeybadger.get_context[:patron_email]).to eq full_create_params[:patron_email]
         end
       end
 
 
       describe "already had made request" do
-        let(:requester_email) { OralHistoryRequester.new(email: full_create_params[:patron_email]) }
+        let(:patron) { build(:patron, email: full_create_params[:patron_email]) }
         let!(:existing_request) {
           create(:oral_history_request,
             work: work,
-            oral_history_requester: requester_email
+            patron: patron
           )
         }
 
@@ -224,12 +262,12 @@ describe OralHistoryRequestsController, type: :controller do
 
             expect(response).to redirect_to(work_path(work.friendlier_id))
             expect(flash[:success]).to match /We've sent another email to #{Regexp.escape full_create_params[:patron_email]}/
-            expect(Honeybadger.get_context[:oral_history_requester_email]).to eq full_create_params[:patron_email]
+            expect(Honeybadger.get_context[:patron_email]).to eq full_create_params[:patron_email]
           end
         end
         describe "already logged in" do
           before do
-            allow(controller).to receive(:current_oral_history_requester).and_return(requester_email)
+            allow(controller).to receive(:current_patron).and_return(patron)
           end
 
           it "redirects to dashboard" do
@@ -239,7 +277,7 @@ describe OralHistoryRequestsController, type: :controller do
 
             expect(response).to redirect_to(oral_history_requests_path)
             expect(flash[:success]).to match /You have already requested this Oral History/
-            expect(Honeybadger.get_context[:oral_history_requester_email]).to eq full_create_params[:patron_email]
+            expect(Honeybadger.get_context[:patron_email]).to eq full_create_params[:patron_email]
           end
         end
       end

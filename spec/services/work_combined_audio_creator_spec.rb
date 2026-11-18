@@ -182,4 +182,32 @@ describe "Combined Audio" do
       expect(combined_audio_info.fingerprint).to be_nil
     end
   end
+
+  describe "available members" do
+    let(:work) { create(:oral_history_work, members: [published_audio, by_request_audio, plain_unpublished_audio]) }
+    let(:published_audio) { create(:asset_with_faked_file, :mp3, published: true, position: 1) }
+    let(:by_request_audio) { create(:asset_with_faked_file, :mp3, published: false, oh_available_by_request: true, position: 2) }
+    let(:plain_unpublished_audio) { create(:asset_with_faked_file, :mp3, published: false, position: 3) }
+
+    def available_ids
+      CombinedAudioDerivativeCreator.new(work.reload).send(:available_audio_members).map(&:id)
+    end
+
+    it "includes only published for direct" do
+      work.oral_history_content!.update!(availability_mode: "direct")
+      expect(available_ids).to eq [published_audio.id]
+    end
+
+    ["automatic_request", "reviewed_request"].each do |mode|
+      it "includes by-request unpublished for #{mode}" do
+        work.oral_history_content!.update!(availability_mode: mode)
+        expect(available_ids).to eq [published_audio.id, by_request_audio.id]
+      end
+    end
+
+    it "includes nothing for embargoed" do
+      work.oral_history_content!.update!(availability_mode: "embargoed")
+      expect(available_ids).to eq []
+    end
+  end
 end

@@ -288,7 +288,7 @@ class Admin::WorksController < AdminController
     deriv_creator = CombinedAudioDerivativeCreator.new(@work)
     unless deriv_creator.available_members?
       redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
-        error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
+        error: "Combined audio derivatives cannot be created, because this oral history does not have any available audio segments."
       }
       return
     end
@@ -301,7 +301,7 @@ class Admin::WorksController < AdminController
       return
     end
 
-    CreateCombinedAudioDerivativesJob.perform_later(@work)
+    EnsureCombinedAudioDerivativeJob.perform_later(@work, force: true)
     sidecar = @work.oral_history_content!
     sidecar.combined_audio_derivatives_job_status = 'queued'
     sidecar.save!
