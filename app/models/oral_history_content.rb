@@ -74,13 +74,14 @@ class OralHistoryContent < ApplicationRecord
   self.filter_attributes = [:json_attributes, :extracted_paragraph_container]
 
   # Different availability modes for OH, including some where non-published assets are
-  # still requestable.
+  # still requestable. The first two are going to be altered in the future
   #
   #   * direct: "Normal" mode, published assets are directly available to the public with
-  #     a click, non-published assets are simply not.
+  #     a click, non-published assets are simply not. Displays as "Public"
   #
-  #   * automatic_request: after filling out request form, user gets access to designated non-public
-  #     assets without human intervention
+  #   * automatic_request: Displays as "Registered Patrons", any registered patrons can see.
+  #     Formerly: after filling out request form, user gets access to designated non-public
+  #     assets without human intervention. Which is why the name.
   #
   #   * reviewed_request: after filling out request form, request needs to be approved by human
   #

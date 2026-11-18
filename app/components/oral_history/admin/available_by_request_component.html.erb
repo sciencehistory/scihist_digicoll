@@ -13,7 +13,7 @@
             <%= f.radio_button :availability_mode, "direct" %>
           </td>
           <td>
-            <label for="oral_history_content_availability_direct">Direct</label>
+            <label for="oral_history_content_availability_direct">Public</label>
             <div class="text-muted">NOT using 'Available by Request' feature</div>
             <div class="text-muted">Published items are available to public, non-published items are not.</div>
           </td>
@@ -21,8 +21,8 @@
         <tr>
           <td><%= f.radio_button :availability_mode, "automatic_request" %></td>
           <td>
-            <label for="oral_history_content_availability_automatic_request">Automatic Request</label>
-            <div class="text-muted">Automatic delivery of selected assets after filling out a form</div>
+            <label for="oral_history_content_availability_automatic_request">Registered Patrons</label>
+            <div class="text-muted">Available after filling out a form and confirming email address</div>
             <div class="text-muted">Used with <code>free access, without internet release</code></div>
           </td>
         </tr>
