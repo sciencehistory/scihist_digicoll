@@ -33,6 +33,12 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
     }.to raise_error(ActionController::RoutingError)
   end
 
+  it "registration form links to sign-in returning to work" do
+    get oral_history_registration_form_path(work.friendlier_id)
+    link = Nokogiri::HTML(response.body).at_css("a[data-role=already-registered-sign-in]")
+    expect(link["href"]).to eq new_oral_history_session_path(return_to: work_path(work.friendlier_id))
+  end
+
   it "request form redirects automatic_request works to registration" do
     get oral_history_request_form_path(work.friendlier_id)
     expect(response).to redirect_to(oral_history_registration_form_path(work.friendlier_id))

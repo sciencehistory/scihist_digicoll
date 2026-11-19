@@ -3,13 +3,16 @@
   <% remembered_form_values = oral_history_request_form_entry_read %>
 
   <div>
+    <p>Accessing this oral history requires registration due to privacy restrictions stipulated by the interviewee.</p>
+
     <p>
       Register to get access to "<%= @work.title %>" and other oral histories available to registered patrons.
 
       <span class="text-danger">We'll email you a link to confirm your email address. Once you click it, you'll have immediate access.</span>
-    </p>
 
-    <p>Accessing this oral history requires registration due to privacy restrictions stipulated by the interviewee.</p>
+      <strong>Already registered?</strong>
+      <%= link_to "Sign in", new_oral_history_session_path(return_to: work_path(@work.friendlier_id)), data: { role: "already-registered-sign-in" } %>
+    </p>
   </div>
 
   <% if @patron.errors.any? %>
