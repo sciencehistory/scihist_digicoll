@@ -174,6 +174,18 @@ class Work < Kithe::Work
     Kithe::Model.where(sql)
   end
 
+  # Members this viewer can see, as a relation: all for staff; plus by-request Oral Histories
+  # when we have a confirmed patron who can access. used mainly in oral history dispaly.
+  def members_viewable_by(user:, patron:)
+    if AccessPolicy.new(user).can_see_unpublished_records?
+      members
+    elsif oral_history_content&.available_by_request? && patron&.can_access_oral_history?(self)
+      members.where(published: true).or(members.merge(Asset.jsonb_contains(oh_available_by_request: true)))
+    else
+      members.where(published: true)
+    end
+  end
+
   # All DISPLAYABLE (to current user) members, in order, and
   # with proper pre-fetches.
   #
