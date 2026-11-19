@@ -19,7 +19,7 @@
   <% if @oral_history_request.errors.any? %>
     <div class="kithe-form-errors-top alert alert-danger mb-4" role="alert">
       <h2 class="h4" class="alert-heading"><%= pluralize(@oral_history_request.errors.count, "error") %></h2>
-      <ol class="mb-0">
+      <ul class="mb-0 list-unstyled">
         <% @oral_history_request.errors.full_messages.each do |msg| %>
           <li><%= msg %></li>
         <% end %>
@@ -82,13 +82,15 @@
           as: :text,
           label: "Intended use",
           hint: "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions.",
-          input_html: { value: remembered_form_values["intended_use"] },
+          input_html: { value: @oral_history_request.intended_use.presence || remembered_form_values["intended_use"] },
           required: true
         %>
       </div>
     </div>
 
     <%= f.hidden_field :work_friendlier_id, value: @work.friendlier_id %>
+
+    <%= render "turnstile_form_protection" %>
 
     <div class="form-actions mt-3 d-flex justify-content-end">
       <%= link_to "Cancel", work_path(@work.friendlier_id), class: "btn btn-brand-secondary me-3", data: { bl_dismiss: "modal" } %>

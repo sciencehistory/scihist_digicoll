@@ -1,0 +1,6 @@
+<%# Turnstile widget placeholder, rendered by turnstile_form_protection.js.
+
+Assumes a `turnstile_form_projection` helper method returning a TurnstileFormProjection object. %>
+<% if turnstile_form_protection.needed? %>
+  <div class="mt-3 d-flex justify-content-end" data-trigger="scihist-auto-cf-turnstile" data-sitekey="<%= turnstile_form_protection.sitekey %>"></div>
+<% end %>
