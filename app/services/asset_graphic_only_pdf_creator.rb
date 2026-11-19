@@ -2,7 +2,7 @@
 # embedded as a *JP2*.
 #
 # Calls out to various command line tools:
-# * vipsthumbnail to resize TIFF as a JP2
+# * vipsthumbnail to resize TIFF, then vips to convert it to a JP2
 # * mediainfo to read TIFF dpi if needed
 # * img2pdf (python) to embed jp2 in PDF
 #
@@ -10,6 +10,7 @@ class AssetGraphicOnlyPdfCreator
   # one way to get dpi from a TIFF, there are others!
   class_attribute :mediainfo_command, default: "mediainfo"
   class_attribute :vipsthumbnail_command, default: "vipsthumbnail"
+  class_attribute :vips_command, default: "vips"
 
   # A python pip package, that we still haven't totally figured out how we're
   # going to get installed.
@@ -81,25 +82,41 @@ class AssetGraphicOnlyPdfCreator
       target_width = orig_width
     end
 
-    output_jp2_tempfile = Tempfile.new(["scihist_digicoll_asset_graphic_only_pdf_creator", ".jp2"])
+    # We do this in two steps, because as of libvips 8.18.7, the JP2 *saver* is flagged
+    # "untrusted", so VIPS_BLOCK_UNTRUSTED blocks it, but we still want that block
+    # when reading the original, which could be a malicious file.
+    #
+    # 1. With VIPS_BLOCK_UNTRUSTED, resize the original into an intermediate TIFF.
+    # 2. Without it, convert that intermediate TIFF -- which we just wrote ourselves,
+    #    so is trusted -- into a JP2.
 
-    # subsample-mode=off is to work around a bug in OpenJPEG -- more recent
-    # versions of vips always turn subsample mode off, but it does need to be off
-    # to avoid color corruption depending on image size:
-    # https://github.com/libvips/libvips/issues/2965
+    resized_tiff_tempfile = Tempfile.new(["scihist_digicoll_asset_graphic_only_pdf_creator", ".tif"])
+    output_jp2_tempfile = Tempfile.new(["scihist_digicoll_asset_graphic_only_pdf_creator", ".jp2"])
 
     # export-profile srgb is to work around vips/OpenJPEG inability to embed
     # ICC profile or colorspace metadata, we NEED to convert to sRGB bytes
     # to avoid color shifts.
     # https://github.com/libvips/libvips/discussions/3428#discussioncomment-6383390
-
     tty_command.run(
       vipsthumbnail_command,
       temp_orig.path,
       "--size","#{target_width}x65500",
       "--export-profile", "srgb",
-      "-o", "#{output_jp2_tempfile.path}[Q=#{compression_quality},subsample-mode=off]",
+      "-o", resized_tiff_tempfile.path,
       env: { "VIPS_BLOCK_UNTRUSTED" => "1" }
+    )
+
+    # subsample-mode=off is to work around a bug in OpenJPEG -- more recent
+    # versions of vips always turn subsample mode off, but it does need to be off
+    # to avoid color corruption depending on image size:
+    # https://github.com/libvips/libvips/issues/2965
+    tty_command.run(
+      vips_command,
+      "jp2ksave",
+      resized_tiff_tempfile.path,
+      output_jp2_tempfile.path,
+      "--Q", compression_quality.to_s,
+      "--subsample-mode", "off"
     )
 
     # note dpi metadata on output jp2 is always 72. :(
@@ -107,6 +124,7 @@ class AssetGraphicOnlyPdfCreator
     output_jp2_tempfile
   ensure
     temp_orig.close! if downloaded_new_copy && temp_orig
+    resized_tiff_tempfile.close! if resized_tiff_tempfile
   end
 
   # Use img2pdf python utility to embed an image in a PDF.
