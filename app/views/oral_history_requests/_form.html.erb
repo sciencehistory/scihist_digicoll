@@ -8,13 +8,9 @@
     <p>
       To receive files for "<%= @work.title %>" by email, please fill out the form below.
 
-      <% if @work.oral_history_content.availability_automatic_request? %>
-        <span class="text-danger">You will receive these files immediately after submitting this form.</span>
-      <% else %>
-        <span class="text-danger">After your request is received, you will receive an email response, usually within
-          3 business days. If permission is granted to access this interview, you will receive the files by email.
-        </span>
-      <% end %>
+      <span class="text-danger">After your request is received, you will receive an email response, usually within
+        3 business days. If permission is granted to access this interview, you will receive the files by email.
+      </span>
     </p>
 
     <p>Accessing this oral history requires a request due to privacy restrictions stipulated by the interviewee.</p>
@@ -74,9 +70,9 @@
         <%= f.input :intended_use,
           as: :text,
           label: "Intended use",
-          hint: (@work.oral_history_content.availability_automatic_request? ? "So that we can better understand our audience, please tell us how you plan to use the oral history you have requested." : "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions."),
+          hint: "Please tell us how you intend to use this oral history interview to help us inform you about any relevant interviewee restrictions.",
           input_html: { value: remembered_form_values["intended_use"] },
-          required: @oral_history_request.work&.oral_history_content&.availability_reviewed_request?
+          required: true
         %>
       </div>
     </div>
