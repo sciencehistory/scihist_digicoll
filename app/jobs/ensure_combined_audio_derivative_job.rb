@@ -7,6 +7,12 @@ class EnsureCombinedAudioDerivativeJob < ApplicationJob
   def perform(work, force: false)
     logger.info("#{self.class}: Starting #{work.title}.")
 
+    unless work.is_oral_history?
+      Rails.logger.warn("#{self.class} called on Work #{work.friendlier_id} that is not oral history, aborting")
+      return
+    end
+
+
     @sidecar = work.oral_history_content!
     return if !force && @sidecar.combined_audio_good?
 
