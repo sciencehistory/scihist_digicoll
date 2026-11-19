@@ -87,6 +87,7 @@ import "../javascript/video_player.js";
 
 import "../javascript/main_nav_collapse_toggle.js";
 import "../javascript/patron_signed_in_status.js";
+import "../javascript/turnstile_form_protection.js";
 import "../javascript/lazy_member_images.js"
 import "../javascript/transcript_toggle.js"
 import "../javascript/admin/extent_converter.js"
