@@ -111,14 +111,6 @@ class OralHistoryRequestsController < ApplicationController
   #
   # Action to create request from form
   def create
-    # write entries to a cookie to pre-fill form next time; every time we write
-    # it will bump the TTL expiration too, so they get another day until it expires.
-    unless current_patron
-      oral_history_request_form_entry_write(
-        form_params.merge(patron_email: patron_email_param).to_h
-      )
-    end
-
     patron = @oral_history_request.patron
     unless patron.persisted?
       # show patron validation errors on the request form fields; copy first, since validating
@@ -189,6 +181,22 @@ private
       return false
     end
 
+    # write entries to a cookie to pre-fill form next time; every time we write
+    # it will bump the TTL expiration too, so they get another day until it expires.
+    unless current_patron
+      oral_history_request_form_entry_write(
+        form_params.merge(patron_email: patron_email_param).to_h
+      )
+    end
+
+    # before anything that could send an email
+    unless turnstile_form_protection.passed?
+      @oral_history_request = OralHistoryRequest.new(work: @work, patron: current_patron, intended_use: form_params[:intended_use])
+      @oral_history_request.errors.add(:base, TurnstileFormProtection::FAILED_MESSAGE)
+      render :new
+      return false
+    end
+
     # A signed-in patron's own details are used as is. Otherwise, form details only ever
     # fill in a new patron, never change an existing one.
     patron = current_patron || Patron.find_or_create_from_form(
@@ -255,4 +263,13 @@ private
     Honeybadger.context({ patron_email: email })
   end
 
+  # one per request, for the form partial and the submit check
+  def turnstile_form_protection
+    @turnstile_form_protection ||= TurnstileFormProtection.new(
+      token: params["cf-turnstile-response"],
+      remote_ip: request.remote_ip,
+      bot_challenge_passed: BotChallengePage::BotChallengePageController._bot_detect_passed_good?(self)
+    )
+  end
+  helper_method :turnstile_form_protection
 end

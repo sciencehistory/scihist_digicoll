@@ -26,6 +26,14 @@ class OralHistoryRegistrationsController < ApplicationController
       "registration_reason" => registration_params[:registration_reason]
     )
 
+    # before anything that could send an email
+    unless turnstile_form_protection.passed?
+      @patron = Patron.new(registration_params)
+      @patron.errors.add(:base, TurnstileFormProtection::FAILED_MESSAGE)
+      render :new
+      return
+    end
+
     @patron = Patron.find_or_create_from_form(**registration_params.to_h.symbolize_keys)
 
     unless @patron.persisted?
@@ -72,4 +80,14 @@ class OralHistoryRegistrationsController < ApplicationController
   def registration_params
     params.require(:patron).permit(:email, :name, :institution, :registration_reason)
   end
+
+  # one per request, for the form partial and the submit check
+  def turnstile_form_protection
+    @turnstile_form_protection ||= TurnstileFormProtection.new(
+      token: params["cf-turnstile-response"],
+      remote_ip: request.remote_ip,
+      bot_challenge_passed: BotChallengePage::BotChallengePageController._bot_detect_passed_good?(self)
+    )
+  end
+  helper_method :turnstile_form_protection
 end
