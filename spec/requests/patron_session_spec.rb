@@ -12,7 +12,7 @@ describe "Patron login sessions", type: :request do
   it "magic link is reusable within 7 days, not after" do
     travel 6.days do
       get login_oral_history_session_path(token)
-      expect(response).to redirect_to(oral_history_requests_path)
+      expect(response).to redirect_to(patron_account_path)
     end
     travel 8.days do
       get login_oral_history_session_path(token)
@@ -24,7 +24,7 @@ describe "Patron login sessions", type: :request do
     get login_oral_history_session_path(token)
     expect(cookies["remember_patron_token"]).to be_present
     drop_session_cookie
-    get oral_history_requests_path
+    get patron_account_path
     expect(response).to have_http_status(200)
   end
 
@@ -32,7 +32,7 @@ describe "Patron login sessions", type: :request do
     get login_oral_history_session_path(token)
     drop_session_cookie
     travel 31.days do
-      get oral_history_requests_path
+      get patron_account_path
       expect(response).to redirect_to(new_oral_history_session_path)
     end
   end
@@ -42,8 +42,8 @@ describe "Patron login sessions", type: :request do
     cookies.delete("remember_patron_token")
     travel 31.days do
       # devise timeoutable redirects back to same page, now anonymous
-      get oral_history_requests_path
-      expect(response).to redirect_to(oral_history_requests_path)
+      get patron_account_path
+      expect(response).to redirect_to(patron_account_path)
       follow_redirect!
       expect(response).to redirect_to(new_oral_history_session_path)
     end
@@ -54,7 +54,7 @@ describe "Patron login sessions", type: :request do
     cookies.delete("remember_patron_token")
     travel 31.days do
       get login_oral_history_session_path(patron.generate_token_for(:auto_login))
-      get oral_history_requests_path
+      get patron_account_path
       expect(response).to have_http_status(200)
     end
   end
@@ -72,8 +72,8 @@ describe "Patron login sessions", type: :request do
       get login_oral_history_session_path(token)
       cookies.delete("remember_patron_token")
       travel 31.days do
-        get oral_history_requests_path
-        expect(response).to redirect_to(oral_history_requests_path)
+        get patron_account_path
+        expect(response).to redirect_to(patron_account_path)
         follow_redirect!
         expect(response).to redirect_to(new_oral_history_session_path)
         get admin_works_path
@@ -85,7 +85,7 @@ describe "Patron login sessions", type: :request do
   it "rotating session_token logs out everywhere" do
     get login_oral_history_session_path(token)
     patron.update!(session_token: SecureRandom.uuid)
-    get oral_history_requests_path
+    get patron_account_path
     expect(response).not_to have_http_status(200)
   end
 end
