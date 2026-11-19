@@ -107,4 +107,47 @@ describe Patron, type: :model do
       end
     end
   end
+
+  describe "sign-in code" do
+    let(:patron) { create(:patron) }
+    let!(:code) { patron.generate_sign_in_code! }
+
+    it "is 6 digits, stored only as digest" do
+      expect(code).to match /\A\d{6}\z/
+      expect(patron.reload.sign_in_code_digest).not_to include(code)
+    end
+
+    it "is consumed once" do
+      expect(patron.consume_sign_in_code!(code)).to be true
+      expect(patron.reload.consume_sign_in_code!(code)).to be false
+    end
+
+    it "ignores spaces and dashes" do
+      expect(patron.consume_sign_in_code!(" #{code.first(3)}-#{code.last(3)} ")).to be true
+    end
+
+    it "is replaced by a new code" do
+      new_code = patron.generate_sign_in_code!
+      expect(patron.consume_sign_in_code!(code)).to be false
+      expect(patron.reload.consume_sign_in_code!(new_code)).to be true
+    end
+
+    it "expires" do
+      travel Patron::SIGN_IN_CODE_EXPIRE + 1.minute do
+        expect(patron.consume_sign_in_code!(code)).to be false
+      end
+    end
+
+    it "is discarded after too many failed attempts" do
+      wrong = format("%06d", (code.to_i + 1) % 1_000_000)
+      Patron::SIGN_IN_CODE_MAX_FAILED_ATTEMPTS.times { patron.consume_sign_in_code!(wrong) }
+      expect(patron.reload.consume_sign_in_code!(code)).to be false
+    end
+
+    it "allows correct code after fewer failed attempts" do
+      wrong = format("%06d", (code.to_i + 1) % 1_000_000)
+      (Patron::SIGN_IN_CODE_MAX_FAILED_ATTEMPTS - 1).times { patron.consume_sign_in_code!(wrong) }
+      expect(patron.reload.consume_sign_in_code!(code)).to be true
+    end
+  end
 end

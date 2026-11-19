@@ -7,6 +7,7 @@
 # reviewed_request oral histories use OralHistoryRequestsController instead.
 class OralHistoryRegistrationsController < ApplicationController
   include OralHistoryRequestFormMemoryHelper
+  include PatronSignInCodeFlow
 
   before_action :set_work
   before_action :redirect_if_signed_in
@@ -34,10 +35,12 @@ class OralHistoryRegistrationsController < ApplicationController
 
     if @patron.confirmed?
       OhSessionMailer.with(patron: @patron, return_to: work_path(@work.friendlier_id)).sign_in_email.deliver_later
-      return_status("You are already registered. We've sent an email to #{@patron.email} with a sign-in link.")
+      show_sign_in_code_form(@patron, return_to: work_path(@work.friendlier_id),
+        message: "You are already registered. We've sent an email to #{@patron.email} with a sign-in link and code.")
     else
       OhSessionMailer.with(patron: @patron, work: @work).registration_email.deliver_later
-      return_status("Thank you for registering. We've sent an email to #{@patron.email}. Click the link in it to confirm your email address and get access.")
+      show_sign_in_code_form(@patron, return_to: work_path(@work.friendlier_id),
+        message: "Thank you for registering. We've sent an email to #{@patron.email}. Click the link in it, or enter the code from it, to confirm your email address and get access.")
     end
   end
 
@@ -53,15 +56,12 @@ class OralHistoryRegistrationsController < ApplicationController
     end
   end
 
-  # signing in confirms, so a signed-in patron is already registered
+  # signing in confirms, so a signed-in patron is already registered.
+  # Back to the work: an alert in the modal for JS requests, otherwise a redirect with flash.
   def redirect_if_signed_in
-    if current_patron
-      return_status("You are already registered and signed in.")
-    end
-  end
+    return unless current_patron
 
-  # back to the work: an alert in the modal for JS requests, otherwise a redirect with flash
-  def return_status(message)
+    message = "You are already registered and signed in."
     if request.xhr?
       render partial: "oral_history_requests/alert", layout: false, locals: { alert_type: "success", message: message }
     else

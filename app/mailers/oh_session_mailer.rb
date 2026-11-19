@@ -10,6 +10,7 @@ class OhSessionMailer < ApplicationMailer
     @patron = params[:patron] or raise ArgumentError.new("missing required params[:patron]")
     # optional local path to land on after sign-in
     @return_to = params[:return_to]
+    @sign_in_code = @patron.generate_sign_in_code!
 
     # prevent gmail from threading multiple magic links in a thread, as gmail ends up hiding the more
     # recent one, which is bad maybe. Set a unique "references" header to avoid this
@@ -24,6 +25,7 @@ class OhSessionMailer < ApplicationMailer
   def registration_email
     @patron = params[:patron] or raise ArgumentError.new("missing required params[:patron]")
     @work = params[:work] or raise ArgumentError.new("missing required params[:work]")
+    @sign_in_code = @patron.generate_sign_in_code!
 
     # unique header so gmail doesn't thread (and hide) repeated sign-in emails, as in sign_in_email
     headers["references"] ="Unique-#{SecureRandom.hex(20)}"
