@@ -63,7 +63,7 @@ module CollectionShowControllers
 
     # Assuming we added a facet.query to solr query, we look up the count returned
     # from the solr response.
-    def canned_query_count(key)
+    helper_method def canned_query_count(key)
       query = SPLASH_CANNED_QUERIES[key.to_sym]
       raise ArgumentError.new("key must be in SPLASH_CANNED_QUERIES hash") if query.nil?
       @response.facet_counts["facet_queries"][query]
@@ -135,7 +135,7 @@ module CollectionShowControllers
 
       config.add_facet_field "oh_feature_facet", label: "Features"
 
-      config.add_facet_field "oh_availability_facet", label: "Availability"
+      config.add_facet_field "oh_availability_facet", label: "Availability", helper_method: :oh_availability_facet_label
 
       # to change order of keys in hash we basically need to hackily make a new
       # hash.
