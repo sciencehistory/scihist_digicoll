@@ -50,13 +50,22 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
   end
 
   describe "with a request in progress" do
-    let(:request_attributes) { { status: "requested", start_time: Time.zone.parse("2026-01-01 12:30:00") } }
+    let(:request_attributes) do
+      {
+        status: "requested",
+        start_time: Time.zone.parse("2026-01-01 12:30:00"),
+        gemini_model: "gemini-test-model",
+        source_version: "mock_git_sha"
+      }
+    end
 
-    it "shows the status and start time, and offers no buttons" do
+    it "shows the status, start time and provenance, and offers no buttons" do
       render_inline described_class.new(work)
 
       expect(page).to have_text("A handwriting transcription is in progress (status: requested).")
       expect(page).to have_text("Started: 2026-Jan-01 12:30")
+      expect(page).to have_text("Gemini model: gemini-test-model")
+      expect(page).to have_text("Code version: mock_git_sha")
       expect(page).not_to have_link("Go to transcript")
       expect(page).not_to have_link("Request a new transcript")
       expect(page).not_to have_link("Delete transcript")

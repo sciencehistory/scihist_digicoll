@@ -145,9 +145,13 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    update_handwriting_transcription_request(status: 'requested')
-
     model = ScihistDigicoll::Env.lookup("gemini_model")
+
+    update_handwriting_transcription_request(
+      status: 'requested',
+      gemini_model: model,
+      source_version: ENV['SOURCE_VERSION'].presence
+    )
 
     gemini_client.post(
       "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent",
