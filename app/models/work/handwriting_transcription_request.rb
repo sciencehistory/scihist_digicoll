@@ -6,6 +6,10 @@ class Work
   # Statuses move from "queued" -> "started" -> "requested" -> "received", and end in one of
   # the terminal statuses, "success" or "failure". On failure, `error` holds the message.
   #
+  # Once Gemini's response has been accepted, we also keep the notes it sent along with the
+  # transcripts: `general_feedback` about the whole batch, and `page_notes`, a hash of
+  # asset friendlier_id => notes about that page.
+  #
   # Unknown keys are allowed, so we can add more details about requests later
   # without having to change this class.
   class HandwritingTranscriptionRequest
@@ -20,6 +24,9 @@ class Work
 
     attr_json :error, :string
     attr_json :start_time, :datetime
+
+    attr_json :general_feedback, :string
+    attr_json :page_notes, ActiveModel::Type::Value.new
 
     def success?
       status == "success"

@@ -70,6 +70,34 @@ describe GeminiHandwritingTranscriptionService do
         .to eq(sample_transcripts)
     end
 
+    it "keeps Gemini's general feedback, and its page notes keyed by asset" do
+      allow(service).to receive(:request_transcription) do |images|
+        pages = pages_for(images.map { |image| image.fetch(:filename) })
+        pages[1]["page_notes"] = "A diagram at the bottom was omitted."
+        pages[2]["page_notes"] = ""
+
+        gemini_response(text: JSON.generate("general_feedback" => "Mostly legible.", "pages" => pages))
+      end
+
+      service.add_transcription!
+
+      request = work.reload.handwriting_transcription_request
+      expect(request.general_feedback).to eq "Mostly legible."
+      expect(request.page_notes).to eq(asset2.friendlier_id => "A diagram at the bottom was omitted.")
+    end
+
+    it "stores no notes when Gemini sends none" do
+      allow(service).to receive(:request_transcription) do |images|
+        gemini_response(text: JSON.generate("pages" => pages_for(images.map { |image| image.fetch(:filename) })))
+      end
+
+      service.add_transcription!
+
+      request = work.reload.handwriting_transcription_request
+      expect(request.general_feedback).to be_nil
+      expect(request.page_notes).to be_nil
+    end
+
     it "records start_time when the request is started" do
       allow(service).to receive(:request_transcription) do |images|
         gemini_response(text: JSON.generate("pages" => pages_for(images.map { |image| image.fetch(:filename) })))

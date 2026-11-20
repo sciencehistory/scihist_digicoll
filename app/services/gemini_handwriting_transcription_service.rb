@@ -165,7 +165,7 @@ class GeminiHandwritingTranscriptionService
 
   # The transcript, and notes about the transcription process,
   # should come in via the response body. This method attaches each page's
-  # transcript to the corresponding asset.
+  # transcript to the corresponding asset, and keeps Gemini's notes on the request.
   def process_results(response:, staged_images:)
     validate_adapter_result!(response)
 
@@ -180,6 +180,18 @@ class GeminiHandwritingTranscriptionService
         data,
         staged_images: staged_images
       )
+
+    # Keep Gemini's notes about the transcription, with each page's notes keyed by its asset.
+    # Saved before attaching the transcripts, so they're kept even if attaching fails.
+    pages_by_filename = pages.index_by { |page| page.fetch("filename") }
+    page_notes = staged_images.each_with_object({}) do |image, notes|
+      note = pages_by_filename.fetch(image.fetch(:filename))["page_notes"]
+      notes[image.fetch(:asset).friendlier_id] = note if note.present?
+    end
+    update_handwriting_transcription_request(
+      general_feedback: data["general_feedback"].presence,
+      page_notes: page_notes.presence
+    )
 
     attach_transcripts!(
       pages,

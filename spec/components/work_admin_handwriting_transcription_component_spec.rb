@@ -73,6 +73,35 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       expect(new_request_link["href"]).to eq("/admin/works/#{work.friendlier_id}/request_new_handwriting_transcription")
       expect(new_request_link["data-method"]).to eq("post")
       expect(new_request_link["data-confirm"]).to match(/delete the current transcript/)
+      expect(page).not_to have_text("Notes from Gemini")
+    end
+
+    describe "with notes from Gemini" do
+      let(:asset) { create(:asset, title: "Page two") }
+      let(:request_attributes) do
+        {
+          status: "success",
+          general_feedback: "Mostly legible.",
+          page_notes: { asset.friendlier_id => "A diagram was omitted.", "deleted1" => "Smudged." }
+        }
+      end
+      let(:work) do
+        create(:work,
+          members: [asset],
+          text_extraction_mode: text_extraction_mode,
+          handwriting_transcription_request: request_attributes
+        )
+      end
+
+      it "shows the general feedback, and each page's notes, linked to its asset when it still exists" do
+        render_inline described_class.new(work)
+
+        expect(page).to have_text("Notes from Gemini")
+        expect(page).to have_text("Mostly legible.")
+        expect(page).to have_css("li", text: /Page two:\s+A diagram was omitted\./)
+        expect(page).to have_link("Page two", href: "/admin/asset_files/#{asset.friendlier_id}")
+        expect(page).to have_css("li", text: /deleted1:\s+Smudged\./)
+      end
     end
 
     it "links to the transcript on the public work page" do
