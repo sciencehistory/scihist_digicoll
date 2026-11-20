@@ -44,10 +44,13 @@ class WorkAdminHandwritingTranscriptionComponent < ApplicationComponent
       "without being sent to Gemini."
   end
 
-  # The work's assets that Gemini left page notes about, by friendlier_id. An asset deleted
-  # since the request won't be found.
+  # The work's assets that Gemini left page notes about, by friendlier_id, in position order
+  # (the order the public sees them in). An asset deleted since the request won't be found.
   def noted_assets
-    @noted_assets ||= work.members.where(friendlier_id: transcription_request.page_notes.keys).index_by(&:friendlier_id)
+    @noted_assets ||= work.members.
+      where(friendlier_id: transcription_request.page_notes.keys).
+      order(:position).
+      index_by(&:friendlier_id)
   end
 
   def formatted_start_time
