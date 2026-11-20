@@ -3,6 +3,10 @@
 # Pretty bare-bones, does set a custom storage location path.
 class CombinedAudioUploader < Shrine
     plugin :activerecord
+    plugin :default_storage
+
+    # Storage depends on the oral history's availability_mode, see OralHistoryContent
+    Attacher.default_store { record.combined_audio_store_key }
 
     # File it by work id, include the original filename in the S3 key, but also
     # generated UUID and suffix. Locations on S3 will look something like:

@@ -7,6 +7,73 @@ describe OralHistoryContent do
 
   let(:m4a_path) { Rails.root + "spec/test_support/audio/5-seconds-of-silence.m4a" }
 
+  describe "combined audio storage" do
+    it "stores public for direct" do
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      expect(oral_history_content.combined_audio_m4a.storage_key).to eq :combined_audio_derivatives
+      expect(oral_history_content.combined_audio_in_correct_storage?).to be true
+    end
+
+    it "stores restricted for non-direct" do
+      oral_history_content.update!(availability_mode: "automatic_request")
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      expect(oral_history_content.combined_audio_m4a.storage_key).to eq :restricted_combined_audio_derivatives
+      expect(oral_history_content.combined_audio_in_correct_storage?).to be true
+    end
+
+    it "enqueues ensure job when availability_mode changes" do
+      expect {
+        oral_history_content.update!(availability_mode: "automatic_request")
+      }.to have_enqueued_job(EnsureCombinedAudioDerivativeJob).with(work)
+    end
+
+    it "does not enqueue on other changes" do
+      expect {
+        oral_history_content.update!(searchable_transcript_source: "changed")
+      }.not_to have_enqueued_job(EnsureCombinedAudioDerivativeJob)
+    end
+
+    it "combined_audio_good? requires correct storage" do
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      allow(oral_history_content).to receive(:combined_audio_up_to_date?).and_return(true)
+      expect(oral_history_content.combined_audio_good?).to be true
+
+      oral_history_content.update_columns(availability_mode: "automatic_request")
+      expect(oral_history_content.combined_audio_good?).to be false
+    end
+
+    it "remove_combined_audio! deletes file and clears metadata" do
+      oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))
+      oral_history_content.update!(combined_audio_fingerprint: "x", combined_audio_component_metadata: { start_times: [] })
+      file = oral_history_content.combined_audio_m4a
+
+      oral_history_content.remove_combined_audio!
+      oral_history_content.reload
+      expect(oral_history_content.combined_audio_m4a).to be_nil
+      expect(oral_history_content.combined_audio_fingerprint).to be_nil
+      expect(oral_history_content.combined_audio_component_metadata).to be_nil
+      expect(file.exists?).to be false
+    end
+  end
+
+  describe "#combined_audio_up_to_date?" do
+    let(:oral_history_content) { create(:oral_history_work, :combined_derivative).oral_history_content }
+
+    it "is true when fingerprint matches" do
+      expect(oral_history_content.combined_audio_up_to_date?).to be true
+    end
+
+    it "is false when fingerprint does not match" do
+      oral_history_content.combined_audio_fingerprint = "stale"
+      expect(oral_history_content.combined_audio_up_to_date?).to be false
+    end
+
+    it "is false when file is missing" do
+      oral_history_content.combined_audio_m4a = nil
+      expect(oral_history_content.combined_audio_up_to_date?).to be false
+    end
+  end
+
   describe "#set_combined_audio_m4a!" do
     it "can set" do
       oral_history_content.set_combined_audio_m4a!(File.open(m4a_path))

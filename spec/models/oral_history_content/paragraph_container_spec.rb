@@ -89,11 +89,11 @@ describe OralHistoryContent::ParagraphContainer do
 
       expect(oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)).to be true
 
-      # changing an audio file fingerprint makes it not fresh anymore, as
-      # start time offsets might be different.
-      mp3_asset.file_attacher.add_metadata("sha512" => "bad")
-      mp3_asset.file_attacher.write
-      mp3_asset.save!
+      # changing first audio file's duration changes later start times, not fresh anymore
+      first_audio = Asset.find(oral_history_content.extracted_paragraph_container.file_start_times.first.first)
+      first_audio.file_attacher.add_metadata("duration_seconds" => 10.minutes.to_f)
+      first_audio.file_attacher.write
+      first_audio.save!
       oral_history_content.reload
 
       expect(oral_history_content.extracted_paragraph_container.fresh?(oral_history_content: oral_history_content)).to be false

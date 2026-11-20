@@ -5,7 +5,7 @@ require 'csv'
 class Admin::OralHistoryRequestsController < AdminController
   def index
     status = params.dig(:query, :status)
-    scope = OralHistoryRequest.includes(:oral_history_requester, :work)
+    scope = OralHistoryRequest.includes(:patron, :work)
     unless status == "any" || status.blank?
       scope = scope.where(delivery_status: status)
     end
@@ -68,7 +68,7 @@ class Admin::OralHistoryRequestsController < AdminController
         work_url(request.work),
         request.oral_history_number,
         request.patron_name,
-        request.requester_email,
+        request.patron_email,
         request.patron_institution,
         request.intended_use,
         request.delivery_status
@@ -109,11 +109,11 @@ class Admin::OralHistoryRequestsController < AdminController
   def notice
     @notice ||= case disposition
       when "approve"
-        "Approve email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
+        "Approve email was sent to #{@oral_history_request.patron_email} for '#{@oral_history_request.work.title}'"
       when  "reject"
-        "Reject email was sent to #{@oral_history_request.requester_email} for '#{@oral_history_request.work.title}'"
+        "Reject email was sent to #{@oral_history_request.patron_email} for '#{@oral_history_request.work.title}'"
       when "dismiss"
-        "#{@oral_history_request.requester_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."      
+        "#{@oral_history_request.patron_email}'s request for '#{@oral_history_request.work.title}' has been dismissed. The request has been set aside and no email will be sent to the requester."      
     end
   end
 
