@@ -96,7 +96,7 @@ class HocrSearcher
   # this logic here, operating on parsed XML text should filter out false positives and only match what we want.
   def matching_ocrx_words_for(hocr_nokogiri)
     hocr_nokogiri.search("//*[@class=\"ocrx_word\"]").select do |ocrx_word|
-      @query.any? { |token| ocrx_word.text =~ /\b#{token}/i }
+      @query.any? { |token| ocrx_word.text =~ /\b#{Regexp.escape(token)}/i }
     end
   end
 
@@ -239,9 +239,10 @@ class HocrSearcher
     # match on beginning of words.
     #
     # The source in the DB is XML, so we need to XML-escape word-internal single and
-    # double quotes the same way tesseract does when creating the hocr
+    # double quotes the same way tesseract does when creating the hocr. And regex-escape,
+    # so user input is always a literal, not a (maybe invalid) regex.
     params = query.collect { |token| token.gsub("'", "&#39;").gsub('"', "&quot;") }.
-      collect { |token| "\\m#{token}" }
+      collect { |token| "\\m#{Regexp.escape(token)}" }
 
     # but now we have to DOUBLE the parameters, cause each clause had one ? for main table and one for leaf representatives
     params = params.collect { |re| [re, re] }.flatten

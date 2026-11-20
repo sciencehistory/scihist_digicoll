@@ -93,6 +93,9 @@ Rails.application.routes.draw do
   get "oral_history_requests", to: "oral_history_requests#index", as: "oral_history_requests"
   get "oral_history_requests/:id", to: "oral_history_requests#show", as: "oral_history_request"
 
+  # devise session management only, login routes are in oral_history_session
+  devise_for :patrons, skip: :all
+
   resource :oral_history_session, only: [:new, :create, :destroy] do
     member do
       get 'login/:token', action: :login, as: :login
@@ -322,6 +325,9 @@ Rails.application.routes.draw do
         patch "update_oral_history_content"
         put "store_input_docx_transcript"
         get "get_output_sequenced_docx_transcript"
+
+        post "request_new_handwriting_transcription", to: "handwriting_transcription#request_new_transcription"
+        delete "delete_handwriting_transcription", to: "handwriting_transcription#delete_transcription"
       end
       collection do
         get 'batch_update', to: "works#batch_update_form"
@@ -368,6 +374,8 @@ Rails.application.routes.draw do
 
     get "/fixity_report", to: "assets#fixity_report", as: "fixity_report"
     get "/storage_report", to: "storage_report#index", as: "storage_report"
+    get "/work_count_report", to: "work_count_report#index", as: "work_count_report"
+    get "/work_count_report/export_work_count_by_user", to: "work_count_report#export_work_count_by_user", as: "export_work_count_by_user"
     get "/orphan_report", to: "orphan_report#index", as: "orphan_report"
 
     resources :oral_history_requests, only: [:index, :show] do
@@ -382,6 +390,10 @@ Rails.application.routes.draw do
     get "/batch_create", to: "batch_create#new", as: "batch_create" # step 1
     post "/batch_create", to: "batch_create#add_files" # step 2
     post "/batch_create/finish", to: "batch_create#create" # step 3, create and redirect
+
+    get  "/batch_replace_metadata", to: "batch_replace_metadata#new", as: "batch_replace_metadata"
+    get  "/batch_replace_metadata/preview", to: "batch_replace_metadata#preview", as: "preview_batch_replace_metadata"
+    post "/batch_replace_metadata", to: "batch_replace_metadata#create"
 
     resources :digitization_queue_items do
       member do

@@ -125,9 +125,9 @@ class Admin::WorksController < AdminController
     authorize! :update, @work
     respond_to do |format|
       if @work.update(work_params)
-        # If this update also just switched ocr_requested, queue up a job to update its OCR
-        # data accordingly. If for some reason this is missed, we still have a nightly rake
-        # task to restore consistent state, but let's try to do it sooner.
+        # If this update also just switched text_extraction_mode, queue up a job to update its OCR
+        # (and handwriting transcription) data accordingly. If for some reason this is missed, we
+        # still have a nightly rake task to restore consistent state, but let's try to do it sooner.
         if @work.text_extraction_mode_previously_changed?
           WorkOcrCreatorRemoverJob.perform_later(@work)
         end
@@ -288,7 +288,7 @@ class Admin::WorksController < AdminController
     deriv_creator = CombinedAudioDerivativeCreator.new(@work)
     unless deriv_creator.available_members?
       redirect_to admin_work_path(@work, anchor: "tab=nav-oral-histories"), flash: {
-        error: "Combined audio derivatives cannot be created, because this oral history does not have any published audio segments."
+        error: "Combined audio derivatives cannot be created, because this oral history does not have any available audio segments."
       }
       return
     end
@@ -301,7 +301,7 @@ class Admin::WorksController < AdminController
       return
     end
 
-    CreateCombinedAudioDerivativesJob.perform_later(@work)
+    EnsureCombinedAudioDerivativeJob.perform_later(@work, force: true)
     sidecar = @work.oral_history_content!
     sidecar.combined_audio_derivatives_job_status = 'queued'
     sidecar.save!

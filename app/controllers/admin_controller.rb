@@ -3,6 +3,7 @@ class AdminController < ApplicationController
   layout "admin"
 
   before_action :authorize_access
+  before_action { Current.user = current_user }
 
   # For now, admin controllers allow anyone who is logged in
   def authorize_access

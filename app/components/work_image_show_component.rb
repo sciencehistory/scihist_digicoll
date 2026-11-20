@@ -85,9 +85,19 @@ class WorkImageShowComponent < ApplicationComponent
   end
 
   def has_transcription_or_translation?
-    # at least one 'english_translation' or 'transcription' that is not NULL and not empty string
+    # at least one 'english_translation' or 'transcription' -- or, if the
+    # gemini_htr_transcripts_feature_flag is on, 'handwriting_transcription' --
+    # that is not NULL and not empty string
+    conditions = [
+      "NULLIF(json_attributes ->> 'english_translation', '') is not null",
+      "NULLIF(json_attributes ->> 'transcription', '') is not null"
+    ]
+    if ScihistDigicoll::Env.lookup(:gemini_htr_transcripts_feature_flag)
+      conditions << "NULLIF(derived_metadata_jsonb ->> 'handwriting_transcription', '') is not null"
+    end
+
     @has_transcription_or_translation ||= ordered_viewable_members_scope.
-      where("NULLIF(json_attributes ->> 'english_translation', '') is not null OR NULLIF(json_attributes ->> 'transcription', '') is not null").
+      where(conditions.join(" OR ")).
       exists?
   end
 

@@ -39,7 +39,7 @@ describe "work factory" do
     end
 
     describe "combined_derivative" do
-      let(:work) { build(:oral_history_work, :combined_derivative)}
+      let(:work) { create(:oral_history_work, :combined_derivative)}
 
       it "is good" do
         combined = CombinedAudioDerivatives.new(work)

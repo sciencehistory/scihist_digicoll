@@ -32,8 +32,9 @@ class OralHistoryChunk < ApplicationRecord
   }
 
   # For testing or what have you, since `embedding` attribute is required.
-  # 3072 is size of OpenAI text-embedding-3-large we use
-  FAKE_EMBEDDING = [0.0] * 3072
+  # 3072 is size of OpenAI text-embedding-3-large
+  # Don't use 0.0 as that behaves badly as a vector.
+  FAKE_EMBEDDING = [1.0] * 3072
 
   # should be thread-safe, re-use connections
   OPENAI_CLIENT = OpenAI::Client.new(

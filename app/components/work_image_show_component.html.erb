@@ -27,7 +27,7 @@
           <%= DescriptionDisplayFormatter.new(work.description).format  %>
         </div>
 
-        <% if ScihistDigicoll::Env.lookup("feature_search_inside_work") && work.has_text_extraction? %>
+        <% if ScihistDigicoll::Env.lookup("feature_search_inside_work") && work.hocr_expected? %>
           <form class="work-page-viewer-search-controls" data-trigger="show-viewer-search">
             <div class="input-group">
               <label for="search-inside-q" class="input-group-text">

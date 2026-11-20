@@ -30,6 +30,7 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
 
     it "renders" do
       render_inline(component)
+      expect(page).to have_text("Out of 3 assets")
     end
   end
 
@@ -96,6 +97,7 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
 
     it "renders" do
       render_inline(component)
+      expect(page).to have_text("Source PDF page count: 1")
     end
   end
 
@@ -142,6 +144,38 @@ describe WorkAdminTextExtractInfoComponent, type: :component do
 
     it "has no warnings" do
       expect(component.warnings?).to eq false
+    end
+  end
+
+  describe "work with no text extraction set, but leftover OCR" do
+    let(:work) do
+      create(:work, text_extraction_mode: nil, language: ["English"], members: [
+        create(:asset, :with_ocr),
+        create(:asset)
+      ])
+    end
+
+    it "has extra_ocr_warning?, and explains it in the panel" do
+      expect(component.extra_ocr_warning?).to be true
+
+      render_inline(component)
+      expect(page).to have_text("Text extraction mode is none, but some assets still have OCR text.")
+    end
+  end
+
+  describe "work in handwriting transcription mode" do
+    let(:work) { create(:work, text_extraction_mode: "handwriting_transcription") }
+
+    it "has a Handwriting heading" do
+      expect(component.heading_label).to eq "Handwriting"
+    end
+
+    it "renders the transcription management card, with the feature flag on" do
+      allow(ScihistDigicoll::Env).to receive(:lookup).and_call_original
+      allow(ScihistDigicoll::Env).to receive(:lookup).with(:gemini_htr_transcripts_feature_flag).and_return(true)
+
+      render_inline(component)
+      expect(page).to have_text("Automatic handwriting transcription")
     end
   end
 end

@@ -279,3 +279,8 @@ gem "bot_challenge_page", ">= 1.1.0", "< 2"
 gem "ruby-openai", "~> 8.0"
 
 gem "json_schemer", "~> 2.5.0"
+
+# json 3.x breaks MultiJson.load in multi_json < 1.21.2, which Resque uses to decode
+# jobs: workers LPOP each job, fail to decode it, and silently drop it. Hold json
+# below 3 until we've upgraded multi_json and verified the Resque round trip.
+gem "json", "< 3"

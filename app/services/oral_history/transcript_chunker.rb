@@ -33,7 +33,9 @@ module OralHistory
     #    embedding, can we wait and try again? With maximum wait being this many seconds.
     #    Default 0, so, no.
     #
-    def initialize(oral_history_content:, allow_embedding_wait_seconds: 0)
+    # @param existing_embeddings [Hash] chunk text => embedding, reused for chunks with exactly that text
+    #
+    def initialize(oral_history_content:, allow_embedding_wait_seconds: 0, existing_embeddings: {})
       unless oral_history_content.kind_of?(OralHistoryContent)
         raise ArgumentError.new("argument must be OralHistoryContent, but was #{oral_history_content.class.name}")
       end
@@ -54,6 +56,7 @@ module OralHistory
         collect { |c| c.value.split(",").first.upcase }
 
       @allow_embedding_wait_seconds = allow_embedding_wait_seconds
+      @existing_embeddings = existing_embeddings
     end
 
     # different ways of extracting paragraphs for different types of source content,
@@ -108,12 +111,15 @@ module OralHistory
       chunk_arrays.each_slice(BATCH_SIZE) do |batch|
         records = batch.collect { |list_of_paragraphs| build_chunk_record(list_of_paragraphs) }
 
-        # TODO, get embeddings, for now we use dummy
+        # reuse embeddings for unchanged text, only fetch for the rest
+        records.each { |r| r.embedding = @existing_embeddings[r.text] }
+        needs_embedding = records.find_all { |r| r.embedding.nil? }
+
         if use_dummy_embedding
-          records.each { |r| r.embedding = OralHistoryChunk::FAKE_EMBEDDING }
-        else
+          needs_embedding.each { |r| r.embedding = OralHistoryChunk::FAKE_EMBEDDING }
+        elsif needs_embedding.present?
           embeddings = begin
-            OralHistoryChunk.get_openai_embeddings(*records.collect(&:text))
+            OralHistoryChunk.get_openai_embeddings(*needs_embedding.collect(&:text))
           rescue Faraday::TooManyRequestsError => e
             # got a 429 from openai,
             if should_retry_openai_rate_limit(e)
@@ -123,13 +129,11 @@ module OralHistory
             end
           end
 
-          if embeddings.count != records.count
-            raise StandardError.new("Fetched OpenAI embeddings in batch, but count does not equal record count! #{embeddings.count}, #{records.count}")
+          if embeddings.count != needs_embedding.count
+            raise StandardError.new("Fetched OpenAI embeddings in batch, but count does not equal record count! #{embeddings.count}, #{needs_embedding.count}")
           end
 
-          0.upto(embeddings.count - 1) do |index|
-            records[index].embedding = embeddings[index]
-          end
+          needs_embedding.zip(embeddings).each { |record, embedding| record.embedding = embedding }
         end
 
         # little bit easier on the DB to save em in batches in a transaction

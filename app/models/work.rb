@@ -23,6 +23,11 @@ class Work < Kithe::Work
 
   belongs_to :digitization_queue_item, optional: true, class_name: "Admin::DigitizationQueueItem"
 
+  belongs_to :created_by, optional: true, class_name: "User"
+  before_create { self.created_by ||= Current.user }
+  belongs_to :last_published_by, optional: true, class_name: "User"
+  before_validation { self.last_published_by = Current.user if published? && published_changed? }
+
   has_many :on_demand_derivatives, inverse_of: :work, dependent: :destroy
   has_many :oral_history_requests, inverse_of: :work, dependent: :destroy
 
@@ -96,7 +101,7 @@ class Work < Kithe::Work
   # actual OCR extraction; pdf_extraction is more of a signal that we plan for it to be there, may not
   # automatically trigger it.
   attr_json :text_extraction_mode, :string
-  validates :text_extraction_mode, inclusion: { in: ["ocr", "pdf_extraction"], allow_nil: true }
+  validates :text_extraction_mode, inclusion: { in: ["ocr", "pdf_extraction", "handwriting_transcription"], allow_nil: true }
   normalizes :text_extraction_mode, with: -> text_extraction { text_extraction.presence }
 
 
@@ -127,11 +132,15 @@ class Work < Kithe::Work
     text_extraction_mode == "pdf_extraction"
   end
 
+  def handwriting_transcription_mode?
+    text_extraction_mode == "handwriting_transcription"
+  end
+
   # to know if we REALLY have text, we'd have to look at the children to see if they contain hocr
   # But we often want to know without fetching children, so text_extraction_mode at the work
   # level is used as an expression of intent, that can also be used for triggering extraction routines
   # etc.
-  def has_text_extraction?
+  def hocr_expected?
     ocr_requested? || pdf_text_extraction?
   end
 

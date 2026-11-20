@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_16_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_29_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -195,12 +195,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_120000) do
 
   create_table "kithe_models", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
+    t.bigint "created_by_id"
     t.jsonb "derived_metadata_jsonb"
     t.bigint "digitization_queue_item_id"
     t.jsonb "file_data"
     t.string "friendlier_id", default: -> { "kithe_models_friendlier_id_gen('2176782336'::bigint, '78364164095'::bigint)" }, null: false
     t.jsonb "json_attributes"
     t.integer "kithe_model_type", null: false
+    t.bigint "last_published_by_id"
     t.uuid "leaf_representative_id"
     t.uuid "parent_id"
     t.integer "position"
@@ -211,8 +213,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_120000) do
     t.string "title", null: false
     t.string "type", null: false
     t.datetime "updated_at", precision: nil, null: false
+    t.index ["created_by_id"], name: "index_kithe_models_on_created_by_id"
     t.index ["file_data"], name: "index_kithe_models_on_file_data", using: :gin
     t.index ["friendlier_id"], name: "index_kithe_models_on_friendlier_id", unique: true
+    t.index ["last_published_by_id"], name: "index_kithe_models_on_last_published_by_id"
     t.index ["leaf_representative_id"], name: "index_kithe_models_on_leaf_representative_id"
     t.index ["parent_id"], name: "index_kithe_models_on_parent_id"
     t.index ["representative_id"], name: "index_kithe_models_on_representative_id"
@@ -309,8 +313,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_120000) do
   end
 
   create_table "oral_history_requester_emails", force: :cascade do |t|
+    t.datetime "confirmed_at"
     t.datetime "created_at", null: false
     t.string "email", null: false
+    t.text "institution_ciphertext"
+    t.text "name_ciphertext"
+    t.text "registration_reason_ciphertext"
+    t.datetime "remember_created_at"
+    t.uuid "session_token", default: -> { "gen_random_uuid()" }, null: false
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_oral_history_requester_emails_on_email", unique: true
   end
@@ -374,6 +384,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_16_120000) do
   add_foreign_key "kithe_models", "kithe_models", column: "leaf_representative_id"
   add_foreign_key "kithe_models", "kithe_models", column: "parent_id"
   add_foreign_key "kithe_models", "kithe_models", column: "representative_id"
+  add_foreign_key "kithe_models", "users", column: "created_by_id"
+  add_foreign_key "kithe_models", "users", column: "last_published_by_id"
   add_foreign_key "on_demand_derivatives", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "kithe_models", column: "work_id"
   add_foreign_key "oral_history_access_requests", "oral_history_requester_emails"

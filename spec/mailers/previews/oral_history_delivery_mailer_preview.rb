@@ -24,7 +24,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
 
     request = OralHistoryRequest.
       create_with(patron_name: "John Smith",
-                  patron_email: "smith@example.com",
+                  patron: sample_patron,
                   intended_use: "just cause").
       find_or_create_by(work: work)
 
@@ -74,6 +74,10 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
 
   protected
 
+  def sample_patron
+    Patron.create_or_find_by!(email: "smith@example.com")
+  end
+
   def sample_work_title(file_type:)
     "Faked Sample OH Request work: #{file_type.to_s}"
   end
@@ -109,7 +113,7 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
     request = OralHistoryRequest.create!(
       work: work,
       patron_name: "John Smith",
-      patron_email: "smith@example.com",
+      patron: sample_patron,
       intended_use: "just cause"
     )
   end

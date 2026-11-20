@@ -12,6 +12,6 @@ class WorkOcrCreatorRemoverJob < ApplicationJob
   discard_on ActiveJob::DeserializationError
 
   def perform(work)
-    WorkOcrCreatorRemover.new(work).process
+    WorkTranscriptionCreatorRemover.new(work).process
   end
 end

@@ -51,7 +51,9 @@ class OralHistoryContent < ApplicationRecord
 
   after_save :delete_chunks_on_transcript_change
 
-  include CombinedAudioUploader::Attachment.new(:combined_audio_m4a, store: :combined_audio_derivatives)
+  include CombinedAudioUploader::Attachment.new(:combined_audio_m4a)
+
+  after_update_commit :ensure_combined_audio_after_change
 
   # Generic attachment with with no custom uploader behavior at all
   include GenericActiveRecordUploader::Attachment.new(:input_docx_transcript)
@@ -99,6 +101,37 @@ class OralHistoryContent < ApplicationRecord
 
   def available_by_request?
     availability_automatic_request? || availability_reviewed_request?
+  end
+
+  # If an OH is fully public, we store it's derivatives in a public cacheable S3 bucket,
+  # but if it's by-request only we need to store it in a private bucket and deliver temporary URLs.
+  def combined_audio_store_key
+    availability_direct? ? :combined_audio_derivatives : :restricted_combined_audio_derivatives
+  end
+
+  # Has a file, and stored fingerprint matches current available audio. Fetches work members.
+  def combined_audio_up_to_date?
+    combined_audio_m4a.present? &&
+      combined_audio_fingerprint == CombinedAudioDerivativeCreator.new(work).fingerprint
+  end
+
+  # embargoed OHs should have no combined audio at all
+  def combined_audio_in_correct_storage?
+    combined_audio_m4a.nil? ||
+      (!availability_embargoed? && combined_audio_m4a.storage_key.to_sym == combined_audio_store_key)
+  end
+
+  # Up to date and in correct storage. Fetches work members.
+  def combined_audio_good?
+    combined_audio_in_correct_storage? && combined_audio_up_to_date?
+  end
+
+  # shrine deletes the old file on save
+  def remove_combined_audio!
+    self.combined_audio_m4a = nil
+    self.combined_audio_fingerprint = nil
+    self.combined_audio_component_metadata = nil
+    save!
   end
 
   # scopes for finding certain kinds of OH's. We add ".distinct" to them all to make them all composable,
@@ -198,6 +231,13 @@ class OralHistoryContent < ApplicationRecord
     self.combined_audio_derivatives_job_status = "failed"
     self.save!
     raise e
+  end
+
+  # mode change can change storage location and which audio is available
+  def ensure_combined_audio_after_change
+    if saved_change_to_availability_mode?
+      EnsureCombinedAudioDerivativeJob.perform_later(work)
+    end
   end
 
   def delete_chunks_on_transcript_change

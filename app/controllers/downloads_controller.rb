@@ -101,7 +101,10 @@ class DownloadsController < ApplicationController
 
     @only_fragment = params[:fragment] == "true"
 
-    render layout: !@only_fragment
+    # explicit respond_to so non-html formats (eg bots sending Accept: text/markdown) get a 406, not a 500 MissingTemplate
+    respond_to do |format|
+      format.html { render layout: !@only_fragment }
+    end
   end
 
   # For OH, we redirect to transcript PDF if present, looking up from work id
@@ -143,10 +146,9 @@ class DownloadsController < ApplicationController
   def is_requestable_oral_history_asset?(asset)
     return false unless asset.oh_available_by_request?
 
-    oh_requester = OralHistorySessionsController.fetch_oral_history_current_requester(request: request)
-    return false unless oh_requester
+    return false unless current_patron
 
-    oh_requester.has_approved_request_for_asset?(asset)
+    current_patron.has_approved_request_for_asset?(asset)
   end
 
   # sets @derivative (for derivatives action), raises RecordNotFound if we can't find it.

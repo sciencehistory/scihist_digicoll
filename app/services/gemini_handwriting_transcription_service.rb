@@ -29,11 +29,12 @@ class GeminiHandwritingTranscriptionService
   # Asks Gemini to transcribe the work's images, and attaches the transcripts to them.
   def add_transcription!
     if work_eligibility_problems.present?
-      raise IneligibleWorkError,
-        "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
+      msg = "We will not send Work #{work.friendlier_id} to be transcribed, because #{work_eligibility_problems.to_sentence}."
+      update_handwriting_transcription_request(status: 'failure', error: msg)
+      raise IneligibleWorkError, msg
     end
 
-    update_handwriting_transcription_request(status: 'started')
+    update_handwriting_transcription_request(status: 'started', start_time: Time.current)
 
     Dir.mktmpdir do |dir|
       staged_images = stage_images(dir)
@@ -52,15 +53,15 @@ class GeminiHandwritingTranscriptionService
   # A rare operation, so we keep it simple: reindex once at the end, instead of
   # once per asset.
   def remove_transcription!
-    Kithe::Indexable.index_with(disable_callbacks: true) do
-      work.members.each do |member|
-        next unless member.is_a?(Asset) && member.handwriting_transcription.present?
-
-        member.update!(handwriting_transcription: nil)
+    ActiveRecord::Base.transaction do
+      Kithe::Indexable.index_with(disable_callbacks: true) do
+          work.members.each do |member|
+            next unless member.is_a?(Asset) && member.handwriting_transcription.present?
+            member.update!(handwriting_transcription: nil)
+        end
+        work.handwriting_transcription_request = nil
+        work.save!
       end
-
-      work.handwriting_transcription_request = nil
-      work.save!
     end
 
     ReindexWorksJob.perform_later([work.id])
@@ -76,6 +77,18 @@ class GeminiHandwritingTranscriptionService
       problems  << "we are limiting the number of requested pages to transcribe to #{MAX_FILES_TO_TRANSCRIBE}"
     end
     problems
+  end
+
+  # Starts a fresh request, with status 'queued' -- forgetting anything about any previous
+  # request, such as its error -- and enqueues the job that will carry it out.
+  #
+  # Always use this, rather than enqueuing HandwritingTranscriptionJob directly, so that
+  # the work shows the request is underway.
+  def queue_transcription!
+    work.handwriting_transcription_request = Work::HandwritingTranscriptionRequest.new(status: 'queued')
+    work.save!
+
+    HandwritingTranscriptionJob.perform_later(work)
   end
 
   private
@@ -111,6 +124,11 @@ class GeminiHandwritingTranscriptionService
         mime_type: image_derivative.mime_type
       }
     end
+  rescue StandardError => e
+    # If we can't stage the images, the whole request has failed.
+    msg = "Could not stage images to send to Gemini: #{e.class}: #{e.message}"
+    update_handwriting_transcription_request(status: 'failure', error: msg)
+    raise
   end
 
   def gemini_client
@@ -127,7 +145,7 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    update_handwriting_transcription_request(status: 'requested', start_time: Time.current)
+    update_handwriting_transcription_request(status: 'requested')
 
     model = ScihistDigicoll::Env.lookup("gemini_model")
 
@@ -280,12 +298,14 @@ class GeminiHandwritingTranscriptionService
     end
   end
 
-  # Published IMAGE assets with a derivative we consider high-res enough to use.
+  # IMAGE assets with a derivative we consider high-res enough to use. Unpublished assets
+  # are included: publishing an asset will also publish its transcription.
   def eligible_assets
     @eligible_assets ||= work.
       members.
       includes(:leaf_representative).
-      where(published: true, type: Asset.sti_name).
+      where(type: Asset.sti_name).
+      where("role is null").
       order(:position).
       select do |asset|
         representative = asset.leaf_representative

@@ -12,8 +12,11 @@ describe OralHistory::ChunkFetcher do
 
   # These are all arbitrary, we just took some random sample vectors, having them
   # not be all zero gives us more realistic data, give us a prefix, we'll pad
-  # with zeroes to correct length.
+  # with zeroes to correct length. With no prefix, a non-zero vector (an all-zero
+  # one has NaN cosine distance).
   def fake_vector(*prefix)
+    return OralHistoryChunk::FAKE_EMBEDDING if prefix.empty?
+
     prefix + ([0.0] * (OralHistoryChunk::FAKE_EMBEDDING.length - prefix.length))
   end
 
