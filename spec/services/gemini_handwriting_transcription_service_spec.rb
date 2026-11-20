@@ -303,7 +303,35 @@ describe GeminiHandwritingTranscriptionService do
     it "raises InvalidResponseError when the response has no text" do
       expect {
         service.send(:extract_generated_text!, gemini_response(text: nil))
-      }.to raise_error(described_class::InvalidResponseError, "Gemini returned an empty response")
+      }.to raise_error(described_class::InvalidResponseError, /Gemini returned no transcript \(reason: none given\)/)
+    end
+
+    it "reports the reason and the response when Gemini blocks the prompt" do
+      envelope = {
+        "promptFeedback" => { "blockReason" => "OTHER" },
+        "usageMetadata" => { "promptTokenCount" => 1234, "totalTokenCount" => 1234 },
+        "modelVersion" => "gemini-test-model",
+        "responseId" => "abc123"
+      }
+
+      expect {
+        service.send(:extract_generated_text!, gemini_response(envelope: envelope))
+      }.to raise_error(described_class::InvalidResponseError) { |error|
+        expect(error.message).to start_with("Gemini returned no transcript (reason: OTHER).")
+        expect(error.message).to include('"responseId":"abc123"')
+      }
+
+      request = work.reload.handwriting_transcription_request
+      expect(request.status).to eq "failure"
+      expect(request.error).to start_with("Gemini returned no transcript (reason: OTHER).")
+    end
+
+    it "reports the finish reason when Gemini stops without producing text" do
+      envelope = { "candidates" => [{ "finishReason" => "PROHIBITED_CONTENT" }] }
+
+      expect {
+        service.send(:extract_generated_text!, gemini_response(envelope: envelope))
+      }.to raise_error(described_class::InvalidResponseError, /no transcript \(reason: PROHIBITED_CONTENT\)/)
     end
 
     it "raises InvalidResponseError when the response envelope isn't valid JSON" do
@@ -369,7 +397,7 @@ describe GeminiHandwritingTranscriptionService do
     it "rejects blank stdout" do
       expect_invalid_response(
         " \n\t ",
-        message: "Gemini returned an empty response"
+        message: "Gemini returned no transcript"
       )
     end
 
@@ -520,7 +548,8 @@ describe GeminiHandwritingTranscriptionService do
   # Builds a stand-in for the HTTP::Response Gemini's generateContent endpoint
   # returns -- either a successful envelope wrapping the given generated `text`,
   # or an error envelope with the given `error_message`.
-  def gemini_response(text: nil, status_code: 200, error_message: nil)
+  # Pass `envelope:` to send a whole response body of your own, instead of one wrapping `text`.
+  def gemini_response(text: nil, status_code: 200, error_message: nil, envelope: nil)
     status = instance_double(
       HTTP::Response::Status,
       success?: (200..299).cover?(status_code),
@@ -528,7 +557,9 @@ describe GeminiHandwritingTranscriptionService do
     )
 
     body =
-      if error_message
+      if envelope
+        JSON.generate(envelope)
+      elsif error_message
         JSON.generate("error" => { "message" => error_message })
       else
         JSON.generate("candidates" => [{ "content" => { "parts" => [{ "text" => text }] } }])
