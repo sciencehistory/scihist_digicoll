@@ -86,7 +86,8 @@ class GeminiHandwritingTranscriptionService
   # the work shows the request is underway.
   def queue_transcription!
     work.handwriting_transcription_request = Work::HandwritingTranscriptionRequest.new(status: 'queued')
-    work.save!
+    # this metadata isn't indexed, so no need to talk to Solr here
+    Kithe::Indexable.index_with(disable_callbacks: true) { work.save! }
 
     HandwritingTranscriptionJob.perform_later(work)
   end
