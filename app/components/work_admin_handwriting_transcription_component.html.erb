@@ -20,15 +20,10 @@
 
         <% if transcription_request.page_notes.present? %>
           <ul class="small">
-            <%# In page order, then notes about any assets that have since been deleted. %>
-            <% (noted_assets.keys | transcription_request.page_notes.keys).each do |friendlier_id| %>
+            <% transcription_request.page_notes.each do |page_note| %>
               <li>
-                <% if (asset = noted_assets[friendlier_id]) %>
-                  <%= link_to asset.title, admin_asset_path(asset) %>:
-                <% else %>
-                  <%= friendlier_id %>:
-                <% end %>
-                <%= transcription_request.page_notes[friendlier_id] %>
+                <%= link_to page_note["friendlier_id"], admin_asset_path(page_note["friendlier_id"]) %>:
+                <%= page_note["note"] %>
               </li>
             <% end %>
           </ul>

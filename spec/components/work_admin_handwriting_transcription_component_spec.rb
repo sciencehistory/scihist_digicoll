@@ -77,30 +77,27 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
     end
 
     describe "with notes from Gemini" do
-      let(:asset) { create(:asset, title: "Page two") }
       let(:request_attributes) do
         {
           status: "success",
           general_feedback: "Mostly legible.",
-          page_notes: { asset.friendlier_id => "A diagram was omitted.", "deleted1" => "Smudged." }
+          page_notes: [
+            { "friendlier_id" => "abc123", "note" => "A diagram was omitted." },
+            { "friendlier_id" => "def456", "note" => "Smudged." }
+          ]
         }
       end
-      let(:work) do
-        create(:work,
-          members: [asset],
-          text_extraction_mode: text_extraction_mode,
-          handwriting_transcription_request: request_attributes
-        )
-      end
 
-      it "shows the general feedback, and each page's notes, linked to its asset when it still exists" do
+      it "shows the general feedback, and each page's notes in order, linked to its asset" do
         render_inline described_class.new(work)
 
         expect(page).to have_text("Notes from Gemini")
         expect(page).to have_text("Mostly legible.")
-        expect(page).to have_css("li", text: /Page two:\s+A diagram was omitted\./)
-        expect(page).to have_link("Page two", href: "/admin/asset_files/#{asset.friendlier_id}")
-        expect(page).to have_css("li", text: /deleted1:\s+Smudged\./)
+        expect(page.all("li").map { |li| li.text.squish }).to eq([
+          "abc123: A diagram was omitted.",
+          "def456: Smudged."
+        ])
+        expect(page).to have_link("abc123", href: "/admin/asset_files/abc123")
       end
     end
 

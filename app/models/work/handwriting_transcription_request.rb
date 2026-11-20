@@ -7,8 +7,9 @@ class Work
   # the terminal statuses, "success" or "failure". On failure, `error` holds the message.
   #
   # Once Gemini's response has been accepted, we also keep the notes it sent along with the
-  # transcripts: `general_feedback` about the whole batch, and `page_notes`, a hash of
-  # asset friendlier_id => notes about that page.
+  # transcripts: `general_feedback` about the whole batch, and `page_notes`, an array of
+  # { "friendlier_id" => ..., "note" => ... } hashes, one per page Gemini had notes about,
+  # in the order the pages were sent.
   #
   # Unknown keys are allowed, so we can add more details about requests later
   # without having to change this class.
