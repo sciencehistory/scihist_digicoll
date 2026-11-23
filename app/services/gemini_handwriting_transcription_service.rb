@@ -13,6 +13,7 @@ class GeminiHandwritingTranscriptionService
   class InvalidResponseError < Error; end
   class UnsupportedImageTypeError < Error; end
   class IneligibleWorkError < Error; end
+  class MissingChecksumError < Error; end
 
   MAX_FILES_TO_TRANSCRIBE = 10
 
@@ -91,6 +92,20 @@ class GeminiHandwritingTranscriptionService
     HandwritingTranscriptionJob.perform_later(work)
   end
 
+  # A fingerprint of the images we would send to Gemini: the stored checksums of their
+  # original files, in page order. It changes when an image is replaced, reordered, added or
+  # removed -- but not when the work's metadata, our prompt, or the images' derivatives change.
+  #
+  # Checksums are made on ingest, so a missing one means something is badly wrong: we raise.
+  def source_fingerprint
+    digests = eligible_assets.map { |asset| asset.leaf_representative.sha512 }
+    if digests.any?(&:blank?)
+      raise MissingChecksumError, "An image on work #{work.friendlier_id} is missing its sha512 checksum"
+    end
+
+    Digest::MD5.hexdigest(digests.join)
+  end
+
   private
 
   attr_reader :work
@@ -150,7 +165,8 @@ class GeminiHandwritingTranscriptionService
     update_handwriting_transcription_request(
       status: 'requested',
       gemini_model: model,
-      source_version: ENV['SOURCE_VERSION'].presence
+      source_version: ENV['SOURCE_VERSION'].presence,
+      source_fingerprint: source_fingerprint
     )
 
     gemini_client.post(
@@ -165,6 +181,9 @@ class GeminiHandwritingTranscriptionService
     update_handwriting_transcription_request(status: 'failure', error: msg)
 
     raise AdapterError, msg
+  rescue MissingChecksumError => e
+    update_handwriting_transcription_request(status: 'failure', error: e.message)
+    raise
   end
 
   # The transcript, and notes about the transcription process,

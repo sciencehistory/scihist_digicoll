@@ -23,8 +23,20 @@ class WorkAdminHandwritingTranscriptionComponent < ApplicationComponent
     work.handwriting_transcription_request
   end
 
+  def transcription_service
+    @transcription_service ||= GeminiHandwritingTranscriptionService.new(work: work)
+  end
+
   def eligibility_problems
-    @eligibility_problems ||= GeminiHandwritingTranscriptionService.new(work: work).work_eligibility_problems
+    @eligibility_problems ||= transcription_service.work_eligibility_problems
+  end
+
+  # The work's images have changed (replaced, reordered, added or removed) since the transcript
+  # was requested. Requests from before we kept fingerprints can't tell, so aren't called stale.
+  def stale_transcript?
+    return false unless transcription_request&.success? && transcription_request.source_fingerprint.present?
+
+    transcription_request.source_fingerprint != transcription_service.source_fingerprint
   end
 
   def status_message

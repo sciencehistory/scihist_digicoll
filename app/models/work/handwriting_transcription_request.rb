@@ -34,6 +34,10 @@ class Work
     attr_json :gemini_model, :string
     attr_json :source_version, :string
 
+    # Also recorded when the request is sent: a fingerprint of the images we sent, in order.
+    # If the work's current fingerprint differs, the transcript is stale. See
+    # GeminiHandwritingTranscriptionService#source_fingerprint.
+    attr_json :source_fingerprint, :string
 
     def success?
       status == "success"
