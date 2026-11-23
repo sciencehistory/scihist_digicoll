@@ -71,7 +71,7 @@ class OralHistoryRegistrationsController < ApplicationController
 
     message = "You are already registered and signed in."
     if request.xhr?
-      render partial: "oral_history_requests/alert", layout: false, locals: { alert_type: "success", message: message }
+      render partial: "oral_history_requests/alert", layout: false, locals: { alert_type: "success", message: message, title: "Register for Oral History Access" }
     else
       redirect_to work_path(@work.friendlier_id), flash: { success: message }
     end

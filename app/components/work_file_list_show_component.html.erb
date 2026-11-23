@@ -30,7 +30,7 @@
       <div class="show-sub-head-body request-section">
         <div class="pe-2 mt-3">
 
-          <p><span class="by-request-items-label">By request</span> <%= available_by_request_sentence %></p>
+          <p><span class="by-request-items-label"><%= @work.oral_history_content&.availability_automatic_request? ? "Registered patrons" : "By request" %></span> <%= available_by_request_sentence %></p>
 
           <% if @work.oral_history_content&.availability_automatic_request? %>
             <p>

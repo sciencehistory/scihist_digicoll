@@ -1,10 +1,6 @@
 <%= render Blacklight::System::ModalComponent.new do |component| %>
   <% component.with_title do %>
-    <% if @work.oral_history_content.availability_reviewed_request? %>
-      Request Oral History Access
-    <% else %>
-      Get Oral History Access
-    <% end %>
+    Request Oral History Access
   <% end %>
 
   <%= render 'form', oral_history_request: @oral_history_request %>
