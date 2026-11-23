@@ -8,6 +8,14 @@
       <p>Started: <%= formatted_start_time %></p>
     <% end %>
 
+    <% if transcription_request&.gemini_model.present? %>
+      <p>Gemini model: <code><%= transcription_request.gemini_model %></code></p>
+    <% end %>
+
+    <% if transcription_request&.source_version.present? %>
+      <p>Code version: <code><%= transcription_request.source_version %></code></p>
+    <% end %>
+
     <% if eligibility_warning %>
       <p>
         <i class="fa fa-exclamation-triangle text-danger" aria-hidden="true"></i>
