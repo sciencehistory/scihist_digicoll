@@ -34,6 +34,36 @@ require "view_component/test_helpers"
 require 'capybara/rspec'
 require 'capybara/rails'
 
+# Chrome 158 rejects the origin: '*' that Capybara::Selenium::Driver::ChromeDriver#reset! passes
+# to Storage.clearDataForOrigin, so every JS system spec failed in teardown.
+# https://github.com/teamcapybara/capybara/issues/2865
+require 'capybara/selenium/driver'
+SanePatch.patch('capybara', '<= 3.40.0', details: "Check whether capybara has fixed https://github.com/teamcapybara/capybara/issues/2865, and if so remove this patch") do
+  Capybara::Selenium::Driver::ChromeDriver.prepend(Module.new do
+    # remember the app origin before super navigates to about:blank
+    def reset!
+      @origin_before_reset = begin
+        uri = URI.parse(current_url.to_s) if @browser
+        "#{uri.scheme}://#{uri.host}:#{uri.port}" if uri&.scheme&.start_with?("http")
+      rescue StandardError
+        nil
+      end
+
+      super
+    end
+
+    # Replace the wildcard clear: cookies globally, storage only for the origin the test used.
+    def execute_cdp(cmd, params = {})
+      return super unless cmd == 'Storage.clearDataForOrigin' && params[:origin] == '*'
+
+      delete_all_cookies
+      if @origin_before_reset && storage_types_to_clear.include?('local_storage')
+        super(cmd, params.merge(origin: @origin_before_reset, storageTypes: 'local_storage'))
+      end
+    end
+  end)
+end
+
 require 'scihist_digicoll/solr_wrapper_util'
 
 #Capybara.server = :puma
