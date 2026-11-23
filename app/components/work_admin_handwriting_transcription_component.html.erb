@@ -8,6 +8,29 @@
       <p>Started: <%= formatted_start_time %></p>
     <% end %>
 
+    <% if transcription_request&.general_feedback.present? || transcription_request&.page_notes.present? %>
+
+      <div class="p-3 border bg-light mb-3">
+        <h6>Notes from Gemini:</h6>
+
+        <% if transcription_request.general_feedback.present? %>
+          <p class="small"><%= transcription_request.general_feedback %></p>
+        <% end %>
+
+
+        <% if transcription_request.page_notes.present? %>
+          <ul class="small">
+            <% transcription_request.page_notes.each do |page_note| %>
+              <li>
+                <%= link_to page_note["friendlier_id"], admin_asset_path(page_note["friendlier_id"]) %>:
+                <%= page_note["note"] %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    <% end %>
+
     <% if transcription_request&.gemini_model.present? %>
       <p>Gemini model: <code><%= transcription_request.gemini_model %></code></p>
     <% end %>

@@ -82,6 +82,32 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       expect(new_request_link["href"]).to eq("/admin/works/#{work.friendlier_id}/request_new_handwriting_transcription")
       expect(new_request_link["data-method"]).to eq("post")
       expect(new_request_link["data-confirm"]).to match(/delete the current transcript/)
+      expect(page).not_to have_text("Notes from Gemini")
+    end
+
+    describe "with notes from Gemini" do
+      let(:request_attributes) do
+        {
+          status: "success",
+          general_feedback: "Mostly legible.",
+          page_notes: [
+            { "friendlier_id" => "abc123", "note" => "A diagram was omitted." },
+            { "friendlier_id" => "def456", "note" => "Smudged." }
+          ]
+        }
+      end
+
+      it "shows the general feedback, and each page's notes in order, linked to its asset" do
+        render_inline described_class.new(work)
+
+        expect(page).to have_text("Notes from Gemini")
+        expect(page).to have_text("Mostly legible.")
+        expect(page.all("li").map { |li| li.text.squish }).to eq([
+          "abc123: A diagram was omitted.",
+          "def456: Smudged."
+        ])
+        expect(page).to have_link("abc123", href: "/admin/asset_files/abc123")
+      end
     end
 
     it "links to the transcript on the public work page" do
