@@ -1,8 +1,8 @@
 require 'digest'
 
 class OralHistoryContent
-  # A serializable container for paragraphs plus some source/provenance metadata
-  # about them!
+  # A serializable container for paragraphs extracted from a transcript PDF, plus some
+  # source/provenance metadata about them! (OHMS and plain-text sources don't use this.)
   #
   # Includes logic for fingerprinting and checking freshness etc.
   class ParagraphContainer
@@ -95,17 +95,21 @@ class OralHistoryContent
       }
     end
 
-    # Will fetch the work#members if not already fetched. Fingerprinting includes
-    # audio files as well as PDF becuase the audio file lengths are used to calculate
-    # offsets for some internal timestamps.
+    # Will fetch the work#members if not already fetched. Fresh if PDF is unchanged, and audio
+    # file start times are unchanged, since we use those to calculate timestamp offsets.
     def fresh?(oral_history_content:)
       combined_audio = CombinedAudioDerivativeCreator.new(oral_history_content.work)
       pdf_asset = oral_history_content.work.members.find { |a| a.respond_to?(:role) && a.role == "transcript" }
 
-      self.source_fingerprint == {
-        "pdf_md5" => pdf_asset.file_metadata&.dig("md5"),
-        "combined_audio_fingerprint" => combined_audio.fingerprint
-      }
+      self.pdf_md5 == pdf_asset.file_metadata&.dig("md5") &&
+        normalize_start_times(self.file_start_times) == normalize_start_times(combined_audio.calculate_start_times)
+    end
+
+    private
+
+    # stored value has been through JSON, so normalize both for comparison
+    def normalize_start_times(start_times)
+      (start_times || []).map { |id, seconds| [id.to_s, seconds.to_f] }
     end
   end
 end

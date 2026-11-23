@@ -70,6 +70,38 @@ describe GeminiHandwritingTranscriptionService do
         .to eq(sample_transcripts)
     end
 
+    it "keeps Gemini's general feedback, and its page notes labelled by asset, in page order" do
+      allow(service).to receive(:request_transcription) do |images|
+        pages = pages_for(images.map { |image| image.fetch(:filename) })
+        pages[0]["page_notes"] = ""
+        pages[1]["page_notes"] = "A diagram at the bottom was omitted."
+        pages[2]["page_notes"] = "Smudged."
+
+        gemini_response(text: JSON.generate("general_feedback" => "Mostly legible.", "pages" => pages))
+      end
+
+      service.add_transcription!
+
+      request = work.reload.handwriting_transcription_request
+      expect(request.general_feedback).to eq "Mostly legible."
+      expect(request.page_notes).to eq([
+        { "friendlier_id" => asset2.friendlier_id, "note" => "A diagram at the bottom was omitted." },
+        { "friendlier_id" => asset3.friendlier_id, "note" => "Smudged." }
+      ])
+    end
+
+    it "stores no notes when Gemini sends none" do
+      allow(service).to receive(:request_transcription) do |images|
+        gemini_response(text: JSON.generate("pages" => pages_for(images.map { |image| image.fetch(:filename) })))
+      end
+
+      service.add_transcription!
+
+      request = work.reload.handwriting_transcription_request
+      expect(request.general_feedback).to be_nil
+      expect(request.page_notes).to be_nil
+    end
+
     it "records start_time when the request is started" do
       allow(service).to receive(:request_transcription) do |images|
         gemini_response(text: JSON.generate("pages" => pages_for(images.map { |image| image.fetch(:filename) })))
@@ -216,6 +248,38 @@ describe GeminiHandwritingTranscriptionService do
       expect(work.reload.handwriting_transcription_request.status).to eq("requested")
     end
 
+    describe "provenance" do
+      before do
+        allow(service.send(:gemini_client)).to receive(:post).and_return(gemini_response(text: "{}"))
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("SOURCE_VERSION").and_return(source_version)
+      end
+
+      describe "with SOURCE_VERSION set" do
+        let(:source_version) { "mock_git_sha" }
+
+        it "records the Gemini model and the source version" do
+          service.send(:request_transcription, staged_images)
+
+          request = work.reload.handwriting_transcription_request
+          expect(request.gemini_model).to eq "gemini-test-model"
+          expect(request.source_version).to eq "mock_git_sha"
+        end
+      end
+
+      describe "without SOURCE_VERSION" do
+        let(:source_version) { nil }
+
+        it "records the Gemini model, and no source version" do
+          service.send(:request_transcription, staged_images)
+
+          request = work.reload.handwriting_transcription_request
+          expect(request.gemini_model).to eq "gemini-test-model"
+          expect(request.source_version).to be_nil
+        end
+      end
+    end
+
     it "raises AdapterError when Gemini can't be reached at all" do
       allow(service.send(:gemini_client)).to receive(:post).and_raise(HTTP::TimeoutError.new("timed out"))
 
@@ -266,6 +330,20 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(WebMock).to have_requested(:post, solr_update_url_regex).once.with { |request|
         request.body.include?("Dear Cousin James")
+      }
+    end
+
+    # The status updates save (and so reindex) the work before the transcripts are attached,
+    # which used to leave it holding a stale, transcript-less list of members to index.
+    it "indexes every page's new transcript during a full transcription" do
+      allow(service).to receive(:request_transcription) do |images|
+        gemini_response(text: JSON.generate("pages" => pages_for(images.map { |image| image.fetch(:filename) })))
+      end
+
+      service.add_transcription!
+
+      expect(WebMock).to have_requested(:post, solr_update_url_regex).at_least_once.with { |request|
+        ["Dear Cousin James", "Charles came home today.", "Mary A. Post."].all? { |text| request.body.include?(text) }
       }
     end
   end

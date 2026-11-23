@@ -11,16 +11,21 @@ class CombinedAudioDerivatives
     @work = work
   end
 
+  # If an OH is fully public, we store it's derivatives in a public cacheable S3 bucket,
+  # but if it's by-request only we need to store it in a private bucket and deliver temporary URLs.
   def m4a_audio_url
-    work&.oral_history_content&.combined_audio_m4a&.url(public:true)
-  end
+    file = work&.oral_history_content&.combined_audio_m4a
+    return nil unless file
 
-  def audio_fingerprint
-    work&.oral_history_content&.combined_audio_fingerprint
+    if file.storage_key.to_sym == :restricted_combined_audio_derivatives
+      file.url(public: false, expires_in: DOWNLOAD_URL_EXPIRES_IN)
+    else
+      file.url(public: true)
+    end
   end
 
   def derivatives_up_to_date?
-    CombinedAudioDerivativeCreator.new(work).fingerprint == audio_fingerprint
+    !!work&.oral_history_content&.combined_audio_up_to_date?
   end
 
   def m4a_audio_download_filename

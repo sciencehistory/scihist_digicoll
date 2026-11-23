@@ -17,7 +17,7 @@ module OralHistory
       end
 
       def work_available_members?
-        @work_published_audio_members_count ||= CombinedAudioDerivativeCreator.new(work).available_members?
+        @work_available_members ||= CombinedAudioDerivativeCreator.new(work).available_members?
       end
 
       def work_available_members_count
@@ -27,8 +27,7 @@ module OralHistory
       def combined_m4a_audio
         return nil unless work.is_oral_history?
         return nil unless work_available_members?
-        oh_content = work.oral_history_content!
-        oh_content.combined_audio_m4a&.url(public:true)
+        CombinedAudioDerivatives.new(work).m4a_audio_url
       end
 
       def combined_audio_fingerprint
@@ -41,7 +40,7 @@ module OralHistory
       end
 
       def derivatives_up_to_date?
-        current_required_fingerprint == combined_audio_fingerprint
+        !!work&.oral_history_content&.combined_audio_up_to_date?
       end
 
       def job_status_time

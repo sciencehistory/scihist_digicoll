@@ -145,9 +145,13 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    update_handwriting_transcription_request(status: 'requested')
-
     model = ScihistDigicoll::Env.lookup("gemini_model")
+
+    update_handwriting_transcription_request(
+      status: 'requested',
+      gemini_model: model,
+      source_version: ENV['SOURCE_VERSION'].presence
+    )
 
     gemini_client.post(
       "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent",
@@ -165,7 +169,7 @@ class GeminiHandwritingTranscriptionService
 
   # The transcript, and notes about the transcription process,
   # should come in via the response body. This method attaches each page's
-  # transcript to the corresponding asset.
+  # transcript to the corresponding asset, and keeps Gemini's notes on the request.
   def process_results(response:, staged_images:)
     validate_adapter_result!(response)
 
@@ -180,6 +184,19 @@ class GeminiHandwritingTranscriptionService
         data,
         staged_images: staged_images
       )
+
+    # Keep Gemini's notes about the transcription, with each page's notes labelled by its asset,
+    # in the order the pages were sent. (An array, since jsonb doesn't keep the order of a hash's keys.)
+    # Saved before attaching the transcripts, so they're kept even if attaching fails.
+    pages_by_filename = pages.index_by { |page| page.fetch("filename") }
+    page_notes = staged_images.filter_map do |image|
+      note = pages_by_filename.fetch(image.fetch(:filename))["page_notes"]
+      { "friendlier_id" => image.fetch(:asset).friendlier_id, "note" => note } if note.present?
+    end
+    update_handwriting_transcription_request(
+      general_feedback: data["general_feedback"].presence,
+      page_notes: page_notes.presence
+    )
 
     attach_transcripts!(
       pages,
@@ -285,6 +302,13 @@ class GeminiHandwritingTranscriptionService
   def attach_transcripts!(pages, staged_images:)
     pages_by_filename =
       pages.index_by { |page| page.fetch("filename") }
+
+    # Each asset save reindexes its parent, which is our in-memory `work`. Earlier saves of
+    # the work (such as status updates) may have loaded and cached its members, without the
+    # new transcripts -- and that stale list would be what gets indexed.
+    # So we clear the in-memory cache for work.members.
+    # See https://api.rubyonrails.org/classes/ActiveRecord/Associations/CollectionProxy.html#method-i-reset
+    work.members.reset
 
     Kithe::Indexable.index_with(batching: true) do
       Asset.transaction do

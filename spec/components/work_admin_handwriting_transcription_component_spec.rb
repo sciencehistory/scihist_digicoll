@@ -50,13 +50,22 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
   end
 
   describe "with a request in progress" do
-    let(:request_attributes) { { status: "requested", start_time: Time.zone.parse("2026-01-01 12:30:00") } }
+    let(:request_attributes) do
+      {
+        status: "requested",
+        start_time: Time.zone.parse("2026-01-01 12:30:00"),
+        gemini_model: "gemini-test-model",
+        source_version: "mock_git_sha"
+      }
+    end
 
-    it "shows the status and start time, and offers no buttons" do
+    it "shows the status, start time and provenance, and offers no buttons" do
       render_inline described_class.new(work)
 
       expect(page).to have_text("A handwriting transcription is in progress (status: requested).")
       expect(page).to have_text("Started: 2026-Jan-01 12:30")
+      expect(page).to have_text("Gemini model: gemini-test-model")
+      expect(page).to have_text("Code version: mock_git_sha")
       expect(page).not_to have_link("Go to transcript")
       expect(page).not_to have_link("Request a new transcript")
       expect(page).not_to have_link("Delete transcript")
@@ -73,6 +82,32 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       expect(new_request_link["href"]).to eq("/admin/works/#{work.friendlier_id}/request_new_handwriting_transcription")
       expect(new_request_link["data-method"]).to eq("post")
       expect(new_request_link["data-confirm"]).to match(/delete the current transcript/)
+      expect(page).not_to have_text("Notes from Gemini")
+    end
+
+    describe "with notes from Gemini" do
+      let(:request_attributes) do
+        {
+          status: "success",
+          general_feedback: "Mostly legible.",
+          page_notes: [
+            { "friendlier_id" => "abc123", "note" => "A diagram was omitted." },
+            { "friendlier_id" => "def456", "note" => "Smudged." }
+          ]
+        }
+      end
+
+      it "shows the general feedback, and each page's notes in order, linked to its asset" do
+        render_inline described_class.new(work)
+
+        expect(page).to have_text("Notes from Gemini")
+        expect(page).to have_text("Mostly legible.")
+        expect(page.all("li").map { |li| li.text.squish }).to eq([
+          "abc123: A diagram was omitted.",
+          "def456: Smudged."
+        ])
+        expect(page).to have_link("abc123", href: "/admin/asset_files/abc123")
+      end
     end
 
     it "links to the transcript on the public work page" do
