@@ -235,6 +235,8 @@ class GeminiHandwritingTranscriptionService
       reason = envelope.dig("candidates", 0, "finishReason") || envelope.dig("promptFeedback", "blockReason")
       msg = "Gemini returned no transcript (reason: #{reason || 'none given'}). " \
         "Response: #{JSON.generate(envelope).truncate(1000)}"
+
+      Rails.logger.warn { "Gemini returned no transcript for work #{work.friendlier_id}. Full response: #{response.body}" }
       update_handwriting_transcription_request(status: 'failure', error: msg)
       raise InvalidResponseError, msg
     end
