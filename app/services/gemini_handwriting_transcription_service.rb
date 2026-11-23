@@ -145,9 +145,13 @@ class GeminiHandwritingTranscriptionService
       "Sending work #{work.friendlier_id} to Gemini for handwriting transcription"
     )
 
-    update_handwriting_transcription_request(status: 'requested')
-
     model = ScihistDigicoll::Env.lookup("gemini_model")
+
+    update_handwriting_transcription_request(
+      status: 'requested',
+      gemini_model: model,
+      source_version: ENV['SOURCE_VERSION'].presence
+    )
 
     gemini_client.post(
       "#{GEMINI_API_BASE_URL}/models/#{model}:generateContent",
@@ -294,6 +298,13 @@ class GeminiHandwritingTranscriptionService
   def attach_transcripts!(pages, staged_images:)
     pages_by_filename =
       pages.index_by { |page| page.fetch("filename") }
+
+    # Each asset save reindexes its parent, which is our in-memory `work`. Earlier saves of
+    # the work (such as status updates) may have loaded and cached its members, without the
+    # new transcripts -- and that stale list would be what gets indexed.
+    # So we clear the in-memory cache for work.members.
+    # See https://api.rubyonrails.org/classes/ActiveRecord/Associations/CollectionProxy.html#method-i-reset
+    work.members.reset
 
     Kithe::Indexable.index_with(batching: true) do
       Asset.transaction do
