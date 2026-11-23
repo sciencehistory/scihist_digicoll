@@ -300,6 +300,20 @@ describe GeminiHandwritingTranscriptionService do
         request.body.include?("Dear Cousin James")
       }
     end
+
+    # The status updates save (and so reindex) the work before the transcripts are attached,
+    # which used to leave it holding a stale, transcript-less list of members to index.
+    it "indexes every page's new transcript during a full transcription" do
+      allow(service).to receive(:request_transcription) do |images|
+        gemini_response(text: JSON.generate("pages" => pages_for(images.map { |image| image.fetch(:filename) })))
+      end
+
+      service.add_transcription!
+
+      expect(WebMock).to have_requested(:post, solr_update_url_regex).at_least_once.with { |request|
+        ["Dear Cousin James", "Charles came home today.", "Mary A. Post."].all? { |text| request.body.include?(text) }
+      }
+    end
   end
 
   describe "#validate_adapter_result!" do
