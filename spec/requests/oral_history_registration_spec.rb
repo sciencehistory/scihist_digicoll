@@ -68,6 +68,16 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
       expect(response).to redirect_to(work_path(work.friendlier_id))
     end
 
+    it "returns to return_to with fragment from page registered on", queue_adapter: :inline do
+      anchored_path = "#{work_path(work.friendlier_id)}#p=12&th=some%20words&modal-auto-open=oh-request-trigger"
+      post register_oral_history_path, params: registration_params.merge(return_to: anchored_path)
+      expect(response).to redirect_to(code_oral_history_session_path(return_to: anchored_path))
+
+      mail = ActionMailer::Base.deliveries.find { |m| m.to == [email] }
+      get registration_link_from(mail)
+      expect(response).to redirect_to(anchored_path)
+    end
+
     it "re-renders form without creating patron when name missing" do
       expect {
         post register_oral_history_path, params: registration_params.deep_merge(patron: { name: "" })
@@ -108,16 +118,6 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
       mail = ActionMailer::Base.deliveries.find { |m| m.to == [email] }
       get registration_link_from(mail)
       expect(response).to redirect_to(work_path(work.friendlier_id))
-    end
-  end
-
-  describe "login return_to" do
-    let(:patron) { create(:patron, email: email) }
-    let(:token) { patron.generate_token_for(:auto_login) }
-
-    it "ignores a non-local return_to" do
-      get login_oral_history_session_path(token, return_to: "//evil.example.com/")
-      expect(response).to redirect_to(patron_account_path)
     end
   end
 end

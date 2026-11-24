@@ -33,10 +33,10 @@ RSpec.describe OhSessionMailer, :type => :mailer do
   end
 
   describe "registration_email" do
-    let(:work) { create(:oral_history_work, :published, :available_by_request, availability_mode: :automatic_request) }
-    let(:mail) { OhSessionMailer.with(patron: patron, work: work).registration_email }
+    let!(:work) { create(:oral_history_work, :published, :available_by_request, availability_mode: :automatic_request) }
+    let(:mail) { OhSessionMailer.with(patron: patron, return_to: work_path(work.friendlier_id)).registration_email }
 
-    it "has a login link returning to the work, and count of registered oral histories" do
+    it "has a login link with return_to, and count of registered oral histories" do
       allow_any_instance_of(Patron).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
 
       expect(mail.to).to eq [patron.email]

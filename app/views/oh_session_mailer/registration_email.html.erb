@@ -5,8 +5,8 @@
 </p>
 
 <p>
-  Please confirm your email address with this link, which will also take you back to <i><%= @work.title %></i>:
-  <%= link_to "Confirm and view the oral history", login_magic_link(return_to: work_url(@work.friendlier_id, only_path: true)), data: { auto_login_link: true } %>
+  Please confirm your email address with this link<% if @return_to %>, which will also take you back to where you left off<% end %>:
+  <%= link_to "Confirm and continue", login_magic_link(return_to: @return_to), data: { auto_login_link: true } %>
 </p>
 
 <%= render "sign_in_code", code: @sign_in_code %>

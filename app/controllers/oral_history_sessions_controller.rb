@@ -10,7 +10,7 @@ class OralHistorySessionsController < ApplicationController
   bot_challenge only: [:new, :code_form]
 
   rate_limit to: 10, within: 15.minutes, only: [:create, :verify_code], with: -> {
-    redirect_to new_oral_history_session_path(return_to: safe_return_to),
+    redirect_to new_oral_history_session_path(return_to: safe_return_to(params[:return_to])),
       flash: { auto_link_message: "Too many attempts. Please wait a few minutes and try again." }
   }
 
@@ -42,12 +42,12 @@ class OralHistorySessionsController < ApplicationController
     patron = Patron.find_by(email: email_param)
 
     if patron.present?
-      OhSessionMailer.with(patron: patron, return_to: safe_return_to).sign_in_email.deliver_later
+      OhSessionMailer.with(patron: patron, return_to: safe_return_to(params[:return_to])).sign_in_email.deliver_later
 
-      show_sign_in_code_form(patron, return_to: safe_return_to,
+      show_sign_in_code_form(patron, return_to: safe_return_to(params[:return_to]),
         message: "We've emailed a sign-in link and code to #{patron.email}.")
     else
-      redirect_to new_oral_history_session_path(return_to: safe_return_to), flash: { auto_link_message: "Sorry, we have no email on record for #{params[:email]}. Please check your entry."}
+      redirect_to new_oral_history_session_path(return_to: safe_return_to(params[:return_to])), flash: { auto_link_message: "Sorry, we have no email on record for #{params[:email]}. Please check your entry."}
     end
   end
 
@@ -58,7 +58,7 @@ class OralHistorySessionsController < ApplicationController
     @sign_in_code_email = session[SESSION_KEY]
 
     unless @sign_in_code_email
-      redirect_to new_oral_history_session_path(return_to: safe_return_to)
+      redirect_to new_oral_history_session_path(return_to: safe_return_to(params[:return_to]))
     end
   end
 
@@ -70,7 +70,7 @@ class OralHistorySessionsController < ApplicationController
       session.delete(SESSION_KEY)
       sign_in_patron_and_redirect(patron)
     else
-      redirect_to code_oral_history_session_path(return_to: safe_return_to),
+      redirect_to code_oral_history_session_path(return_to: safe_return_to(params[:return_to])),
         flash: { auto_link_message: "Sorry, that code is incorrect or has expired. Please try again, or request a new one." }
     end
   end
@@ -94,18 +94,11 @@ class OralHistorySessionsController < ApplicationController
     request.env["devise.skip_timeout"] = true
     patron.remember_me = true
     sign_in(:patron, patron)
-    redirect_to (safe_return_to || patron_account_path), allow_other_host: false
+    redirect_to (safe_return_to(params[:return_to]) || patron_account_path), allow_other_host: false
   end
 
   def email_param
     params.dig(:email) or raise ActionController::ParameterMissing.new(:email)
   end
-
-  # only a local path, so the link can't be used to redirect off-site
-  def safe_return_to
-    path = params[:return_to]
-    path if path.is_a?(String) && path.start_with?("/") && !path.start_with?("//") && !path.include?("\\")
-  end
-  helper_method :safe_return_to
 
 end

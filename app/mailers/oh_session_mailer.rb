@@ -21,10 +21,11 @@ class OhSessionMailer < ApplicationMailer
   end
 
   # Sent on registering for automatic_request oral histories; the link confirms the patron
-  # and returns them to the work they started from.
+  # and returns them to where they started from.
   def registration_email
     @patron = params[:patron] or raise ArgumentError.new("missing required params[:patron]")
-    @work = params[:work] or raise ArgumentError.new("missing required params[:work]")
+    # optional local path to land on after confirming
+    @return_to = params[:return_to]
     @sign_in_code = @patron.generate_sign_in_code!
 
     # unique header so gmail doesn't thread (and hide) repeated sign-in emails, as in sign_in_email
