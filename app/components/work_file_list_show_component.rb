@@ -87,6 +87,14 @@ class WorkFileListShowComponent < ApplicationComponent
     end
   end
 
+  def request_button_path
+    if @work.oral_history_content.availability_automatic_request?
+      oral_history_registration_form_path(@work.friendlier_id)
+    else
+      oral_history_request_form_path(@work.friendlier_id)
+    end
+  end
+
   def available_by_request_assets
     @available_by_request_assets ||= begin
       unless work.is_oral_history? &&
