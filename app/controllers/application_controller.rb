@@ -1,5 +1,6 @@
 class ApplicationController < ActionController::Base
   include BotChallengePage::Controller
+  include SafeReturnToHelper
 
   # Blacklight tried to add some things to ApplicationController, but
   # we pretty much only want to use CatalogController from Blacklight, so
