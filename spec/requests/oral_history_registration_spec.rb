@@ -14,7 +14,7 @@ describe "Oral History patron registration", type: :request, queue_adapter: :tes
     Nokogiri::HTML(mail.body.decoded).at_css("a[data-auto-login-link]")["href"]
   end
 
-  it "work page Get Access button links to registration" do
+  it "work page Register for Access button links to registration" do
     work.update!(published: true)
     get work_path(work.friendlier_id)
     expect(response.body).to include(%{href="#{oral_history_registration_form_path(work.friendlier_id)}"})

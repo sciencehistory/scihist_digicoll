@@ -51,7 +51,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
       expect(page).to have_selector("h2", text: "Access this interview")
       expect(page).to have_text("1 PDF Transcript File")
       expect(page).to have_text("1 Audio Recording File")
-      expect(page).to have_selector(:link_or_button, 'Get Access')
+      expect(page).to have_selector(:link_or_button, 'Register for Access')
 
       within(".show-member-file-list-item") do
         expect(page).to have_selector(:link, preview_pdf.title)
@@ -60,7 +60,7 @@ describe "Oral History with by-request delivery", type: :system, js: true, queue
 
       expect(page).to have_text("Register and confirm your email address to receive immediate access to these files.")
 
-      click_on 'Get Access'
+      click_on 'Register for Access'
 
       expect(page).to have_selector(".modal") # now in modal
 

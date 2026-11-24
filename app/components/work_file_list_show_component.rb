@@ -81,7 +81,7 @@ class WorkFileListShowComponent < ApplicationComponent
 
   def request_button_name
     if @work.oral_history_content.availability_automatic_request?
-      "Get Access"
+      "Register for Access"
     else
       "Request Access"
     end
