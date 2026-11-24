@@ -41,13 +41,16 @@ class OralHistoryRegistrationsController < ApplicationController
       return
     end
 
+    # from the form, may include #fragment from the page, e.g. AI citation paragraph
+    return_to = safe_return_to(params[:return_to]) || work_path(@work.friendlier_id)
+
     if @patron.confirmed?
-      OhSessionMailer.with(patron: @patron, return_to: work_path(@work.friendlier_id)).sign_in_email.deliver_later
-      show_sign_in_code_form(@patron, return_to: work_path(@work.friendlier_id),
+      OhSessionMailer.with(patron: @patron, return_to: return_to).sign_in_email.deliver_later
+      show_sign_in_code_form(@patron, return_to: return_to,
         message: "You are already registered. We've sent an email to #{@patron.email} with a sign-in link and code.")
     else
-      OhSessionMailer.with(patron: @patron, work: @work).registration_email.deliver_later
-      show_sign_in_code_form(@patron, return_to: work_path(@work.friendlier_id),
+      OhSessionMailer.with(patron: @patron, return_to: return_to).registration_email.deliver_later
+      show_sign_in_code_form(@patron, return_to: return_to,
         message: "Thank you for registering. We've sent an email to #{@patron.email}. Click the link in it, or enter the code from it, to confirm your email address and get access.")
     end
   end

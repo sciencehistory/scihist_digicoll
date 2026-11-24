@@ -10,5 +10,5 @@
 
   <p>Enter the code we emailed to <b><%= @sign_in_code_email %></b>.</p>
 
-  <%= render "code_form", return_to: safe_return_to %>
+  <%= render "code_form", return_to: safe_return_to(params[:return_to]) %>
 </div>

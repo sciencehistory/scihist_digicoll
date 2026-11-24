@@ -11,7 +11,7 @@
       <span class="text-danger">We'll email you a link to confirm your email address. Once you click it, you'll have immediate access.</span>
 
       <strong>Already registered?</strong>
-      <%= link_to "Sign in", new_oral_history_session_path(return_to: work_path(@work.friendlier_id)), data: { role: "already-registered-sign-in" } %>
+      <%= link_to "Sign in", new_oral_history_session_path(return_to: work_path(@work.friendlier_id)), data: { role: "already-registered-sign-in", set_current_url: "return_to" } %>
     </p>
   </div>
 
@@ -66,6 +66,8 @@
     </div>
 
     <%= hidden_field_tag :work_friendlier_id, @work.friendlier_id %>
+    <%# JS sets to current page URL with #fragment, so after confirmation we return to the same spot %>
+    <%= hidden_field_tag :return_to, work_path(@work.friendlier_id), data: { set_current_url: true } %>
 
     <%= render "turnstile_form_protection" %>
 

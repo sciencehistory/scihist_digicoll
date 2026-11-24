@@ -15,7 +15,7 @@
 
   <%= simple_form_for(:oral_history_session, url: oral_history_session_path, html: { class: "mb-4" }) do |f| %>
     <%= f.input :email, input_html: { name: "email" } %>
-    <%= hidden_field_tag :return_to, safe_return_to if safe_return_to %>
+    <%= hidden_field_tag :return_to, safe_return_to(params[:return_to]) %>
     <%= f.submit value: "Send me a sign-in link", class: "btn btn-brand-main" %>
   <% end %>
 
