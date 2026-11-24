@@ -1,0 +1,5 @@
+<p style="margin-top: 32px; color: #555; font-size: 14px">
+  The button works for <%= Patron::LOGIN_LINK_EXPIRE.in_days.to_i %> days, then you can
+  <%= link_to "get a new sign-in link", new_oral_history_session_url %>. It signs you in, so please don't share this email.
+  Questions? Just reply, or write to <%= mail_to ScihistDigicoll::Env.lookup!(:oral_history_email_address) %>.
+</p>

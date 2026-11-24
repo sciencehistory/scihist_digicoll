@@ -1,7 +1,7 @@
 <%# locals: (code:) %>
 <p>
-  Or, enter this code on the page where you requested this email:
-  <b data-sign-in-code="true"><%= code.first(3) %> <%= code.last(3) %></b>
+  Or enter this code on the page where you asked for this email:
+  <b data-sign-in-code="true" style="font-size: 20px; letter-spacing: 2px; white-space: nowrap"><%= code.first(3) %> <%= code.last(3) %></b>
   <br>
-  (The code expires in <%= Patron::SIGN_IN_CODE_EXPIRE.in_minutes.to_i %> minutes.)
+  <span style="color: #555">The code expires in <%= Patron::SIGN_IN_CODE_EXPIRE.in_minutes.to_i %> minutes.</span>
 </p>

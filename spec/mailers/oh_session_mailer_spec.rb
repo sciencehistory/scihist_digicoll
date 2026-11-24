@@ -20,7 +20,8 @@ RSpec.describe OhSessionMailer, :type => :mailer do
     # every time you call it, I guess this works?
     allow_any_instance_of(Patron).to receive(:generate_token_for).with(:auto_login).and_return("TOKEN")
 
-    expect(mail.body).to include("<a data-auto-login-link=\"true\" href=\"#{login_oral_history_session_url('TOKEN')}\">")
+    link = Nokogiri::HTML(mail.body.decoded).at_css("a[data-auto-login-link]")
+    expect(link["href"]).to eq login_oral_history_session_url("TOKEN")
   end
 
   it "includes a working sign-in code" do
