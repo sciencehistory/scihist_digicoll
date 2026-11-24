@@ -16,6 +16,8 @@ class Patron < ApplicationRecord
   LOGIN_LINK_EXPIRE = 7.days
   SESSION_EXPIRE_PERIOD = 30.days
   SIGN_IN_CODE_EXPIRE = 15.minutes
+  # JS-readable flag only, see config/initializers/patron_signed_in_cookie.rb
+  SIGNED_IN_FLAG_COOKIE = "patron_signed_in"
   SIGN_IN_CODE_MAX_FAILED_ATTEMPTS = 5
 
   # Login is via magic link in OralHistorySessionsController, devise handles the session.

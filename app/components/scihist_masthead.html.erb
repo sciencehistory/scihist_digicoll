@@ -3,6 +3,16 @@
     <div class="shi-top-bar noprint">
         <div class="shi-top-bar__container">
 
+            <%# same for everyone so cacheable; patron_signed_in_status.js swaps which link shows %>
+            <div class="shi-top-bar__patron">
+                <a class="shi-top-bar-nav__item shi-hover" href="<%= new_oral_history_session_path %>" data-patron-signed-out-show>
+                    <i class="fa fa-user-circle" aria-hidden="true"></i> Patron Sign-in
+                </a>
+                <a class="shi-top-bar-nav__item shi-hover" href="<%= patron_account_path %>" data-patron-signed-in-show hidden>
+                    <i class="fa fa-user-circle" aria-hidden="true"></i> Patron Account
+                </a>
+            </div>
+
             <div class="shi-top-bar-nav">
                 <a class="shi-top-bar-nav__item shi-hover" href="<%= URI::join(ScihistDigicoll::Env.lookup(:main_website_base), "/about") %>" target="_self">
                     About
