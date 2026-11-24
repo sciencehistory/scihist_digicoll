@@ -37,6 +37,18 @@ class CollectionShowController < CatalogController
     end
   end
 
+  # We want to display a different label for access/availability categories than what is
+  # actually the value stored in DB and Solr index. we may update these later.
+  #
+  # Here rather than OralHistoryCollectionController, since OH sub-collections use its config too.
+  helper_method def oh_availability_facet_label(value)
+    case value.downcase
+    when "immediate" then "Public"
+    when "upon request" then "Registered patrons"
+    else value
+    end
+  end
+
   configure_blacklight do |config|
     # Our custom sub-class to limit just to docs in collection, with collection id
     # taken from params[:collection_id]
