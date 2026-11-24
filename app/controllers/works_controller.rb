@@ -3,6 +3,13 @@
 class WorksController < ApplicationController
   before_action :set_work, :check_auth
 
+  # Challenge only when showing a patron by-request OH content; public pages stay indexable.
+  bot_challenge only: :show, if: -> {
+    request.format.html? &&
+      @work.oral_history_content&.available_by_request? &&
+      current_patron&.can_access_oral_history?(@work)
+  }
+
   def show
     @show_deai_header = true
 

@@ -5,6 +5,10 @@
 class OralHistorySessionsController < ApplicationController
   include PatronSignInCodeFlow
 
+  # full pages for login and code entry, just extra guards we really don't want bots in our
+  # patron sessions.
+  bot_challenge only: [:new, :code_form]
+
   rate_limit to: 10, within: 15.minutes, only: [:create, :verify_code], with: -> {
     redirect_to new_oral_history_session_path(return_to: safe_return_to),
       flash: { auto_link_message: "Too many attempts. Please wait a few minutes and try again." }
