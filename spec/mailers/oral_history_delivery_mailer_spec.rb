@@ -25,10 +25,9 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     end
 
     it "includes an auto-login-link and body" do
-      expect(mail.body.raw_source).to include("<a data-auto-login-link=\"true\" href=\"#{login_oral_history_session_url('TOKEN')}\">")
-
       mail_body_html = Nokogiri::HTML(mail.body.raw_source)
-      expect(mail_body_html).to have_text(/Thank you for requesting #{Regexp.escape access_request.work.title}.*has been approved/)
+      expect(mail_body_html.at_css("a[data-auto-login-link]")["href"]).to eq login_oral_history_session_url('TOKEN')
+      expect(mail_body_html).to have_text("Your request for #{access_request.work.title} has been approved")
     end
 
     describe "with automatic delivery" do
@@ -40,7 +39,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
         expect(mail.subject).to eq "Science History Institute Oral History Request: Approved: #{access_request.work.title}"
 
         mail_body_html = Nokogiri::HTML(mail.body.raw_source)
-        expect(mail_body_html).to have_text(/Thank you for requesting #{Regexp.escape access_request.work.title}.*has been approved/)
+        expect(mail_body_html).to have_text("Your request for #{access_request.work.title} has been approved")
       end
     end
   end
@@ -62,7 +61,7 @@ RSpec.describe OralHistoryDeliveryMailer, :type => :mailer do
     end
 
     it "includes an auto-login-link and body" do
-      expect(mail.body.raw_source).to include("<a data-auto-login-link=\"true\" href=\"#{login_oral_history_session_url('TOKEN')}\">")
+      expect(Nokogiri::HTML(mail.body.raw_source).at_css("a[data-auto-login-link]")["href"]).to eq login_oral_history_session_url('TOKEN')
 
       mail_body_html = Nokogiri::HTML(mail.body.raw_source)
       expect(mail_body_html).to have_text("Unfortunately we could not approve your request for #{access_request.work.title} at this time.")

@@ -90,8 +90,6 @@ en:
     front_matter: "Front Matter and Index"
 
   oral_history:
-    sign_in_prompt: "You can view the status of all of your oral history requests and download materials from approved requests using this special sign-in link:"
-    sign_in_link_label: "Access Science History Institute Requests"
     access_limit:
       immediate_ohms_only: "Only with synchronized audio"
       immediate_only: "Only fully public without request" # these names need work if we are to use them.

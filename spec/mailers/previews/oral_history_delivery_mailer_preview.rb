@@ -9,17 +9,19 @@ require 'factory_bot_rails'
 # or
 #     .../oral_history_delivery_email_mp3
 #
-# OR, with an actual work you have in your dev db:
+# Each finds or creates sample data if needed. OR, with an actual work you have in your dev db:
 #
 #    http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email?work_friendlier_id=q87u4qt
 #
 class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   CUSTOM_MESSAGE = "[[This is optional customized per-email instructions written by staff to patron, possibly including usage restrictions.]]"
 
-  # requires eg ?work_friendlier_id=adf34aefadf
+  # optional ?work_friendlier_id=adf34aefadf, else sample mp3 work
   #
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/oral_history_delivery_email?work_friendlier_id=adf34aefadf
   def oral_history_delivery_email
+    return oral_history_delivery_email_mp3 if params[:work_friendlier_id].blank?
+
     work = Work.find_by_friendlier_id!(params[:work_friendlier_id])
 
     request = OralHistoryRequest.
@@ -53,26 +55,34 @@ class OralHistoryDeliveryMailerPreview < ActionMailer::Preview
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/approved_with_session_link_email
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/approved_with_session_link_email?request_id=134
   def approved_with_session_link_email
-    request = (params[:request_id].present? && OralHistoryRequest.find(params[:request_id]) ||
-      OralHistoryRequest.where(delivery_status: "approved").first ||
-      (raise TypeError.new("need an approved request in db to preview")))
-
-    OralHistoryDeliveryMailer.with(request: request).approved_with_session_link_email
+    OralHistoryDeliveryMailer.with(request: request_with_status("approved"), custom_message: CUSTOM_MESSAGE).
+      approved_with_session_link_email
   end
 
   # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/rejected_with_session_link_email
-  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/rejected_with_session_link_email=137
+  # http://localhost:3000/rails/mailers/oral_history_delivery_mailer/rejected_with_session_link_email?request_id=137
   def rejected_with_session_link_email
-    request = (params[:request_id].present? && OralHistoryRequest.find(params[:request_id]) ||
-      OralHistoryRequest.where(delivery_status: "rejected").first ||
-      (raise TypeError.new("need a rejected request in db to preview")))
-
-    OralHistoryDeliveryMailer.with(request: request).rejected_with_session_link_email
+    OralHistoryDeliveryMailer.with(request: request_with_status("rejected"), custom_message: CUSTOM_MESSAGE).
+      rejected_with_session_link_email
   end
 
 
 
   protected
+
+  # ?request_id param, else existing request with status, else new one on the sample mp3 work
+  def request_with_status(status)
+    return OralHistoryRequest.find(params[:request_id]) if params[:request_id].present?
+
+    OralHistoryRequest.where(delivery_status: status).where.not(patron: nil).first ||
+      OralHistoryRequest.create!(
+        work: oral_history_request(file_type: :mp3).work,
+        patron_name: "John Smith",
+        patron: sample_patron,
+        intended_use: "just cause",
+        delivery_status: status
+      )
+  end
 
   def sample_patron
     Patron.create_or_find_by!(email: "smith@example.com") { |p| p.name = "Test Patron" }
