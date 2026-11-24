@@ -47,15 +47,7 @@ describe OralHistory::AiConversationCitationComponent, type: :component do
     end
   end
 
-  it "renders link to paragraph" do
-    expect(component.link_to_source).to eq work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}&th=This is a long enough quote")
-  end
-
-  describe "automatic requestable" do
-    let(:availability_mode) { "automatic_request" }
-
-    it "generates link to PDF with page number" do
-      expect(component.link_to_source).to eq view_transcript_pdf_path(work, anchor_page: (work.oral_history_content.extracted_paragraph_container.logical_page_number_offset + 4).to_s)
-    end
+  it "links to paragraph with request/register form trigger" do
+    expect(component.link_to_source).to eq work_path(citation_item.work.friendlier_id, anchor: "p=#{citation_item.paragraph_start}&th=This is a long enough quote&modal-auto-open=oh-request-trigger")
   end
 end

@@ -11,10 +11,6 @@
 
 
     <span data-shi-slot="footnote-badges">
-      <% unless citation_item.can_link_to_html_transcript? %>
-        <span class="badge text-body bg-warning border border-warning-subtle ms-2">PDF-only</span>
-      <% end %>
-
       <% if citation_item.oral_history_content.availability_reviewed_request? %>
           <span class="badge bg-danger-subtle border border-danger-subtle text-body ms-2">Restricted</span>
       <% end %>
