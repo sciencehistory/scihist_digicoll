@@ -15,6 +15,7 @@ class OralHistoryRequestsController < ApplicationController
   end
 
   include OralHistoryRequestFormMemoryHelper
+  include PatronSignInCodeFlow
 
   rescue_from AccessDenied do |exception|
     redirect_to new_oral_history_session_path, flash: { auto_link_message: exception.message }
@@ -206,10 +207,8 @@ private
         )
       else
         OhSessionMailer.with(patron: patron).sign_in_email.deliver_later
-        return_status(
-          work_path(@work.friendlier_id),
-          "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link, which you can use to view your requests."
-        )
+        show_sign_in_code_form(patron,
+          message: "You have already requested this Oral History. We've sent another email to #{patron_email_param} with a sign-in link and code, which you can use to view your requests.")
       end
 
       return false # abort further processing

@@ -231,7 +231,7 @@ describe OralHistoryRequestsController, type: :controller do
               expect(action).to eq "sign_in_email"
             }
 
-            expect(response).to redirect_to(work_path(work.friendlier_id))
+            expect(response).to redirect_to(code_oral_history_session_path)
             expect(flash[:success]).to match /We've sent another email to #{Regexp.escape full_create_params[:patron_email]}/
             expect(Honeybadger.get_context[:patron_email]).to eq full_create_params[:patron_email]
           end
