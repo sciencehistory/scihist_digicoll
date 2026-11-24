@@ -100,11 +100,11 @@ class WorksController < ApplicationController
 
   # We use a different ViewComponent depending on work characteristics, polymorophically kind of.
   def view_component
-    @view_component ||= if @work.is_oral_history? && !@work.oral_history_content&.available_by_request? && has_oh_audio_member?
+    @view_component ||= if @work.is_oral_history? && can_see_audio_player?
       # special OH audio player template
       WorkOhAudioShowComponent.new(@work)
     elsif @work.is_oral_history?
-      # OH with no playable audio, either becuae it's by-request or it's not there at all.
+      # OH with no audio this viewer can play, either because it's by-request or it's not there at all.
       WorkFileListShowComponent.new(@work)
     elsif show_media_player?
       # Other generic Audio or Video work
@@ -113,6 +113,17 @@ class WorksController < ApplicationController
       # standard image-based template.
       WorkImageShowComponent.new(@work)
     end
+  end
+
+  # OH audio player page: direct, or automatic_request with patron access.
+  def can_see_audio_player?
+    oh = @work.oral_history_content
+    return false if oh&.availability_embargoed?
+    # for now we aren't allowing audio player access to reviewed requests even if approved
+    return false if oh&.availability_reviewed_request?
+    return false if oh&.availability_automatic_request? && !current_patron&.can_access_oral_history?(@work)
+
+    has_oh_audio_member?
   end
 
   # Is an Oral History with at least one audio member?
@@ -131,23 +142,22 @@ class WorksController < ApplicationController
     #
     # We use Arel.sql cause if we don't we get a deprecation message telling us:
     #     "Dangerous query method... Known-safe values can be passed by wrapping them in Arel.sql()""
+    return false unless @work.is_oral_history?
+
     @has_oh_audio_member ||= begin
-      if ! @work.genre && @work.genre.include?("Oral histories")
-        false
-      else
-        direct_types = @work.members.
-          where(published: true).
-          distinct.pluck(Arel.sql("file_data -> 'metadata' -> 'mime_type'")).
-          compact
+      # chosen as the public sees it, so staff get the same page type
+      viewable = @work.members_viewable_by(user: nil, patron: current_patron)
 
-        indirect_types = @work.members.
-          where(published: true).
-          joins(:leaf_representative).
-          distinct.pluck(Arel.sql("leaf_representatives_kithe_models.file_data -> 'metadata' -> 'mime_type'")).
-          compact
+      direct_types = viewable.
+        distinct.pluck(Arel.sql("file_data -> 'metadata' -> 'mime_type'")).
+        compact
 
-        (direct_types + indirect_types).any? { |t| t.start_with?("audio/")}
-      end
+      indirect_types = viewable.
+        joins(:leaf_representative).
+        distinct.pluck(Arel.sql("leaf_representatives_kithe_models.file_data -> 'metadata' -> 'mime_type'")).
+        compact
+
+      (direct_types + indirect_types).any? { |t| t.start_with?("audio/")}
     end
   end
 

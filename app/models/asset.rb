@@ -357,6 +357,18 @@ class Asset < Kithe::Asset
     corrected_webvtt_str || (audio_asr_enabled?.presence &&  asr_webvtt_str)
   end
 
+  # Is this asset requestable by given patron, even if it's not published?
+  def is_requestable_oral_history_asset?(patron)
+    return false unless patron # not requestable by missing patron!
+    return false unless parent && parent.is_a?(Work)# if it's not attached to a work this is not requestable
+    return false unless parent.oral_history_content # doens't have an oral history sidecar, nope.
+
+    raise ArgumentError.new("arg must be a Patron, was a #{patron.class}") unless patron.kind_of?(Patron)
+
+    oh_available_by_request? && # this asset is marked avail for request
+      parent.oral_history_content.available_by_request? && # work has avail by request status set too
+      patron.can_access_oral_history?(parent) # the Patron supplied has access to this requestable OH
+  end
 
   # Used as an around_promotion callback. If we're promoting a shrine cache file using remote_url storage, and
   # the file is from our ingest_bucket, then add a record to table to schedule it's deletion in the future
