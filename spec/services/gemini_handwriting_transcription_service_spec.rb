@@ -264,6 +264,7 @@ describe GeminiHandwritingTranscriptionService do
           request = work.reload.handwriting_transcription_request
           expect(request.gemini_model).to eq "gemini-test-model"
           expect(request.source_version).to eq "mock_git_sha"
+          expect(request.source_fingerprint).to eq service.source_fingerprint
         end
       end
 
@@ -280,6 +281,22 @@ describe GeminiHandwritingTranscriptionService do
       end
     end
 
+    it "records failure, and raises, without contacting Gemini, if an image has no checksum" do
+      staged_images # stage first, so the checksum is only missing for the request
+      remove_sha512(asset2)
+      fresh_service = described_class.new(work: work.reload)
+      allow(fresh_service.send(:gemini_client)).to receive(:post)
+
+      expect {
+        fresh_service.send(:request_transcription, staged_images)
+      }.to raise_error(described_class::MissingChecksumError, /missing its sha512/)
+
+      expect(fresh_service.send(:gemini_client)).not_to have_received(:post)
+      request = work.reload.handwriting_transcription_request
+      expect(request).to be_failure
+      expect(request.error).to match(/missing its sha512/)
+    end
+
     it "raises AdapterError when Gemini can't be reached at all" do
       allow(service.send(:gemini_client)).to receive(:post).and_raise(HTTP::TimeoutError.new("timed out"))
 
@@ -291,6 +308,45 @@ describe GeminiHandwritingTranscriptionService do
 
       expect(request_state.status).to eq("failure")
       expect(request_state.error).to include("Could not reach Gemini")
+    end
+  end
+
+  describe "#source_fingerprint" do
+    def fingerprint_now
+      described_class.new(work: work.reload).source_fingerprint
+    end
+
+    it "is a hash of the images' original checksums, in page order" do
+      expect(service.source_fingerprint).to eq Digest::MD5.hexdigest(assets.map(&:sha512).join)
+    end
+
+    it "doesn't change when the work's metadata changes" do
+      original = fingerprint_now
+      work.update!(description: "A different description")
+      expect(fingerprint_now).to eq original
+    end
+
+    it "changes when the images are reordered" do
+      original = fingerprint_now
+      asset1.update_column(:position, 4)
+      expect(fingerprint_now).not_to eq original
+    end
+
+    it "changes when an image is replaced" do
+      original = fingerprint_now
+      asset2.update_column(:file_data, asset2.file_data.deep_merge("metadata" => { "sha512" => "a-new-file" }))
+      expect(fingerprint_now).not_to eq original
+    end
+
+    it "changes when an image is removed" do
+      original = fingerprint_now
+      asset3.destroy!
+      expect(fingerprint_now).not_to eq original
+    end
+
+    it "raises if an image has no checksum" do
+      remove_sha512(asset2)
+      expect { fingerprint_now }.to raise_error(described_class::MissingChecksumError)
     end
   end
 
@@ -630,6 +686,10 @@ describe GeminiHandwritingTranscriptionService do
         )
       }
     )
+  end
+
+  def remove_sha512(asset)
+    asset.update_column(:file_data, asset.file_data.deep_merge("metadata" => { "sha512" => nil }))
   end
 
   def tmpdir

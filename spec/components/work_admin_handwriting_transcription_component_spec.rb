@@ -3,6 +3,7 @@ require 'rails_helper'
 describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in_user: :editor do
   let(:feature_flag) { true }
   let(:eligibility_problems) { [] }
+  let(:current_fingerprint) { "current-fingerprint" }
   let(:text_extraction_mode) { "handwriting_transcription" }
   let(:request_attributes) { nil }
   let(:work) do
@@ -17,7 +18,9 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
     allow(ScihistDigicoll::Env).to receive(:lookup).with(:gemini_htr_transcripts_feature_flag).and_return(feature_flag)
 
     allow(GeminiHandwritingTranscriptionService).to receive(:new).and_return(
-      instance_double(GeminiHandwritingTranscriptionService, work_eligibility_problems: eligibility_problems)
+      instance_double(GeminiHandwritingTranscriptionService,
+        work_eligibility_problems: eligibility_problems,
+        source_fingerprint: current_fingerprint)
     )
   end
 
@@ -83,6 +86,33 @@ describe WorkAdminHandwritingTranscriptionComponent, type: :component, logged_in
       expect(new_request_link["data-method"]).to eq("post")
       expect(new_request_link["data-confirm"]).to match(/delete the current transcript/)
       expect(page).not_to have_text("Notes from Gemini")
+    end
+
+    describe "staleness" do
+      let(:stale_warning) { "This transcript may be out of date" }
+
+      it "doesn't warn when the request has no fingerprint" do
+        render_inline described_class.new(work)
+        expect(page).not_to have_text(stale_warning)
+      end
+
+      describe "with a fingerprint matching the work's images" do
+        let(:request_attributes) { { status: "success", source_fingerprint: current_fingerprint } }
+
+        it "doesn't warn" do
+          render_inline described_class.new(work)
+          expect(page).not_to have_text(stale_warning)
+        end
+      end
+
+      describe "with a fingerprint that no longer matches the work's images" do
+        let(:request_attributes) { { status: "success", source_fingerprint: "old-fingerprint" } }
+
+        it "warns that the transcript may be out of date" do
+          render_inline described_class.new(work)
+          expect(page).to have_text(stale_warning)
+        end
+      end
     end
 
     describe "with notes from Gemini" do
