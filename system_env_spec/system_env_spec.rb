@@ -103,13 +103,22 @@ describe "System Environment" do
         FileUtils.rm(output_path) if File.exist?(output_path)
       end
 
-      it "can write a jp2" do
+      # Mirrors AssetGraphicOnlyPdfCreator: resize the original with VIPS_BLOCK_UNTRUSTED,
+      # then convert our own intermediate TIFF to JP2 without it, since as of libvips
+      # 8.18.7 the JP2 saver is itself flagged untrusted.
+      it "can write a jp2, reading the original with untrusted operations blocked" do
         input_path =  File.join(test_support_dir, "images/mini_page_scan.tiff")
+        resized_path = File.join(tmp_output_dir, "sample_resized.tif")
         output_path = File.join(tmp_output_dir, "sample.jp2")
 
-        # `vipsthumbnail #{input_path} -o #{output_path}[Q=40,subsample-mode=off]`
+        _out, err, status = Open3.capture3({ "VIPS_BLOCK_UNTRUSTED" => "1" }, "vipsthumbnail", input_path, "--size", "16x65500", "--export-profile", "srgb", "-o", resized_path)
+        expect(status).to be_success, "vipsthumbnail failed: #{err}"
+
+        _out, err, status = Open3.capture3("vips", "jp2ksave", resized_path, output_path, "--Q", "40", "--subsample-mode", "off")
+        expect(status).to be_success, "vips jp2ksave failed: #{err}"
+        expect(File.size(output_path)).to be > 0
       ensure
-        FileUtils.rm(output_path) if File.exist?(output_path)
+        [resized_path, output_path].each { |p| FileUtils.rm(p) if p && File.exist?(p) }
       end
     end
   end
@@ -154,7 +163,7 @@ describe "System Environment" do
 
   describe "python CLI utilities" do
     describe "img2pdf" do
-      let(:cmd) { system("which uv 2>1 >/dev/null") ? 'uv run img2pdf' : 'img2pdf' }
+      let(:cmd) { system("which uv >/dev/null 2>&1") ? 'uv run img2pdf' : 'img2pdf' }
 
       it "is present" do
         `#{cmd} -h`
@@ -172,7 +181,7 @@ describe "System Environment" do
   end
 
   describe "our `extract_pdf_text` python script" do
-    let(:cmd) { system("which uv 2>1 >/dev/null") ? 'uv run ./python_script/extract_pdf_text.py' : 'python3 ./python_script/extract_pdf_text.py' }
+    let(:cmd) { system("which uv >/dev/null 2>&1") ? 'uv run ./python_script/extract_pdf_text.py' : 'python3 ./python_script/extract_pdf_text.py' }
 
     it "can be run by system python with imports available" do
       stdout, stderr, status = Open3.capture3("#{cmd} -h")
