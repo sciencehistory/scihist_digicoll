@@ -3,6 +3,9 @@
 require 'kithe/blacklight_tools/bulk_loading_search_service'
 
 class CatalogController < ApplicationController
+  # Deepest offset into search results we'll serve; see #catch_bad_blacklight_params
+  MAX_RESULTS_DEPTH = 10_000
+
   # Do these before loading Blacklgiht kind of for legacy reasons, they MIGHT be
   # better the blacklight includes, but at present that breaks some of our tests,
   # need to look into it.
@@ -601,6 +604,21 @@ class CatalogController < ApplicationController
         unless value.is_a?(Array) && value.all? {|v| v.is_a?(String)}
           render(plain: "Invalid URL query parameter f=#{param_display.call(params[:f])}", status: 400) && return
         end
+      end
+    end
+
+    # Crawlers page through unconstrained results (which we exempt from bot challenge)
+    # to offsets past 130,000. Solr has to rank every result up to the requested offset,
+    # and these requests were filling our small Solr heap. Real users don't page this deep.
+    #
+    # Reads raw params the same way Blacklight's SearchState#page/#per_page do, rather than
+    # calling search_state, which can raise on the malformed params this method is screening.
+    # Only for index -- in the facet action, page refers to facet value pagination.
+    if action_name == "index" && params[:page].present?
+      per_page = (params[:rows].presence || params[:per_page].presence || blacklight_config.default_per_page).to_s.to_i
+      per_page = per_page.clamp(1, blacklight_config.max_per_page)
+      if (params[:page].to_i - 1) * per_page >= MAX_RESULTS_DEPTH
+        render(plain: "Sorry, we can't show results past the first #{MAX_RESULTS_DEPTH.to_fs(:delimited)}. Please refine your search.", status: 400) && return
       end
     end
   end
